@@ -1,11 +1,15 @@
 # FlatEngine - 2D Game Engine
 
-![FlatEngineScreenCap](https://github.com/user-attachments/assets/b0dedd8b-447b-41fb-a73f-68b3cbc3f4d7)
 
+![ReleaseBuildV1](https://github.com/user-attachments/assets/e7a38d3e-963c-4bcb-a5f1-a01b33d6dda3)
+
+## UPDATE
+
+There is now a published release for FlatEngine2D!  Please see the "Releases" section on the right-hand side for a download link and read up on the ReadMe for details on how to use FlatEngine.
 
 ### Disclaimer
 
-This project is in active development and there is currently no released build available.  Feel free to download the source code and build it yourself in Visual Studio.
+This project is in active development.
 
 This is a hobby project.
 It will likely crash eventually so save often. THERE IS NO AUTOSAVE.

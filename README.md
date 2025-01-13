@@ -7,6 +7,10 @@
 
 There is now a published release for FlatEngine2D!  Please see the "Releases" section on the right-hand side for a download link and read up on the ReadMe for details on how to use FlatEngine.
 
+I've included a sample project inside FlatEngine2D called FlatSpace.  With it, hopefully you can get an idea of how to use FlatEngine.  But remember, FlatSpace is only one way to make a game using FlatEngine.  Get creative!
+
+As a note, FlatSpace was made before the implementation of persistant GameObjects which enable you to have some GameObjects stick around even when changing scenes.  Creation of new persistant GameObjects is located in the Assets dropdown menu.  Persistant objects are tied to the Project, so make sure to save your Scenes AND your Projects often to keep your progress saved!
+
 ### Disclaimer
 
 This project is in active development.

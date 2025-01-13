@@ -36,6 +36,8 @@ namespace FlatEngine
 	bool F_b_closeProgram = false;
 	bool F_b_closeProgramQueued = false;
 
+	bool F_b_projectSelected = false;
+
 	std::shared_ptr<WindowManager> F_Window = std::make_shared<WindowManager>();
 
 	std::string F_RuntimeDirectoriesLuaFilepath = "..\\engine\\scripts\\RuntimeDirectories.lua";
@@ -598,15 +600,19 @@ namespace FlatEngine
 		{
 			F_LoadedProject.LoadPersistantScene();
 		}
+		//else
+		//{
+		//	LogString("No persistant GameObjects to load.");
+		//}
 
 		if (F_LoadedProject.GetLoadedScenePath() != "")
 		{
 			LoadScene(F_LoadedProject.GetLoadedScenePath());
 		}
-		else
-		{
-			CreateNewScene();
-		}
+		//else
+		//{
+		//	LogString("No project scene to load.");
+		//}
 	}
 
 	void BuildProject()
@@ -615,6 +621,8 @@ namespace FlatEngine
 		{
 			try
 			{
+				LogString(F_LoadedProject.GetBuildPath());
+				std::filesystem::create_directories(F_LoadedProject.GetBuildPath());
 				std::filesystem::copy("..\\FlatEngine-Core", F_LoadedProject.GetBuildPath() + "\\Core", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
 			catch (std::exception& e)
@@ -633,7 +641,8 @@ namespace FlatEngine
 			}
 			try
 			{
-				std::filesystem::copy("..\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()), F_LoadedProject.GetBuildPath() + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()), std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
+				std::filesystem::create_directories(F_LoadedProject.GetBuildPath() + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()));
+				std::filesystem::copy("..\\projects\\", F_LoadedProject.GetBuildPath() + "\\projects\\", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
 			catch (std::exception& e)
 			{
@@ -896,7 +905,7 @@ namespace FlatEngine
 
 		if (path == "")
 		{
-			filePath = GetDir("mappingContexts") + "\\" + fileName + ".mpc";
+			filePath = GetDir("projectDir") + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\mappingContexts" + "\\" + fileName + ".mpc";
 		}
 		else
 		{
@@ -1262,7 +1271,7 @@ namespace FlatEngine
 
 		if (path == "")
 		{
-			filePath = GetDir("tileSets") + "\\" + fileName + ".tls";
+			filePath = GetDir("projectDir") + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\tileSets" + "\\" + fileName + ".tls";
 		}
 		else
 		{
@@ -1409,7 +1418,7 @@ namespace FlatEngine
 
 		if (path == "")
 		{
-			filePath = GetDir("animations") + filename + ".anm";
+			filePath = GetDir("projectDir") + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\animations\\" + filename + ".anm";
 		}
 		else
 		{
@@ -2084,6 +2093,17 @@ namespace FlatEngine
 		F_Logger.DrawPoint(point, color, drawList);
 	}
 
+	void SaveDebugLogToFile(std::string path)
+	{		
+		if (path != "")
+		{			
+			WriteStringToFile(path, F_Logger.GetBuffer().Buf.Data);
+		}
+		else
+		{			
+			WriteStringToFile(GetCurrentDir() + "\\log_output.txt", F_Logger.GetBuffer().Buf.Data);
+		}
+	}
 
 	// Game Loop
 	void StartGameLoop()
@@ -2290,7 +2310,7 @@ namespace FlatEngine
 		CoUninitialize();
 
 	
-		return relativePath;
+		return sFilePath;
 	}
 
 	std::string GetFilenameFromPath(std::string path, bool b_keepExtension)
@@ -2333,7 +2353,7 @@ namespace FlatEngine
 	std::string MakePathRelative(std::string filepath)
 	{
 		std::string relativePath = "";
-		std::string root = GetDir("root");
+		std::string root = GetDir("projectDir");
 		size_t rootDirIndex;
 
 		if (filepath != "")
@@ -2454,6 +2474,22 @@ namespace FlatEngine
 		}
 
 		return files;
+	}
+
+	void WriteStringToFile(std::string path, std::string text)
+	{
+		std::ofstream fileObject;
+		std::ifstream ifstream(path);
+
+		// Delete old contents of the file
+		fileObject.open(path, std::ofstream::out | std::ofstream::trunc);
+		fileObject.close();
+
+		// Opening file in append mode
+		fileObject.open(path, std::ios::app);
+
+		fileObject << text.c_str() << std::endl;
+		fileObject.close();
 	}
 
 

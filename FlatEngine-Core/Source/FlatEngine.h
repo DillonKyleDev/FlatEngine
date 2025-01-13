@@ -85,6 +85,8 @@ namespace FlatEngine
 	extern std::map<std::string, sol::protected_function> F_LoadedSceneScriptFiles;
 	extern std::map<std::string, sol::protected_function> F_LoadedPersistantScriptFiles;
 
+	extern bool F_b_projectSelected;
+
 	extern std::string F_RuntimeDirectoriesLuaFilepath;
 	extern std::string F_EditorDirectoriesLuaFilepath;
 
@@ -306,6 +308,7 @@ namespace FlatEngine
 	extern void DrawCircle(Vector2 center, float radius, Vector4 color, ImDrawList* drawList, float thickness = 1, int segments = 0);
 	extern void DrawPoint(Vector2 point, Vector4 color, ImDrawList* drawList);
 	extern void DebugRectangle(Vector2 startingPoint, Vector2 endPoint, Vector4 color, float thickness, ImDrawList* drawList);
+	extern void SaveDebugLogToFile(std::string path = "");
 
 	// Game View
 	extern void Game_RenderView(bool b_inRuntime = false);
@@ -373,9 +376,7 @@ namespace FlatEngine
 	extern void BeginImGuiRender();
 	extern void EndImGuiRender();
 	extern void SetNextViewportToFillWindow();
-
 	extern void MoveScreenCursor(float x, float y);
-
 	extern void RenderSeparator(float topPadding, float bottomPadding);
 	extern void RenderSubTitle(std::string title);
 	extern void BeginWindow(std::string name, Vector4 bgColor = GetColor("windowBg"));
@@ -447,4 +448,5 @@ namespace FlatEngine
 	extern void DeleteFileUsingPath(std::string filePath);
 	extern std::vector<std::string> FindAllFilesWithExtension(std::string dirPath, std::string extension);
 	extern std::string GetFilePathUsingFileName(std::string dirPath, std::string name);
+	extern void WriteStringToFile(std::string path, std::string text);
 };

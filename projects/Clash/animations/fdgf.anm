@@ -1,0 +1,22 @@
+{
+    "animation": {
+        "_loop": false,
+        "animationProperties": {
+            "audio": [],
+            "boxCollider": [],
+            "button": [],
+            "camera": [],
+            "canvas": [],
+            "characterController": [],
+            "circleCollider": [],
+            "event": [],
+            "rigidBody": [],
+            "script": [],
+            "sprite": [],
+            "text": [],
+            "transform": []
+        },
+        "length": 0.0,
+        "name": "fdgf"
+    }
+}

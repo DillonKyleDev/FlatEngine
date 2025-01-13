@@ -201,11 +201,10 @@ public:
 
 
 		// Render the project selection screen
-		static bool b_projectSelected = false;
-		if (!b_projectSelected)
+		if (!FL::F_b_projectSelected)
 		{
-			FlatGui::RenderProjectHub(b_projectSelected, m_startupProject);
-			if (b_projectSelected)
+			FlatGui::RenderProjectHub(FL::F_b_projectSelected, m_startupProject);
+			if (FL::F_b_projectSelected)
 			{
 				m_b_recreateWindow = true;
 			}
@@ -231,17 +230,15 @@ public:
 		// If window was recreated this frame ( for after selecting a project )
 		if (m_b_recreateWindow)
 		{
-			//FL::F_Window->SetScreenDimensions(1200, 700);
+			m_b_recreateWindow = false;
 			FL::F_Window->SetScreenDimensions(1500, 850);
-			//FL::F_Window->SetScreenDimensions(1900, 1000);
-			//FL::F_AssetManager.CollectDirectories(GetDirectoriesType());
 			FL::F_AssetManager.CollectColors();
 			FL::RestartImGui(); // ImGui setup relies on global colors
 			FL::F_AssetManager.CollectTextures(); 
-			m_b_recreateWindow = false;
 			FL::InitializeTileSets();
 			FL::F_PrefabManager->InitializePrefabs();
 			FlatGui::LoadProject(m_startupProject);
+			FlatEngine::LoadScene(FlatEngine::GetLoadedProject().GetLoadedScenePath());
 			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
 		}
 	}

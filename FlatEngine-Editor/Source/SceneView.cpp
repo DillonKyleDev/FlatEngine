@@ -112,7 +112,7 @@ namespace FlatGui
 				persistantObjects = FL::GetLoadedProject().GetPersistantGameObjectScene()->GetSceneObjects();
 			}
 
-			FL::LogVector2(FG_sceneViewCenter);
+			//FL::LogVector2(FG_sceneViewCenter);
 			RenderViewObjects(sceneObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
 			RenderViewObjects(persistantObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
 			RenderTransformArrowWidget();

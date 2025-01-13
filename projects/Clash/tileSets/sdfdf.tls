@@ -1,0 +1,10 @@
+{
+    "tileSetData": {
+        "name": "sdfdf",
+        "texturePath": "",
+        "tileHeight": 16,
+        "tileSetPath": "..\\projects\\Clash\\tileSets\\\\sdfdf.tls",
+        "tileWidth": 16
+    },
+    "tiles": []
+}

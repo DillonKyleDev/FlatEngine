@@ -81,7 +81,7 @@ namespace FlatEngine
 					// Create the directory if it doesn't yet exist
 					if (!DoesFileExist(sValue) && sKey != "root")
 					{
-						std::filesystem::create_directories(sValue);
+						//std::filesystem::create_directories(sValue);
 					}
 				}
 			}

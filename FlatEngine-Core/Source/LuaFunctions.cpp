@@ -183,34 +183,34 @@ namespace FlatEngine
 			return instanceData.has_value();
 		};
 		F_Lua["GetScriptParam"] = [](std::string paramName, long ID, std::string scriptName)
+		{
+			GameObject* thisObject = GetObjectByID(ID);
+			Animation::S_EventFunctionParam parameter = Animation::S_EventFunctionParam();
+
+			if (thisObject != nullptr)
 			{
-				GameObject* thisObject = GetObjectByID(ID);
-				Animation::S_EventFunctionParam parameter = Animation::S_EventFunctionParam();
-
-				if (thisObject != nullptr)
+				Script* script = thisObject->GetScript(scriptName);
+				if (script != nullptr)
 				{
-					Script* script = thisObject->GetScript(scriptName);
-					if (script != nullptr)
-					{
-						parameter = script->GetParam(paramName);
+					parameter = script->GetParam(paramName);
 
-						if (parameter.type == "empty")
-						{
-							LogError("No parameter with the name \"" + paramName + "\" found in " + scriptName + " Script on the " + thisObject->GetName() + " GameObject");
-						}
-					}
-					else
+					if (parameter.type == "empty")
 					{
-						LogError(thisObject->GetName() + " does not contain the Script named " + scriptName);
+						LogError("No parameter with the name \"" + paramName + "\" found in " + scriptName + " Script on the " + thisObject->GetName() + " GameObject");
 					}
 				}
 				else
 				{
-					LogError("GameObject with that id not found.");
+					LogError(thisObject->GetName() + " does not contain the Script named " + scriptName);
 				}
+			}
+			else
+			{
+				LogError("GameObject with that id not found.");
+			}
 
-				return parameter;
-			};
+			return parameter;
+		};
 		F_Lua["GetScriptParam"] = [](std::string paramName, long ID)
 		{
 			GameObject* thisObject = GetObjectByID(ID);
@@ -255,7 +255,7 @@ namespace FlatEngine
 		};
 		F_Lua["LoadScene"] = [](std::string sceneName)
 		{
-			std::string scenePath = GetFilePathUsingFileName(GetDir("scenes"), sceneName + ".scn");
+			std::string scenePath = GetFilePathUsingFileName(GetDir("projectDir"), sceneName + ".scn");
 			if (scenePath != "")
 			{
 				QueueLoadScene(scenePath);
@@ -812,7 +812,7 @@ namespace FlatEngine
 
 		if (path == "")
 		{
-			fileNameWExtention = GetDir("scripts") + "/" + fileName + ".scp.lua";
+			fileNameWExtention = GetDir("projectDir") + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\scripts\\" + fileName + ".scp.lua";
 		}
 		else
 		{

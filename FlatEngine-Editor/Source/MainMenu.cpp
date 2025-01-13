@@ -36,32 +36,33 @@ namespace FlatGui
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Project..."))
+				if (ImGui::MenuItem("Project Hub"))
 				{					
-					b_openProjectModal = true;
+					//b_openProjectModal = true;
+					FL::F_b_projectSelected = false;					
 				}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Open Project..."))
-				{					
-					std::string projectPath = FL::OpenLoadFileExplorer();
-					if (projectPath != "")
-					{
-						LoadProject(projectPath);
-					}
-				}
+				//if (ImGui::MenuItem("Open Project..."))
+				//{					
+				//	std::string projectPath = FL::OpenLoadFileExplorer();
+				//	if (projectPath != "")
+				//	{
+				//		LoadProject(projectPath);
+				//	}
+				//}
 				if (ImGui::MenuItem("Save Project"))
 				{					
 					std::string projectPath = FL::F_LoadedProject.GetPath();
 					SaveProject(FL::F_LoadedProject, projectPath);
 				}
-				if (ImGui::MenuItem("Save Project As..."))
-				{					
-					std::string projectPath = FL::OpenSaveFileExplorer();
-					if (projectPath != "")
-					{
-						SaveProject(FL::F_LoadedProject, projectPath);
-					}
-				}
+				//if (ImGui::MenuItem("Save Project As..."))
+				//{					
+				//	std::string projectPath = FL::OpenSaveFileExplorer();
+				//	if (projectPath != "")
+				//	{
+				//		SaveProject(FL::F_LoadedProject, projectPath);
+				//	}
+				//}
 
 				ImGui::Separator();
 
@@ -78,15 +79,20 @@ namespace FlatGui
 						SaveCurrentProject();
 					}
 				}
+				if (ImGui::IsItemHovered())
+				{
+					FL::RenderTextToolTip("You must add '.scn' to the end of your scene files or FlatEngine won't see them.");
+				}
 
 				if (ImGui::MenuItem("Load Scene...", "Ctrl+L"))
 				{					
 					std::string scenePath = FL::OpenLoadFileExplorer();
 					if (scenePath != "")
 					{
-						FL::F_SceneManager.LoadScene(scenePath);
-						FL::F_LoadedProject.SetLoadedScenePath(scenePath);						
-						SaveCurrentProject();
+						OpenFileContextually(scenePath);
+						//FL::F_SceneManager.LoadScene(scenePath);
+						//FL::F_LoadedProject.SetLoadedScenePath(scenePath);						
+						//SaveCurrentProject();
 					}
 				}
 				
@@ -95,15 +101,15 @@ namespace FlatGui
 					FL::F_SceneManager.SaveCurrentScene();
 				}
 
-				if (ImGui::MenuItem("Save Scene As..."))
-				{					
-					std::string scenePath = FL::OpenSaveFileExplorer();
-					if (scenePath != "")
-					{
-						Scene* currentScene = FL::GetLoadedScene();
-						FL::F_SceneManager.SaveScene(currentScene, scenePath);
-					}
-				}
+				//if (ImGui::MenuItem("Save Scene As..."))
+				//{					
+				//	std::string scenePath = FL::OpenSaveFileExplorer();
+				//	if (scenePath != "")
+				//	{
+				//		Scene* currentScene = FL::GetLoadedScene();
+				//		FL::F_SceneManager.SaveScene(currentScene, scenePath);
+				//	}
+				//}
 
 				ImGui::Separator();
 				if (ImGui::MenuItem("Quit", "Alt+F4"))
@@ -113,24 +119,24 @@ namespace FlatGui
 
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Edit"))
-			{
-				if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-				if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-				ImGui::Separator();
-				if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-				if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-				ImGui::EndMenu();
-			}
+			//if (ImGui::BeginMenu("Edit"))
+			//{
+			//	if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+			//	if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+			//	ImGui::Separator();
+			//	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+			//	if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+			//	if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+			//	ImGui::EndMenu();
+			//}
 			if (ImGui::BeginMenu("Viewports"))
 			{
-				if (ImGui::MenuItem("ImGui Demo Window", NULL, FG_b_showDemoWindow))
-				{
-					FG_b_showDemoWindow = !FG_b_showDemoWindow;
-					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
-				}
-				ImGui::Separator();
+				//if (ImGui::MenuItem("ImGui Demo Window", NULL, FG_b_showDemoWindow))
+				//{
+				//	FG_b_showDemoWindow = !FG_b_showDemoWindow;
+				//	SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
+				//}
+				//ImGui::Separator();
 				ImGui::Text("- Main Panels -");
 				ImGui::Separator();
 				if (ImGui::MenuItem("Scene View", NULL, FG_b_showSceneView))
@@ -179,11 +185,11 @@ namespace FlatGui
 					FG_b_showAnimator = !FG_b_showAnimator;
 					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 				}
-				if (ImGui::MenuItem("Animation Preview", NULL, FG_b_showAnimationPreview))
-				{
-					FG_b_showAnimationPreview = !FG_b_showAnimationPreview;
-					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
-				}
+				//if (ImGui::MenuItem("Animation Preview", NULL, FG_b_showAnimationPreview))
+				//{
+				//	FG_b_showAnimationPreview = !FG_b_showAnimationPreview;
+				//	SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
+				//}
 				ImGui::Separator();
 				ImGui::Text("- Editors -");
 				ImGui::Separator();
@@ -197,11 +203,11 @@ namespace FlatGui
 					FG_b_showTileSetEditor = !FG_b_showTileSetEditor;
 					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 				}
-				if (ImGui::MenuItem("Script Editor", NULL, FG_b_showScriptEditor))
-				{
-					FG_b_showScriptEditor = !FG_b_showScriptEditor;
-					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
-				}
+				//if (ImGui::MenuItem("Script Editor", NULL, FG_b_showScriptEditor))
+				//{
+				//	FG_b_showScriptEditor = !FG_b_showScriptEditor;
+				//	SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
+				//}
 				if (ImGui::MenuItem("Mapping Context Editor", NULL, FG_b_showMappingContextEditor))
 				{
 					FG_b_showMappingContextEditor = !FG_b_showMappingContextEditor;
@@ -403,6 +409,7 @@ namespace FlatGui
 		if (FL::RenderInputModal("Create Lua Script", "Enter a name for the Lua script:", newScriptName, b_openScriptModal))
 		{
 			FL::CreateNewLuaScript(newScriptName);
+			FG_currentDirectory = FL::GetDir("projectDir") + "\\projects\\" + FL::GetFilenameFromPath(FL::F_LoadedProject.GetPath()) + "\\scripts";
 		}
 		// New Animation Modal
 		std::string animationName = "";
@@ -413,8 +420,9 @@ namespace FlatGui
 			FL::CreateNewAnimationFile(animationName);
 			SaveAnimationFile(animationProperties, FL::GetDir("animations") + "/" + animationName + ".anm");
 			SetFocusedAnimation(animationProperties);
+			FG_currentDirectory = FL::GetDir("projectDir") + "\\projects\\" + FL::GetFilenameFromPath(FL::F_LoadedProject.GetPath()) + "\\animations";
 			FG_b_showAnimator = true;
-			FG_b_showAnimationPreview = true;
+			//FG_b_showAnimationPreview = true;
 		}
 		// New Mapping Context Modal
 		std::string mappingContextName = "";
@@ -423,6 +431,7 @@ namespace FlatGui
 			FL::CreateNewMappingContextFile(mappingContextName);
 			FL::F_selectedMappingContextName = mappingContextName;
 			FG_b_showMappingContextEditor = true;
+			FG_currentDirectory = FL::GetDir("projectDir") + "\\projects\\" + FL::GetFilenameFromPath(FL::F_LoadedProject.GetPath()) + "\\mappingContexts";
 		}
 		// New TileSet Modal
 		std::string tileSetName = "";
@@ -430,6 +439,7 @@ namespace FlatGui
 		{
 			FL::CreateNewTileSetFile(tileSetName, FL::GetDir("tileSets"));
 			FG_b_showTileSetEditor = true;
+			FG_currentDirectory = FL::GetDir("projectDir") + "\\projects\\" + FL::GetFilenameFromPath(FL::F_LoadedProject.GetPath()) + "\\tileSets";
 		}
 
 		FL::PopMenuStyles();

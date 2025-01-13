@@ -33,6 +33,8 @@ namespace FlatEngine
 				F_Application->Init();
 				F_Application->Run();
 			}
+
+			SaveDebugLogToFile();
 			CloseProgram();
 		}
 

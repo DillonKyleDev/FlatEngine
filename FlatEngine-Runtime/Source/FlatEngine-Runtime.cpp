@@ -6,6 +6,7 @@
 #include "AssetManager.h"
 #include "PrefabManager.h"
 #include "Project.h"
+#include "Logger.h"
 
 #include <string>
 #include <memory>
@@ -151,10 +152,8 @@ public:
 			json projectJson;
 			FL::InitializeTileSets();
 			FL::InitializeMappingContexts();
-			FL::LoadGameProject(FL::FindAllFilesWithExtension("..\\", ".prj").front(), projectJson);
 			FL::F_PrefabManager->InitializePrefabs();
-			FL::LoadScene(FL::F_LoadedProject.GetRuntimeScene());
-
+			FL::LoadGameProject(FL::FindAllFilesWithExtension("..\\", ".prj").front(), projectJson);
 			b_hasRunOnce = true;
 		}
 	}

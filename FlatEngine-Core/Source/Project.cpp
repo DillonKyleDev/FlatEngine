@@ -93,78 +93,81 @@ namespace FlatEngine
 
 	void Project::LoadPersistantScene()
 	{
-		m_persistantGameObjectsScene.UnloadSceneObjects();
-		m_persistantGameObjectsScene.UnloadECSManager();
-
-		std::ofstream file_obj;
-		std::ifstream ifstream(m_persistantGameObjectsScenePath);
-
-		file_obj.open(m_persistantGameObjectsScenePath, std::ios::in);
-		std::string fileContent = "";
-
-		if (file_obj.good())
+		if (F_LoadedProject.GetPersistantGameObjectsScenePath() != "")
 		{
-			std::string line;
-			while (!ifstream.eof())
+			m_persistantGameObjectsScene.UnloadSceneObjects();
+			m_persistantGameObjectsScene.UnloadECSManager();
+
+			std::ofstream file_obj;
+			std::ifstream ifstream(m_persistantGameObjectsScenePath);
+
+			file_obj.open(m_persistantGameObjectsScenePath, std::ios::in);
+			std::string fileContent = "";
+
+			if (file_obj.good())
 			{
-				std::getline(ifstream, line);
-				if (line != "")
+				std::string line;
+				while (!ifstream.eof())
 				{
-					fileContent.append(line + "\n");
-				}
-			}
-		}
-
-		file_obj.close();
-
-		if (file_obj.good() && fileContent != "")
-		{
-			m_persistantGameObjectsScene = Scene();
-			// Set persistant gameobjects starting ID's at arbitrarily high values so they will never collide with the regular scene object ID's
-			m_persistantGameObjectsScene.SetNextComponentID(10000000);
-			m_persistantGameObjectsScene.SetNextGameObjectID(10000000);
-			m_persistantGameObjectsScene.SetName(GetFilenameFromPath(m_persistantGameObjectsScenePath, false));
-			m_persistantGameObjectsScene.SetPersistantScene(true);
-
-			json fileContentJson = json::parse(fileContent);
-
-			if (fileContentJson.contains("Persistant GameObjects") && fileContentJson["Persistant GameObjects"][0] != "NULL")
-			{
-				auto firstObjectName = fileContentJson["Persistant GameObjects"];
-
-				// Loop through the saved GameObjects in the JSON file
-				for (int i = 0; i < fileContentJson["Persistant GameObjects"].size(); i++)
-				{
-					// Add created GameObject to our new Scene
-					bool b_persistant = true;
-					GameObject* loadedObject = CreateObjectFromJson(fileContentJson["Persistant GameObjects"][i], &m_persistantGameObjectsScene);
-					// Check for primary camera
-					if (loadedObject != nullptr && loadedObject->HasComponent("Camera") && loadedObject->GetCamera()->IsPrimary())
+					std::getline(ifstream, line);
+					if (line != "")
 					{
-						SetPrimaryCamera(loadedObject->GetCamera());
+						fileContent.append(line + "\n");
 					}
 				}
+			}
 
-				// Just in case any parent objects had not been created at the time of children being created on scene load,
-				// loop through objects with parents and add them as children to their parent objects
-				for (std::pair<long, GameObject> sceneObject : m_persistantGameObjectsScene.GetSceneObjects())
+			file_obj.close();
+
+			if (file_obj.good() && fileContent != "")
+			{
+				m_persistantGameObjectsScene = Scene();
+				// Set persistant gameobjects starting ID's at arbitrarily high values so they will never collide with the regular scene object ID's
+				m_persistantGameObjectsScene.SetNextComponentID(10000000);
+				m_persistantGameObjectsScene.SetNextGameObjectID(10000000);
+				m_persistantGameObjectsScene.SetName(GetFilenameFromPath(m_persistantGameObjectsScenePath, false));
+				m_persistantGameObjectsScene.SetPersistantScene(true);
+
+				json fileContentJson = json::parse(fileContent);
+
+				if (fileContentJson.contains("Persistant GameObjects") && fileContentJson["Persistant GameObjects"][0] != "NULL")
 				{
-					long myID = sceneObject.first;
-					long parentID = sceneObject.second.GetParentID();
+					auto firstObjectName = fileContentJson["Persistant GameObjects"];
 
-					if (parentID != -1)
+					// Loop through the saved GameObjects in the JSON file
+					for (int i = 0; i < fileContentJson["Persistant GameObjects"].size(); i++)
 					{
-						if (GetObjectByID(parentID) != nullptr)
+						// Add created GameObject to our new Scene
+						bool b_persistant = true;
+						GameObject* loadedObject = CreateObjectFromJson(fileContentJson["Persistant GameObjects"][i], &m_persistantGameObjectsScene);
+						// Check for primary camera
+						if (loadedObject != nullptr && loadedObject->HasComponent("Camera") && loadedObject->GetCamera()->IsPrimary())
 						{
-							GetObjectByID(parentID)->AddChild(myID);
+							SetPrimaryCamera(loadedObject->GetCamera());
+						}
+					}
+
+					// Just in case any parent objects had not been created at the time of children being created on scene load,
+					// loop through objects with parents and add them as children to their parent objects
+					for (std::pair<long, GameObject> sceneObject : m_persistantGameObjectsScene.GetSceneObjects())
+					{
+						long myID = sceneObject.first;
+						long parentID = sceneObject.second.GetParentID();
+
+						if (parentID != -1)
+						{
+							if (GetObjectByID(parentID) != nullptr)
+							{
+								GetObjectByID(parentID)->AddChild(myID);
+							}
 						}
 					}
 				}
 			}
-		}
-		else
-		{
-			LogError("Failed to load scene: " + m_persistantGameObjectsScenePath);
+			else
+			{
+				LogError("Failed to load scene. Scene file empty: " + m_persistantGameObjectsScenePath);
+			}
 		}
 	}
 

@@ -384,7 +384,7 @@
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 5.099983215332031,
+                    "xPos": 7.0,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
                     "yPos": -16.39999771118164,
@@ -1151,7 +1151,7 @@
             "name": "TileMap(4)",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 5.099983215332031,
+            "spawnLocationX": 7.0,
             "spawnLocationY": -16.39999771118164,
             "tags": {
                 "Enemy": false,

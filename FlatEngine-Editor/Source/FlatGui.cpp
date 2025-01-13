@@ -1441,12 +1441,18 @@ namespace FlatGui
 	void RenderTransformArrowWidget()
 	{
 		GameObject* focusedObject = FL::GetObjectByID(GetFocusedGameObjectID());
-		Transform* transform = focusedObject->GetTransform();
-		Vector2 position = transform->GetTruePosition();
 
 		// Renders Transform Arrow widget
 		if (FL::F_CursorMode == FL::F_CURSOR_MODE::TRANSLATE && focusedObject != nullptr)
-		{		
+		{	
+			Transform* transform = focusedObject->GetTransform();
+			Vector2 position = Vector2(0, 0);
+
+			if (transform != nullptr)
+			{
+				position = transform->GetTruePosition();
+			}
+
 			SDL_Texture* arrowToRender = FL::GetTexture("transformArrow");
 			// * 3 because the texture is so small. If we change the scale, it will change the render starting position. We only want to change the render ending position so we adjust dimensions only
 			float arrowWidth = (float)FL::GetTextureObject("transformArrow")->GetWidth() * 3;

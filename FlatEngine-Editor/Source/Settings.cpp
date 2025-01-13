@@ -21,11 +21,11 @@ namespace FlatGui
 
 				// List settings groups
 				FL::RenderSectionHeader("Engine Setting");
-				static std::string settingSelected = "Game";
+				static std::string settingSelected = "Settings";
 				if (FL::PushTreeList("EngineSettingSelect"))
 				{
-					FL::RenderTreeLeaf("Game", settingSelected);
-					FL::RenderTreeLeaf("State", settingSelected);
+					FL::RenderTreeLeaf("Settings", settingSelected);
+					//FL::RenderTreeLeaf("State", settingSelected);
 					FL::PopTreeList();
 				}
 
@@ -46,7 +46,7 @@ namespace FlatGui
 				if (FL::PushTable("SettingsTable", 2))
 				{
 					// List settings per grouping
-					if (settingSelected == "Game")
+					if (settingSelected == "Settings")
 					{
 						std::string startupScene = FL::F_LoadedProject.GetRuntimeScene();
 						if (FL::RenderInputTableRow("##SceneLoadedOnStart", "Scene to load on game start", startupScene, true))
@@ -73,20 +73,20 @@ namespace FlatGui
 							}
 						}
 
-						FL::RenderSelectableTableRow("##ResolutionSelect", "Resolution", resolutions, currentResolutionIndex);
+						//FL::RenderSelectableTableRow("##ResolutionSelect", "Resolution", resolutions, currentResolutionIndex);
 
-						if (resolutions.at(currentResolutionIndex) == "800 x 600")
-						{
-							FL::F_LoadedProject.SetResolution(Vector2(800, 600));
-						}
-						else if (resolutions.at(currentResolutionIndex) == "1920 x 1080")
-						{
-							FL::F_LoadedProject.SetResolution(Vector2(1920, 1080));
-						}
-						else if (resolutions.at(currentResolutionIndex) == "1920 x 1200")
-						{
-							FL::F_LoadedProject.SetResolution(Vector2(1920, 1200));
-						}
+						//if (resolutions.at(currentResolutionIndex) == "800 x 600")
+						//{
+						//	FL::F_LoadedProject.SetResolution(Vector2(800, 600));
+						//}
+						//else if (resolutions.at(currentResolutionIndex) == "1920 x 1080")
+						//{
+						//	FL::F_LoadedProject.SetResolution(Vector2(1920, 1080));
+						//}
+						//else if (resolutions.at(currentResolutionIndex) == "1920 x 1200")
+						//{
+						//	FL::F_LoadedProject.SetResolution(Vector2(1920, 1200));
+						//}
 
 						int musicVolume = FL::GetLoadedProject().GetMusicVolume();
 						int effectsVolume = FL::GetLoadedProject().GetEffectsVolume();
@@ -104,11 +104,11 @@ namespace FlatGui
 						{
 							FL::F_LoadedProject.SetFullscreen(b_fullscreen);
 						}
-						bool b_vsyncEnabled = FL::F_LoadedProject.IsVsyncEnabled();
-						if (FL::RenderCheckboxTableRow("##VsyncCheckbox", "Vsync", b_vsyncEnabled))
-						{
-							FL::F_LoadedProject.SetVsyncEnabled(b_vsyncEnabled);
-						}
+						//bool b_vsyncEnabled = FL::F_LoadedProject.IsVsyncEnabled();
+						//if (FL::RenderCheckboxTableRow("##VsyncCheckbox", "Vsync", b_vsyncEnabled))
+						//{
+						//	FL::F_LoadedProject.SetVsyncEnabled(b_vsyncEnabled);
+						//}
 					}
 					else if (settingSelected == "State")
 					{

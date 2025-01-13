@@ -141,7 +141,7 @@ namespace FlatEngine
 					// Check for primary camera
 					if (loadedObject != nullptr && loadedObject->HasComponent("Camera") && loadedObject->GetCamera()->IsPrimary())
 					{
-						m_persistantGameObjectsScene.SetPrimaryCamera(loadedObject->GetCamera());
+						SetPrimaryCamera(loadedObject->GetCamera());
 					}
 				}
 

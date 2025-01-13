@@ -484,11 +484,11 @@ namespace FlatGui
 			camera->SetPrimaryCamera(b_isPrimary);
 			if (b_isPrimary)
 			{
-				FL::GetLoadedScene()->SetPrimaryCamera(camera);
+				FL::SetPrimaryCamera(camera);
 			}
 			else
 			{
-				FL::GetLoadedScene()->RemovePrimaryCamera();
+				FL::RemovePrimaryCamera();
 			}
 		}		
 
@@ -1501,7 +1501,7 @@ namespace FlatGui
 		bool b_isStatic = boxCollider->IsStatic();
 		bool b_isSolid = boxCollider->IsSolid();
 		bool b_showActiveRadius = boxCollider->GetShowActiveRadius();
-		bool b_isComposite = boxCollider->IsComposite();
+		//bool b_isComposite = boxCollider->IsComposite();
 		float activeWidth = boxCollider->GetActiveWidth();
 		float activeHeight = boxCollider->GetActiveHeight();
 		ImVec4 activeEdges = boxCollider->GetActiveEdges();
@@ -1611,9 +1611,8 @@ namespace FlatGui
 		bool b_isColliding = circleCollider->IsColliding();
 		bool b_isContinuous = circleCollider->IsContinuous();
 		bool b_isStatic = circleCollider->IsStatic();
-		//bool b_isSolid = circleCollider->IsSolid();	temporarily disabled because circle physics is not sorted out yet
-		bool b_isSolid = false;
-		bool b_isComposite = circleCollider->IsComposite();
+		//bool b_isSolid = circleCollider->IsSolid();	disabled because circle physics is not sorted out yet		
+		//bool b_isComposite = circleCollider->IsComposite();
 		float activeRadius = circleCollider->GetActiveRadiusGrid();
 		Vector2 activeOffset = circleCollider->GetActiveOffset();
 		int activeLayer = circleCollider->GetActiveLayer();
@@ -1660,18 +1659,18 @@ namespace FlatGui
 		{
 			circleCollider->SetIsStatic(b_isStatic);
 		}
-		if (FL::RenderCheckbox(" Is Solid", b_isSolid))
-		{
-			circleCollider->SetIsSolid(b_isSolid);
-		}
-		if (ImGui::IsItemHovered())
-		{
-			FL::RenderTextToolTip("SOLID circle colliders temporarily disabled.");
-		}
-		if (FL::RenderCheckbox(" Is Composite", b_isComposite))
-		{
-			circleCollider->SetIsComposite(b_isComposite);
-		}
+		//if (FL::RenderCheckbox(" Is Solid", b_isSolid))
+		//{
+		//	circleCollider->SetIsSolid(b_isSolid);
+		//}
+		//if (ImGui::IsItemHovered())
+		//{
+		//	FL::RenderTextToolTip("SOLID circle colliders temporarily disabled.");
+		//}
+		//if (FL::RenderCheckbox(" Is Composite", b_isComposite))
+		//{
+		//	circleCollider->SetIsComposite(b_isComposite);
+		//}
 	}
 
 	void RenderRigidBodyComponent(RigidBody* rigidBody)

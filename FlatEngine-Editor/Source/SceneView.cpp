@@ -24,6 +24,7 @@ namespace FlatGui
 	Vector2 FG_sceneViewCenter = Vector2(0, 0);
 	bool FG_b_sceneViewLockedOnObject = false;
 	long FG_sceneViewLockedObjectID = -1;
+	Vector2 FG_sceneViewportCenter = Vector2(0, 0);
 
 	void Scene_RenderView()
 	{
@@ -59,12 +60,15 @@ namespace FlatGui
 			DYNAMIC_VIEWPORT_WIDTH = trunc(canvas_p1.x - canvas_p0.x);
 			DYNAMIC_VIEWPORT_HEIGHT = trunc(canvas_p1.y - canvas_p0.y);
 			
+			FG_sceneViewportCenter = Vector2(canvas_p0.x + DYNAMIC_VIEWPORT_WIDTH, canvas_p0.y + DYNAMIC_VIEWPORT_HEIGHT);
+
 			ImGuiIO& inputOutput = ImGui::GetIO();
 			Vector2 currentPos = ImGui::GetCursorScreenPos();
 			Vector2 centerOffset = Vector2(SCENE_VIEWPORT_WIDTH / 2, SCENE_VIEWPORT_HEIGHT / 2);
 			bool b_weightedScroll = false;
 
-			
+			// Need both the center of the viewport and the center of the world to reference when drawing imagese to the scene view
+
 			AddSceneViewMouseControls("SceneViewCanvas", currentPos, canvas_sz, FG_sceneViewScrolling, FG_sceneViewCenter, FG_sceneViewGridStep);
 
 			RenderGridView(FG_sceneViewCenter, FG_sceneViewScrolling, b_weightedScroll, canvas_p0, canvas_p1, canvas_sz, FG_sceneViewGridStep, centerOffset);
@@ -108,9 +112,10 @@ namespace FlatGui
 				persistantObjects = FL::GetLoadedProject().GetPersistantGameObjectScene()->GetSceneObjects();
 			}
 
-
+			FL::LogVector2(FG_sceneViewCenter);
 			RenderViewObjects(sceneObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
 			RenderViewObjects(persistantObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
+			RenderTransformArrowWidget();
 
 
 			// For centering on focused GameObject
@@ -127,11 +132,11 @@ namespace FlatGui
 			RenderCursorModeButtons();
 
 			// Game Stats in SceneView
-			ImGui::SetCursorScreenPos(Vector2(canvas_p0.x + 3, canvas_p1.y - 80)); // was - 54 y
+			ImGui::SetCursorScreenPos(Vector2(canvas_p0.x + 3, canvas_p1.y - 40)); // was - 54 y
 			RenderGameTimeStats();
 
 			// Game Stats in GameView
-			RenderStatsOnGameView();
+			//RenderStatsOnGameView();
 		
 		// }
 		ImGui::PopStyleVar();
@@ -165,11 +170,11 @@ namespace FlatGui
 
 	void RenderCursorModeButtons()
 	{
-		Vector2 iconSize = Vector2(18, 18);
-		Vector2 buttonSize = Vector2(27, 25);
+		Vector2 iconSize = Vector2(24, 24);
+		Vector2 buttonSize = Vector2(33, 31);
 		Vector2 startPos = ImGui::GetCursorScreenPos();
-		ImGui::GetWindowDrawList()->AddRectFilled(startPos, Vector2(startPos.x + 300, startPos.y + 36), FL::GetColor32("cursorModeSelectBg"), 0);
-		ImGui::GetWindowDrawList()->AddRect(Vector2(startPos.x - 1, startPos.y - 1), Vector2(startPos.x + 300, startPos.y + 36), FL::GetColor32("cursorModeSelectBorder"), 0);
+		ImGui::GetWindowDrawList()->AddRectFilled(startPos, Vector2(startPos.x + 250, startPos.y + 40), FL::GetColor32("cursorModeSelectBg"), 0);
+		ImGui::GetWindowDrawList()->AddRect(Vector2(startPos.x - 1, startPos.y - 1), Vector2(startPos.x + 250, startPos.y + 40), FL::GetColor32("cursorModeSelectBorder"), 0);
 		ImGui::SetCursorScreenPos(Vector2(startPos.x + 10, startPos.y + 5));
 
 
@@ -195,53 +200,6 @@ namespace FlatGui
 		}
 		ImGui::SameLine();
 
-
-		if (FL::F_CursorMode == FL::F_CURSOR_MODE::SCALE)
-		{
-			Vector2 currentPos = ImGui::GetCursorScreenPos();
-			ImGui::GetWindowDrawList()->AddRect(Vector2(currentPos.x - 1, currentPos.y - 1), Vector2(currentPos.x + buttonSize.x, currentPos.y + buttonSize.y), FL::GetColor32("cursorModeButtonSelectedBorder"));
-			if (FL::RenderImageButton("#ScaleModeIcon", FL::GetTexture("scale"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
-			{
-				FL::F_CursorMode = FL::F_CURSOR_MODE::SCALE;
-			}
-		}
-		else
-		{
-			if (FL::RenderImageButton("#ScaleModeIcon", FL::GetTexture("scale"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
-			{
-				FL::F_CursorMode = FL::F_CURSOR_MODE::SCALE;
-			}
-		}
-		if (ImGui::IsItemHovered())
-		{
-			FL::RenderTextToolTip("Scale Mode (2) *not available*");
-		}
-		ImGui::SameLine();
-
-
-		if (FL::F_CursorMode == FL::F_CURSOR_MODE::ROTATE)
-		{
-			Vector2 currentPos = ImGui::GetCursorScreenPos();
-			ImGui::GetWindowDrawList()->AddRect(Vector2(currentPos.x - 1, currentPos.y - 1), Vector2(currentPos.x + buttonSize.x, currentPos.y + buttonSize.y), FL::GetColor32("cursorModeButtonSelectedBorder"));
-			if (FL::RenderImageButton("#RotateModeIcon", FL::GetTexture("rotate"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
-			{
-				FL::F_CursorMode = FL::F_CURSOR_MODE::ROTATE;
-			}
-		}
-		else
-		{
-			if (FL::RenderImageButton("#RotateModeIcon", FL::GetTexture("rotate"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
-			{
-				FL::F_CursorMode = FL::F_CURSOR_MODE::ROTATE;
-			}
-		}
-		if (ImGui::IsItemHovered())
-		{
-			FL::RenderTextToolTip("Rotate Mode (3) *not available*");
-		}
-		ImGui::SameLine();
-
-
 		if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH)
 		{
 			Vector2 currentPos = ImGui::GetCursorScreenPos();
@@ -260,7 +218,7 @@ namespace FlatGui
 		}
 		if (ImGui::IsItemHovered())
 		{
-			FL::RenderTextToolTip("Tile Brush Mode (4)");
+			FL::RenderTextToolTip("Tile Brush Mode (2)");
 		}
 		ImGui::SameLine();
 
@@ -283,7 +241,7 @@ namespace FlatGui
 		}
 		if (ImGui::IsItemHovered())
 		{
-			FL::RenderTextToolTip("Tile Erase Mode (5)");
+			FL::RenderTextToolTip("Tile Erase Mode (3)");
 		}
 		ImGui::SameLine();
 
@@ -292,21 +250,21 @@ namespace FlatGui
 		{
 			Vector2 currentPos = ImGui::GetCursorScreenPos();
 			ImGui::GetWindowDrawList()->AddRect(Vector2(currentPos.x - 1, currentPos.y - 1), Vector2(currentPos.x + buttonSize.x, currentPos.y + buttonSize.y), FL::GetColor32("cursorModeButtonSelectedBorder"));
-			if (FL::RenderImageButton("#BoxColliderTileDrawModeIcon", FL::GetTexture("tileColliderDraw"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
+			if (FL::RenderImageButton("#BoxColliderTileDrawModeIcon", FL::GetTexture("tileDrawColliders"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
 			{
 				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
 			}
 		}
 		else
 		{
-			if (FL::RenderImageButton("#BoxColliderTileDrawModeIcon", FL::GetTexture("tileColliderDraw"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
+			if (FL::RenderImageButton("#BoxColliderTileDrawModeIcon", FL::GetTexture("tileDrawColliders"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
 			{
 				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
 			}
 		}
 		if (ImGui::IsItemHovered())
 		{
-			FL::RenderTextToolTip("BoxCollider Draw Mode (6)");
+			FL::RenderTextToolTip("BoxCollider Draw Mode (4)");
 		}
 		ImGui::SameLine();
 
@@ -314,21 +272,21 @@ namespace FlatGui
 		{
 			Vector2 currentPos = ImGui::GetCursorScreenPos();
 			ImGui::GetWindowDrawList()->AddRect(Vector2(currentPos.x - 1, currentPos.y - 1), Vector2(currentPos.x + buttonSize.x, currentPos.y + buttonSize.y), FL::GetColor32("cursorModeButtonSelectedBorder"));
-			if (FL::RenderImageButton("#SelectTilesModeIcon", FL::GetTexture("selectTiles"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
+			if (FL::RenderImageButton("#SelectTilesModeIcon", FL::GetTexture("tileSelect"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
 			{
 				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_MULTISELECT;
 			}
 		}
 		else
 		{
-			if (FL::RenderImageButton("#SelectTilesModeIcon", FL::GetTexture("selectTiles"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
+			if (FL::RenderImageButton("#SelectTilesModeIcon", FL::GetTexture("tileSelect"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
 			{
 				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_MULTISELECT;
 			}
 		}
 		if (ImGui::IsItemHovered())
 		{
-			FL::RenderTextToolTip("Select Tiles Mode (7)");
+			FL::RenderTextToolTip("Select Tiles Mode (5)");
 		}
 		ImGui::SameLine();
 
@@ -336,21 +294,21 @@ namespace FlatGui
 		{
 			Vector2 currentPos = ImGui::GetCursorScreenPos();
 			ImGui::GetWindowDrawList()->AddRect(Vector2(currentPos.x - 1, currentPos.y - 1), Vector2(currentPos.x + buttonSize.x, currentPos.y + buttonSize.y), FL::GetColor32("cursorModeButtonSelectedBorder"));
-			if (FL::RenderImageButton("#MoveTilesModeIcon", FL::GetTexture("moveTiles"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
+			if (FL::RenderImageButton("#MoveTilesModeIcon", FL::GetTexture("tileMove"), iconSize, 0, FL::GetColor("selectedCursorModeButtonBg"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHoverSelected")))
 			{
 				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_MOVE;
 			}
 		}
 		else
 		{
-			if (FL::RenderImageButton("#MoveTilesModeIcon", FL::GetTexture("moveTiles"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
+			if (FL::RenderImageButton("#MoveTilesModeIcon", FL::GetTexture("tileMove"), iconSize, 0, FL::GetColor("transparent"), FL::GetColor("imageButtonTint"), FL::GetColor("cursorModeButtonHover")))
 			{
 				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_MOVE;
 			}
 		}
 		if (ImGui::IsItemHovered())
 		{
-			FL::RenderTextToolTip("Move Tiles Mode (8) *experimental*");
+			FL::RenderTextToolTip("Move Tiles Mode (6) *experimental*");
 		}
 	}
 
@@ -360,10 +318,8 @@ namespace FlatGui
 
 		std::string ellapsedTimeString =          "time:   ---";
 		std::string framesCountedString =         "frames: ---";
-		std::string averageFpsString    =         "fps:    ---";
+		//std::string averageFpsString    =         "fps:    ---";
 		std::string numberOfColliderPairsString = "collider pairs: ---";
-		std::string gridstepX = "gridstep x: " + std::to_string(FG_sceneViewGridStep.x);
-		std::string gridstepY = "gridstep y: " + std::to_string(FG_sceneViewGridStep.y);
 
 		static Uint32 frameStart = FL::GetEngineTime();		
 		static long framesCountedAtStart = FL::GetFramesCounted();
@@ -392,21 +348,19 @@ namespace FlatGui
 
 			ellapsedTimeString =          "time:   " + std::to_string((int)FL::GetEllapsedGameTimeInSec());
 			framesCountedString =         "frames: " + std::to_string(FL::GetFramesCounted());
-			averageFpsString =            "fps:    " + std::to_string((int)fps);
+			//averageFpsString =          "fps:    " + std::to_string((int)fps);
 			numberOfColliderPairsString = "collider pairs: " + std::to_string(FL::GetLoadedScene()->GetColliderPairs().size());
 		}
 
+		ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor32("logText"));
 		ImGui::Text(ellapsedTimeString.c_str());
 		ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 13));
 		ImGui::Text(framesCountedString.c_str());		
 		ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 26));
-		ImGui::Text(averageFpsString.c_str());
-		ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 39));
+		//ImGui::Text(averageFpsString.c_str());
+		//ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 39));
 		ImGui::Text(numberOfColliderPairsString.c_str());
-		ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 52));
-		ImGui::Text(gridstepX.c_str());
-		ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 65));
-		ImGui::Text(gridstepY.c_str());
+		ImGui::PopStyleColor();
 	}
 
 	void RenderStatsOnGameView()
@@ -420,7 +374,7 @@ namespace FlatGui
 
 			Vector2 gameViewSize = ImGui::GetWindowSize();
 			Vector2 gameViewPos = ImGui::GetWindowPos();
-			ImGui::SetCursorScreenPos(Vector2(gameViewPos.x + 3, gameViewPos.y + gameViewSize.y - 80));
+			ImGui::SetCursorScreenPos(Vector2(gameViewPos.x + 3, gameViewPos.y + gameViewSize.y - 40));
 			RenderGameTimeStats();
 
 		// }

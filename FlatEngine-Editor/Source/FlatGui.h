@@ -110,6 +110,7 @@ namespace FlatGui
 	extern void DestroySelf(std::shared_ptr<FL::GameObject> thisObject);
 
 	// Scene view
+	extern Vector2 FG_sceneViewportCenter;
 	extern float SCENE_VIEWPORT_WIDTH;
 	extern float SCENE_VIEWPORT_HEIGHT;
 	extern float DYNAMIC_VIEWPORT_WIDTH;
@@ -142,6 +143,7 @@ namespace FlatGui
 	extern bool FG_b_showSceneView;
 	extern bool FG_b_showGameView;
 	extern bool FG_b_showHierarchy;
+	extern bool FG_b_showPersistantHierarchy;
 	extern bool FG_b_showInspector;
 	extern bool FG_b_showAnimator;
 	extern bool FG_b_showAnimationPreview;
@@ -163,6 +165,7 @@ namespace FlatGui
 	extern void AddViewports();
 	extern void RenderToolbar();
 	extern void RenderHierarchy();
+	extern void RenderPersistantHierarchy();
 	extern void RenderInspector();
 	extern void Scene_RenderView();
 	extern void RenderAnimator();
@@ -177,6 +180,7 @@ namespace FlatGui
 	extern void RenderGridView(Vector2& centerPoint, Vector2& scrolling, bool b_weightedScroll, Vector2 canvasP0, Vector2 canvasP1, Vector2 canvasSize, Vector2& gridStep, Vector2 centerOffset, bool b_showAxis = true);
 	extern void RenderViewObjects(std::map<long, GameObject>& objects, Vector2 centerPoint, Vector2 canvasP0, Vector2 canvasSize, float gridStep);
 	extern void RenderViewObject(GameObject& self, Vector2 scrolling, Vector2 canvasP0, Vector2 canvasSize, float gridStep, ImDrawList* drawList, ImDrawListSplitter* drawSplitter);
+	extern void RenderTransformArrowWidget();
 	extern void RenderFileExplorer();
 	extern void RenderFilesTopBar();
 	extern void RenderDirNodes(std::string dir);

@@ -5,6 +5,7 @@
 #include "imgui_impl_sdlrenderer2.h"
 #include <string>
 
+
 namespace FlatEngine
 {
 	WindowManager::WindowManager()
@@ -33,9 +34,9 @@ namespace FlatEngine
 		return m_renderer;
 	}
 
-	void WindowManager::SetFullscreen(bool _isFullscreen)
+	void WindowManager::SetFullscreen(bool b_isFullscreen)
 	{
-		m_b_isFullscreen = _isFullscreen;
+		m_b_isFullscreen = b_isFullscreen;
 
 		if (m_b_isFullscreen)
 		{
@@ -67,9 +68,13 @@ namespace FlatEngine
 		bool b_success = true;
 
 		if (m_renderer != NULL)
+		{
 			SDL_DestroyRenderer(m_renderer);
+		}
 		if (m_window != NULL)
+		{
 			SDL_DestroyWindow(m_window);
+		}
 
 		// Create window with SDL_Renderer graphics context
 		SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);

@@ -148,6 +148,11 @@ namespace FlatGui
 					FG_b_showHierarchy = !FG_b_showHierarchy;
 					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 				}
+				if (ImGui::MenuItem("Persistant Hierarchy", NULL, FG_b_showPersistantHierarchy))
+				{
+					FG_b_showPersistantHierarchy = !FG_b_showPersistantHierarchy;
+					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
+				}
 				if (ImGui::MenuItem("Inspector", NULL, FG_b_showInspector))
 				{
 					FG_b_showInspector = !FG_b_showInspector;
@@ -390,11 +395,6 @@ namespace FlatGui
 				}
 				ImGui::EndMenu();
 			}
-			// Display name of loaded project on Menu bar
-			std::string projectNameString = "Loaded Project: " + FL::GetFilenameFromPath(FL::F_LoadedProject.GetPath());
-			ImGui::BeginDisabled();
-			ImGui::BeginMenu(projectNameString.c_str());
-			ImGui::EndDisabled();
 			ImGui::EndMainMenuBar();
 		}
 

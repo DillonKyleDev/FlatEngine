@@ -149,6 +149,8 @@ namespace FlatEngine
 	extern Vector2 F_gameViewCenter;
 	extern Vector2 F_gameViewGridStep;
 
+	extern Camera* F_primaryCamera;
+
 
 	// Collision Detection
 	extern std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs;
@@ -258,6 +260,10 @@ namespace FlatEngine
 	extern GameObject* GetObjectByID(long objectID);
 	extern GameObject* GetObjectByName(std::string name);
 	extern GameObject* GetObjectByTag(std::string tag);
+
+	extern void SetPrimaryCamera(Camera* primaryCamera);
+	extern void RemovePrimaryCamera();
+	extern Camera* GetPrimaryCamera();
 
 	extern long GetNextComponentID();
 	extern long GetNextGameObjectID();

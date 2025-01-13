@@ -54,9 +54,6 @@ namespace FlatEngine
 		void IncrementComponentID();
 		void SetNextComponentID(long nextID);
 		long GetNextComponentID();
-		void SetPrimaryCamera(Camera* camera);
-		void RemovePrimaryCamera();
-		Camera *GetPrimaryCamera();		
 		void OnPrefabInstantiated();
 		void UpdateColliderPairs();
 
@@ -123,7 +120,6 @@ namespace FlatEngine
 		std::map<long, GameObject> m_sceneObjects;
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		ECSManager m_ECSManager;
-		Camera *m_primaryCamera;
 		long m_nextGameObjectID;
 		long m_nextComponentID;
 		std::vector<long> m_freedComponentIDs;

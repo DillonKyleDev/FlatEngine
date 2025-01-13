@@ -18,7 +18,7 @@ namespace FlatEngine
 		m_frustrumColor = Vector4(255,255,255,255);
 		m_b_shouldFollow = false;
 		m_toFollowID = -1;
-		m_followSmoothing = 0.9f;
+		m_followSmoothing = 0.1f;
 	}
 
 	Camera::~Camera()
@@ -73,7 +73,7 @@ namespace FlatEngine
 	void Camera::Follow()
 	{
 		GameObject *followTarget = GetObjectByID(m_toFollowID);
-		if (m_b_shouldFollow && GetParent()->HasComponent("Transform") && followTarget != nullptr && followTarget->HasComponent("Transform"))
+		if (m_b_shouldFollow && followTarget != nullptr && followTarget->HasComponent("Transform"))
 		{
 			Transform* cameraTransform = GetParent()->GetTransform();
 			Vector2 followPos = followTarget->GetTransform()->GetTruePosition();

@@ -26,5 +26,6 @@
     <ClCompile Include="Source\ScriptEditor.cpp" />
     <ClCompile Include="Source\TileSetEditor.cpp" />
     <ClCompile Include="Source\ProjectHub.cpp" />
+    <ClCompile Include="Source\PersistantObjectHierarchy.cpp" />
   </ItemGroup>
 </Project>

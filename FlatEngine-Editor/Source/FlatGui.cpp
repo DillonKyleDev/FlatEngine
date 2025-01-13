@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <windows.h> // For getting directory name
 
+
 namespace FL = FlatEngine;
 
 /*
@@ -70,6 +71,7 @@ namespace FlatGui
 	bool FG_b_showSceneView = true;
 	bool FG_b_showGameView = true;
 	bool FG_b_showHierarchy = true;
+	bool FG_b_showPersistantHierarchy = true;
 	bool FG_b_showInspector = true;
 	bool FG_b_showAnimator = false;
 	bool FG_b_showAnimationPreview = false;
@@ -122,11 +124,20 @@ namespace FlatGui
 
 			if (FG_b_showHierarchy)
 			{
-				FL::AddProfilerProcess("Hierarchy");
+				FL::AddProfilerProcess("Scene Hierarchy");
 			}
 			else
 			{
-				FL::RemoveProfilerProcess("Hierarchy");
+				FL::RemoveProfilerProcess("Scene Hierarchy");
+			}
+
+			if (FG_b_showPersistantHierarchy)
+			{
+				FL::AddProfilerProcess("Persistant Hierarchy");
+			}
+			else
+			{
+				FL::RemoveProfilerProcess("Persistant Hierarchy");
 			}
 
 			if (FG_b_showInspector)
@@ -293,6 +304,10 @@ namespace FlatGui
 				{
 					FG_b_showHierarchy = currentObjectJson["_showHierarchy"];
 				}
+				if (currentObjectJson.contains("_showHierarchy"))
+				{
+					FG_b_showPersistantHierarchy = currentObjectJson["_showPersistantHierarchy"];
+				}				
 				if (currentObjectJson.contains("_showInspector"))
 				{
 					FG_b_showInspector = currentObjectJson["_showInspector"];
@@ -430,6 +445,7 @@ namespace FlatGui
 			{ "_showSceneView", FG_b_showSceneView },
 			{ "_showGameView", FG_b_showGameView },
 			{ "_showHierarchy", FG_b_showHierarchy },
+			{ "_showPersistantHierarchy", FG_b_showPersistantHierarchy },
 			{ "_showInspector", FG_b_showInspector },
 			{ "_showAnimator", FG_b_showAnimator },
 			{ "_showAnimationPreview", FG_b_showAnimationPreview },
@@ -489,6 +505,13 @@ namespace FlatGui
 			startTime = (float)FL::GetEngineTime();
 			RenderHierarchy();
 			FL::AddProcessData("Hierarchy", (float)FL::GetEngineTime() - startTime);
+		}
+
+		if (FG_b_showPersistantHierarchy)
+		{
+			startTime = (float)FL::GetEngineTime();
+			RenderPersistantHierarchy();
+			FL::AddProcessData("Persistant Hierarchy", (float)FL::GetEngineTime() - startTime);
 		}
 
 		if (FG_b_showInspector)
@@ -1412,98 +1435,111 @@ namespace FlatGui
 					}
 				}
 			}
+		}
+	}
 
-			// Renders Transform Arrow widget
-			if (FL::F_CursorMode == FL::F_CURSOR_MODE::TRANSLATE && focusedObjectID != -1 && focusedObjectID == self.GetID())
+	void RenderTransformArrowWidget()
+	{
+		GameObject* focusedObject = FL::GetObjectByID(GetFocusedGameObjectID());
+		Transform* transform = focusedObject->GetTransform();
+		Vector2 position = transform->GetTruePosition();
+
+		// Renders Transform Arrow widget
+		if (FL::F_CursorMode == FL::F_CURSOR_MODE::TRANSLATE && focusedObject != nullptr)
+		{		
+			SDL_Texture* arrowToRender = FL::GetTexture("transformArrow");
+			// * 3 because the texture is so small. If we change the scale, it will change the render starting position. We only want to change the render ending position so we adjust dimensions only
+			float arrowWidth = (float)FL::GetTextureObject("transformArrow")->GetWidth() * 3;
+			float arrowHeight = (float)FL::GetTextureObject("transformArrow")->GetHeight() * 3;
+			Vector2 arrowScale = { 1, 1 };
+			Vector2 arrowOffset = { 3, arrowHeight - 3 };
+			bool b_scalesWithZoom = false;
+			float transformMoveModifier = 0.02f;
+			ImGuiIO& inputOutput = ImGui::GetIO();
+			Vector2 positionOnScreen = Vector2(FG_sceneViewCenter.x + (position.x * FG_sceneViewGridStep.x), FG_sceneViewCenter.y - (position.y * FG_sceneViewGridStep.x));
+
+			// Invisible button for Transform Arrow Move X and Y
+			Vector2 moveAllStartPos = Vector2(positionOnScreen.x - 4, positionOnScreen.y - 23);
+			FL::RenderInvisibleButton("##TransformBaseArrowButton", moveAllStartPos, Vector2(28, 28), false);
+			const bool b_baseHovered = ImGui::IsItemHovered();
+			const bool b_baseActive = ImGui::IsItemActive();
+			const bool b_baseClicked = ImGui::IsItemClicked();
+
+			if (b_baseHovered || b_baseActive)
 			{
-				GameObject *focusedObject = FL::GetObjectByID(focusedObjectID);
-				SDL_Texture* arrowToRender = FL::GetTexture("transformArrow");
-				// * 3 because the texture is so small. If we change the scale, it will change the render starting position. We only want to change the render ending position so we adjust dimensions only
-				float arrowWidth = (float)FL::GetTextureObject("transformArrow")->GetWidth() * 3;
-				float arrowHeight = (float)FL::GetTextureObject("transformArrow")->GetHeight() * 3;
-				Vector2 arrowScale = { 1, 1 };
-				Vector2 arrowOffset = { 3, arrowHeight - 3 };
-				bool b_scalesWithZoom = false;
-				float transformMoveModifier = 0.02f;
-				ImGuiIO& inputOutput = ImGui::GetIO();
-				Vector2 positionOnScreen = Vector2(FG_sceneViewCenter.x + (position.x * gridStep), FG_sceneViewCenter.y - (position.y * gridStep));
-			
-				// Invisible button for Transform Arrow Move X and Y
-				Vector2 moveAllStartPos = Vector2(positionOnScreen.x - 4, positionOnScreen.y - 23);
-				FL::RenderInvisibleButton("##TransformBaseArrowButton", moveAllStartPos, Vector2(28, 28), false);
-				const bool b_baseHovered = ImGui::IsItemHovered();
-				const bool b_baseActive = ImGui::IsItemActive();
-				const bool b_baseClicked = ImGui::IsItemClicked();
-
-				if (b_baseHovered || b_baseActive)
-				{
-					arrowToRender = FL::GetTexture("transformArrowAllWhite");
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				}
-
-				// Invisible button for X arrow
-				Vector2 moveXStartPos = Vector2(positionOnScreen.x + 24, positionOnScreen.y - 30);
-				FL::RenderInvisibleButton("##TransformBaseArrowXButton", moveXStartPos, Vector2(63, 35), false);
-				const bool b_xHovered = ImGui::IsItemHovered();
-				const bool b_xActive = ImGui::IsItemActive();
-				const bool b_xClicked = ImGui::IsItemClicked();
-
-				if (b_xHovered || b_xActive)
-				{
-					arrowToRender = FL::GetTexture("transformArrowXWhite");
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				}
-
-				// Invisible button for Y arrow
-				Vector2 moveYStartPos = Vector2(positionOnScreen.x - 4, positionOnScreen.y - 86);
-				FL::RenderInvisibleButton("TransformBaseArrowYButton", moveYStartPos, Vector2(35, 63), false);
-				const bool b_yHovered = ImGui::IsItemHovered();
-				const bool b_yActive = ImGui::IsItemActive();
-				const bool b_yClicked = ImGui::IsItemClicked();
-
-				if (b_yHovered || b_yActive)
-				{
-					arrowToRender = FL::GetTexture("transformArrowYWhite");
-					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-				}
-
-				static Vector2 transformScreenPos = Vector2(0, 0);
-				static Vector2 cursorPosAtClick = inputOutput.MousePos;
-				Vector2 relativePosition = transform->GetPosition();
-
-				if (b_baseClicked || b_xClicked || b_yClicked)
-				{
-					cursorPosAtClick = inputOutput.MousePos;
-					transformScreenPos = Vector2(origin.x + (relativePosition.x * gridStep), origin.y - (relativePosition.y * gridStep));
-				}
-
-				Vector2 transformPosOffsetFromMouse = Vector2((cursorPosAtClick.x - transformScreenPos.x) / gridStep, (cursorPosAtClick.y - transformScreenPos.y) / gridStep);
-				Vector2 mousePosInGrid = Vector2((inputOutput.MousePos.x - origin.x) / gridStep, (origin.y - inputOutput.MousePos.y) / gridStep);
-				Vector2 newTransformPos = Vector2(mousePosInGrid.x - transformPosOffsetFromMouse.x, mousePosInGrid.y + transformPosOffsetFromMouse.y);				
-
-				if (b_baseActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-				{
-					transform->SetPosition(newTransformPos);
-				}
-				else if (b_xActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-				{
-					transform->SetPosition(Vector2(newTransformPos.x, relativePosition.y));
-				}
-				else if (b_yActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-				{
-					transform->SetPosition(Vector2(relativePosition.x, newTransformPos.y));
-				}
-
-
-				// Draw channel maxSpriteLayers + 3 for Upper UI Transform Arrow
-				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 3);
-				FL::AddImageToDrawList(arrowToRender, position, scrolling, arrowWidth, arrowHeight, arrowOffset, arrowScale, b_scalesWithZoom, gridStep, drawList);
+				arrowToRender = FL::GetTexture("transformArrowAllWhite");
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			}
+
+			// Invisible button for X arrow
+			Vector2 moveXStartPos = Vector2(positionOnScreen.x + 24, positionOnScreen.y - 30);
+			FL::RenderInvisibleButton("##TransformBaseArrowXButton", moveXStartPos, Vector2(63, 35), false);
+			const bool b_xHovered = ImGui::IsItemHovered();
+			const bool b_xActive = ImGui::IsItemActive();
+			const bool b_xClicked = ImGui::IsItemClicked();
+
+			if (b_xHovered || b_xActive)
+			{
+				arrowToRender = FL::GetTexture("transformArrowXWhite");
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			// Invisible button for Y arrow
+			Vector2 moveYStartPos = Vector2(positionOnScreen.x - 4, positionOnScreen.y - 86);
+			FL::RenderInvisibleButton("TransformBaseArrowYButton", moveYStartPos, Vector2(35, 63), false);
+			const bool b_yHovered = ImGui::IsItemHovered();
+			const bool b_yActive = ImGui::IsItemActive();
+			const bool b_yClicked = ImGui::IsItemClicked();
+
+			if (b_yHovered || b_yActive)
+			{
+				arrowToRender = FL::GetTexture("transformArrowYWhite");
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			static Vector2 transformScreenPos = Vector2(0, 0);
+			static Vector2 cursorPosAtClick = inputOutput.MousePos;
+			Vector2 relativePosition = transform->GetPosition();
+
+			if (b_baseClicked || b_xClicked || b_yClicked)
+			{
+				cursorPosAtClick = inputOutput.MousePos;
+				transformScreenPos = Vector2(position.x + (relativePosition.x * FG_sceneViewGridStep.x), position.y - (relativePosition.y * FG_sceneViewGridStep.x));
+			}
+
+			Vector2 transformPosOffsetFromMouse = Vector2((cursorPosAtClick.x - transformScreenPos.x) / FG_sceneViewGridStep.x, (cursorPosAtClick.y - transformScreenPos.y) / FG_sceneViewGridStep.x);
+			Vector2 mousePosInGrid = Vector2((inputOutput.MousePos.x - position.x) / FG_sceneViewGridStep.x, (position.y - inputOutput.MousePos.y) / FG_sceneViewGridStep.x);
+			Vector2 newTransformPos = Vector2(mousePosInGrid.x - transformPosOffsetFromMouse.x, mousePosInGrid.y + transformPosOffsetFromMouse.y);
+
+			if (b_baseActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			{
+				transform->SetPosition(newTransformPos);
+			}
+			else if (b_xActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			{
+				transform->SetPosition(Vector2(newTransformPos.x, relativePosition.y));
+			}
+			else if (b_yActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			{
+				transform->SetPosition(Vector2(relativePosition.x, newTransformPos.y));
+			}
+
+
+			// Draw channel maxSpriteLayers + 3 for Upper UI Transform Arrow			
+			FL::AddImageToDrawList(arrowToRender, position, FG_sceneViewCenter, arrowWidth, arrowHeight, arrowOffset, arrowScale, b_scalesWithZoom, FG_sceneViewGridStep.x, ImGui::GetWindowDrawList());
 		}
 	}
 
 	void AddSceneViewMouseControls(std::string buttonID, Vector2 startPos, Vector2 size, Vector2 &scrolling, Vector2 centerPoint, Vector2 &gridStep, Uint32 rectColor, bool b_filled, ImGuiButtonFlags buttonFlags, bool b_allowOverlap, bool b_weightedScroll, float zoomMultiplier, float minGridStep, float maxGridStep)
 	{
+		int sdl_x;
+		int sdl_y;
+		SDL_GetMouseState(&sdl_x, &sdl_y);
+		Vector2 sdlState = Vector2((float)sdl_x, (float)sdl_y);
+		Vector2 mouseDelta = Vector2(0, 0);
+		static Vector2 mouseLastPos = sdlState;
+		ImGui::GetIO().MousePos = sdlState;
+
 		if (size.x > 0 && size.y > 0)
 		{
 			ImGuiIO& inputOutput = ImGui::GetIO();
@@ -1528,14 +1564,16 @@ namespace FlatGui
 			const bool b_isClicked = ImGui::IsItemClicked();
 
 			const float mouse_threshold_for_pan = 0.0f;
+			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+			{
+				mouseLastPos = sdlState;
+			}
 			if (b_isActive && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
 			{
-				// This does not seem to work properly when resizing the window
-				// inputOutput.MousePos and MouseDelta give incorrect values after upon dragging the mouse
-				scrolling.x += inputOutput.MouseDelta.x;
-				scrolling.y += inputOutput.MouseDelta.y;
-
-				//SaveCurrentProject();
+				mouseDelta = Vector2(sdlState.x - mouseLastPos.x, sdlState.y - mouseLastPos.y);
+				scrolling.x += mouseDelta.x;
+				scrolling.y += mouseDelta.y;
+				mouseLastPos = sdlState;
 			}
 
 			// Show cursor position in scene view when pressing Alt

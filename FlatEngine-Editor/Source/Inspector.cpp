@@ -138,11 +138,11 @@ namespace FlatGui
 						ImGui::CloseCurrentPopup();
 					}
 
-					//if (ImGui::MenuItem("CircleCollider"))
-					//{
-					//	focusedObject->AddCircleCollider();
-					//	ImGui::CloseCurrentPopup();
-					//}
+					if (ImGui::MenuItem("CircleCollider"))
+					{
+						focusedObject->AddCircleCollider();
+						ImGui::CloseCurrentPopup();
+					}
 
 					if (!focusedObject->HasComponent("TileMap"))
 					{

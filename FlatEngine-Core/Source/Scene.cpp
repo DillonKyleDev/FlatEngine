@@ -32,8 +32,7 @@ namespace FlatEngine
 		m_path = "";
 		m_sceneObjects = std::map<long, GameObject>();		
 		m_animatorPreviewObjects = std::vector<GameObject*>();
-		m_ECSManager = ECSManager();
-		m_primaryCamera = nullptr;
+		m_ECSManager = ECSManager();		
 		m_nextGameObjectID = 0;
 		m_nextComponentID = 0;
 		m_freedComponentIDs = std::vector<long>();
@@ -193,10 +192,10 @@ namespace FlatEngine
 	{
 		long ID = objectToDelete->GetID();
 
-		if (m_primaryCamera != nullptr && m_primaryCamera->GetParentID() == objectToDelete->GetID())
+		if (F_primaryCamera != nullptr && F_primaryCamera->GetParentID() == objectToDelete->GetID())
 		{
-			m_primaryCamera->SetPrimaryCamera(false);
-			m_primaryCamera = nullptr;
+			F_primaryCamera->SetPrimaryCamera(false);
+			F_primaryCamera = nullptr;
 		}
 		
 		if (objectToDelete->GetAnimation() != nullptr)
@@ -287,35 +286,6 @@ namespace FlatEngine
 		}
 
 		return ID;
-	}
-
-	void Scene::SetPrimaryCamera(Camera* camera)
-	{
-		if (camera != nullptr)
-		{
-			// Remove the old m_primaryCamera
-			if (m_primaryCamera != nullptr)
-			{
-				m_primaryCamera->SetPrimaryCamera(false);
-			}
-
-			m_primaryCamera = camera;
-			m_primaryCamera->SetPrimaryCamera(true);
-		}
-		else
-		{
-			LogError("Scene::SetPrimaryCamera() - The Camera pointer you tried to set as the primary Camera was a nullptr.");
-		}
-	}
-
-	void Scene::RemovePrimaryCamera()
-	{
-		m_primaryCamera = nullptr;
-	}
-
-	Camera *Scene::GetPrimaryCamera()
-	{
-		return m_primaryCamera;
 	}
 
 	std::vector<std::pair<Collider*, Collider*>> Scene::GetColliderPairs()

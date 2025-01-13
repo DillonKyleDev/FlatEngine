@@ -447,7 +447,7 @@ namespace FlatEngine
 		{
 			if (m_Cameras.at(ownerID).IsPrimary())
 			{
-				GetLoadedScene()->RemovePrimaryCamera();
+				RemovePrimaryCamera();
 			}
 			m_Cameras.erase(ownerID);			
 			b_success = true;

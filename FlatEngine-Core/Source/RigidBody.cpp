@@ -130,7 +130,7 @@ namespace FlatEngine
 
 	void RigidBody::ApplyGravity()
 	{
-		if (m_gravity > 0)
+		if (m_gravity > 0 && m_mass != 0)
 		{
 			if (!m_b_isGrounded && m_velocity.y > -m_terminalVelocity)
 			{
@@ -144,7 +144,7 @@ namespace FlatEngine
 				}
 			}
 		}
-		else if (m_gravity < 0)
+		else if (m_gravity < 0 && m_mass != 0)
 		{
 			if (!m_b_isGrounded && m_velocity.y < m_terminalVelocity)
 			{

@@ -109,9 +109,9 @@ namespace FlatEngine
 
 	void GameLoop::HandleCamera()
 	{
-		if (GetLoadedScene()->GetPrimaryCamera() != nullptr)
+		if (GetPrimaryCamera() != nullptr)
 		{
-			GetLoadedScene()->GetPrimaryCamera()->Follow();
+			GetPrimaryCamera()->Follow();
 		}
 	}
 

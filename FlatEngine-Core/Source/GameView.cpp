@@ -87,18 +87,16 @@ namespace FlatEngine
 		std::map<long, GameObject> sceneObjects;
 		Scene* persistantObjectScene = GetLoadedProject().GetPersistantGameObjectScene();
 		std::map<long, GameObject> persistantObjects = std::map<long, GameObject>();
-		Camera* primaryCamera;
+		Camera* primaryCamera = GetPrimaryCamera();
 		Transform* cameraTransform = nullptr;
 
 		if (loadedScene != nullptr)
 		{
 			sceneObjects = loadedScene->GetSceneObjects();			
-			primaryCamera = loadedScene->GetPrimaryCamera();
 		}
 		else
 		{
 			sceneObjects = std::map<long, GameObject>();
-			primaryCamera = nullptr;
 		}
 
 		if (persistantObjectScene != nullptr)

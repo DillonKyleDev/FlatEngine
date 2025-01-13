@@ -92,6 +92,8 @@ namespace FlatEngine
 	std::shared_ptr<GameObject> objectForFocusedAnimation = nullptr;
 	std::shared_ptr<Animation::S_Property> selectedKeyFrameToEdit = nullptr;
 
+	// Camera
+	Camera* F_primaryCamera = nullptr;
 
 	// Collision Detection
 	std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
@@ -802,11 +804,11 @@ namespace FlatEngine
 
 	void DeleteGameObject(long sceneObjectID)
 	{
-		if (GetLoadedScene()->GetObjectByID(sceneObjectID))
+		if (GetLoadedScene()->GetObjectByID(sceneObjectID) != nullptr)
 		{
 			GetLoadedScene()->DeleteGameObject(sceneObjectID);
 		}
-		else if (GetLoadedProject().GetPersistantGameObjectScene()->GetObjectByID(sceneObjectID))
+		else if (GetLoadedProject().GetPersistantGameObjectScene()->GetObjectByID(sceneObjectID) != nullptr)
 		{
 			GetLoadedProject().GetPersistantGameObjectScene()->DeleteGameObject(sceneObjectID);
 		}
@@ -860,6 +862,30 @@ namespace FlatEngine
 		{
 			return persistantObject;
 		}
+	}
+
+	void SetPrimaryCamera(Camera* primaryCamera)
+	{
+		if (F_primaryCamera != nullptr)
+		{
+			F_primaryCamera->SetPrimaryCamera(false);
+		}
+		F_primaryCamera = primaryCamera;
+		F_primaryCamera->SetPrimaryCamera(true);
+	}
+
+	void RemovePrimaryCamera()
+	{
+		if (F_primaryCamera != nullptr)
+		{
+			F_primaryCamera->SetPrimaryCamera(false);
+			F_primaryCamera = nullptr;
+		}
+	}
+
+	Camera* GetPrimaryCamera()
+	{
+		return F_primaryCamera;
 	}
 
 
@@ -1349,6 +1375,7 @@ namespace FlatEngine
 		ImGui_ImplSDLRenderer2_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
+		ImGui::GetIO().MouseDelta;
 
 		//Create dockable background space for all viewports
 		ImGui::DockSpaceOverViewport();
@@ -2898,9 +2925,9 @@ namespace FlatEngine
 				else if (type == "Camera")
 				{
 					Camera* newCamera = loadedObject->AddCamera(id, b_isActive, b_isCollapsed);
-					bool _isPrimaryCamera = CheckJsonBool(componentJson, "_isPrimaryCamera", objectName);
+					bool b_isPrimaryCamera = CheckJsonBool(componentJson, "_isPrimaryCamera", objectName);
 					newCamera->SetDimensions(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
-					newCamera->SetPrimaryCamera(_isPrimaryCamera);
+					newCamera->SetPrimaryCamera(b_isPrimaryCamera);
 					newCamera->SetZoom(CheckJsonFloat(componentJson, "zoom", objectName));
 					newCamera->SetFrustrumColor(Vector4(
 						CheckJsonFloat(componentJson, "frustrumRed", objectName),
@@ -2911,6 +2938,11 @@ namespace FlatEngine
 					newCamera->SetShouldFollow(CheckJsonBool(componentJson, "_follow", objectName));
 					newCamera->SetFollowSmoothing(CheckJsonFloat(componentJson, "followSmoothing", objectName));
 					newCamera->SetToFollowID(CheckJsonLong(componentJson, "following", objectName));
+
+					if (b_isPrimaryCamera)
+					{
+						SetPrimaryCamera(newCamera);
+					}
 				}
 				else if (type == "Script")
 				{

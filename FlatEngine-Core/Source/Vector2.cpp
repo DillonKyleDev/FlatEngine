@@ -115,7 +115,7 @@ namespace FlatEngine
 		x = x / hypotenuse;
 		y = y / hypotenuse;
 
-		float newhypotenuse = std::sqrt((x * x) + (y * y));
+		float newhypotenuse = std::sqrt((x * x) + (y * y));		
 
 		return *this;
 	}

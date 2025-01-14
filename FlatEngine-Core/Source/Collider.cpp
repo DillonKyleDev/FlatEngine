@@ -965,13 +965,11 @@ namespace FlatEngine
 
 		// else fire it now. (upon initially adding the object to m_collidingObjects for the first time)
 		if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_BoxCollider)
-		{
-			LogString("Colliding from box");
+		{			
 			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnBoxCollisionEnter);
 		}
 		if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_CircleCollider)
-		{
-			LogString("Colliding from Circle");
+		{			
 			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnCircleCollisionEnter);
 		}
 	}

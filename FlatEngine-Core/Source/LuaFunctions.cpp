@@ -411,8 +411,10 @@ namespace FlatEngine
 			"x", &Vector2::GetX,
 			"SetY", &Vector2::SetY,
 			"y", &Vector2::GetY,
-			"SetXY", &Vector2::_xy
+			"SetXY", &Vector2::_xy,
+			"Normalize", &Vector2::Normalize
 		);
+
 		F_Lua.new_usertype<Vector4>("Vector4",
 			sol::constructors<Vector4(), Vector4(float x, float y, float z, float w)>(),
 			"SetX", &Vector4::SetX,

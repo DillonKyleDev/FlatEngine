@@ -1926,6 +1926,8 @@ namespace FlatEngine
 	{
 		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
 		std::map<long, std::map<long, BoxCollider>> &persistantBoxColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetBoxColliders();
+		std::map<long, std::map<long, CircleCollider>>& sceneCircleColliders = GetLoadedScene()->GetCircleColliders();
+		std::map<long, std::map<long, CircleCollider>>& persistantCircleColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleColliders();
 
 		//if (GetLoadedScene() != nullptr)
 		//{
@@ -1938,7 +1940,7 @@ namespace FlatEngine
 
 		// Remake colliderPairs
 		F_ColliderPairs.clear();
-		std::vector<BoxCollider*> colliders;
+		std::vector<Collider*> colliders;
 
 		// Collect BoxColliders into a simple to navigate vector
 		for (std::map<long, std::map<long, BoxCollider>>::iterator colliderMap = sceneBoxColliders.begin(); colliderMap != sceneBoxColliders.end();)
@@ -1959,11 +1961,29 @@ namespace FlatEngine
 			}
 			colliderMap++;
 		}
+		for (std::map<long, std::map<long, CircleCollider>>::iterator colliderMap = sceneCircleColliders.begin(); colliderMap != sceneCircleColliders.end();)
+		{
+			for (std::map<long, CircleCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
+			{
+				colliders.push_back(&innerMap->second);
+				innerMap++;
+			}
+			colliderMap++;
+		}
+		for (std::map<long, std::map<long, CircleCollider>>::iterator colliderMap = persistantCircleColliders.begin(); colliderMap != persistantCircleColliders.end();)
+		{
+			for (std::map<long, CircleCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
+			{
+				colliders.push_back(&innerMap->second);
+				innerMap++;
+			}
+			colliderMap++;
+		}
 
 		int colliderCounter = 1;
-		for (std::vector<BoxCollider*>::iterator collider1 = colliders.begin(); collider1 != colliders.end(); collider1++)
+		for (std::vector<Collider*>::iterator collider1 = colliders.begin(); collider1 != colliders.end(); collider1++)
 		{
-			for (std::vector<BoxCollider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
+			for (std::vector<Collider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
 			{
 				if ((*collider1)->GetParentID() != (*collider2)->GetParentID())
 				{
@@ -1973,28 +1993,28 @@ namespace FlatEngine
 					std::vector<std::string> coll1Ignored = coll1TagList.GetIgnoredTags();
 					std::vector<std::string> coll2Ignored = coll2TagList.GetIgnoredTags();
 
-					bool _ignorePair = false;
+					bool b_ignorePair = false;
 
 					for (std::string ignoredTag : coll1Ignored)
 					{
 						if (coll2TagList.HasTag(ignoredTag))
 						{
-							_ignorePair = true;
+							b_ignorePair = true;
 							break;
 						}
 					}
-					if (!_ignorePair)
+					if (!b_ignorePair)
 					{
 						for (std::string ignoredTag : coll2Ignored)
 						{
 							if (coll1TagList.HasTag(ignoredTag))
 							{
-								_ignorePair = true;
+								b_ignorePair = true;
 								break;
 							}
 						}
 					}
-					if (!_ignorePair)
+					if (!b_ignorePair)
 					{
 						std::pair<Collider*, Collider*> newPair = { (*collider1), (*collider2) };
 						F_ColliderPairs.push_back(newPair);

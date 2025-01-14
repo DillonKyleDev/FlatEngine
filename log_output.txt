@@ -1,16 +1,15 @@
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[C++] System ready. Begin logging...
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-[LUA] HurtBox : Circle Col
 [C++] Colliding from box
 [C++] Colliding from box
 [C++] Colliding from box
+[C++] Colliding from Circle
+[C++] ERROR : Something went wrong in Lua function: OnCircleCollisionEnter()
+[C++] ERROR : ..\projects\Clash\scripts\HurtBox.scp.lua:49: attempt to call a nil value (method 'Normalize')
+stack traceback:
+	..\projects\Clash\scripts\HurtBox.scp.lua:49: in function 'base.OnCircleCollisionEnter'
 [C++] Colliding from box
-[C++] Colliding from box
-[C++] Colliding from box
-[LUA] HurtBox : Circle Col
-[C++] Colliding from box
-[C++] Colliding from box
-[C++] Colliding from box
-[C++] Colliding from box
+[C++] Colliding from Circle
+[C++] ERROR : Something went wrong in Lua function: OnCircleCollisionEnter()
+[C++] ERROR : ..\projects\Clash\scripts\HurtBox.scp.lua:49: attempt to call a nil value (method 'Normalize')
+stack traceback:
+	..\projects\Clash\scripts\HurtBox.scp.lua:49: in function 'base.OnCircleCollisionEnter'
 

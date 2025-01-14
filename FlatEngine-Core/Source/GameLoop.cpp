@@ -422,6 +422,28 @@ namespace FlatEngine
 			}
 			outerIter++;
 		}
+		std::map<long, std::map<long, CircleCollider>>& sceneCircleColliders = GetLoadedScene()->GetCircleColliders();
+		for (std::map<long, std::map<long, CircleCollider>>::iterator outerIter = sceneCircleColliders.begin(); outerIter != sceneCircleColliders.end();)
+		{
+			for (std::map<long, CircleCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
+			{
+				innerIter->second.ResetCollisions();
+				innerIter->second.RecalculateBounds(gridstep, viewportCenter);
+				innerIter++;
+			}
+			outerIter++;
+		}
+		std::map<long, std::map<long, CircleCollider>>& persistantCircleColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleColliders();
+		for (std::map<long, std::map<long, CircleCollider>>::iterator outerIter = persistantCircleColliders.begin(); outerIter != persistantCircleColliders.end();)
+		{
+			for (std::map<long, CircleCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
+			{
+				innerIter->second.ResetCollisions();
+				innerIter->second.RecalculateBounds(gridstep, viewportCenter);
+				innerIter++;
+			}
+			outerIter++;
+		}
 
 		float processTime = (float)GetEngineTime();		
 		static int continuousCounter = 0;
@@ -430,7 +452,7 @@ namespace FlatEngine
 			Collider* collider1 = colliderPair.first;
 			Collider* collider2 = colliderPair.second;
 
-			if (collider1->GetParent() != nullptr && collider1 != nullptr && collider1->IsActive() && collider2->GetParent() != nullptr && collider2 != nullptr && collider2->IsActive() && (!collider1->IsStatic() || !collider2->IsStatic()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
+			if (collider1->GetParent() != nullptr && collider1->GetParent()->IsActive() && collider1 != nullptr && collider1->IsActive() && collider2->GetParent() != nullptr && collider2->GetParent()->IsActive() && collider2 != nullptr && collider2->IsActive() && (!collider1->IsStatic() || !collider2->IsStatic()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
 			{
 				if (collider2 != nullptr && (collider1->GetID() != collider2->GetID()) && collider2->IsActive())
 				{

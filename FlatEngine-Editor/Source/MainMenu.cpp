@@ -8,6 +8,7 @@
 #include "Project.h"
 #include "Vector2.h"
 #include "PrefabManager.h"
+#include "SceneManager.h"
 
 #include "imgui.h"
 
@@ -39,7 +40,9 @@ namespace FlatGui
 				if (ImGui::MenuItem("Project Hub"))
 				{					
 					//b_openProjectModal = true;
-					FL::F_b_projectSelected = false;					
+					FL::F_b_projectSelected = false;
+					
+					FL::F_LoadedProject = Project();
 				}
 				ImGui::Separator();
 				//if (ImGui::MenuItem("Open Project..."))

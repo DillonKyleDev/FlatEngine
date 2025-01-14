@@ -49,15 +49,23 @@ namespace FlatGui
 					if (settingSelected == "Settings")
 					{
 						std::string startupScene = FL::F_LoadedProject.GetRuntimeScene();
-						if (FL::RenderInputTableRow("##SceneLoadedOnStart", "Scene to load on game start", startupScene, true))
+						if (FL::RenderInputTableRow("##SceneLoadedOnStart", "Game start scene path", startupScene, false))
 						{
 							FL::F_LoadedProject.SetRuntimeScene(startupScene);
+						}
+						if (ImGui::IsItemHovered())
+						{
+							FL::RenderTextToolTip("Enter as a relative path from inside the FlatEngine-Runtime folder (no quotation marks)\nie ../projects/project_name/scenes/scene_name.scn");
 						}
 
 						std::string finalBuildPath = FL::F_LoadedProject.GetBuildPath();
 						if (FL::RenderInputTableRow("Final Build Path", "Final project build path", finalBuildPath))
 						{
 							FL::F_LoadedProject.SetBuildPath(finalBuildPath);
+						}
+						if (ImGui::IsItemHovered())
+						{
+							FL::RenderTextToolTip("Absolute or relative path is allowed (no quotation marks)");
 						}
 
 						Vector2 currentResolution = FL::F_LoadedProject.GetResolution();

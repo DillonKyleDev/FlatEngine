@@ -542,6 +542,9 @@ namespace FlatEngine
 
 	void LoadGameProject(std::string path, json &projectJson)
 	{
+		Scene newScene = Scene();
+		F_SceneManager.SetLoadedScene(newScene);
+
 		Project newProject = Project();
 		newProject.SetPath(path);
 		
@@ -620,8 +623,7 @@ namespace FlatEngine
 		if (F_LoadedProject.GetBuildPath() != "")
 		{
 			try
-			{
-				LogString(F_LoadedProject.GetBuildPath());
+			{				
 				std::filesystem::create_directories(F_LoadedProject.GetBuildPath());
 				std::filesystem::copy("..\\FlatEngine-Core", F_LoadedProject.GetBuildPath() + "\\Core", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
@@ -667,6 +669,8 @@ namespace FlatEngine
 				LogError("Failed to copy intermediates: ");
 				LogError(e.what());
 			}
+
+			LogString("Project built to: " + F_LoadedProject.GetBuildPath());
 		}
 	}
 
@@ -716,11 +720,11 @@ namespace FlatEngine
 				F_PlayerObject = GetObjectByTag("Player");
 			}
 		}
-		else
-		{
-			LogError("Failed to load scene. Scene does not exist.");
-			LogString("Path: " + actualPath);
-		}
+		//else
+		//{
+		//	LogError("Failed to load scene. Scene does not exist.");
+		//	LogString("Path: " + actualPath);
+		//}
 	}
 
 	long GetNextComponentID()
@@ -761,7 +765,7 @@ namespace FlatEngine
 
 		if (path == "")
 		{
-			filePath = GetDir("scenes") + "\\" + filename + ".scn";
+			filePath = "..\\projects\\" + GetFilenameFromPath(GetLoadedProject().GetPath()) + "\\scenes\\" + filename + ".scn";
 		}
 		else
 		{
@@ -2101,7 +2105,7 @@ namespace FlatEngine
 		}
 		else
 		{			
-			WriteStringToFile(GetCurrentDir() + "\\log_output.txt", F_Logger.GetBuffer().Buf.Data);
+			WriteStringToFile("..\\log_output.txt", F_Logger.GetBuffer().Buf.Data);
 		}
 	}
 

@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "Scene.h"
 #include "Transform.h"
+#include "Project.h"
+#include "SceneManager.h"
 
 #include "imgui.h"
 
@@ -26,10 +28,14 @@ namespace FlatGui
 			static std::string newSceneName = "";
 			static bool b_openSceneModal = false;
 			if (FL::RenderInputModal("Create Scene", "Enter a name for the Scene", newSceneName, b_openSceneModal))
-			{
-				std::string scenePath = FL::CreateNewSceneFile(newSceneName);
-				FL::SaveScene(FL::GetLoadedScene(), newSceneName);
-				FL::LoadScene(scenePath);
+			{				
+				std::string scenePath = "..\\projects\\" + FL::GetFilenameFromPath(FL::GetLoadedProject().GetPath()) + "\\scenes\\" + newSceneName + ".scn";
+				FL::GetLoadedScene()->SetPath(scenePath);
+				FL::GetLoadedScene()->SetName(newSceneName);
+				FL::SaveScene(FL::GetLoadedScene(), scenePath);
+				FL::F_SceneManager.SetLoadedScenePath(scenePath);
+				FL::GetLoadedProject().SetLoadedScenePath(scenePath);	
+				SaveCurrentProject();
 				FL::SetProjectLoadedScenePath(scenePath);
 			}
 
@@ -41,8 +47,8 @@ namespace FlatGui
 			{
 				if (ImGui::MenuItem("Save all"))
 				{
-					if (FL::GetLoadedScenePath() == "")
-					{
+					if (FL::GetLoadedScenePath() == "" && FL::GetLoadedScene() != nullptr)
+					{						
 						b_openSceneModal = true;
 					}
 					else
@@ -54,7 +60,7 @@ namespace FlatGui
 				}
 				if (ImGui::MenuItem("Save scene"))
 				{
-					if (FL::GetLoadedScenePath() == "")
+					if (FL::GetLoadedScenePath() == "" && FL::GetLoadedScene() != nullptr)
 					{
 						b_openSceneModal = true;
 					}
@@ -139,7 +145,7 @@ namespace FlatGui
 					ImGui::TableSetColumnIndex(1);
 					ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor("logText"));
 					ImGui::SetCursorPos(Vector2(ImGui::GetCursorPosX() + 7, ImGui::GetCursorPosY() + 4)); // Indent the text
-					ImGui::Text("ALL SCENE OBJECTS");
+					ImGui::Text("SCENE OBJECTS");
 					ImGui::PopStyleColor();
 
 					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(0, 0));

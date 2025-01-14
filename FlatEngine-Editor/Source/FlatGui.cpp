@@ -67,7 +67,7 @@ namespace FlatGui
 	bool FG_b_showDemoWindow = false;
 	bool FG_b_showScriptEditor = false;
 	bool FG_b_showTileSetEditor = false;
-	bool FG_b_showFileExplorer = false;
+	bool FG_b_showFileExplorer = true;
 	bool FG_b_showSceneView = true;
 	bool FG_b_showGameView = true;
 	bool FG_b_showHierarchy = true;
@@ -77,7 +77,7 @@ namespace FlatGui
 	bool FG_b_showAnimationPreview = false;
 	bool FG_b_showKeyFrameEditor = false;
 	bool FG_b_showLogger = true;
-	bool FG_b_showProfiler = true;
+	bool FG_b_showProfiler = false;
 	bool FG_b_showMappingContextEditor = false;
 	bool FG_b_showSettings = false;
 
@@ -378,7 +378,7 @@ namespace FlatGui
 			Project newProject = Project();
 			std::string directoryPath = "..\\projects\\" + projectName;
 			std::string projectFilePath = directoryPath + "\\" + projectName + ".prj";
-			std::string persistantGameObjectsScenePath = directoryPath + "\\" + projectName + ".scn";
+			std::string persistantGameObjectsScenePath = directoryPath + "\\persistant_objects_" + projectName + ".scn";
 
 			CreateProjectDirectory(directoryPath);
 

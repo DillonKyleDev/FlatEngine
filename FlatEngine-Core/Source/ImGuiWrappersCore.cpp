@@ -1161,7 +1161,7 @@ namespace FlatEngine
 
 			if (RenderButton("OK", Vector2(70, 30)))
 			{ 
-				b_validInput = inputValue != "";
+				b_validInput = (inputValue != "");
 				ImGui::CloseCurrentPopup(); 
 			}
 			ImGui::SetItemDefaultFocus();

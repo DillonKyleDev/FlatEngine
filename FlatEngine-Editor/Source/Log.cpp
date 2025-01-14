@@ -14,7 +14,7 @@ namespace FlatGui
 
 	void RenderLog()
 	{
-		FL::BeginWindow("Logger", FG_b_showLogger);
+		FL::BeginWindow("Log", FG_b_showLogger);
 		// {
 		
 			// Border around object

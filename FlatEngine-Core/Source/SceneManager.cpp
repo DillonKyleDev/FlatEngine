@@ -20,6 +20,12 @@ namespace FlatEngine
 	{
 	}
 
+	void SceneManager::SetLoadedScene(Scene scene)
+	{
+		m_loadedScene = scene;
+		m_loadedScenePath = scene.GetPath();
+	}
+
 	Scene *SceneManager::CreateNewScene()
 	{
 		m_loadedScene = Scene();
@@ -161,6 +167,11 @@ namespace FlatEngine
 	Scene* SceneManager::GetLoadedScene()
 	{
 		return &m_loadedScene;
+	}
+
+	void SceneManager::SetLoadedScenePath(std::string filePath)
+	{
+		m_loadedScenePath = filePath;
 	}
 	
 	std::string SceneManager::GetLoadedScenePath()

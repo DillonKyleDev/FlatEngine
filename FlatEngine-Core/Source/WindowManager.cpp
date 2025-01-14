@@ -80,9 +80,9 @@ namespace FlatEngine
 		SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 		m_window = SDL_CreateWindow("FlatEngine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_windowWidth, m_windowHeight, window_flags);
 		// Vsync on
-		//m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+		m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 		// Vsync off
-		m_renderer = SDL_CreateRenderer(m_window, -1, 0);
+		//m_renderer = SDL_CreateRenderer(m_window, -1, 0);
 		SDL_RenderSetLogicalSize(m_renderer, m_windowWidth, m_windowHeight);
 		SDL_RenderSetIntegerScale(m_renderer, SDL_bool(true));
 		if (m_window == NULL)

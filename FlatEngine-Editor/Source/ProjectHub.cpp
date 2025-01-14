@@ -126,7 +126,7 @@ namespace FlatGui
 				ImGui::Separator();				
 				FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 110, 6);
 
-				std::string projectName = "";
+				static std::string projectName = "";
 				static bool b_openProjectModal = false;
 
 				if (FL::RenderButton("New Project", Vector2(100, 30)))

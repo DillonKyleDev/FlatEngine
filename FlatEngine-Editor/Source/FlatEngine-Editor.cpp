@@ -202,7 +202,7 @@ public:
 
 		// Render the project selection screen
 		if (!FL::F_b_projectSelected)
-		{
+		{			
 			FlatGui::RenderProjectHub(FL::F_b_projectSelected, m_startupProject);
 			if (FL::F_b_projectSelected)
 			{

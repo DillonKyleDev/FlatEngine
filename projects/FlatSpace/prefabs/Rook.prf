@@ -1,0 +1,248 @@
+{
+    "Name": "Rook",
+    "Prefab": [
+        {
+            "_isActive": true,
+            "_isPrefab": false,
+            "children": [
+                59
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 276,
+                    "rotation": 180.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -24.299999237060547,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -14.399999618530273,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 277,
+                    "path": "..\\assets\\images\\sprites\\FlatSpace\\rook.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.0,
+                    "tintColorY": 0.228125661611557,
+                    "tintColorZ": 0.9125000238418579,
+                    "type": "Sprite",
+                    "xOffset": 7.5,
+                    "xScale": 1.0,
+                    "yOffset": 6.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "_isComposite": false,
+                    "_isContinuous": true,
+                    "_isSolid": false,
+                    "_isStatic": false,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 1.5,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 1.875,
+                    "id": 278,
+                    "type": "BoxCollider"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "animationData": [
+                        {
+                            "name": "ShipExplode",
+                            "path": "..\\assets\\animations\\ShipExplode.anm"
+                        },
+                        {
+                            "name": "Shoot",
+                            "path": "..\\assets\\animations\\RookShoot.anm"
+                        }
+                    ],
+                    "id": 279,
+                    "type": "Animation"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "attachedScript": "Rook",
+                    "id": 280,
+                    "scriptParameters": [],
+                    "type": "Script"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "airControl": 0.20000000298023224,
+                    "id": 281,
+                    "maxAcceleration": 0.800000011920929,
+                    "maxSpeed": 30.0,
+                    "type": "CharacterController"
+                },
+                {
+                    "_allowTorques": true,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isStatic": false,
+                    "angularDrag": 1.0,
+                    "equilibriumForce": 2.0,
+                    "fallingGravity": 0.0,
+                    "friction": 1.0,
+                    "gravity": 0.0,
+                    "id": 282,
+                    "mass": 1.0,
+                    "terminalVelocity": 1.0,
+                    "type": "RigidBody",
+                    "windResistance": 1.0
+                }
+            ],
+            "id": 58,
+            "ignoreTags": {
+                "Enemy": true,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            },
+            "name": "Rook",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -24.299999237060547,
+            "spawnLocationY": -14.399999618530273,
+            "tags": {
+                "Enemy": true,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            }
+        },
+        {
+            "_isActive": true,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 283,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": -24.299999237060547,
+                    "xPos": -0.800000011920929,
+                    "xScale": 0.800000011920929,
+                    "yOrigin": -14.399999618530273,
+                    "yPos": 1.1199994087219238,
+                    "yScale": 0.10100000351667404
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 284,
+                    "path": "..\\assets\\images\\colors\\white.png",
+                    "pivotPoint": "PivotLeft",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 0.8313725590705872,
+                    "tintColorZ": 0.8313725590705872,
+                    "type": "Sprite",
+                    "xOffset": 0.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 284,
+                    "path": "..\\assets\\images\\colors\\white.png",
+                    "pivotPoint": "PivotLeft",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 0.8313725590705872,
+                    "tintColorZ": 0.8313725590705872,
+                    "type": "Sprite",
+                    "xOffset": 0.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 59,
+            "ignoreTags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            },
+            "name": "Healthbar",
+            "parent": 58,
+            "prefabName": "",
+            "spawnLocationX": -0.800000011920929,
+            "spawnLocationY": 1.1199994087219238,
+            "tags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            }
+        }
+    ]
+}

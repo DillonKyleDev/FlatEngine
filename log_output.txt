@@ -1,4 +1,16 @@
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 [C++] System ready. Begin logging...
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[LUA] HurtBox : Circle Col
+[C++] Colliding from box
+[C++] Colliding from box
+[C++] Colliding from box
+[C++] Colliding from box
+[C++] Colliding from box
+[C++] Colliding from box
+[LUA] HurtBox : Circle Col
+[C++] Colliding from box
+[C++] Colliding from box
+[C++] Colliding from box
+[C++] Colliding from box
 

@@ -1,0 +1,214 @@
+{
+    "Name": "Transport3",
+    "Prefab": [
+        {
+            "_isActive": true,
+            "_isPrefab": false,
+            "children": [
+                66
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 292,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -19.81818199157715,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 1.454545497894287,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "id": 293,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\transport\\transportThreeCar.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 28.0,
+                    "xScale": 1.0,
+                    "yOffset": 5.5,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "Transport",
+                    "id": 294,
+                    "scriptParameters": [
+                        {
+                            "bool": false,
+                            "double": 0.0,
+                            "float": 0.0,
+                            "int": 25,
+                            "long": 0,
+                            "paramName": "health",
+                            "string": "",
+                            "type": "int",
+                            "vector2X": 0.0,
+                            "vector2Y": 0.0
+                        }
+                    ],
+                    "type": "Script"
+                },
+                {
+                    "_allowTorques": true,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isStatic": false,
+                    "angularDrag": 1.0,
+                    "equilibriumForce": 2.0,
+                    "fallingGravity": 0.0,
+                    "friction": 1.0,
+                    "gravity": 0.0,
+                    "id": 295,
+                    "mass": 1.0,
+                    "terminalVelocity": 1.0,
+                    "type": "RigidBody",
+                    "windResistance": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "animationData": [
+                        {
+                            "name": "Explode",
+                            "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
+                        }
+                    ],
+                    "id": 296,
+                    "type": "Animation"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isComposite": false,
+                    "_isContinuous": true,
+                    "_isSolid": false,
+                    "_isStatic": false,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 1.375,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 7.0,
+                    "id": 297,
+                    "type": "BoxCollider"
+                }
+            ],
+            "id": 65,
+            "ignoreTags": {
+                "Enemy": true,
+                "EnemyDamage": true,
+                "EnemyTrigger": true,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": true,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": true,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": true,
+                "TerrainTrigger": false
+            },
+            "name": "Transport3",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -19.81818199157715,
+            "spawnLocationY": 1.454545497894287,
+            "tags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": true,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            }
+        },
+        {
+            "_isActive": true,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 298,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": -19.81818199157715,
+                    "xPos": 3.299999952316284,
+                    "xScale": 1.0,
+                    "yOrigin": 1.454545497894287,
+                    "yPos": -0.10000000149011612,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 66,
+            "ignoreTags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            },
+            "name": "Engines",
+            "parent": 65,
+            "prefabName": "",
+            "spawnLocationX": 3.299999952316284,
+            "spawnLocationY": -0.10000000149011612,
+            "tags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            }
+        }
+    ]
+}

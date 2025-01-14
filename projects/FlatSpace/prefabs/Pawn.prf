@@ -1,0 +1,226 @@
+{
+    "Name": "Pawn",
+    "Prefab": [
+        {
+            "_isActive": true,
+            "_isPrefab": false,
+            "children": [
+                49
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "id": 169,
+                    "rotation": 180.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -5.052631378173828,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -2.5789473056793213,
+                    "yScale": 1.0
+                },
+                {
+                    "_allowTorques": true,
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "_isStatic": false,
+                    "angularDrag": 1.0,
+                    "equilibriumForce": 2.0,
+                    "fallingGravity": 0.0,
+                    "friction": 1.0,
+                    "gravity": 0.0,
+                    "id": 170,
+                    "mass": 1.0,
+                    "terminalVelocity": 1.0,
+                    "type": "RigidBody",
+                    "windResistance": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "airControl": 0.20000000298023224,
+                    "id": 171,
+                    "maxAcceleration": 0.800000011920929,
+                    "maxSpeed": 30.0,
+                    "type": "CharacterController"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "attachedScript": "Pawn",
+                    "id": 172,
+                    "type": "Script"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "animationData": [
+                        {
+                            "name": "ShipExplode",
+                            "path": "..\\projects\\FlatSpace\\animations\\ShipExplode.anm"
+                        }
+                    ],
+                    "id": 173,
+                    "type": "Animation"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "id": 174,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\FlatSpace\\pawn.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.7250000238418579,
+                    "tintColorY": 0.0,
+                    "tintColorZ": 0.0,
+                    "type": "Sprite",
+                    "xOffset": 6.5,
+                    "xScale": 1.0,
+                    "yOffset": 4.5,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "_isComposite": false,
+                    "_isContinuous": true,
+                    "_isSolid": false,
+                    "_isStatic": false,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 1.125,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 1.625,
+                    "id": 175,
+                    "type": "BoxCollider"
+                }
+            ],
+            "id": 48,
+            "ignoreTags": {
+                "Enemy": true,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": true,
+                "TerrainTrigger": false
+            },
+            "name": "Pawn",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -5.052631378173828,
+            "spawnLocationY": -2.5789473056793213,
+            "tags": {
+                "Enemy": true,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            }
+        },
+        {
+            "_isActive": true,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 176,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": -5.052631378173828,
+                    "xPos": -0.800000011920929,
+                    "xScale": 0.800000011920929,
+                    "yOrigin": -2.5789473056793213,
+                    "yPos": 1.0,
+                    "yScale": 0.10100000351667404
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 177,
+                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
+                    "pivotPoint": "PivotLeft",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 0.0,
+                    "tintColorZ": 0.0,
+                    "type": "Sprite",
+                    "xOffset": 0.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 49,
+            "ignoreTags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            },
+            "name": "Healthbar",
+            "parent": 48,
+            "prefabName": "",
+            "spawnLocationX": -0.800000011920929,
+            "spawnLocationY": 1.0,
+            "tags": {
+                "Enemy": false,
+                "EnemyDamage": false,
+                "EnemyTrigger": false,
+                "EnvironmentalDamage": false,
+                "EnvironmentalTrigger": false,
+                "InteractableItem": false,
+                "InteractableObject": false,
+                "Item": false,
+                "Npc": false,
+                "NpcTrigger": false,
+                "Player": false,
+                "PlayerDamage": false,
+                "PlayerTrigger": false,
+                "Projectile": false,
+                "Terrain": false,
+                "TerrainTrigger": false
+            }
+        }
+    ]
+}

@@ -448,8 +448,10 @@ namespace FlatEngine
 			"GetText", &GameObject::GetText,
 			"GetCharacterController", &GameObject::GetCharacterController,
 			"GetRigidBody", &GameObject::GetRigidBody,
-			"GetBoxColliders", &GameObject::GetBoxColliders,
+			//"GetBoxColliders", &GameObject::GetBoxColliders,
 			"GetBoxCollider", &GameObject::GetBoxCollider,
+			//"GetBoxColliders", &GameObject::GetCircleColliders,
+			"GetCircleCollider", &GameObject::GetCircleCollider,
 			"GetTileMap", &GameObject::GetTileMap,
 			"AddSprite", &GameObject::AddSpriteLua,
 			"AddScript", &GameObject::AddScriptLua,
@@ -615,7 +617,8 @@ namespace FlatEngine
 			"SetPendingForces", &RigidBody::SetPendingForces,
 			"GetPendingForces", &RigidBody::GetPendingForces,
 			"SetTerminalVelocity", &RigidBody::SetTerminalVelocity,
-			"GetTerminalVelocity", &RigidBody::GetTerminalVelocity
+			"GetTerminalVelocity", &RigidBody::GetTerminalVelocity,
+			"IsGrounded", &RigidBody::IsGrounded
 		);
 
 		F_Lua.new_usertype<Collider>("Collider",
@@ -632,6 +635,14 @@ namespace FlatEngine
 			"SetActive", &BoxCollider::SetActive,
 			"IsActive", &BoxCollider::IsActive,
 			"GetID", &BoxCollider::GetID
+		);
+
+		F_Lua.new_usertype<CircleCollider>("CircleCollider",
+			"GetParent", &CircleCollider::GetParent,
+			"GetParentID", &CircleCollider::GetParentID,
+			"SetActive", &CircleCollider::SetActive,
+			"IsActive", &CircleCollider::IsActive,
+			"GetID", &CircleCollider::GetID
 		);
 
 		F_Lua.new_usertype<CharacterController>("CharacterController",

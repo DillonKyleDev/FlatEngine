@@ -1,0 +1,23 @@
+{
+    "tileSetData": {
+        "name": "GroundTiles",
+        "texturePath": "../projects/FlatSpace/images/tilesets/BrickWall.png",
+        "tileHeight": 16,
+        "tileSetPath": "../projects/FlatSpace/tileSets/GroundTiles.tls",
+        "tileWidth": 16
+    },
+    "tiles": [
+        {
+            "index": 0
+        },
+        {
+            "index": 30
+        },
+        {
+            "index": 5
+        },
+        {
+            "index": 35
+        }
+    ]
+}

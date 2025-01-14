@@ -897,6 +897,28 @@ namespace FlatEngine
 			return GetLoadedScene()->GetCircleCollidersByOwner(m_ID);
 		}
 	}
+	CircleCollider* GameObject::GetCircleCollider()
+	{
+		std::vector<CircleCollider*> colliders;
+
+		if (m_b_persistant)
+		{
+			colliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleCollidersByOwner(m_ID);
+		}
+		else
+		{
+			colliders = GetLoadedScene()->GetCircleCollidersByOwner(m_ID);
+		}
+
+		if (colliders.size() > 0)
+		{
+			return colliders[0];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
 	CompositeCollider* GameObject::GetCompositeCollider()
 	{
 		if (m_b_persistant)

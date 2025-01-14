@@ -401,35 +401,42 @@ namespace FlatEngine
 						if (tileSetName != "" && tileSetIndex != -1)
 						{
 							TileSet* tileSet = GetTileSet(tileSetName);
-							SDL_Texture* texture = tileSet->GetTexture()->GetTexture();
-							Vector2 uvStart = tileSet->GetIndexUVs(tileSetIndex).first;
-							Vector2 uvEnd = tileSet->GetIndexUVs(tileSetIndex).second;
+							if (tileSet != nullptr)
+							{
+								SDL_Texture* texture = tileSet->GetTexture()->GetTexture();
+								Vector2 uvStart = tileSet->GetIndexUVs(tileSetIndex).first;
+								Vector2 uvEnd = tileSet->GetIndexUVs(tileSetIndex).second;
 
-							Tile newTile = Tile();
-							newTile.tileCoord = coord;
-							int x = (int)coord.x;
-							int y = (int)coord.y;
-							newTile.tileSetName = tileSet->GetName();
-							newTile.tileSetIndex = tileSetIndex;
-							newTile.tileSetTexture = texture;
-							newTile.uvStart = uvStart;
-							newTile.uvEnd = uvEnd;
+								Tile newTile = Tile();
+								newTile.tileCoord = coord;
+								int x = (int)coord.x;
+								int y = (int)coord.y;
+								newTile.tileSetName = tileSet->GetName();
+								newTile.tileSetIndex = tileSetIndex;
+								newTile.tileSetTexture = texture;
+								newTile.uvStart = uvStart;
+								newTile.uvEnd = uvEnd;
 
-							if (tiles.count(x) > 0 && tiles.at(x).count(y) > 0)
-							{
-								tiles.at(x).at(y) = newTile;
+								if (tiles.count(x) > 0 && tiles.at(x).count(y) > 0)
+								{
+									tiles.at(x).at(y) = newTile;
+								}
+								else if (tiles.count(x) > 0 && tiles.at(x).count(y) == 0)
+								{
+									std::pair<int, Tile> newPair = { y, newTile };
+									tiles.at(x).emplace(newPair);
+								}
+								else if (tiles.count(x) == 0)
+								{
+									std::pair<int, Tile> newPair = { y, newTile };
+									std::map<int, Tile> yCoords;
+									yCoords.emplace(newPair);
+									tiles.emplace(x, yCoords);
+								}
 							}
-							else if (tiles.count(x) > 0 && tiles.at(x).count(y) == 0)
+							else
 							{
-								std::pair<int, Tile> newPair = { y, newTile };
-								tiles.at(x).emplace(newPair);
-							}
-							else if (tiles.count(x) == 0)
-							{
-								std::pair<int, Tile> newPair = { y, newTile };
-								std::map<int, Tile> yCoords;
-								yCoords.emplace(newPair);
-								tiles.emplace(x, yCoords);
+								LogError("TileSet: " + tileSetName + " could not be found when initializing prefab: " + prefab.name);
 							}
 						}
 					}

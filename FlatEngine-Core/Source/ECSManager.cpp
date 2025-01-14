@@ -607,7 +607,7 @@ namespace FlatEngine
 	{
 		// Remake colliderPairs
 		m_ColliderPairs.clear();
-		std::vector<BoxCollider*> colliders;
+		std::vector<Collider*> colliders;
 
 		// Collect BoxColliders into a simple to navigate vector
 		for (std::map<long, std::map<long, BoxCollider>>::iterator colliderMap = m_BoxColliders.begin(); colliderMap != m_BoxColliders.end();)
@@ -619,11 +619,20 @@ namespace FlatEngine
 			}
 			colliderMap++;
 		}
+		for (std::map<long, std::map<long, CircleCollider>>::iterator colliderMap = m_CircleColliders.begin(); colliderMap != m_CircleColliders.end();)
+		{
+			for (std::map<long, CircleCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
+			{
+				colliders.push_back(&innerMap->second);
+				innerMap++;
+			}
+			colliderMap++;
+		}
 	
 		int colliderCounter = 1;
-		for (std::vector<BoxCollider*>::iterator collider1 = colliders.begin(); collider1 != colliders.end(); collider1++)
+		for (std::vector<Collider*>::iterator collider1 = colliders.begin(); collider1 != colliders.end(); collider1++)
 		{
-			for (std::vector<BoxCollider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
+			for (std::vector<Collider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
 			{
 				if ((*collider1)->GetParentID() != (*collider2)->GetParentID())
 				{

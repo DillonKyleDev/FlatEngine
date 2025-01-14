@@ -714,7 +714,7 @@ namespace FlatGui
 			Vector2 scale = transform->GetScale();
 			//Vector2 baseScale = transform->GetBaseScale();
 			
-			if (sprite != nullptr && sprite->GetTexture() != nullptr)
+			if (sprite != nullptr && sprite->GetTexture() != nullptr && sprite->IsActive())
 			{
 				SDL_Texture* spriteTexture = sprite->GetTexture();
 				float spriteTextureWidth = (float)sprite->GetTextureWidth();

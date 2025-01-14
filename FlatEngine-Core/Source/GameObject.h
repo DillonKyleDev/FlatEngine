@@ -102,6 +102,7 @@ namespace FlatEngine
 		std::vector<BoxCollider*> GetBoxColliders();	
 		BoxCollider* GetBoxCollider();
 		std::vector<CircleCollider*> GetCircleColliders();
+		CircleCollider* GetCircleCollider();
 		CompositeCollider* GetCompositeCollider();	
 		TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		

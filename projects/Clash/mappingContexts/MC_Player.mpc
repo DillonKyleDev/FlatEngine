@@ -3,9 +3,11 @@
         {
             "Keyboard_a": "IA_MoveLeft",
             "Keyboard_d": "IA_MoveRight",
-            "Keyboard_f": "IA_Shoot",
+            "Keyboard_leftShift": "IA_Roll",
+            "Keyboard_m": "IA_LightAttack",
+            "Keyboard_n": "IA_HeavyAttack",
             "Keyboard_s": "IA_MoveBackward",
-            "Keyboard_space": "IA_Jump",
+            "Keyboard_space": "IA_Shoot",
             "Keyboard_w": "IA_MoveForward",
             "name": "MC_Player"
         }

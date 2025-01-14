@@ -132,16 +132,22 @@ namespace FlatGui
 						}
 					}
 
-					if (ImGui::MenuItem("BoxCollider"))
+					if (!focusedObject->HasComponent("BoxCollider"))
 					{
-						focusedObject->AddBoxCollider();
-						ImGui::CloseCurrentPopup();
-					}
+						if (ImGui::MenuItem("BoxCollider"))
+						{
+							focusedObject->AddBoxCollider();
+							ImGui::CloseCurrentPopup();
+						}
+					}		
 
-					if (ImGui::MenuItem("CircleCollider"))
+					if (!focusedObject->HasComponent("BoxCollider"))
 					{
-						focusedObject->AddCircleCollider();
-						ImGui::CloseCurrentPopup();
+						if (ImGui::MenuItem("CircleCollider"))
+						{
+							focusedObject->AddCircleCollider();
+							ImGui::CloseCurrentPopup();
+						}
 					}
 
 					if (!focusedObject->HasComponent("TileMap"))

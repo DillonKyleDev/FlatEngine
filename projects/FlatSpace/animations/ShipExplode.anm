@@ -1,0 +1,131 @@
+{
+    "animation": {
+        "_loop": false,
+        "animationProperties": {
+            "audio": [],
+            "boxCollider": [],
+            "button": [],
+            "camera": [],
+            "canvas": [],
+            "characterController": [],
+            "circleCollider": [],
+            "event": [
+                {
+                    "functionName": "Die",
+                    "parameters": [],
+                    "time": 373.9129333496094
+                }
+            ],
+            "rigidBody": [],
+            "script": [],
+            "sprite": [
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": true,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": false,
+                    "interpType": 0,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\explosion2\\explosion_1.png",
+                    "speed": 0.10000000149011612,
+                    "time": 0.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 5.0,
+                    "yOffset": 5.0
+                },
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": true,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": false,
+                    "interpType": 0,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\explosion2\\explosion_2.png",
+                    "speed": 0.10000000149011612,
+                    "time": 70.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 5.0,
+                    "yOffset": 5.0
+                },
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": true,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": false,
+                    "interpType": 0,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\explosion2\\explosion_3.png",
+                    "speed": 0.10000000149011612,
+                    "time": 140.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 5.0,
+                    "yOffset": 5.0
+                },
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": true,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": false,
+                    "interpType": 0,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\explosion2\\explosion_4.png",
+                    "speed": 0.10000000149011612,
+                    "time": 210.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 5.0,
+                    "yOffset": 5.0
+                },
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": true,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": false,
+                    "interpType": 0,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\explosion2\\explosion_5.png",
+                    "speed": 0.10000000149011612,
+                    "time": 280.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 5.0,
+                    "yOffset": 5.0
+                },
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": true,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": false,
+                    "interpType": 0,
+                    "path": "..\\projects\\FlatSpace\\images\\sprites\\explosion2\\explosion_6.png",
+                    "speed": 0.10000000149011612,
+                    "time": 352.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 5.0,
+                    "yOffset": 5.0
+                }
+            ],
+            "text": [],
+            "transform": []
+        },
+        "length": 0.0,
+        "name": "ShipExplode"
+    }
+}

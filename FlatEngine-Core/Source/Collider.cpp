@@ -139,7 +139,14 @@ namespace FlatEngine
 			{
 				collider1->AddCollidingObject(collider2);
 				// For Collider events - Fire OnActiveCollision while there is a collision happening
-				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
+				if (collider1->GetType() == ComponentTypes::T_BoxCollider)
+				{
+					CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
+				}
+				else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
+				{
+					CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
+				}
 			}
 			else
 			{
@@ -152,7 +159,14 @@ namespace FlatEngine
 			{
 				collider2->AddCollidingObject(collider1);
 				// For Collider events - Fire OnActiveCollision while there is a collision happening
-				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
+				if (collider2->GetType() == ComponentTypes::T_BoxCollider)
+				{
+					CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
+				}
+				else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
+				{
+					CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
+				}
 			}
 			else
 			{
@@ -950,7 +964,16 @@ namespace FlatEngine
 		}
 
 		// else fire it now. (upon initially adding the object to m_collidingObjects for the first time)
-		CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnBoxCollisionEnter);
+		if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_BoxCollider)
+		{
+			LogString("Colliding from box");
+			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnBoxCollisionEnter);
+		}
+		if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_CircleCollider)
+		{
+			LogString("Colliding from Circle");
+			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnCircleCollisionEnter);
+		}
 	}
 
 	std::vector<GameObject*> Collider::GetCollidingObjects()
@@ -979,6 +1002,10 @@ namespace FlatEngine
 				for (BoxCollider* boxCollider : collidedLastFrame->GetBoxColliders())
 				{
 					CallLuaCollisionFunction(GetParent(), boxCollider, LuaEventFunction::OnBoxCollisionLeave);
+				}
+				for (CircleCollider* circleCollider : collidedLastFrame->GetCircleColliders())
+				{
+					CallLuaCollisionFunction(GetParent(), circleCollider, LuaEventFunction::OnCircleCollisionLeave);
 				}
 			}
 		}

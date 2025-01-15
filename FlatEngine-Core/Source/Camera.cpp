@@ -116,7 +116,9 @@ namespace FlatEngine
 	void Camera::SetZoom(float newZoom)
 	{
 		if (newZoom >= 1 && newZoom <= 100)
+		{
 			m_zoom = newZoom;
+		}
 	}
 
 	float Camera::GetZoom()

@@ -36,7 +36,7 @@ namespace FlatGui
 				{
 					FL::RenderTextTableRow("##ColliderPairs", "FIRST", "SECOND");
 
-					for (std::pair<Collider*, Collider*> pair : FL::GetLoadedScene()->GetColliderPairs())
+					for (std::pair<Collider*, Collider*> pair : FL::F_ColliderPairs)
 					{
 						GameObject* col1Object = pair.first->GetParent();
 						GameObject* col2Object = pair.second->GetParent();

@@ -10290,6 +10290,19 @@
                     "tiles": [],
                     "type": "TileMap",
                     "width": 227
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "collisionAreas": [],
+                    "height": 34,
+                    "id": 173,
+                    "tileHeight": 16,
+                    "tileSets": [],
+                    "tileWidth": 16,
+                    "tiles": [],
+                    "type": "TileMap",
+                    "width": 227
                 }
             ],
             "id": 1,

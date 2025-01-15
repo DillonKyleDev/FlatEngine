@@ -36,7 +36,6 @@ namespace FlatEngine
 		};
 
 		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
 		return data;
 	}
 
@@ -44,7 +43,7 @@ namespace FlatEngine
 	{
 		m_b_isMoving = true;
 
-		if (GetParent()->HasComponent("Transform") && GetParent()->HasComponent("RigidBody"))
+		if (GetParent()->HasComponent("RigidBody"))
 		{
 			Vector2 pendingForces = Vector2(0, 0);
 			RigidBody* rigidBody = GetParent()->GetRigidBody();

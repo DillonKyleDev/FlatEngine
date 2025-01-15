@@ -23,7 +23,7 @@ namespace FlatEngine
 			m_b_windowResized = false;
 			m_windowWidth = 1920;
 			m_windowHeight = 1080;
-			m_directoryType = NoDir;  // Tells the engine where to look for the xxxDirectories.lua file containing important paths and dir locations
+			m_directoryType = NoDir;
 		}
 		~Application() {};
 

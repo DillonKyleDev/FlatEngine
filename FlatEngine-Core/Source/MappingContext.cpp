@@ -102,7 +102,7 @@ namespace FlatEngine {
 				m_inputsByAction.emplace(actionPair);
 			}
 		}
-		else
+		else if (m_inputsByBinding.count(keyBinding) > 0)
 		{
 			std::string oldActionName = m_inputsByBinding.at(keyBinding)->actionName;
 			m_inputsByBinding.erase(keyBinding);

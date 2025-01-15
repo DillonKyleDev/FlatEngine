@@ -64,7 +64,10 @@ namespace FlatEngine
     void TileSet::SetTexturePath(std::string texturePath)
     {
         m_texturePath = texturePath;
-        m_texture->LoadFromFile(m_texturePath);
+        if (m_texture != nullptr)
+        {
+            m_texture->LoadFromFile(m_texturePath);
+        }
         InitializeUVs();
     }
 
@@ -128,7 +131,7 @@ namespace FlatEngine
         m_tileSetIndices.clear();
         m_allTileUVs.clear();
 
-        if (m_tileWidth != 0 && m_tileHeight != 0 && m_texture->GetTexture() != nullptr)
+        if (m_tileWidth != 0 && m_tileHeight != 0 && m_texture != nullptr && m_texture->GetTexture() != nullptr)
         {
             int textureWidth = m_texture->GetWidth();
             int textureHeight = m_texture->GetHeight();

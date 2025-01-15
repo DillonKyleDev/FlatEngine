@@ -56,12 +56,12 @@ namespace FlatEngine
 
 	void Text::LoadText()
 	{
-		if (m_text != "" && m_font != nullptr && m_fontSize > 0)
+		if (m_text != "" && m_font != nullptr && m_fontSize > 0 && m_texture != nullptr)
 		{
 			m_texture->LoadFromRenderedText(m_text, m_white, m_font);
 			m_pivotOffset = Vector2((float)m_texture->GetWidth() / 2, (float)m_texture->GetHeight() / 2);
 		}
-		else 
+		else if (m_texture != nullptr)
 		{
 			if (m_font == nullptr)
 			{
@@ -103,7 +103,10 @@ namespace FlatEngine
 		{
 			TTF_CloseFont(m_font);
 			m_font = nullptr;
-			m_texture->FreeTexture();
+			if (m_texture != nullptr)
+			{
+				m_texture->FreeTexture();
+			}
 			LogError("Font not valid in \"" + GetParent()->GetName() + "\" Text component.");
 		}
 	}
@@ -181,7 +184,7 @@ namespace FlatEngine
 		}
 
 		m_pivotPoint = Pivot::PivotCenter;	
-		LogError("Pivot point string not valid. Try 'Pivot<Direction>': ie. PivotLeft, PivotRight, PivotCenter");
+		LogError("Pivot point string not valid. Use 'Pivot<Direction>': ie. PivotLeft, PivotRight, PivotCenter");
 		UpdatePivotOffset();
 	}
 
@@ -212,63 +215,66 @@ namespace FlatEngine
 
 	void Text::UpdatePivotOffset()
 	{
-		Vector2 centeredOffset = Vector2((float)m_texture->GetWidth() / 2, (float)m_texture->GetHeight() / 2);
+		if (m_texture != nullptr)
+		{
+			Vector2 centeredOffset = Vector2((float)m_texture->GetWidth() / 2, (float)m_texture->GetHeight() / 2);
 
-		switch (m_pivotPoint)
-		{
-		case Pivot::PivotCenter:
-		{
-			m_pivotOffset = centeredOffset;
-			break;
-		}
-		case Pivot::PivotLeft:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2), centeredOffset.y);
-			break;
-		}
-		case Pivot::PivotRight:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2), centeredOffset.y);
-			break;
-		}
-		case Pivot::PivotTop:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y - (m_texture->GetHeight() / 2));
-			break;
-		}
-		case Pivot::PivotBottom:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y + (m_texture->GetHeight() / 2));
-			break;
-		}
+			switch (m_pivotPoint)
+			{
+			case Pivot::PivotCenter:
+			{
+				m_pivotOffset = centeredOffset;
+				break;
+			}
+			case Pivot::PivotLeft:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2), centeredOffset.y);
+				break;
+			}
+			case Pivot::PivotRight:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2), centeredOffset.y);
+				break;
+			}
+			case Pivot::PivotTop:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y - (m_texture->GetHeight() / 2));
+				break;
+			}
+			case Pivot::PivotBottom:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y + (m_texture->GetHeight() / 2));
+				break;
+			}
 
-		case Pivot::PivotTopLeft:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2), centeredOffset.y - (m_texture->GetHeight() / 2));
-			break;
-		}
-		case Pivot::PivotTopRight:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2), centeredOffset.y - (m_texture->GetHeight() / 2));
-			break;
-		}
-		case Pivot::PivotBottomLeft:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2), centeredOffset.y + (m_texture->GetHeight() / 2));
-			break;
-		}
-		case Pivot::PivotBottomRight:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2), centeredOffset.y + (m_texture->GetHeight() / 2));
-			break;
-		}
-		default:
-		{
-			m_pivotOffset = m_offset;
-			break;
-		}
-		}
+			case Pivot::PivotTopLeft:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2), centeredOffset.y - (m_texture->GetHeight() / 2));
+				break;
+			}
+			case Pivot::PivotTopRight:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2), centeredOffset.y - (m_texture->GetHeight() / 2));
+				break;
+			}
+			case Pivot::PivotBottomLeft:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2), centeredOffset.y + (m_texture->GetHeight() / 2));
+				break;
+			}
+			case Pivot::PivotBottomRight:
+			{
+				m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2), centeredOffset.y + (m_texture->GetHeight() / 2));
+				break;
+			}
+			default:
+			{
+				m_pivotOffset = m_offset;
+				break;
+			}
+			}
 
-		m_offset = m_pivotOffset;
+			m_offset = m_pivotOffset;
+		}
 	}
 }

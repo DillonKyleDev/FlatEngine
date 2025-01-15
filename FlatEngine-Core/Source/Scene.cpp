@@ -135,7 +135,7 @@ namespace FlatEngine
 		}
 		for (GameObject *animPreviewObject : m_animatorPreviewObjects)
 		{
-			if (name == animPreviewObject->GetName())
+			if (animPreviewObject != nullptr && name == animPreviewObject->GetName())
 			{
 				return animPreviewObject;
 			}
@@ -175,7 +175,7 @@ namespace FlatEngine
 
 		if (objectToDelete != nullptr)
 		{
-			Scene::DeleteChildrenAndSelf(objectToDelete);
+			DeleteChildrenAndSelf(objectToDelete);
 		}
 	}
 
@@ -183,53 +183,56 @@ namespace FlatEngine
 	{
 		if (objectToDelete != nullptr)
 		{
-			Scene::DeleteChildrenAndSelf(objectToDelete);
+			DeleteChildrenAndSelf(objectToDelete);
 		}
 	}
 
 	// Recursive
 	void Scene::DeleteChildrenAndSelf(GameObject *objectToDelete)
 	{
-		long ID = objectToDelete->GetID();
-
-		if (F_primaryCamera != nullptr && F_primaryCamera->GetParentID() == objectToDelete->GetID())
+		if (objectToDelete != nullptr)
 		{
-			F_primaryCamera->SetPrimaryCamera(false);
-			F_primaryCamera = nullptr;
-		}
-		
-		if (objectToDelete->GetAnimation() != nullptr)
-		{
-			objectToDelete->GetAnimation()->StopAll();
-		}
+			long ID = objectToDelete->GetID();
 
-		for (Component* component : objectToDelete->GetComponents())
-		{
-			RemoveComponent(component);
-		}
+			if (F_primaryCamera != nullptr && F_primaryCamera->GetParentID() == objectToDelete->GetID())
+			{
+				F_primaryCamera->SetPrimaryCamera(false);
+				F_primaryCamera = nullptr;
+			}
 
-		long parentID = objectToDelete->GetParentID();
-		if (parentID != -1)
-		{
-			GetObjectByID(parentID)->RemoveChild(ID);
-		}
+			if (objectToDelete->GetAnimation() != nullptr)
+			{
+				objectToDelete->GetAnimation()->StopAll();
+			}
 
-		if (objectToDelete->HasChildren())
-		{
-			std::vector<long> childrenIDs = objectToDelete->GetChildren();
+			for (Component* component : objectToDelete->GetComponents())
+			{
+				RemoveComponent(component);
+			}
 
-			for (int i = 0; i < objectToDelete->GetChildren().size(); i++)
-			{				
-				GameObject *child = GetObjectByID(childrenIDs[i]);
-				if (child != nullptr)
+			long parentID = objectToDelete->GetParentID();
+			if (parentID != -1 && GetObjectByID(parentID) != nullptr)
+			{
+				GetObjectByID(parentID)->RemoveChild(ID);
+			}
+
+			if (objectToDelete->HasChildren())
+			{
+				std::vector<long> childrenIDs = objectToDelete->GetChildren();
+
+				for (int i = 0; i < objectToDelete->GetChildren().size(); i++)
 				{
-					Scene::DeleteChildrenAndSelf(child);
+					GameObject* child = GetObjectByID(childrenIDs[i]);
+					if (child != nullptr)
+					{
+						DeleteChildrenAndSelf(child);
+					}
 				}
 			}
-		}
 
-		m_sceneObjects.erase(ID);
-		m_freedGameObjectIDs.push_back(ID);
+			m_sceneObjects.erase(ID);
+			m_freedGameObjectIDs.push_back(ID);
+		}
 	}
 
 	void Scene::IncrementGameObjectID()
@@ -288,11 +291,6 @@ namespace FlatEngine
 		return ID;
 	}
 
-	std::vector<std::pair<Collider*, Collider*>> Scene::GetColliderPairs()
-	{
-		return m_ECSManager.GetColliderPairs();
-	}
-
 	void Scene::SetPersistantScene(bool b_persistant)
 	{
 		m_b_persistantScene = b_persistant;
@@ -304,15 +302,8 @@ namespace FlatEngine
 	}
 
 	void Scene::OnPrefabInstantiated()
-	{
-		m_ECSManager.UpdateColliderPairs();
-		FL::UpdateColliderPairs();
-	}
-
-	void Scene::UpdateColliderPairs()
-	{
-		m_ECSManager.UpdateColliderPairs();
-		FL::UpdateColliderPairs();
+	{		
+		UpdateColliderPairs();
 	}
 
 	void Scene::KeepNextComponentIDUpToDate(long ID)
@@ -415,10 +406,13 @@ namespace FlatEngine
 
 	void Scene::RemoveComponent(Component* component)
 	{
-		long ID = component->GetID();
-		if (m_ECSManager.RemoveComponent(component))
+		if (component != nullptr)
 		{
-			m_freedComponentIDs.push_back(ID);
+			long ID = component->GetID();
+			if (m_ECSManager.RemoveComponent(component))
+			{
+				m_freedComponentIDs.push_back(ID);
+			}
 		}
 	}
 

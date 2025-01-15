@@ -98,7 +98,6 @@ namespace FlatEngine
 			float yOffset = 0;
 			Vector4 tintColor = Vector4(1, 1, 1, 1);
 			bool b_instantTintChange = false;
-
 			bool b_pathAnimated = false;
 			bool b_scaleAnimated = false;
 			bool b_offsetAnimated = false;
@@ -114,6 +113,7 @@ namespace FlatEngine
 			bool b_isActive = true;
 		};
 		struct S_Canvas : public S_Property {
+			bool b_isActive = true;
 		};
 		struct S_Audio : public S_Property {
 			std::string soundName = "";	
@@ -126,7 +126,6 @@ namespace FlatEngine
 			bool b_instantTintChange = false;
 			float xOffset = 0;
 			float yOffset = 0;
-
 			bool b_fontPathAnimated = false;
 			bool b_textAnimated = false;
 			bool b_tintColorAnimated = false;

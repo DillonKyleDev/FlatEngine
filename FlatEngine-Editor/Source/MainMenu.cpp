@@ -9,6 +9,7 @@
 #include "Vector2.h"
 #include "PrefabManager.h"
 #include "SceneManager.h"
+#include "TagList.h"
 
 #include "imgui.h"
 
@@ -178,11 +179,11 @@ namespace FlatGui
 					FG_b_showLogger = !FG_b_showLogger;
 					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 				}
-				if (ImGui::MenuItem("Profiler", NULL, FG_b_showProfiler))
-				{
-					FG_b_showProfiler = !FG_b_showProfiler;
-					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
-				}
+				//if (ImGui::MenuItem("Profiler", NULL, FG_b_showProfiler))
+				//{
+				//	FG_b_showProfiler = !FG_b_showProfiler;
+				//	SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
+				//}
 				if (ImGui::MenuItem("Animator", NULL, FG_b_showAnimator))
 				{
 					FG_b_showAnimator = !FG_b_showAnimator;
@@ -314,13 +315,13 @@ namespace FlatGui
 						newObject->SetName("BoxCollider(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
-					//if (ImGui::MenuItem("CircleCollider"))
-					//{
-					//	GameObject* newObject = FL::CreateGameObject(-1);
-					//	newObject->AddCircleCollider();
-					//	newObject->SetName("CircleCollider(" + std::to_string(newObject->GetID()) + ")");
-					//	SetFocusedGameObjectID(newObject->GetID());
-					//}
+					if (ImGui::MenuItem("CircleCollider"))
+					{
+						GameObject* newObject = FL::CreateGameObject(-1);
+						newObject->AddCircleCollider();
+						newObject->SetName("CircleCollider(" + std::to_string(newObject->GetID()) + ")");
+						SetFocusedGameObjectID(newObject->GetID());
+					}
 					if (ImGui::MenuItem("TileMap"))
 					{
 						GameObject* newObject = FL::CreateGameObject(-1);
@@ -382,6 +383,24 @@ namespace FlatGui
 				if (ImGui::MenuItem("Reload Lua Textures"))
 				{
 					FL::F_AssetManager.CollectTextures();					
+				}
+				if (ImGui::MenuItem("Reload Tags"))
+				{
+					FL::F_AssetManager.CollectTags();
+					if (FL::GetLoadedScene() != nullptr)
+					{
+						for (std::map<long, GameObject>::iterator gameObject = FL::GetLoadedScene()->GetSceneObjects().begin(); gameObject != FL::GetLoadedScene()->GetSceneObjects().end(); gameObject++)
+						{
+							gameObject->second.GetTagList().UpdateAvailableTags();
+						}
+					}
+					if (FL::F_LoadedProject.GetPersistantGameObjectScene() != nullptr)
+					{
+						for (std::map<long, GameObject>::iterator gameObject = FL::F_LoadedProject.GetPersistantGameObjectScene()->GetSceneObjects().begin(); gameObject != FL::F_LoadedProject.GetPersistantGameObjectScene()->GetSceneObjects().end(); gameObject++)
+						{
+							gameObject->second.GetTagList().UpdateAvailableTags();
+						}
+					}
 				}
 				ImGui::Separator();
 				if (ImGui::BeginMenu("Widgets"))

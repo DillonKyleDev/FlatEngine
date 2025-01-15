@@ -41,9 +41,7 @@ namespace FlatEngine
 		m_BoxColliders = std::map<long, std::map<long, BoxCollider>>();
 		m_CircleColliders = std::map<long, std::map<long, CircleCollider>>();
 		m_RigidBodies = std::map<long, RigidBody>();
-		m_CharacterControllers = std::map<long, CharacterController>();
-
-		m_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
+		m_CharacterControllers = std::map<long, CharacterController>();		
 	}
 
 	ECSManager::~ECSManager()
@@ -67,8 +65,7 @@ namespace FlatEngine
 		m_CircleColliders.clear();
 		m_RigidBodies.clear();
 		m_CharacterControllers.clear();
-		m_TileMaps.clear();
-		m_ColliderPairs.clear();
+		m_TileMaps.clear();		
 	}
 
 	Transform* ECSManager::AddTransform(Transform transform, long ownerID)
@@ -148,9 +145,8 @@ namespace FlatEngine
 
 		// Update m_ColliderPairs
 		if (GetObjectByID(ownerID) != nullptr) // If BoxCollider added to object, but object not yet added to Scene, (will be caught in Scene::AddSceneObject())
-		{
+		{	
 			UpdateColliderPairs();
-			FL::UpdateColliderPairs();
 		}
 
 		return &m_BoxColliders.at(ownerID).at(collider.GetID());
@@ -173,9 +169,8 @@ namespace FlatEngine
 
 		// Update m_ColliderPairs
 		if (GetObjectByID(ownerID) != nullptr) // If CircleCollider added to object, but object not yet added to Scene, (will be caught in Scene::AddSceneObject())
-		{
+		{			
 			UpdateColliderPairs();
-			FL::UpdateColliderPairs();
 		}
 
 		return &m_CircleColliders.at(ownerID).at(collider.GetID());
@@ -215,22 +210,37 @@ namespace FlatEngine
 	Transform* ECSManager::GetTransformByOwner(long ownerID)
 	{
 		if (m_Transforms.count(ownerID))
+		{
 			return &m_Transforms.at(ownerID);
-		else return nullptr;
+		}
+		else 
+		{
+			return nullptr;
+		}
 	}
 
 	Sprite* ECSManager::GetSpriteByOwner(long ownerID)
 	{
 		if (m_Sprites.count(ownerID))
+		{
 			return &m_Sprites.at(ownerID);
-		else return nullptr;
+		}
+		else 
+		{
+			return nullptr;
+		}
 	}
 
 	Camera* ECSManager::GetCameraByOwner(long ownerID)
 	{
 		if (m_Cameras.count(ownerID))
+		{
 			return &m_Cameras.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	std::vector<Script*> ECSManager::GetScriptsByOwner(long ownerID)
@@ -250,29 +260,49 @@ namespace FlatEngine
 	Canvas* ECSManager::GetCanvasByOwner(long ownerID)
 	{
 		if (m_Canvases.count(ownerID))
+		{
 			return &m_Canvases.at(ownerID);
-		else return nullptr;
+		}
+		else 
+		{
+			return nullptr;
+		}
 	}
 
 	Audio* ECSManager::GetAudioByOwner(long ownerID)
 	{
 		if (m_Audios.count(ownerID))
+		{
 			return &m_Audios.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	Text* ECSManager::GetTextByOwner(long ownerID)
 	{
 		if (m_Texts.count(ownerID))
+		{
 			return &m_Texts.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	CompositeCollider* ECSManager::GetCompositeColliderByOwner(long ownerID)
 	{
 		if (m_CompositeColliders.count(ownerID))
+		{
 			return &m_CompositeColliders.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	std::vector<BoxCollider*> ECSManager::GetBoxCollidersByOwner(long ownerID)
@@ -306,39 +336,63 @@ namespace FlatEngine
 	Animation* ECSManager::GetAnimationByOwner(long ownerID)
 	{
 		if (m_Animations.count(ownerID))
+		{
 			return &m_Animations.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	Button* ECSManager::GetButtonByOwner(long ownerID)
 	{
 		if (m_Buttons.count(ownerID))
+		{
 			return &m_Buttons.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	RigidBody* ECSManager::GetRigidBodyByOwner(long ownerID)
 	{
 		if (m_RigidBodies.count(ownerID))
+		{
 			return &m_RigidBodies.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	CharacterController* ECSManager::GetCharacterControllerByOwner(long ownerID)
 	{
 		if (m_CharacterControllers.count(ownerID))
+		{
 			return &m_CharacterControllers.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	TileMap* ECSManager::GetTileMapByOwner(long ownerID)
 	{
 		if (m_TileMaps.count(ownerID))
+		{
 			return &m_TileMaps.at(ownerID);
-		else return nullptr;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
-
-	// Remove Components
+	
 	bool ECSManager::RemoveComponent(Component *component)
 	{
 		long ownerID = component->GetParentID();
@@ -415,7 +469,9 @@ namespace FlatEngine
 			return RemoveTileMap(ownerID);
 		}
 		else
+		{
 			return false;
+		}
 	}
 
 	bool ECSManager::RemoveTransform(long ownerID)
@@ -603,81 +659,6 @@ namespace FlatEngine
 		return b_success;
 	}
 
-	void ECSManager::UpdateColliderPairs()
-	{
-		// Remake colliderPairs
-		m_ColliderPairs.clear();
-		std::vector<Collider*> colliders;
-
-		// Collect BoxColliders into a simple to navigate vector
-		for (std::map<long, std::map<long, BoxCollider>>::iterator colliderMap = m_BoxColliders.begin(); colliderMap != m_BoxColliders.end();)
-		{
-			for (std::map<long, BoxCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
-			{
-				colliders.push_back(&innerMap->second);
-				innerMap++;
-			}
-			colliderMap++;
-		}
-		for (std::map<long, std::map<long, CircleCollider>>::iterator colliderMap = m_CircleColliders.begin(); colliderMap != m_CircleColliders.end();)
-		{
-			for (std::map<long, CircleCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
-			{
-				colliders.push_back(&innerMap->second);
-				innerMap++;
-			}
-			colliderMap++;
-		}
-	
-		int colliderCounter = 1;
-		for (std::vector<Collider*>::iterator collider1 = colliders.begin(); collider1 != colliders.end(); collider1++)
-		{
-			for (std::vector<Collider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
-			{
-				if ((*collider1)->GetParentID() != (*collider2)->GetParentID())
-				{
-					TagList coll1TagList = (*collider1)->GetParent()->GetTagList();
-					TagList coll2TagList = (*collider2)->GetParent()->GetTagList();
-
-					std::vector<std::string> coll1Ignored = coll1TagList.GetIgnoredTags();
-					std::vector<std::string> coll2Ignored = coll2TagList.GetIgnoredTags();
-
-					bool _ignorePair = false;
-
-					for (std::string ignoredTag : coll1Ignored)
-					{
-						if (coll2TagList.HasTag(ignoredTag))
-						{
-							_ignorePair = true;
-							break;
-						}
-					}
-					if (!_ignorePair)
-					{
-						for (std::string ignoredTag : coll2Ignored)
-						{
-							if (coll1TagList.HasTag(ignoredTag))
-							{
-								_ignorePair = true;
-								break;
-							}
-						}
-					}
-					if (!_ignorePair)
-					{
-						std::pair<Collider*, Collider*> newPair = { (*collider1), (*collider2) };
-						m_ColliderPairs.push_back(newPair);
-					}
-				}
-			}
-		}
-	}
-
-	std::vector<std::pair<Collider*, Collider*>> ECSManager::GetColliderPairs()
-	{
-		return m_ColliderPairs;
-	}
-
 	std::map<long, Transform> &ECSManager::GetTransforms()
 	{
 		return m_Transforms;
@@ -719,8 +700,7 @@ namespace FlatEngine
 		return m_Texts;
 	}
 	std::vector<Collider*> ECSManager::GetColliders()
-	{
-		// Collect all colliders when needed so we don't have to keep an member variable updated
+	{		
 		std::vector<Collider*> colliders;
 		for (std::pair<long, CompositeCollider> collider : m_CompositeColliders)
 		{

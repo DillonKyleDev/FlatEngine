@@ -315,7 +315,8 @@ namespace FlatEngine
 
 						F_AssetManager.CollectDirectories(dirType);			   // Collect important directories and file paths from Directories.lua
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
-						F_AssetManager.CollectTextures();				       // Collect and create Texture icons from Textures.lua
+						F_AssetManager.CollectTextures();	                   // Collect and create Texture icons from Textures.lua
+						F_AssetManager.CollectTags();
 						SetupImGui();										   // Setup ImGui for use in the prompt for Directories.lua location
 						SetImGuiColors();									   // Use the collected colors to style ImGui elements
 						RetrieveLuaScriptPaths();
@@ -2610,43 +2611,32 @@ namespace FlatEngine
 		std::map <std::string, bool> tagList = currentObject.GetTagList().GetTagsMap();
 		std::map <std::string, bool> ignoreTagList = currentObject.GetTagList().GetIgnoreTagsMap();
 
-		json tagsObjectJson = json::object({
-			{ "Player", tagList.at("Player") },
-			{ "Enemy", tagList.at("Enemy") },
-			{ "Npc", tagList.at("Npc") },
-			{ "Terrain", tagList.at("Terrain") },
-			{ "PlayerTrigger", tagList.at("PlayerTrigger") },
-			{ "EnemyTrigger", tagList.at("EnemyTrigger") },
-			{ "NpcTrigger", tagList.at("NpcTrigger") },
-			{ "EnvironmentalTrigger", tagList.at("EnvironmentalTrigger") },
-			{ "TerrainTrigger", tagList.at("TerrainTrigger") },
-			{ "PlayerDamage", tagList.at("PlayerDamage") },
-			{ "EnemyDamage", tagList.at("EnemyDamage") },
-			{ "EnvironmentalDamage", tagList.at("EnvironmentalDamage") },
-			{ "Projectile", tagList.at("Projectile") },
-			{ "InteractableItem", tagList.at("InteractableItem") },
-			{ "InteractableObject", tagList.at("InteractableObject") },
-			{ "Item", tagList.at("Item") },
-		});
-
-		json ignoreTagsObjectJson = json::object({
-			{ "Player", ignoreTagList.at("Player") },
-			{ "Enemy", ignoreTagList.at("Enemy") },
-			{ "Npc", ignoreTagList.at("Npc") },
-			{ "Terrain", ignoreTagList.at("Terrain") },
-			{ "PlayerTrigger", ignoreTagList.at("PlayerTrigger") },
-			{ "EnemyTrigger", ignoreTagList.at("EnemyTrigger") },
-			{ "NpcTrigger", ignoreTagList.at("NpcTrigger") },
-			{ "EnvironmentalTrigger", ignoreTagList.at("EnvironmentalTrigger") },
-			{ "TerrainTrigger", ignoreTagList.at("TerrainTrigger") },
-			{ "PlayerDamage", ignoreTagList.at("PlayerDamage") },
-			{ "EnemyDamage", ignoreTagList.at("EnemyDamage") },
-			{ "EnvironmentalDamage", ignoreTagList.at("EnvironmentalDamage") },
-			{ "Projectile", ignoreTagList.at("Projectile") },
-			{ "InteractableItem", ignoreTagList.at("InteractableItem") },
-			{ "InteractableObject", ignoreTagList.at("InteractableObject") },
-			{ "Item", ignoreTagList.at("Item") },
-		});
+		json tagsObjectArray = json::array();
+		for (std::map<std::string, bool>::iterator tagIter = tagList.begin(); tagIter != tagList.end(); tagIter++)
+		{
+			// For making sure we don't save any stale tags that aren't available in the Tags.lua file
+			for (std::string availableTag : F_TagsAvailable)
+			{
+				if (tagIter->first == availableTag)
+				{
+					json tag = json::object({ { tagIter->first, tagIter->second } });
+					tagsObjectArray.push_back(tag);
+				}
+			}
+		}
+		json ignoreTagsObjectArray = json::array();
+		for (std::map<std::string, bool>::iterator tagIter = ignoreTagList.begin(); tagIter != ignoreTagList.end(); tagIter++)
+		{
+			// For making sure we don't save any stale ignore tags that aren't available in the Tags.lua file
+			for (std::string availableTag : F_TagsAvailable)
+			{
+				if (tagIter->first == availableTag)
+				{
+					json ignore = json::object({ { tagIter->first, tagIter->second } });
+					ignoreTagsObjectArray.push_back(ignore);
+				}
+			}
+		}
 		
 		std::string objectName = currentObject.GetName();
 		Vector2 spawnLocation = currentObject.GetPrefabSpawnLocation();
@@ -2667,8 +2657,8 @@ namespace FlatEngine
 			{ "parent", currentObject.GetParentID() },
 			{ "children", childrenArray },
 			{ "components", componentsArray },
-			{ "tags", tagsObjectJson },
-			{ "ignoreTags", ignoreTagsObjectJson },
+			{ "tags", tagsObjectArray },
+			{ "ignoreTags", ignoreTagsObjectArray },
 		});
 
 		return gameObjectJson;
@@ -2891,50 +2881,28 @@ namespace FlatEngine
 			loadedObject->SetName(objectName);
 			loadedObject->SetActive(b_isActive);
 
-			// TagList
-			bool b_updateColliderPairs = false;
+			// TagList			
 			if (JsonContains(objectJson, "tags", objectName))
 			{
-				json tagsObj = objectJson["tags"];
-				tags.SetTag("Player", CheckJsonBool(tagsObj, "Player", objectName), b_updateColliderPairs);
-				tags.SetTag("Enemy", CheckJsonBool(tagsObj, "Enemy", objectName), b_updateColliderPairs);
-				tags.SetTag("Npc", CheckJsonBool(tagsObj, "Npc", objectName), b_updateColliderPairs);
-				tags.SetTag("Terrain", CheckJsonBool(tagsObj, "Terrain", objectName), b_updateColliderPairs);
-				tags.SetTag("PlayerTrigger", CheckJsonBool(tagsObj, "PlayerTrigger", objectName), b_updateColliderPairs);
-				tags.SetTag("EnemyTrigger", CheckJsonBool(tagsObj, "EnemyTrigger", objectName), b_updateColliderPairs);
-				tags.SetTag("NpcTrigger", CheckJsonBool(tagsObj, "NpcTrigger", objectName), b_updateColliderPairs);
-				tags.SetTag("EnvironmentalTrigger", CheckJsonBool(tagsObj, "EnvironmentalTrigger", objectName), b_updateColliderPairs);
-				tags.SetTag("TerrainTrigger", CheckJsonBool(tagsObj, "TerrainTrigger", objectName), b_updateColliderPairs);
-				tags.SetTag("Projectile", CheckJsonBool(tagsObj, "Projectile", objectName), b_updateColliderPairs);
-				tags.SetTag("PlayerDamage", CheckJsonBool(tagsObj, "PlayerDamage", objectName), b_updateColliderPairs);
-				tags.SetTag("EnemyDamage", CheckJsonBool(tagsObj, "EnemyDamage", objectName), b_updateColliderPairs);
-				tags.SetTag("EnvironmentalDamage", CheckJsonBool(tagsObj, "EnvironmentalDamage", objectName), b_updateColliderPairs);
-				tags.SetTag("Projectile", CheckJsonBool(tagsObj, "Projectile", objectName), b_updateColliderPairs);
-				tags.SetTag("InteractableItem", CheckJsonBool(tagsObj, "InteractableItem", objectName), b_updateColliderPairs);
-				tags.SetTag("InteractableObject", CheckJsonBool(tagsObj, "InteractableObject", objectName), b_updateColliderPairs);
-				tags.SetTag("Item", CheckJsonBool(tagsObj, "Item", objectName), b_updateColliderPairs);
+				json tagsJson = objectJson["tags"];
+				for (json jsonTag : tagsJson)
+				{
+					std::string tag = jsonTag.items().begin().key();
+					bool b_hasTag = jsonTag.items().begin().value();
+					tags.SetTag(tag, b_hasTag);
+				}
 			}
 			if (JsonContains(objectJson, "ignoreTags", objectName))
 			{
-				json ignoreTags = objectJson["ignoreTags"];
-				tags.SetIgnore("Player", CheckJsonBool(ignoreTags, "Player", objectName), b_updateColliderPairs);
-				tags.SetIgnore("Enemy", CheckJsonBool(ignoreTags, "Enemy", objectName), b_updateColliderPairs);
-				tags.SetIgnore("Npc", CheckJsonBool(ignoreTags, "Npc", objectName), b_updateColliderPairs);
-				tags.SetIgnore("Terrain", CheckJsonBool(ignoreTags, "Terrain", objectName), b_updateColliderPairs);
-				tags.SetIgnore("PlayerTrigger", CheckJsonBool(ignoreTags, "PlayerTrigger", objectName), b_updateColliderPairs);
-				tags.SetIgnore("EnemyTrigger", CheckJsonBool(ignoreTags, "EnemyTrigger", objectName), b_updateColliderPairs);
-				tags.SetIgnore("NpcTrigger", CheckJsonBool(ignoreTags, "NpcTrigger", objectName), b_updateColliderPairs);
-				tags.SetIgnore("EnvironmentalTrigger", CheckJsonBool(ignoreTags, "EnvironmentalTrigger", objectName), b_updateColliderPairs);
-				tags.SetIgnore("TerrainTrigger", CheckJsonBool(ignoreTags, "TerrainTrigger", objectName), b_updateColliderPairs);
-				tags.SetIgnore("Projectile", CheckJsonBool(ignoreTags, "Projectile", objectName), b_updateColliderPairs);
-				tags.SetIgnore("PlayerDamage", CheckJsonBool(ignoreTags, "PlayerDamage", objectName), b_updateColliderPairs);
-				tags.SetIgnore("EnemyDamage", CheckJsonBool(ignoreTags, "EnemyDamage", objectName), b_updateColliderPairs);
-				tags.SetIgnore("EnvironmentalDamage", CheckJsonBool(ignoreTags, "EnvironmentalDamage", objectName), b_updateColliderPairs);
-				tags.SetIgnore("Projectile", CheckJsonBool(ignoreTags, "Projectile", objectName), b_updateColliderPairs);
-				tags.SetIgnore("InteractableItem", CheckJsonBool(ignoreTags, "InteractableItem", objectName), b_updateColliderPairs);
-				tags.SetIgnore("InteractableObject", CheckJsonBool(ignoreTags, "InteractableObject", objectName), b_updateColliderPairs);
-				tags.SetIgnore("Item", CheckJsonBool(ignoreTags, "Item", objectName), b_updateColliderPairs);
+				json ignoreTagsJson = objectJson["ignoreTags"];
+				for (json jsonIgnoreTag : ignoreTagsJson)
+				{
+					std::string ignoreTag = jsonIgnoreTag.items().begin().key();
+					bool b_ignoresTag = jsonIgnoreTag.items().begin().value();
+					tags.SetIgnore(ignoreTag, b_ignoresTag);
+				}
 			}
+
 			loadedObject->SetTagList(tags);
 
 			float objectRotation = 0;

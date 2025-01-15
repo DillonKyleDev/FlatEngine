@@ -229,10 +229,10 @@ namespace FlatGui
 					{
 						FL::RenderTextTableRow("TagsTableHeaders", "Tag", "Has", "Ignore");
 
-						for (std::pair<std::string, bool> tag : tagList.GetTagsMap())
+						for (std::string tag : FL::F_TagsAvailable)
 						{
-							std::string tableRowId = tag.first + "TagCheckboxTableRow";
-							RenderTagListTableRow(tableRowId.c_str(), tag.first, tagList);
+							std::string tableRowId = tag + "TagCheckboxTableRow";
+							RenderTagListTableRow(tableRowId.c_str(), tag, tagList);
 						}
 
 						FL::PopTable();

@@ -118,7 +118,7 @@ namespace FlatEngine
 		std::vector<BoxCollider*> boxColliders = GetParent()->GetBoxColliders();
 		for (BoxCollider* boxCollider : boxColliders)
 		{
-			if ((vel.x > 0 && (!boxCollider->m_b_isCollidingRight || !boxCollider->m_b_rightCollisionStatic) || vel.x < 0 && (!boxCollider->m_b_isCollidingLeft || !boxCollider->m_b_leftCollisionStatic)))
+			if (boxCollider != nullptr && (vel.x > 0 && (!boxCollider->m_b_isCollidingRight || !boxCollider->m_b_rightCollisionStatic) || vel.x < 0 && (!boxCollider->m_b_isCollidingLeft || !boxCollider->m_b_leftCollisionStatic)))
 			{
 				m_pendingForces.x += vel.x;
 			}
@@ -243,23 +243,28 @@ namespace FlatEngine
 		
 		for (BoxCollider* boxCollider : boxColliders)
 		{
-			Vector2 scale = Vector2(1, 1);
-			Transform* transform = boxCollider->GetParent()->GetTransform();
-			if (transform != nullptr)
+			if (boxCollider != nullptr)
 			{
-				scale = transform->GetScale();
+				Vector2 scale = Vector2(1, 1);
+				Transform* transform = boxCollider->GetParent()->GetTransform();
+				if (transform != nullptr)
+				{
+					scale = transform->GetScale();
+				}
+
+				float halfWidth = boxCollider->GetActiveWidth() / 2 * scale.x;
+				float halfHeight = boxCollider->GetActiveHeight() / 2 * scale.y;
+
+				ApplyCollisionForce(boxCollider, halfWidth, halfHeight);
 			}
-
-			float halfWidth = boxCollider->GetActiveWidth() / 2 * scale.x;
-			float halfHeight = boxCollider->GetActiveHeight() / 2 * scale.y;
-
-			ApplyCollisionForce(boxCollider, halfWidth, halfHeight);
 		}		
 		for (CircleCollider* circleCollider : circleColliders)
 		{
-			float activeRadius = circleCollider->GetActiveRadiusGrid();			
-
-			ApplyCollisionForce(circleCollider, activeRadius, activeRadius);
+			if (circleCollider != nullptr)
+			{
+				float activeRadius = circleCollider->GetActiveRadiusGrid();
+				ApplyCollisionForce(circleCollider, activeRadius, activeRadius);
+			}
 		}
 	}
 
@@ -593,7 +598,9 @@ namespace FlatEngine
 				float height = (float)sprite->GetTextureHeight() / 10;
 				float radius = (width + height) / 2; // rough estimate
 				if (width != 0 && height != 0)
+				{
 					m_I = 2 * m_mass / 5 * radius * radius;
+				}
 			}
 		}
 

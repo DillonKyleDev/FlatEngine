@@ -83,9 +83,7 @@ namespace FlatEngine
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
-		void UpdateColliderPairs();
-
-		std::map<long, Transform> &GetTransforms();
+		std::map<long, Transform>& GetTransforms();
 		std::map<long, Sprite>& GetSprites();
 		std::map<long, Camera>& GetCameras();
 		std::map<long, std::map<long, Script>>& GetScripts();
@@ -97,12 +95,11 @@ namespace FlatEngine
 		std::map<long, Text>& GetTexts();
 		std::vector<Collider*> GetColliders();
 		std::map<long, CompositeCollider>& GetCompositeColliders();
-		std::map<long, std::map<long, BoxCollider>> &GetBoxColliders();
+		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
 		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
 		std::map<long, RigidBody>& GetRigidBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
-		std::map<long, TileMap>& GetTileMaps();
-		std::vector<std::pair<Collider*, Collider*>> GetColliderPairs();
+		std::map<long, TileMap>& GetTileMaps();		
 
 	private:
 		std::map<long, Transform> m_Transforms;
@@ -120,8 +117,6 @@ namespace FlatEngine
 		std::map<long, std::map<long, CircleCollider>> m_CircleColliders;
 		std::map<long, RigidBody> m_RigidBodies;
 		std::map<long, CharacterController> m_CharacterControllers;
-		std::map<long, TileMap> m_TileMaps;
-
-		std::vector<std::pair<Collider*, Collider*>> m_ColliderPairs;
+		std::map<long, TileMap> m_TileMaps;		
 	};
 }

@@ -488,18 +488,14 @@ namespace FlatEngine
 	{
 		std::string prefabName = GetFilenameFromPath(path);
 
-		// Declare file and input stream
 		std::ofstream file_obj;
 		std::ifstream ifstream(path);
 
-		// Delete old contents of the file
 		file_obj.open(path, std::ofstream::out | std::ofstream::trunc);
 		file_obj.close();
 
-		// Opening file in append mode
 		file_obj.open(path, std::ios::app);
 
-		// Array that will hold our gameObjectCheckJson objects
 		json prefabObjectJsonArray;
 
 		gameObject.SetName(prefabName);
@@ -507,24 +503,17 @@ namespace FlatEngine
 		gameObject.SetPrefabName("");
 		gameObject.SetPrefabSpawnLocation(Vector2(0, 0));
 
-		// Push the parent
 		prefabObjectJsonArray.push_back(CreateJsonFromObject(gameObject));
 
-		// Push the children
 		std::vector<long> childIDs = gameObject.GetChildren();
 		for (int i = 0; i < childIDs.size(); i++)
 		{
-			// Add the gameObjectJson to the prefabObjectJsonArray
 			prefabObjectJsonArray.push_back(CreateJsonFromObject(*GetObjectByID(childIDs[i])));
 		}
 
-		// Recreate the GameObjectJson object and add the array as the content
 		json prefabObject = json::object({ { "Prefab", prefabObjectJsonArray }, { "Name", prefabName } });
 
-		// Add the GameObjects object contents to the file
 		file_obj << prefabObject.dump(4).c_str() << std::endl;
-
-		// Close the file
 		file_obj.close();
 
 		AddPrefab(path);
@@ -550,7 +539,6 @@ namespace FlatEngine
 				}
 			}
 
-			// Add pair to m_prefabs
 			if (m_prefabs.count(prefabJson["Name"]))
 			{
 				m_prefabs.at(prefabJson["Name"]) = prefab;

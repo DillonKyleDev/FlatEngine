@@ -3,43 +3,14 @@
 #include "GameLoop.h"
 #include "Scene.h"
 
+
 namespace FlatEngine 
 {
+	std::vector<std::string> F_TagsAvailable = std::vector<std::string>();
+
 	TagList::TagList()
 	{
-		m_tags.emplace("Player", false);
-		m_tags.emplace("Enemy", false);
-		m_tags.emplace("Npc", false);
-		m_tags.emplace("Terrain", false);
-		m_tags.emplace("PlayerTrigger", false);
-		m_tags.emplace("EnemyTrigger", false);
-		m_tags.emplace("NpcTrigger", false);
-		m_tags.emplace("EnvironmentalTrigger", false);
-		m_tags.emplace("TerrainTrigger", false);
-		m_tags.emplace("PlayerDamage", false);
-		m_tags.emplace("EnemyDamage", false);
-		m_tags.emplace("EnvironmentalDamage", false);
-		m_tags.emplace("Projectile", false);
-		m_tags.emplace("InteractableItem", false);
-		m_tags.emplace("InteractableObject", false);
-		m_tags.emplace("Item", false);
-
-		m_ignoreTags.emplace("Player", false);
-		m_ignoreTags.emplace("Enemy", false);
-		m_ignoreTags.emplace("Npc", false);
-		m_ignoreTags.emplace("Terrain", false);
-		m_ignoreTags.emplace("PlayerTrigger", false);
-		m_ignoreTags.emplace("EnemyTrigger", false);
-		m_ignoreTags.emplace("NpcTrigger", false);
-		m_ignoreTags.emplace("EnvironmentalTrigger", false);
-		m_ignoreTags.emplace("TerrainTrigger", false);
-		m_ignoreTags.emplace("PlayerDamage", false);
-		m_ignoreTags.emplace("EnemyDamage", false);
-		m_ignoreTags.emplace("EnvironmentalDamage", false);
-		m_ignoreTags.emplace("Projectile", false);
-		m_ignoreTags.emplace("InteractableItem", false);
-		m_ignoreTags.emplace("InteractableObject", false);
-		m_ignoreTags.emplace("Item", false);
+		UpdateAvailableTags();
 	}
 
 	TagList::TagList(TagList* toCopy)
@@ -48,14 +19,34 @@ namespace FlatEngine
 		for (iterator = toCopy->m_tags.begin(); iterator != toCopy->m_tags.end(); iterator++)
 		{
 			if (m_tags.count(iterator->first) > 0)
+			{
 				m_tags.at(iterator->first) = iterator->second;
+			}
 			else
+			{
 				m_tags.emplace(iterator->first, iterator->second);
+			}
 		}
 	}
 
 	TagList::~TagList()
 	{
+	}
+
+
+	void TagList::UpdateAvailableTags()
+	{
+		for (std::string tag : F_TagsAvailable)
+		{
+			if (m_tags.count(tag) == 0)
+			{
+				m_tags.emplace(tag, false);
+			}
+			if (m_ignoreTags.count(tag) == 0)
+			{
+				m_ignoreTags.emplace(tag, false);
+			}
+		}
 	}
 
 	void TagList::SetTag(std::string tag, bool b_value, bool b_updateColliderPairs)
@@ -67,7 +58,7 @@ namespace FlatEngine
 
 		if (b_updateColliderPairs)
 		{
-			GetLoadedScene()->UpdateColliderPairs();
+			UpdateColliderPairs();
 		}
 	}
 
@@ -77,7 +68,7 @@ namespace FlatEngine
 		{
 			m_tags.at(tag) = !m_tags.at(tag);
 		}
-		GetLoadedScene()->UpdateColliderPairs();
+		UpdateColliderPairs();
 	}
 
 	bool TagList::HasTag(std::string tag)
@@ -101,7 +92,7 @@ namespace FlatEngine
 
 		if (b_updateColliderPairs)
 		{
-			GetLoadedScene()->UpdateColliderPairs();
+			UpdateColliderPairs();
 		}
 	}
 
@@ -111,7 +102,7 @@ namespace FlatEngine
 		{
 			m_ignoreTags.at(tag) = !m_ignoreTags.at(tag);
 		}
-		GetLoadedScene()->UpdateColliderPairs();
+		UpdateColliderPairs();
 	}
 
 	bool TagList::IgnoresTag(std::string tag)

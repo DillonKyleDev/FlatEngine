@@ -24,7 +24,7 @@ namespace FlatEngine
 		~Audio();
 		std::string GetData();
 
-		std::vector<SoundData> &GetSounds();
+		std::vector<SoundData>& GetSounds();
 		std::string GetPath(std::string soundName);
 		bool ContainsName(std::string soundName);
 		void SetPath(std::string soundName, std::string newPath);
@@ -40,7 +40,7 @@ namespace FlatEngine
 		void Play(std::string soundName, int channel = -1);
 		void Pause(std::string soundName, int channel = -1);
 		void Stop(std::string soundName, int channel = -1);
-		// Lua function wrappers because optional parameters are not allowed in Lua
+		// Lua function wrappers because default parameters are not allowed in Lua
 		void PlaySound(std::string soundName);
 		void PauseSound(std::string soundName);
 		void StopSound(std::string soundName);

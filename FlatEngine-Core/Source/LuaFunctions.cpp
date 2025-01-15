@@ -86,6 +86,10 @@ namespace FlatEngine
 		{
 			return CreateGameObject(parentID);
 		};
+		F_Lua["CreateGameObject"] = []()
+		{
+			return CreateGameObject(-1);
+		};
 		F_Lua["CreateStringVector"] = []()
 		{
 			return CreateStringVector();
@@ -318,10 +322,6 @@ namespace FlatEngine
 			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
 			LogLong(value, "", prefix);
 		};
-		F_Lua["CloseProgram"] = []()
-		{
-			F_b_closeProgramQueued = true;
-		};
 		F_Lua["GetMappingContext"] = [](std::string contextName)
 		{
 			return GetMappingContext(contextName);
@@ -338,6 +338,10 @@ namespace FlatEngine
 
 			return newObject;
 		};
+		F_Lua["CloseProgram"] = []()
+			{
+				F_b_closeProgramQueued = true;
+			};
 		F_Lua["SceneDrawLine"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
@@ -449,12 +453,11 @@ namespace FlatEngine
 			"GetCanvas", &GameObject::GetCanvas,
 			"GetText", &GameObject::GetText,
 			"GetCharacterController", &GameObject::GetCharacterController,
-			"GetRigidBody", &GameObject::GetRigidBody,
-			//"GetBoxColliders", &GameObject::GetBoxColliders,
-			"GetBoxCollider", &GameObject::GetBoxCollider,
-			//"GetBoxColliders", &GameObject::GetCircleColliders,
+			"GetRigidBody", &GameObject::GetRigidBody,			
+			"GetBoxCollider", &GameObject::GetBoxCollider,			
 			"GetCircleCollider", &GameObject::GetCircleCollider,
 			"GetTileMap", &GameObject::GetTileMap,
+			
 			"AddSprite", &GameObject::AddSpriteLua,
 			"AddScript", &GameObject::AddScriptLua,
 			"AddCamera", &GameObject::AddCameraLua,
@@ -467,6 +470,7 @@ namespace FlatEngine
 			"AddRigidBody", &GameObject::AddRigidBodyLua,
 			"AddBoxCollider", &GameObject::AddBoxColliderLua,
 			"AddTileMap", &GameObject::AddTileMapLua,
+
 			"AddChild", &GameObject::AddChild,
 			"RemoveChild", &GameObject::RemoveChild,
 			"GetFirstChild", &GameObject::GetFirstChild,
@@ -524,7 +528,7 @@ namespace FlatEngine
 			"SetActive", &Audio::SetActive,
 			"IsActive", &Audio::IsActive,
 			"GetID", &Audio::GetID,
-			"IsMusicPlaying", &Audio::IsMusicPlaying,
+			"IsSoundPlaying", &Audio::IsMusicPlaying,
 			"Play", &Audio::PlaySound,
 			"Pause", &Audio::PauseSound,
 			"Stop", &Audio::PauseSound,
@@ -532,6 +536,11 @@ namespace FlatEngine
 		);
 
 		F_Lua.new_usertype<Button>("Button",
+			"GetParent", &Button::GetParent,
+			"GetParentID", &Button::GetParentID,
+			"SetActive", &Button::SetActive,
+			"IsActive", &Button::IsActive,
+			"GetID", &Button::GetID,
 			"SetActiveDimensions", &Button::SetActiveDimensions,
 			"SetActiveOffset", & Button::SetActiveOffset,
 			"GetActiveOffset", &Button::GetActiveOffset,
@@ -550,6 +559,11 @@ namespace FlatEngine
 		);
 
 		F_Lua.new_usertype<Script>("Script",
+			"GetParent", &Script::GetParent,
+			"GetParentID", &Script::GetParentID,
+			"SetActive", &Script::SetActive,
+			"IsActive", &Script::IsActive,
+			"GetID", &Script::GetID,
 			"SetAttachedScript", &Script::SetAttachedScript,
 			"GetAttachedScript", &Script::GetAttachedScript,
 			"RunAwakeAndStart", &Script::RunAwakeAndStart
@@ -568,7 +582,7 @@ namespace FlatEngine
 			"HasAnimation", &Animation::HasAnimation
 		);
 
-		F_Lua.new_usertype<Animation::S_EventFunctionParam>("EventParameter",
+		F_Lua.new_usertype<Animation::S_EventFunctionParam>("ScriptParameter",
 			"type",&Animation::S_EventFunctionParam::GetType,
 			"string", &Animation::S_EventFunctionParam::GetString,
 			"int", &Animation::S_EventFunctionParam::GetInt,
@@ -893,7 +907,6 @@ namespace FlatEngine
 		RetrieveLuaScriptPaths();
 	}
 
-	// Not used anymore
 	bool CheckLuaScriptFile(std::string filePath)
 	{
 		try

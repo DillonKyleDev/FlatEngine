@@ -16,6 +16,7 @@ namespace FlatEngine
 		m_files = std::map<std::string, std::string>();
 		m_colors = std::map<std::string, Vector4>();
 		m_textures = std::map<std::string, std::shared_ptr<Texture>>();
+		m_tags = std::vector<std::string>();
 		m_errorTexture = std::make_shared<Texture>();
 		m_errorColor = Vector4(1, 0, 0, 1);
 		m_resourceFailedToLoadImagePath = "";	
@@ -62,68 +63,110 @@ namespace FlatEngine
 		// Load in lua script
 		if (DoesFileExist(dirPath))
 		{
-			auto script = F_Lua.safe_script_file(dirPath);
-			std::optional<sol::table> dirTable = F_Lua["F_Dirs"];
-			std::optional<sol::table> pathTable = F_Lua["F_Paths"];
-
-			// Directories
-			if (dirTable)
+			try
 			{
-				for (const auto& entry : dirTable.value())
+				auto script = F_Lua.safe_script_file(dirPath);
+
+				std::optional<sol::table> dirTable = F_Lua["F_Dirs"];
+				std::optional<sol::table> pathTable = F_Lua["F_Paths"];
+
+				// Directories
+				if (dirTable)
 				{
-					sol::object key = entry.first;
-					sol::object value = entry.second;
-					std::string sKey = key.as<std::string>();     // cast key as a string
-					std::string sValue = value.as<std::string>(); // cast key as a string
-
-					m_directories.emplace(sKey, sValue);
-
-					// Create the directory if it doesn't yet exist
-					if (!DoesFileExist(sValue) && sKey != "root")
+					for (const auto& entry : dirTable.value())
 					{
-						//std::filesystem::create_directories(sValue);
+						sol::object key = entry.first;
+						sol::object value = entry.second;
+						std::string sKey = key.as<std::string>();    // cast key as a string
+						std::string sValue = value.as<std::string>();
+
+						m_directories.emplace(sKey, sValue);
+					}
+				}
+
+				// File Paths
+				if (pathTable)
+				{
+					for (const auto& entry : pathTable.value())
+					{
+						sol::object key = entry.first;
+						sol::object value = entry.second;
+						std::string sKey = key.as<std::string>();
+						std::string sValue = value.as<std::string>();
+
+						m_files.emplace(sKey, sValue);
 					}
 				}
 			}
-
-			// File Paths
-			if (pathTable)
+			catch (sol::error err)
 			{
-				for (const auto& entry : pathTable.value())
-				{
-					sol::object key = entry.first;
-					sol::object value = entry.second;
-					std::string sKey = key.as<std::string>();     // cast key as a string
-					std::string sValue = value.as<std::string>(); // cast key as a string
+				LogError("Something went wrong in lua Directories file.");
+				LogError(err.what());
+			}
+		}
+	}
 
-					m_files.emplace(sKey, sValue);
+	void AssetManager::CollectTags()
+	{
+		F_TagsAvailable.clear();
+
+		std::string tagsPath = "../engine/scripts/Tags.lua";
+
+		// Load in lua script
+		if (DoesFileExist(tagsPath))
+		{
+			try
+			{
+				auto script = F_Lua.safe_script_file(tagsPath);
+
+				std::optional<sol::table> tagsTable = F_Lua["F_Tags"];
+
+				if (tagsTable)
+				{		
+					int counter = 1;
+					for (const auto& entry : tagsTable.value())
+					{
+						F_TagsAvailable.push_back(entry.second.as<std::string>());
+					}
 				}
+			}
+			catch (sol::error err)
+			{
+				LogError("Something went wrong in Tags.lua");
+				LogError(err.what());
 			}
 		}
 	}
 
 	void AssetManager::CollectColors()
 	{
-		// Load in lua script
 		if (DoesFileExist(GetFilePath("colors")))
 		{
 			if (CheckLuaScriptFile(GetFilePath("colors")))
 			{
-				m_colors.clear();
-				auto script = F_Lua.safe_script_file(GetFilePath("colors"));
-				std::optional<sol::table> colorTable = F_Lua["F_Colors"];
-
-				if (colorTable)
+				try
 				{
-					for (const auto& entry : colorTable.value())
-					{
-						sol::object key = entry.first;
-						sol::object value = entry.second;
-						std::string sKey = key.as<std::string>();     // cast key as a string
-						Vector4 sValue = value.as<Vector4>();         // cast key as a Vector4
+					auto script = F_Lua.safe_script_file(GetFilePath("colors"));
+					std::optional<sol::table> colorTable = F_Lua["F_Colors"];
+					m_colors.clear();
 
-						m_colors.emplace(sKey, sValue);
+					if (colorTable)
+					{
+						for (const auto& entry : colorTable.value())
+						{
+							sol::object key = entry.first;
+							sol::object value = entry.second;
+							std::string sKey = key.as<std::string>();     // cast key as a string
+							Vector4 sValue = value.as<Vector4>();         // cast key as a Vector4
+
+							m_colors.emplace(sKey, sValue);
+						}
 					}
+				}
+				catch (sol::error err)
+				{
+					LogError("Something went wrong in lua file Colors.lua");
+					LogError(err.what());
 				}
 			}
 			else
@@ -134,32 +177,39 @@ namespace FlatEngine
 	}	
 
 	void AssetManager::CollectTextures()
-	{
-		// Load in lua script
+	{		
 		if (DoesFileExist(GetFilePath("textures")))
 		{
 			if (CheckLuaScriptFile(GetFilePath("textures")))
 			{
 				m_textures.clear();
-				auto script = F_Lua.safe_script_file(GetFilePath("textures"));
-				sol::object errPath = F_Lua["F_ResourceFailedToLoadImagePath"];
-				m_resourceFailedToLoadImagePath = errPath.as<std::string>();
-				m_errorTexture->LoadFromFile(m_resourceFailedToLoadImagePath);
-
-				std::optional<sol::table> textureTable = F_Lua["F_Textures"];
-				if (textureTable)
+				try
 				{
-					for (const auto& entry : textureTable.value())
-					{
-						sol::object key = entry.first;
-						sol::object value = entry.second;
-						std::string sKey = key.as<std::string>();     // cast key as a string
-						std::string sValue = value.as<std::string>(); // cast key as a string
+					auto script = F_Lua.safe_script_file(GetFilePath("textures"));
+					sol::object errPath = F_Lua["F_ResourceFailedToLoadImagePath"];
+					m_resourceFailedToLoadImagePath = errPath.as<std::string>();
+					m_errorTexture->LoadFromFile(m_resourceFailedToLoadImagePath);
 
-						std::shared_ptr<Texture> newTexture = std::make_shared<Texture>();
-						m_textures.emplace(sKey, newTexture);
-						m_textures.at(sKey)->LoadFromFile(sValue);
+					std::optional<sol::table> textureTable = F_Lua["F_Textures"];
+					if (textureTable)
+					{
+						for (const auto& entry : textureTable.value())
+						{
+							sol::object key = entry.first;
+							sol::object value = entry.second;
+							std::string sKey = key.as<std::string>();
+							std::string sValue = value.as<std::string>();
+
+							std::shared_ptr<Texture> newTexture = std::make_shared<Texture>();
+							m_textures.emplace(sKey, newTexture);
+							m_textures.at(sKey)->LoadFromFile(sValue);
+						}
 					}
+				}
+				catch (sol::error err)
+				{
+					LogError("Something went wrong in lua Textures.lua file");
+					LogError(err.what());
 				}
 			}
 			else

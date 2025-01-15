@@ -55,7 +55,6 @@ namespace FlatEngine
 		void SetNextComponentID(long nextID);
 		long GetNextComponentID();
 		void OnPrefabInstantiated();
-		void UpdateColliderPairs();
 
 		// ECS Wrappers
 		void KeepNextComponentIDUpToDate(long ID);
@@ -109,8 +108,7 @@ namespace FlatEngine
 		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
 		std::map<long, RigidBody>& GetRigidBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
-		std::map<long, TileMap>& GetTileMaps();
-		std::vector<std::pair<Collider*, Collider*>> GetColliderPairs();
+		std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);
 		bool IsPersistantScene();
 

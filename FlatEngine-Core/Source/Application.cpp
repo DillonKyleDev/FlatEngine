@@ -21,15 +21,6 @@ namespace FlatEngine
 		// Handle window resizing and recreating ImGui
 		if (m_b_windowResized)
 		{
-			//FL::SaveCurrentScene();
-
-			//int width;
-			//int height;
-			//SDL_GetWindowSize(FL::F_Window->GetWindow(), &width, &height);
-			//FL::F_Window->SetScreenDimensions(width, height);
-			//FL::F_AssetManager.CollectDirectories();
-			FL::RestartImGui(); // ImGui setup relies on global colors
-
 			m_b_windowResized = false;
 		}
 

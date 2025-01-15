@@ -78,10 +78,7 @@ namespace FlatEngine
 			for (long id : GetParent()->GetChildren())
 			{
 				GameObject *child = GetObjectByID(id);
-				if (child->HasComponent("Transform"))
-				{
-					child->GetTransform()->UpdateOrigin(GetTruePosition());
-				}
+				child->GetTransform()->UpdateOrigin(GetTruePosition());
 			}
 		}
 	}
@@ -100,12 +97,9 @@ namespace FlatEngine
 			for (long ID : GetParent()->GetChildren())
 			{
 				GameObject *child = GetObjectByID(ID);
-				if (child->HasComponent("Transform"))
-				{
-					Transform* childTransform = child->GetTransform();
-					childTransform->SetOrigin(newOrigin);
-					childTransform->UpdateChildOrigins(childTransform->GetTruePosition());
-				}
+				Transform* childTransform = child->GetTransform();
+				childTransform->SetOrigin(newOrigin);
+				childTransform->UpdateChildOrigins(childTransform->GetTruePosition());
 			}
 		}
 	}
@@ -118,13 +112,10 @@ namespace FlatEngine
 			{
 				for (long ID : GetParent()->GetChildren())
 				{
-					GameObject* child = GetObjectByID(ID);
-					if (child->HasComponent("Transform"))
-					{						
-						Transform* childTransform = child->GetTransform();
-						childTransform->SetBaseScale(baseScale);
-						childTransform->UpdateChildBaseScale(childTransform->GetTotalScale());
-					}
+					GameObject* child = GetObjectByID(ID);					
+					Transform* childTransform = child->GetTransform();
+					childTransform->SetBaseScale(baseScale);
+					childTransform->UpdateChildBaseScale(childTransform->GetTotalScale());
 				}
 			}
 		}

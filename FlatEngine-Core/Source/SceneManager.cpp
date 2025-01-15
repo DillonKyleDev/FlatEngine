@@ -34,32 +34,35 @@ namespace FlatEngine
 
 	void SceneManager::SaveScene(Scene *scene, std::string filePath)
 	{		
-		scene->SetPath(filePath);
-		std::ofstream file_obj;
-		std::ifstream ifstream(filePath);
-
-		file_obj.open(filePath, std::ofstream::out | std::ofstream::trunc);
-		file_obj.close();
-
-		file_obj.open(filePath, std::ios::app);
-		json sceneObjectsJsonArray;
-
-		std::map<long, GameObject> &sceneObjects = scene->GetSceneObjects();
-		if (sceneObjects.size() > 0)
+		if (scene != nullptr)
 		{
-			for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
-			{				
-				sceneObjectsJsonArray.push_back(CreateJsonFromObject(iter->second));				
+			scene->SetPath(filePath);
+			std::ofstream file_obj;
+			std::ifstream ifstream(filePath);
+
+			file_obj.open(filePath, std::ofstream::out | std::ofstream::trunc);
+			file_obj.close();
+
+			file_obj.open(filePath, std::ios::app);
+			json sceneObjectsJsonArray;
+
+			std::map<long, GameObject>& sceneObjects = scene->GetSceneObjects();
+			if (sceneObjects.size() > 0)
+			{
+				for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
+				{
+					sceneObjectsJsonArray.push_back(CreateJsonFromObject(iter->second));
+				}
 			}
-		}
-		else
-		{
-			sceneObjectsJsonArray.push_back("NULL");
-		}
+			else
+			{
+				sceneObjectsJsonArray.push_back("NULL");
+			}
 
-		json newFileObject = json::object({ {"Scene GameObjects", sceneObjectsJsonArray } });
-		file_obj << newFileObject.dump(4).c_str() << std::endl;
-		file_obj.close();
+			json newFileObject = json::object({ {"Scene GameObjects", sceneObjectsJsonArray } });
+			file_obj << newFileObject.dump(4).c_str() << std::endl;
+			file_obj.close();
+		}
 	}
 
 	void SceneManager::SaveCurrentScene()
@@ -67,10 +70,6 @@ namespace FlatEngine
 		if (m_loadedScenePath != "")
 		{
 			SaveScene(&m_loadedScene, m_loadedScenePath);
-		}
-		else
-		{
-
 		}
 	}
 

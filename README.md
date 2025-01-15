@@ -17,11 +17,11 @@ This project is in active development.
 
 This is a hobby project.
 It will likely crash eventually so save often. THERE IS NO AUTOSAVE.
-Things will change, sometimes drastically, with updates.
+Things will change with updates.
 Your results and the usefulness of FlatEngine may vary.
 Key systems are not optimized.
 
-Many things in this README are already out of date so keep that in mind when reading.  The general architecture of FlatEngine won't change that much over the course of development.
+Many things in this README are out of date so keep that in mind when reading.  The general architecture of FlatEngine won't change that much over the course of development.
 
 
 ## About:
@@ -54,7 +54,7 @@ For logging, I created my own library of functions that interface with ImGui.
 
 ### Scripting
 
-Lua/Sol is the scripting language embedded in FlatEngine. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.
+Lua/Sol is the scripting language embedded in FlatEngine2D. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.
 
 See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.
 
@@ -70,7 +70,15 @@ Tags are a list of properties that a GameObject can have that can be queried usi
 
 `GameObject::HasTag("tagName")` 
 
-The Tags system is also used in the collision detection system to prevent objects that should not interact from interacting, based on the tags each GameObject is set to Ignore.  I would eventually like to extend this system to use a Lua script file for the available tags, that way they are editable by the user, but for now they are hard-coded into the engine.
+The Tags system is also used in the collision detection system to prevent objects that should not interact from interacting, based on the tags each GameObject is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove Tags and they will appear in the engine upon either closing and reopening the engine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar.</br>
+
+Tags must remain in the format present in the `Tags.lua` file: Comma-separated strings inside a Lua table named `F_Tags`
+
+`F_Tags = {
+  "Tagname",
+  "Tagname2",
+  "Tagname3"
+}`
 
 ## Components
 
@@ -87,8 +95,8 @@ FlatEngines GameObjects require components be attached for their functionality. 
 9. Audio
 10. Text
 11. BoxCollider
-12. CircleCollider (work in progress)
-13. CompositeCollider (work in progress)
+12. CircleCollider (work in progress -> CircleColliders currently do not support Solid collision and can only be used as triggers)
+13. CompositeCollider (work in progress -> Currently removed from the engine)
 14. RigidBody
 15. CharacterController
 16. TileMap (work in progress)
@@ -119,8 +127,7 @@ Sprites are the visual representation of GameObjects in the scene.  Currently on
 
 ### Script
 
-**EDIT: This is outdated.**
-Scripts in FlatEngine are written in Lua in ".scp.lua" files.  The Script component is merely a container for a script reference.  Eventually I plan on enabling exposure of Lua variables inside the Script component but that is not currently a feature of FlatEngine.  See the explanation farther down on how scripting works in FlatEngine for more details.
+Scripts in FlatEngine are written in Lua in ".scp.lua" files.  The Script component is a container for a script reference and allows you to expose variables to the lua script from the inspector window for customizeability across GameObjects using the same Script.  See the more detailed explanation further down on how to use the Script components and Lua in FlatEngine2D.
 
 ### Button
 
@@ -135,7 +142,6 @@ Buttons are simple UI elements for enabling mouse interaction in a scene.  Butto
 ### Canvas
 
 Canvases are meant to support the use of Buttons when making UIs.  Canvases, (if enabled), block all Button interactions of Buttons that are below the layer of the Canvas.  Canvases have the following properties
-
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -157,7 +163,7 @@ The Camera component is how the scene is viewed in the GameView.  Even without a
 
 ### Animation
 
-Animation components are one of the most powerful components that can be attached to a GameObject.  They currently support animation of Transform, Sprite, Text, and Audio components.  Additionally, you may choose to add Events to each Animation.  Animation Events allow you to call Lua functions at a particular keyframe and pass up to 5 parameters to it, (string, int, long, float, double, bool, or Vector2).  These are extremely powerful and useful to take advantage of.  I plan to add more components to the list of components you can animate, but I believe this is a very versitile grouping and likely you are able to do most of what you need to with them.  For more details on the Animation component, please refer to the tour video I will be posted in the ReadMe.  I will update this with more detailed information in the future.
+Animation components are one of the most powerful components that can be attached to a GameObject.  Animations are attached to Animation components of a GameObject and can be called through the Animation::Play() method at runtime.  Animations currently support animation of Transform, Sprite, Text, and Audio components, and Events. Animation Events allow you to call Lua functions at a particular keyframe and pass up to 5 parameters to it, (string, int, long, float, double, bool, or Vector2).  These are extremely powerful and useful to take advantage of.  I plan to add more components to the list of components you can animate, but I believe this is a very versitile grouping and likely you are able to do most of what you need to with them.  I will update this with more detailed information in the future.
 
 ### Audio
 
@@ -174,7 +180,6 @@ The Audio component allows you to attach several different audio clips and music
 
 Text components function very similarly to Sprite components except they render text.  Text components have the following properties:
 
-
 | Property        | Description |
 |:--------------------|:---------------|
 Text|The actual text to be rendered.|
@@ -185,11 +190,9 @@ Text|The actual text to be rendered.|
 |Color| The color that will be applied to the texture.|
 |Pivot Point| The point at which all scaling and positioning of the texture is relative to.  If you manually change the Offset of the Text, that value will override the Pivot Point offset.|
 
-
 ### Collision Components
 
 The Collision components are not all complete.  The BoxCollider component is complete but it does not take rotation into account.  This is a feature I will be working on in the near future.  The CircleCollider can detect collisions, but it does not yet know how to handle positioning based on collisions.  The CompositeCollider I am waiting until the other Collision components are finished to continue work on it.  As a result, I have disabled the use of Circle and Composite colliders from the engine temporarily.  The BoxCollider uses a simple AABB collision detection approach.  The collision system is connected to the Tags system and will not check collisions between GameObjects that are ignoring each other based on the Tags they pocess.  The BoxCollider component has the following properties:
-
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -198,10 +201,9 @@ The Collision components are not all complete.  The BoxCollider component is com
 |Active Layer|This feature is neglected due to the Tags system being in place, but it will be updated when I do the necessary overhaul of the collision system as a whole.  Colliders should only interact with other colliders on the same layer.|
 |Is Continuous?|Determines how often this collider needs to be checked for collision. Currently it is set to every 10 frames for non continuous colliders, this is subject to change.|
 |Is Static?|If a collider is static it may not need to be checked or updated as often as non static colliders, this saves on performance.|
-|Is Solid?|Determines whether other collisiders should pass through this collider or if it is just a trigger.|
+|Is Solid?|Determines whether other collisiders should pass through this collider or if it is just a trigger. (Is Solid is disabled for CircleColliders at the moment but they can be used as triggers instead.)|
 |Is Composite?|For adding this Collider to the CompositeCollider component on the GameObject (work in progress).|
 |Show Active Radius?|Before the AABB testing occurs, each tested collision is tested using a less expensive radius check, this enables you to see that radius for each particular collider.|
-
 
 ### RigidBody
 
@@ -218,13 +220,11 @@ The RigidBody component is responsible for handling all of the phyiscs that an o
 |Angular Drag|The amount that a GameObject is slowed while rotating.|
 |Equilibrium Force|I believe this will be removed in a future update.  I am unsure if this value should be exposed to the end user.|
 
-
 ### CharacterController
 
 Note: This component is due for a rework.  The exposed variables don't make much sense and are not intuitive to use.  Max Acceleration is essentially the max speed, or the maximum amount of velocity that is added each frame.
 
 The CharacterController is a bundle of functionallity that is meant to make it easier to manipulate a character GameObjects RigidBody component.  The CharacterController has the following properties:
-
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -237,7 +237,6 @@ The CharacterController is a bundle of functionallity that is meant to make it e
 Note: The TileMap component is in working condition but it does need some improvements to the user experience and optimization to be considered complete.  I am including it in the release for testing purposes.
 
 The TileMap component allows the user to quickly draw scenes using TileSets created in the engine.  Each TileMap can have multiple TileSets (palettes) that it can use to draw in the scene.  Eventually I would like to add layers to each TileMap, but for now, in order to have layered tiles you must create another GameObject with a TileMap and place them on top of each other.  I recommend having one parent object and then as many child GameObjects as needed for the layers needed.  The TileMap currently supports a rudimentary BoxCollider drawing system that can be used to add collisions to the TileMap.  It is surely in need of a user experience overhaul but it is functional.  As noted above, there are several optimizations that still need to be made to this system to be considered complete.  The TileMap component contains the following properties:
-
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -598,6 +597,9 @@ Here is a list of every function that is called by the engine at specific times 
 `OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening 
 `OnBoxCollisionEnter(collidedWith)` -- Called on the first frame a collision happens
 `OnBoxCollisionLeave(collidedWith)` -- Called when a collision ceases
+`OnCircleCollision(collidedWith)` -- Called every frame there is a collision happening 
+`OnCircleCollisionEnter(collidedWith)` -- Called on the first frame a collision happens
+`OnCircleCollisionLeave(collidedWith)` -- Called when a collision ceases
 `OnButtonMouseOver()` -- Called every frame the mouse is hovering a Button
 `OnButtonMouseEnter()` -- Called on the first frame a mouse is hovering a Button
 `OnButtonMouseLeave()` -- Called when the mouse stops hovering a Button
@@ -613,53 +615,157 @@ Any Animation Event function that is called during an Animation
 
 ## Lua Functions Available
 
-This is list of all functions that can be called using Lua to interact with the engine and with GameObjects and components:
+This is a comprehensive list of all functions that can be called in Lua to interact with FlatEngine2D, GameObjects, and components:
 
+`CreateGameObject(long parentID = -1)`<br/>
+Action: Creates a GameObject.<br/>
+Parameters: `long parentID = -1` - ID of the GameObject to parent it to. defaults to -1 by default for no parent.<br/>
+Returns: `GameObject*` - pointer to the new GameObject<br/>
+
+`CreateStringVector()`<br/>
+Action: Creates a new `std::vector<std::string>()`.<br/>
+Parameters: `None`<br/>
+Returns: `std::vector<std::string>()`<br/>
+
+`CreateIntVector()`<br/>
+Action: Creates a new `std::vector<int>()`.<br/>
+Parameters: `None`<br/>
+Returns: `std::vector<int>()`<br/>
+
+`CreateLongVector()`<br/>
+Action: Creates a new `std::vector<long>()`.<br/>
+Parameters: `None`<br/>
+Returns: `std::vector<long>()`<br/>
+
+`CreateFloatVector()`<br/>
+Action: Creates a new `std::vector<float>()`.<br/>
+Parameters: `None`<br/>
+Returns: `std::vector<float>()`<br/>
+
+`CreateDoubleVector()`<br/>
+Action: Creates a new `std::vector<double>()`.<br/>
+Parameters: `None`<br/>
+Returns: `std::vector<double>()`<br/>
+
+`CreateBoolVector()`<br/>
+Action: Creates a new `std::vector<bool>()`.<br/>
+Parameters: `None`<br/>
+Returns: `std::vector<bool>()`<br/>
+
+`IntToString(int value)`<br/>
+Action: Converts an int to an std::string.<br/>
+Parameters: `int value`<br/>
+Returns: `std::string` - the converted value.<br/>
+
+`LongToString(long value)`<br/>
+Action: Converts a long to an std::string.<br/>
+Parameters: `long value`<br/>
+Returns: `std::string` - the converted value.<br/>
+
+`FloatToString(float value)`<br/>
+Action: Converts a float to an std::string.<br/>
+Parameters: `float value`<br/>
+Returns: `std::string` - the converted value.<br/>
+
+`DoubleToString(double value)`<br/>
+Action: Converts a double to an std::string.<br/>
+Parameters: `double value`<br/>
+Returns: `std::string` - the converted value.<br/>
+
+`GetInstanceData(std::string scriptName, long ID)`<br/>
+Action: Gets the data table associated with a given Script instance.<br/>
+Parameters: `std::string scriptName, long ID` - ID: ID of the GameObject that owns the Script component.<br/>
+Returns: `table instanceData` - a Lua table with the data.<br/>
+
+`ContainsData(std::string scriptName, long ID)`<br/>
+Action: Checks whether a Lua table of instance data exists for a specified Script name with specified GameObject ID.<br/>
+Parameters: `std::string scriptName, long ID`<br/>
+Returns: `bool` - Whether a table entry exists or not.<br/>
+
+`GetScriptParam(std::string paramName, long ID, std::string scriptName = calling_script_name)`<br/>
+Action: Gets the specified `ScriptParameter` from the `ParameterList` on a specified Script component owned by a GameObject.<br/>
+Parameters: `std::string paramName, long ID, std::string scriptName`<br/>
+Returns: `ScriptParameter` - The requested parameter or empty `ScriptParameter` with `type = empty` if it doesn't exist. `scriptName` defaults to the calling script.<br/>
+
+`LoadGameObject(long ID)`<br/>
+Action: Sets the specified GameObject as the loaded GameObject. This sets the `this_object` and `myID` Lua variables to that GameObject.<br/>
+Parameters: `long ID` - The desired GameObjects ID.<br/>
+Returns: `void`<br/>
+
+`GetObjectByID(long ID)`<br/>
+Action: Gets a GameObject based on ID.<br/>
+Parameters: `long ID` - The desired GameObjects ID.<br/>
+Returns: `GameObject*` - The GameObject with specified ID or nullptr if it doesn't exist.<br/>
 
 `GetObjectByName(std::string objectName)`<br/>
 Action: Gets a GameObject in the loaded scene by name.<br/>
-Parameters: objectName - name of the object you want.<br/>
-Returns: GameObject*<br/>
+Parameters: `std::string objectName` - name of the object you want.<br/>
+Returns: `GameObject*`<br/>
 
 `LoadScene(std::string sceneName)`<br/>
 Action: Loads a scene<br/>
-Parameters: sceneName - name of the scene to load.<br/>
-Returns: void<br/>
+Parameters: `std::string sceneName` - name of the scene to load.<br/>
+Returns: `void`<br/>
+
+`ReloadScene()`<br/>
+Action: Reload the currently loaded scene.<br/>
+Parameters: `std::string sceneName` - name of the scene to reload.<br/>
+Returns: `void`<br/>
+
+`GetLoadedScene()`<br/>
+Action: Gets the currently loaded scene.<br/>
+Parameters: `none`<br/>
+Returns: `Scene*` - The current Scene or `nullptr` if no Scene is loaded.<br/>
 
 `LogString(std::string line)`<br/>
 Action: Log a string to the console.<br/>
-Parameters: line - string to log<br/>
-Returns: void<br/>
+Parameters: `std::string line` - string to log<br/>
+Returns: `void`<br/>
 
 `LogInt(int value, std::string line = "")`<br/>
 Action: Log an int to the console and a string that will be prefixed to the value.<br/>
-Parameters: value - value to log, line - (optional) string that will be prefixed to the value<br/>
-Returns: void<br/>
+Parameters: `int value` - value to log, line - (optional) string that will be prefixed to the value<br/>
+Returns: `void`<br/>
 
 `LogFloat(float value, std::string line = "")`<br/>
-Action: Log an int to the console and a string that will be prefixed to the value.<br/>
-Parameters: value - value to log, line - (optional) string that will be prefixed to the value<br/>
-Returns: void<br/>
+Action: Log an float to the console and a string that will be prefixed to the value.<br/>
+Parameters: `float value` - value to log, line - (optional) string that will be prefixed to the value<br/>
+Returns: `void`<br/>
 
 `LogDouble(double value, std::string line = "")`<br/>
-Action: Log an int to the console and a string that will be prefixed to the value.<br/>
-Parameters: value - value to log, line - (optional) string that will be prefixed to the value<br/>
-Returns: void<br/>
+Action: Log an double to the console and a string that will be prefixed to the value.<br/>
+Parameters: `double value` - value to log, line - (optional) string that will be prefixed to the value<br/>
+Returns: `void`<br/>
 
 `LogLong(long value, std::string line = "")`<br/>
-Action: Log an int to the console and a string that will be prefixed to the value.<br/>
-Parameters: value - value to log, line - (optional) string that will be prefixed to the value<br/>
-Returns: void<br/>
+Action: Log an long to the console and a string that will be prefixed to the value.<br/>
+Parameters: `long value` - value to log, line - (optional) string that will be prefixed to the value<br/>
+Returns: `void`<br/>
 
 `GetMappingContext(std::string contextName)`<br/>
 Action: Get a copy of a Mapping Context object by name.<br/>
-Parameters: contextName - name of the Mapping Context<br/>
-Returns: MappingContext*<br/>
+Parameters: `std::string contextName` - Name of the Mapping Context<br/>
+Returns: `MappingContext*` - or `nullptr` if none exists with that name.<br/>
 
 `Instantiate(std::string prefabName, Vector2 position)`<br/>
 Action: Instantiate a Prefab at a specific location<br/>
 Parameters: prefabName - name of the Prefab to spawn, position - the position in the game world to spawn the Prefab.<br/>
-Returns: GameObject*<br/>
+Returns: `GameObject*`<br/>
+
+`CloseProgram()`<br/>
+Action: Closes the game and the editor.<br/>
+Parameters: `none`<br/>
+Returns: `void`<br/>
+
+`SceneDrawLine(Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)`<br/>
+Action: Draws a debug line inside the Scene View.<br/>
+Parameters: `Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness`<br/>
+Returns: `void`<br/>
+
+`SceneGameLine(Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)`<br/>
+Action: Draws a debug line inside the Game View.<br/>
+Parameters: `Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness`<br/>
+Returns: `void`<br/>
 
 `GetTime()`<br/>
 Action: Get the time in milliseconds the gameloop has been active (started and unpaused).<br/>
@@ -676,209 +782,387 @@ Action: Gets the Vector4 that represents a color in the Colors.lua file in the p
 Parameters: color - name of the color in the Colors.lua file in FlatEngine -> engine -> scripts -> Colors.lua<br/>
 Returns: Vector4<br/>
 
-`RandomNumber(unsigned int min, unsigned int max)`<br/>
-Action: Generates a random number within specified range.<br/>
-Parameters: min - the lowest value (inclusive), max - the highest value (inclusive)<br/>
-Returns: int<br/>
+`RandomInt(int min, int max)`<br/>
+Action: Get a random int between two values.<br/>
+Parameters: `int min, int max`<br/>
+Returns: `int`<br/>
+
+`RandomInt(float min, float max)`<br/>
+Action: Get a random float between two values.<br/>
+Parameters: `float min, float max`<br/>
+Returns: `float`<br/>
+
+`Remap(std::string contextName, std::string inputAction, int timeoutTime)`<br/>
+Action: Begins a timer that allows the next button press to map to the specified InputAction on the specified MappingContext.<br/>
+Parameters: `std::string contextName`, `std::string inputAction` - InputAction to remap, `int timeoutTime` - how long in milliseconds to allow for input before timing out.<br/>
+Returns: `void`<br/>
+
 
 # UNDER CONSTRUCTION
 
 ### FlatEngine classes exposed to Lua and their methods (Lua usertypes)
 
+
+
+## Scene
+
+|Method|Details|
+|:-----|-------|
+|`SetName(std::string name)`|
+Action: Sets the name of calling Scene.</br>
+Parameters: `std::string name`</br>
+Returns: `void`|
+|`GetName()`|
+Action: Gets the name of calling Scene.</br>
+Parameters: `none`</br>
+Returns: `std::string`|
+|`GetPath()`|
+Action: Returns the filepath of the calling Scene.</br>
+Parameters: `none`</br>
+Returns: `std::string`|
+
 ## Vector2
 
 |Method|Details|
 |:-----|-------|
-|Vector2(), Vector2(float x,float y)|Action: Constructors</br>Parameters: x,y,z,w - values to set x and y to.</br>Returns: Vector2
-|SetX(float x)|Action: Sets the x-value of the Vector2.</br>Parameters: x - the value to set x to.</br>Returns: void|
-|x|Action: </br>Parameters: </br>Returns: |
-|SetY(float y)|Action: Sets the y-value of the Vector2.</br>Parameters: y - the value to set x to.</br>Returns: void|
-|y|Action: </br>Parameters: </br>Returns: |
-|SetXY(float x, float y)|Action: </br>Parameters: </br>Returns: |
+|`Vector2(), Vector2(float x,float y)`|
+Action: Constructors</br>
+Parameters: `float x, float y` - values to set x and y to.</br>\
+Returns: `Vector2`|
+|`SetX(float x)`|
+Action: Sets the x-value of the Vector2.</br>
+Parameters: `float x` - the value to set x to.</br>
+Returns: `void`|
+|`x()`|
+Action: Gets the x component.</br>
+Parameters: `none`</br>
+Returns: `float`|
+|`SetY(float y)`|
+Action: Sets the y-value of the Vector2.</br>
+Parameters: `float y` - the value to set y to.</br>
+Returns: `void`|
+|`y()`|
+Action: Gets the y component.</br>
+Parameters: `none`</br>
+Returns: `float`|
+|`SetXY(float x, float y)`|
+Action: Sets both the x and y components.</br>
+Parameters: `float x, float y`</br>
+Returns: `none`|
 
 ## Vector4
 |Method|Details|
 |:-----|-------|
-|Vector4(), Vector4(float x, float y, float z, float w)|Action: Constructors</br></br>Parameters: x,y,z,w - values to set x, y, z, and w to.</br>Returns: Vector4
-|SetX|Action: </br>Parameters: </br>Returns: |
-|x|Action: </br>Parameters: </br>Returns: |
-|SetY|Action: </br>Parameters: </br>Returns: | 
-|y|Action: </br>Parameters: </br>Returns: |
-|SetZ|Action: </br>Parameters: </br>Returns: | 
-|z|Action: </br>Parameters: </br>Returns: |
-|SetW|Action: </br>Parameters: </br>Returns: | 
-|w|Action: </br>Parameters: </br>Returns: |
-|SetXYZW|Action: </br>Parameters: </br>Returns: |
+|`Vector4(), Vector4(float x, float y, float z, float w)`|
+Action: Constructors</br>
+Parameters: `float x, float y, float z, float w` - values to set x, y, z, and w to.</br>
+Returns: `Vector4`|
+|`SetX(float x)`|
+Action: Sets the x-value of the Vector2.</br>
+Parameters: `float x` - the value to set x to.</br>
+Returns: `void`|
+|`x()`|
+Action: Gets the x component.</br>
+Parameters: `none`</br>
+Returns: `float x`|
+|`SetY(float y)`|
+Action: Sets the y-value of the Vector2.</br>
+Parameters: `float y` - the value to set y to.</br>
+Returns: `void`|
+|`y()`|
+Action: Gets the y component.</br>
+Parameters: `none`</br>
+Returns: `float y`|
+|`SetZ()`|
+Action: Sets the z component.</br>
+Parameters: </br>
+Returns: `void`| 
+|`z()`|
+Action: Gets the z component.</br>
+Parameters: </br>
+Returns: `float z`|
+|`SetW()`|
+Action: Sets the w component.</br>
+Parameters: </br>
+Returns: `void`| 
+|`w()`|
+Action: Gets the w component.</br>
+Parameters: </br>
+Returns: `float w`|
+|`SetXYZW()`|
+Action: Sets all four components.</br>
+Parameters: </br>
+Returns: `void`|
 
 
 ## GameObject
 |Method|Details|
 |:-----|-------|
-|GetID|Action: </br>Parameters: </br>Returns: |
-|GetName|Action: </br>Parameters: </br>Returns: |
-|SetName|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|HasTag|Action: </br>Parameters: </br>Returns: |
-|GetTransform|Action: </br>Parameters: </br>Returns: |
-|AddSprite|Action: </br>Parameters: </br>Returns: |
-|GetSprite|Action: </br>Parameters: </br>Returns: |
-|GetCamera|Action: </br>Parameters: </br>Returns: |
-|GetAnimation|Action: </br>Parameters: </br>Returns: |
-|GetAudio|Action: </br>Parameters: </br>Returns: |
-|GetButton|Action: </br>Parameters: </br>Returns: |
-|GetCanvas|Action: </br>Parameters: </br>Returns: |
-|GetText|Action: </br>Parameters: </br>Returns: |
-|GetCharacterController|Action: </br>Parameters: </br>Returns: |
-|GetRigidBody|Action: </br>Parameters: </br>Returns: |
-|GetBoxColliders|Action: </br>Parameters: </br>Returns: |
-|GetBoxCollider|Action: </br>Parameters: </br>Returns: |
-|GetFirstChild|Action: </br>Parameters: </br>Returns: |
-|HasChildren|Action: </br>Parameters: </br>Returns: |
-|GetChildren|Action: </br>Parameters: </br>Returns: |
-|HasScript|Action: </br>Parameters: </br>Returns: |
-|FindChildByName|Action: </br>Parameters: </br>Returns: |
+|`GetID()`|Action: Gets GameObject ID.</br>Parameters: `none`</br>Returns: `long`|
+|`GetName()`|Action: Gets GameObject name.</br>Parameters: `none`</br>Returns: `std::string`|
+|`SetName(std::string name)`|Action: Sets GameObject name.</br>Parameters: `std::string name`</br>Returns: `void`|
+|`IsActive()`|Action: Returns whether the GameObject is set to Active.</br>Parameters: `none`</br>Returns: `bool`|
+|`SetActive(bool isActive)`|Action: Sets the GameObject as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `void`|
+|`GetParent()`|Action: Gets the GameObjects parent.</br>Parameters: `none`</br>Returns: `GameObject` or `nullptr` if it doesn't have one.|
+|`GetParentID()`|Action: Gets the GameObjects parent ID.</br>Parameters: `none`</br>Returns: `long`|
+|`HasTag(std::string tag)`|Action: Returns whether the GameObject has a Tag.</br>Parameters: `std::string tag` </br>Returns: `bool`|
+|`SetTag(std::string tag, bool hasTag)`|Action: Sets specified Tag for the GameObject.</br>Parameters: `std::string tag, bool hasTag`</br>Returns: `void`|
+|`SetIgnore(std::string, bool ignores)`|Action: Sets specified Tag for the GameObject to ignore.</br>Parameters: `std::string ignoreTag, bool ignores`</br>Returns: `void`|
+|`GetTransform()`|Action: Gets the Transform Component.</br>Parameters: `none`</br>Returns: `Transform*` or `nullptr`|
+|`GetSprite()`|Action: Gets the Sprite Component.</br>Parameters: `none`</br>Returns: `Sprite*` or `nullptr`|
+|`GetCamera()`|Action: Gets the Camera Component.</br>Parameters: `none`</br>Returns: `Camera*` or `nullptr`|
+|`GetScript()`|Action: Gets the Script Component.</br>Parameters: `none`</br>Returns: `Script*` or `nullptr`|
+|`GetAnimation()`|Action: Gets the Animation Component.</br>Parameters: `none`</br>Returns: `Animation*` or `nullptr`|
+|`GetAudio()`|Action: Gets the Audio Component.</br>Parameters: `none`</br>Returns: `Audio*` or `nullptr`|
+|`GetButton()`|Action: Gets the Button Component.</br>Parameters: `none`</br>Returns: `Button*` or `nullptr`|
+|`GetCanvas()`|Action: Gets the Canvas Component.</br>Parameters: `none`</br>Returns: `Canvas*` or `nullptr`|
+|`GetText()`|Action: Gets the Text Component.</br>Parameters: `none`</br>Returns: `Text*` or `nullptr`|
+|`GetCharacterController()`|Action: Gets the CharacterController Component.</br>Parameters: `CharacterController`</br>Returns: `CharacterController*` or `nullptr`|
+|`GetRigidBody()`|Action: Gets the RigidBody Component.</br>Parameters: `none`</br>Returns: `RigidBody*` or `nullptr`|
+|`GetBoxCollider()`|Action: Gets the BoxCollider Component.</br>Parameters: `none`</br>Returns: `BoxCollider*` or `nullptr`|
+|`GetCircleCollider()`|Action: Gets the CircleCollider Component.</br>Parameters: `none`</br>Returns: `CircleCollider*` or `nullptr`|
+|`GetTileMap()`|Action: Gets the TileMap Component.</br>Parameters: `none`</br>Returns: `TileMap*` or `nullptr`|
+|`AddSprite()`|Action: Adds and returns a Sprite component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Sprite*` or `nullptr`|
+|`AddScript()`|Action: Adds and returns a Script component to the GameObject.</br>Parameters: `none`</br>Returns: `Script*` or `nullptr`|
+|`AddCamera()`|Action: Adds and returns a Camera component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Camera*` or `nullptr`|
+|`AddAnimation()`|Action: Adds and returns an Animation component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Animation*` or `nullptr`|
+|`AddAudio()`|Action: Adds and returns an Audio component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Audio*` or `nullptr`|
+|`AddButton()`|Action: Adds and returns a Button component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Button*` or `nullptr`|
+|`AddCanvas()`|Action: Adds and returns a Canvas component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Canvas*` or `nullptr`|
+|`AddText()`|Action: Adds and returns a Text component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Text*` or `nullptr`|
+|`AddCharacterController()`|Action: Adds and returns a CharacterController component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `CharacterController*` or `nullptr`|
+|`AddRigidBody()`|Action: Adds and returns a RigidBody component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `RigidBody*` or `nullptr`|
+|`AddBoxCollider()`|Action: Adds and returns a BoxCollider component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `BoxCollider*` or `nullptr`|
+|`AddCircleCollider()`|Action: Adds and returns a CircleCollider component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `CircleCollider*` or `nullptr`|
+|`AddTileMap()`|Action: Adds and returns a TileMap component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `TileMap*` or `nullptr`|
+|`AddChild(long childID)`|Action: Adds specified child to GameObject.</br>Parameters: `long childID`</br>Returns: `void`|
+|`RemoveChild()`|Action: Removes specified child from GameObject.</br>Parameters: `long childID`</br>Returns: `void`|
+|`GetFirstChild()`|Action: Gets the first child found on a GameObject. Not necessarily the first in the Hierarchy.</br>Parameters: </br>Returns: |
+|`HasChildren()`|Action: Returns whether the GameObject has children.</br>Parameters: `none`</br>Returns: `bool hasChildren`|
+|`GetChildren()`|Action: Gets the GameObjects children.</br>Parameters: `none`</br>Returns: `std::vector<long>` - IDs of the children.|
+|`HasScript()`|Action: Returns whether a GameObject Has a Script with specified name.</br>Parameters: `std::string scriptName`</br>Returns: `bool hasScript`|
+|`FindChildByName(std::string childName)`|Action: Gets specified child of GameObject by name.</br>Parameters: `std::string childName`</br>Returns: `GameObject*` or `nullptr` if no child exists with that name.|
 
 ## Transform
 |Method|Details|
 |:-----|-------|
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
-|SetPosition|Action: </br>Parameters: </br>Returns: |
-|GetPosition|Action: </br>Parameters: </br>Returns: |
-|GetTruePosition|Action: </br>Parameters: </br>Returns: |
-|SetRotation|Action: </br>Parameters: </br>Returns: |
-|GetRotation|Action: </br>Parameters: </br>Returns: |
-|SetScale|Action: </br>Parameters: </br>Returns: |
-|GetScale|Action: </br>Parameters: </br>Returns: |
-|LookAt|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetPosition(Vector2 scale)`|Action: Sets the position of the GameObject.</br>Parameters: `Vector2 position`</br>Returns: `void`|
+|`GetPosition()`|Action: Gets the GameObjects current position relative to it's origin.</br>Parameters: `none`</br>Returns: `Vector2 relativePosition`|
+|`GetTruePosition()`|Action: Gets the GameObjects current position relative to the center point of the Scene.</br>Parameters: `none`</br>Returns: `Vector2 truePosition`|
+|`SetRotation(float rotation)`|Action: Sets the rotation in degrees of the GameObjects. Only effects Sprites currently.</br>Parameters: `float rotation`</br>Returns: `void`|
+|`GetRotation()`|Action: Gets the rotation in degrees of the GameObject.</br>Parameters: `none`</br>Returns: `float rotation`|
+|`SetScale(Vector2 scale)`|Action: Sets the x and y scale of the GameObject. Should effect all components.</br>Parameters: `Vector2 scale`</br>Returns: `void`|
+|`GetScale()`|Action: Gets the x and y scale of the GameObject.</br>Parameters: `none`</br>Returns: `Vector2 scale`|
+|`LookAt()`|Action: Causes the GameObject to rotate at the specified position.</br>Parameters: `Vector2 position`</br>Returns: `void`|
 
 ## Sprite
 |Method|Details|
 |:-----|-------|
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
-|SetTexture|Action: </br>Parameters: </br>Returns: |
-|GetPath|Action: </br>Parameters: </br>Returns: |
-|SetScale|Action: </br>Parameters: </br>Returns: |
-|GetScale|Action: </br>Parameters: </br>Returns: |
-|GetTextureWidth|Action: </br>Parameters: </br>Returns: |
-|GetTextureHeight|Action: </br>Parameters: </br>Returns: |
-|SetTintColor|Action: </br>Parameters: </br>Returns: |
-|GetTintColor|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `void`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`SetTexture(std::string texturePath)`|Action: Sets the path of the Sprites texture.</br>Parameters: `std::string texturePath`</br>Returns: `void`|
+|`GetPath()`|Action: Gets the path of the Sprites texture.</br>Parameters: `none`</br>Returns: `std::string texturePath`|
+|`SetScale(Vector2 scale)`|Action: Sets the x and y scale of the Sprites texture independantly and in addition to the Transform's scale.</br>Parameters: `Vector2 scale`</br>Returns: `void`|
+|`GetScale()`|Action: Gets the x and y scale of the Sprites texture.</br>Parameters: `none`</br>Returns: `Vector2 scale`|
+|`GetTextureWidth()`|Action: Gets the actual width of the texture in pixels.</br>Parameters: `none`</br>Returns: `int pixelWidth`|
+|`GetTextureHeight()`|Action: Gets the actual height of the texture in pixels.</br>Parameters: `none`</br>Returns: `int pixelHeight`|
+|`SetTintColor(Vector4 tintColor)`|Action: Sets the RGBA color to tint the Sprites texture.</br>Parameters: `Vector4 tintColor` - Vector4(x = red, y = green, z = blue, w = alpha)</br>Returns: `void`|
+|`GetTintColor()`|Action: Gets the RGBA tintColor of the Sprites texture.</br>Parameters: `none`</br>Returns: `Vector4 tintColor` - Vector4(x = red, y = green, z = blue, w = alpha)|
+|`SetAlpha(float alpha)`|Action: Set the alpha channel of the texture's tint color.</br>Parameters: `float alpha`</br>Returns: `void`|
+|`GetAlpha()`|Action: Gets the value of the alpha channel of the texture's tint color.</br>Parameters: `none`</br>Returns: `float alpha`|
+|`SetPivotPoint()`|Action: Sets the location the texture should pivot on when rotating.</br>Parameters: `std::string pivotPoint` - syntax expected for pivot point selection:Parameters: `std::string pivotPoint` - string syntax expected for pivot point selection: "PivotCenter", "PivotLeft", "PivotRight", "PivotTop", "PivotBottom", "PivotTopLeft", "PivotTopRight", "PivotBottomRight","PivotBottomLeft"</br>Returns: `void`|
+
+## Text
+|Method|Details|
+|:-----|-------|
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `void`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`SetText()`|Action: Sets the text displayed by the Text component.</br>Parameters: `std::string displayedText`</br>Returns: `void`|
+|`SetPivotPoint()`|Action: Sets the location the text should pivot on when rotating.</br>Parameters: `std::string pivotPoint` - string syntax expected for pivot point selection: "PivotCenter", "PivotLeft", "PivotRight", "PivotTop", "PivotBottom", "PivotTopLeft", "PivotTopRight", "PivotBottomRight","PivotBottomLeft"</br>Returns: `void`|
 
 ## Audio
 |Method|Details|
 |:-----|-------|
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
-|IsMusicPlaying|Action: </br>Parameters: </br>Returns: |
-|Play|Action: </br>Parameters: </br>Returns: |
-|Pause|Action: </br>Parameters: </br>Returns: |
-|Stop|Action: </br>Parameters: </br>Returns: |
-|StopAll|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `void`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`IsSoundPlaying()`|Action: Returns true if the specified sound is playing.</br>Parameters: </br>Returns: `bool isSoundPlaying`|
+|`Play(std::string soundName)`|Action: Starts playing the specified sound attached to Audio component.</br>Parameters: `std::string soundName`</br>Returns: `void`|
+|`Pause(std::string soundName)`|Action: Pauses the specified sound attached to Audio component.</br>Parameters: `std::string soundName`</br>Returns: `void`|
+|`Stop(std::string soundName)`|Action: Stops playing the specified sound attached to Audio component.</br>Parameters: `std::string soundName`</br>Returns: `void`|
+|`StopAll()`|Action: Stops all sounds that are currently playing on the Audio component.</br>Parameters: `none`</br>Returns: `void`|
+
+## Button
+|Method|Details|
+|:-----|-------|
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `void`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`SetActiveDimensions(float width, float height)`|Action: </br>Parameters: `float width, float height`</br>Returns: `void`|
+|`SetActiveOffset(Vector2 activeOffset)`|Action: Set the amount in x and y that the Button is offset from it's Transform's position.</br>Parameters: `Vector2 activeOffset`</br>Returns: `void`|
+|`GetActiveOffset()`|Action: Gets the anount in x and y the Button is offset from it's Transform's position.</br>Parameters: `none`</br>Returns: `Vector2 activeOffset`|
+|`SetActiveLayer(float activeLayer)`|Action: Sets the Canvas layer the Button is active on and thus the priority it has over other Buttons on lower layers.</br>Parameters: `float activeLayer`</br>Returns: `void`|
+|`GetActiveLayer()`|Action: Gets the Buttons active Canvas layer.</br>Parameters: `none`</br>Returns: `void`|
+|`GetActiveWidth()`|Action: Gets the active width of the Button.</br>Parameters: `none`</br>Returns: `float activeWidth`|
+|`GetActiveHeight()`|Action: Gets the active height of the Button.</br>Parameters: `none`</br>Returns: `float activeHeight`|
+|`MouseIsOver()`|Action: Returns true if the mouse is hovering the button and can be clicked.</br>Parameters: `none`</br>Returns: `bool mouseIsOver`|
+|`SetLeftClick(bool leftClickable)`|Action: Set whether left clicking can activate the Button.</br>Parameters: `bool leftClickable`</br>Returns: `void`|
+|`GetLeftClick()`|Action: Returns true if the Button can be activated by a left click of the mouse.</br>Parameters: `none`</br>Returns: `bool leftClickable`|
+|`SetRightClick(bool rightClickable)`|Action: Set whether right clicking can activate the Button.</br>Parameters: `bool rightClickable`</br>Returns: `void`|
+|`GetRightClick()`|Action: Returns true if the Button can be activated by a right click of the mouse.</br>Parameters: `none`</br>Returns: `bool rightClickable`|
+|`SetLuaFunctionName(std::string functionName)`|Action: Set the Lua function name that will be called when the Button is activated.</br>Parameters: `std::string functionName` </br>Returns: `void`|
+|`GetLuaFunctionName()`|Action: Get the Lua function name that will be called when the Button is activated.</br>Parameters: `none`</br>Returns: `std::string functionName`|
+|`SetLuaFunctionParams(ParameterList functionParameters)`|Action: Set the list of function parameters, (ParameterList), that will be passed to the Button when it is activated.</br>Parameters: `ParameterList functionParameters`</br>Returns: `void`|
+
+## Script
+|Method|Details|
+|:-----|-------|
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetAttachedScript(std::string attachedScriptName)`|Action: Sets the Script that is attached to the Script component that will run during gameplay.</br>Parameters: `std::string scriptName`</br>Returns: `void`|
+|`GetAttachedScript()`|Action: Gets the Script that is attached to the Script component.</br>Parameters: `none`</br>Returns: `std::string attachedScriptName`|
+|`RunAwakeAndStart()`|Action: Run the Awake() and Start() Lua methods on the attached Script.</br>Parameters: `none`</br>Returns: `void`|
 
 ## Animation
 |Method|Details|
 |:-----|-------|
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
-|Play|Action: </br>Parameters: </br>Returns: |
-|Stop|Action: </br>Parameters: </br>Returns: |
-|StopAll|Action: </br>Parameters: </br>Returns: |
-|IsPlaying|Action: </br>Parameters: </br>Returns: |
-|HasAnimation|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`Play(std::string animationName)`|Action: Play the specified Animation on the Animation component.</br>Parameters: `std::string animationName`</br>Returns: `void`|
+|`Stop(std::string animationName)`|Action: Stop the specified Animation on the Animation component.</br>Parameters: `std::string animationName`</br>Returns: `void`|
+|`StopAll()`|Action: Stops all Animations that are currently playing on the Animation component.</br>Parameters: `none`</br>Returns: `void`|
+|`IsPlaying(std::string animationName)`|Action: Returns true if the specified Animation is playing.</br>Parameters: `std::string animationName`</br>Returns: `bool isPlaying`|
+|`HasAnimation(std::string animationName)`|Action: Returns true if the Animation component has an Animation with specified name.</br>Parameters: `std::string animationName`</br>Returns: `bool hasAnimation`|
 
-## EventParameter
+## ScriptParameter
 |Method|Details|
 |:-----|-------|
-|type|Action: </br>Parameters: </br>Returns: |
-|string|Action: </br>Parameters: </br>Returns: |
-|int|Action: </br>Parameters: </br>Returns: |
-|long|Action: </br>Parameters: </br>Returns: |
-|float|Action: </br>Parameters: </br>Returns: |
-|double|Action: </br>Parameters: </br>Returns: |
-|bool|Action: </br>Parameters: </br>Returns: |
-|Vector2|Action: </br>Parameters: </br>Returns: |
+|`type()`|Action: Gets the type of the ScriptParameter. ("string", "int", "float", "double", "long", "bool", "Vector2") </br>Parameters: `none`</br>Returns: `std::string type`|
+|`SetType()`|Action: Sets the type of the parameter.</br>Parameters: `std::string type` - Can be "string", "int", "float", "double", "long", "bool", "Vector2"</br>Returns: `void`|
+|`string()`|Action: Gets the string value inside the ScriptParameter.</br>Parameters: `none`</br>Returns: `std::string stringValue`|
+|`int()`|Action: Gets the string value inside the ScriptParameter. </br>Parameters: `none`</br>Returns: `int intValue`|
+|`long()`|Action: Gets the long value inside the ScriptParameter. </br>Parameters: `none`</br>Returns: `long longValue`|
+|`float()`|Action: Gets the float value inside the ScriptParameter. </br>Parameters: `none`</br>Returns: `float floatValue`|
+|`double()`|Action: Gets the double value inside the ScriptParameter. </br>Parameters: `none`</br>Returns: `double doubleValue`|
+|`bool()`|Action: Gets the bool value inside the ScriptParameter. </br>Parameters: `none`</br>Returns: `bool boolValue`|
+|`Vector2()`|Action: Gets the Vector2 value inside the ScriptParameter. </br>Parameters: `none`</br>Returns: `Vector2 vector2Value`|
+|`SetString()`|Action: Sets the string value inside the ScriptParameter.</br>Parameters: `std::string stringValue`</br>Returns: `none`|
+|`SetInt()`|Action: Sets the int value inside the ScriptParameter.</br>Parameters: `int intValue`</br>Returns: `none`|
+|`SetLong()`|Action: Sets the long value inside the ScriptParameter.</br>Parameters: `long longValue`</br>Returns: `none`|
+|`SetFloat()`|Action: Sets the float value inside the ScriptParameter.</br>Parameters: `float floatValue`</br>Returns: `none`|
+|`SetDouble()`|Action: Sets the double value inside the ScriptParameter.</br>Parameters: `double doubleValue`</br>Returns: `none`|
+|`SetBool()`|Action: Sets the bool value inside the ScriptParameter.</br>Parameters: `bool boolValue`</br>Returns: `none`|
+|`SetVector2()`|Action: Sets the Vector2 value inside the ScriptParameter.</br>Parameters: `Vector2 vector2Value`</br>Returns: `none`|
+
+## ParameterList
+|Method|Details|
+|:-----|-------|
+|`SetParameters(std::vector<ScriptParameter> parameters)`|Action: Sets the ScriptParameters member variable of the ParameterList.</br>Parameters: `std::vector<ScriptParameter> parameters`</br>Returns: `void`|
+|`AddParameter(ScriptParameter parameters)`|Action: Add a the ScriptParameter to the ParameterList.</br>Parameters: `ScriptParameter parameter`</br>Returns: `void`|
 
 ## RigidBody
 |Method|Details|
 |:-----|-------|
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
-|SetMass|Action: </br>Parameters: </br>Returns: |
-|GetMass|Action: </br>Parameters: </br>Returns: |
-|SetGravity|Action: </br>Parameters: </br>Returns: |
-|GetGravity|Action: </br>Parameters: </br>Returns: |
-|SetFallingGravity|Action: </br>Parameters: </br>Returns: |
-|GetFallingGravity|Action: </br>Parameters: </br>Returns: |
-|SetFriction|Action: </br>Parameters: </br>Returns: |
-|GetFriction|Action: </br>Parameters: </br>Returns: |
-|SetAngularDrag|Action: </br>Parameters: </br>Returns: |
-|GetAngularDrag|Action: </br>Parameters: </br>Returns: |
-|SetAngularVelocity|Action: </br>Parameters: </br>Returns: |
-|GetAngularVelocity|Action: </br>Parameters: </br>Returns: |
-|SetTorquesAllowed|Action: </br>Parameters: </br>Returns: |
-|TorquesAllowed|Action: </br>Parameters: </br>Returns: |
-|AddForce|Action: </br>Parameters: </br>Returns: |
-|AddTorque|Action: </br>Parameters: </br>Returns: |
-|GetVelocity|Action: </br>Parameters: </br>Returns: |
-|SetPendingForces|Action: </br>Parameters: </br>Returns: |
-|GetPendingForces|Action: </br>Parameters: </br>Returns: |
-|SetTerminalVelocity|Action: </br>Parameters: </br>Returns: |
-|GetTerminalVelocity|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`SetMass(float mass)`|Action: </br>Parameters: </br>Returns: `void`|
+|`GetMass()`|Action: </br>Parameters: `none`</br>Returns: `float mass`|
+|`SetRisingGravity(float risingGravity)`|Action: Sets the gravity experienced by the RigidBody in the positive y-direction.</br>Parameters: `float risingGravity`</br>Returns: `void`|
+|`GetRisingGravity()`|Action: Gets the gravity experienced by the RigidBody in the positive y-direction.</br>Parameters: `none`</br>Returns: `float risingGravity`|
+|`SetFallingGravity(float fallingGravity)`|Action: Sets the gravity experienced by the RigidBody in the negative y-direction.</br>Parameters: `float fallingGravity`</br>Returns: `void`|
+|`GetFallingGravity()`|Action: Gets the gravity experienced by the RigidBody in the negative y-direction.</br>Parameters: `none`</br>Returns: `float fallingGravity`|
+|`SetFriction(float friction)`|Action: Sets the ground friction experienced by the RigidBody.</br>Parameters: `float friction`</br>Returns: `void`|
+|`GetFriction()`|Action: Gets the ground friction experienced by the RigidBody.</br>Parameters: `none`</br>Returns: `float friction`|
+|`SetAngularDrag(float angularDrag)`|Action: Sets the rotational drag experienced by the RigidBody.</br>Parameters: `float angularDrag`</br>Returns: `void`|
+|`GetAngularDrag()`|Action: Gets the rotational drag experienced by the RigidBody.</br>Parameters: `none`</br>Returns: `float angularDrag`|
+|`SetAngularVelocity(float angularVelocity)`|Action: Set the angular velocity of the RigidBody.</br>Parameters: `float angularVelocity`</br>Returns: `void`|
+|`GetAngularVelocity()`|Action: Gets the angularVelocity of the RigidBody.</br>Parameters: `none`</br>Returns: `float angularVelocity`|
+|`SetTorquesAllowed(bool torquesAllowed)`|Action: Sets whether the RigidBody can experience torques (not tied to velocity).</br>Parameters: `bool torquesAllowed`</br>Returns: `void`|
+|`TorquesAllowed()`|Action: Returns whether the RigidBody can experience torques.</br>Parameters: `none`</br>Returns: `bool torquesAllowed`|
+|`AddForce(Vector2 forceDirection, float scale)`|Action: Add a force to the RigidBody in specified direction multiplied by scale.</br>Parameters: `Vector2 forceDirection, float scale`</br>Returns: `void`|
+|`AddTorque(float torque, float scale)`|Action: Add a rotational force to the RigidBody.</br>Parameters: `float torque, float scale` - torque can be negative or positive depending on desired direction.</br>Returns: `void`|
+|`GetVelocity()`|Action: </br>Parameters: </br>Returns: |
+|`SetPendingForces()`|Action: Sets the total combined force that will be applied to the RigidBody this frame.</br>Parameters: Vector2 pendingForces</br>Returns: ``void`|
+|`GetPendingForces()`|Action: Gets the total combined force that will be applied to the RigidBody this frame.</br>Parameters: `none`</br>Returns: Vector2 pendingForces|
+|`SetTerminalVelocity(float terminalVelocity)`|Action: Sets the terminal velocity of the RigidBody.</br>Parameters: `float terminalVelocity`</br>Returns: `void`|
+|`GetTerminalVelocity()`|Action: Gets the terminal velocity of the RigidBody.</br>Parameters:  `none`</br>Returns: `float terminalVelocity`|
+|`IsGrounded()`|Action: Returns whether the GameObject is grounded. (uses attached BoxCollider to determine)</br> Parameters: `none`</br> Returns: `bool isGrounded`|
 
-
-## BoxCollider
+## Collider
 |Method|Details|
 |:-----|-------|
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
 
+## BoxCollider - inherits from Collider
+|Method|Details|
+|:-----|-------|
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+
+## CircleCollider - inherits from Collider
+|Method|Details|
+|:-----|-------|
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
 
 ## CharacterController
 |Method|Details|
 |:-----|-------|
-|MoveToward|Action: </br>Parameters: </br>Returns: |
-|GetParent|Action: </br>Parameters: </br>Returns: |
-|GetParentID|Action: </br>Parameters: </br>Returns: |
-|SetActive|Action: </br>Parameters: </br>Returns: |
-|IsActive|Action: </br>Parameters: </br>Returns: |
-|GetID|Action: </br>Parameters: </br>Returns: |
+|`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
+|`GetParentID()`|Action: Gets the ID of the GameObject the component is attached to.</br>Parameters: `none`</br>Returns: `long ID`|
+|`GetID()`|Action: Gets the ID of the component.</br>Parameters: `none`</br>Returns: `long ID`|
+|`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
+|`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
+|`MoveToward(Vector2 direction)`|Action: Causes the GameObject to move in specified direction at the `maxSpeed` indicated inside the component settings.</br>Parameters: `Vector2 direction`</br>Returns: `void`|
 
+## InputMapping
+|Method|Details|
+|:-----|-------|
+|`KeyCode()`|Action: Gets the key code associated with the InputMapping.</br>Parameters: `none`</br>Returns: `std::string keyCode`|
+|`InputActionName()`|Action: Gets the name of the InputAction associated with the InputMapping.</br>Parameters: `none`</br>Returns: `std::string inputActionName`|
 
 ## MappingContext
 |Method|Details|
 |:-----|-------|
-|Fired|Action: </br>Parameters: </br>Returns: |
-|ActionPressed|Action: </br>Parameters: </br>Returns: |
-|GetName|Action: </br>Parameters: </br>Returns: |
-
-
+|`Fired()`|Action: Returns true on initial press of InputAction key code.</br>Parameters: `none`</br>Returns: `bool inputActionFired`|
+|`ActionPressed()`|Action: Returns true if the key code for the InputAction is currently being pressed.</br>Parameters: `none`</br>Returns: `bool inputActionPressed`|
+|`GetName()`|Action: Gets the name of the MappingContext.</br>Parameters: `none`</br>Returns: `std::sting name`|
+|`GetInputMappings()`|Action: Gets the InputMappings associated with the MappingContext.</br>Parameters: `none`</br>Returns: `std::vector<std::shared_ptr<InputMapping>> inputMappings`|
 
 
 --------------------------------------------------------------------------------------
 
 ### Editing Engine Colors and Adding More
-
-
-
-### Editing Engine Textures / Icons
+You may access and customize the colors of FlatEngine2D by opening and editing the file located at `engine/scripts/Colors.lua`.
+You may access and customize the textures used by FlatEngine2D by opening and editing the file located at `engine/scripts/Textures.lua`.
+You may access and customize the Tags used by FlatEngine2D GameObjects by opening and editing the file located at `engine/scripts/Tags.lua`.

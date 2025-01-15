@@ -39,8 +39,7 @@ namespace FlatEngine
 			{ "soundData", soundData }
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
+		std::string data = jsonData.dump();		
 		return data;
 	}
 

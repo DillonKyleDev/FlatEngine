@@ -19,10 +19,12 @@ namespace FlatEngine
 	public:
 		AssetManager();
 		~AssetManager();	
+
 		void UpdateProjectDirs(std::string projectPath);
 		void CollectDirectories(DirectoryType dirType);
 		void CollectColors();
 		void CollectTextures();
+		void CollectTags();
 		std::string GetFailedToLoadImagePath();
 		std::string GetDir(std::string dirName);
 		std::string GetFilePath(std::string fileName);
@@ -35,6 +37,7 @@ namespace FlatEngine
 		std::map<std::string, std::string> m_files;
 		std::map<std::string, Vector4> m_colors;
 		std::map<std::string, std::shared_ptr<Texture>> m_textures;
+		std::vector<std::string> m_tags;
 		std::string m_resourceFailedToLoadImagePath;
 		std::shared_ptr<Texture> m_errorTexture;
 		Vector4 m_errorColor;

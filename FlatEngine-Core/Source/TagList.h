@@ -13,6 +13,7 @@ namespace FlatEngine
 		TagList(TagList* toCopy);
 		~TagList();
 
+		void UpdateAvailableTags();
 		void SetTag(std::string tag, bool b_value, bool b_updateColliderPairs = true);
 		void ToggleTag(std::string tag);
 		bool HasTag(std::string);

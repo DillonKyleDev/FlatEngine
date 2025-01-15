@@ -347,7 +347,6 @@ namespace FlatEngine
 		//UpdateCenter();
 		//UpdateCorners();
 		//UpdateNormals();
-
 		UpdateActiveEdges(gridStep, viewportCenter);
 	}
 }

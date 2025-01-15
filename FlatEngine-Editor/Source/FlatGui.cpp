@@ -563,12 +563,12 @@ namespace FlatGui
 			FL::AddProcessData("Log", (float)FL::GetEngineTime() - startTime);
 		}
 	
-		if (FG_b_showProfiler)
-		{
-			startTime = (float)FL::GetEngineTime();
-			RenderProfiler();
-			FL::AddProcessData("Profiler", (float)FL::GetEngineTime() - startTime);
-		}
+		//if (FG_b_showProfiler)
+		//{
+		//	startTime = (float)FL::GetEngineTime();
+		//	RenderProfiler();
+		//	FL::AddProcessData("Profiler", (float)FL::GetEngineTime() - startTime);
+		//}
 
 		if (FG_b_showMappingContextEditor)
 		{

@@ -1,7 +1,7 @@
 # FlatEngine - 2D Game Engine
 
+![engine](https://github.com/user-attachments/assets/885f13e4-e57b-4232-9c16-bdee07d63437)
 
-![ReleaseBuildV1](https://github.com/user-attachments/assets/e7a38d3e-963c-4bcb-a5f1-a01b33d6dda3)
 
 ## UPDATE
 
@@ -21,45 +21,27 @@ Things will change with updates.
 Your results and the usefulness of FlatEngine may vary.
 Key systems are not optimized.
 
-Many things in this README are out of date so keep that in mind when reading.  The general architecture of FlatEngine won't change that much over the course of development.
+Some things in this README are out of date so keep that in mind when reading. I will do my best to mark the out of date information as "Outdated", but the general architecture of FlatEngine won't change.
 
 
 ## About:
 
-FlatEngine is a 2D game engine made using SDL2 and ImGui.  It is a passion project and a way to improve my software development skills. This game engine is intended to replace Unity in all my future 2D game development projects and maybe it will be useful to you as well.  I will also be using the base engine I develop here to create a full 3D game engine in the future.  See the license for details about using the engine and code, but as far as code I have written, you are free to use it as you wish, and you are also free to credit me if you would like to but it is not required.  Additionally, I would love to see any projects you are working on or have used any of the engine code for if you would be willing to share it.
+FlatEngine2D is a 2D game engine made using SDL2 and ImGui.  It is a passion project and is intended to replace Unity in all my future 2D game development projects.  Maybe you will find it useful as well.  I will also be using the bones of the engine I develop here to create a full 3D game engine in the future.  See the license for details about using the engine and code, but as far as code I have written and assets I've created, you are free to use them as you wish, and you are also free to credit me if you would like to but it is not required.  Additionally, I would love to see any projects you are working on or have used any of the engine code for if you would be willing to share it.
 
-I've spent a lot of time with the Unity game engine and so have found comfort in its design philosophy.  I will be adopting many of Unitys methods for handling various things within my engine.
+I've spent a lot of time with the Unity game engine and so have found comfort in it's design philosophy.  I will be adopting many of Unity's methods for handling various things within my engine.
 
 
 --------------------------------------------------------------------------------------
 
 
 ## Libraries / Utilities
+| Library used        | Features supported |
+|:--------------------|:---------------|
+|SDL_2|The engine is built using SDL_2 as a base, along with several other SDL libraries including SDL_ttf for fonts, SDL_Image, and SDL_Mixer for audio.|
+|ImGui|The entire user interface, including all of the interactions within the scene view, are handled using ImGui_Docking.|
+|nlohmann Json Formatter|nlohmann Json Formatter is used for saving various types of data for later use including Scene data (GameObjects and components), Project data, and Animation data.|
+|Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine2D. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
 
-### SDL_2
-
-The engine is built using SDL_2 as a base, along with several other SDL libraries including SDL_ttf for fonts, SDL_Image, and SDL_Mixer for audio.
-
-### ImGui
-
-The entire user interface, including all of the interactions within the scene view, are handled using ImGui_Docking.
-
-### Json Formatter
-
-Json Formatter is used for saving various types of data for later use including Scene data (GameObjects and components), Project data, and Animation data.
-
-### Logging
-
-For logging, I created my own library of functions that interface with ImGui.
-
-### Scripting
-
-Lua/Sol is the scripting language embedded in FlatEngine2D. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.
-
-See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.
-
-
---------------------------------------------------------------------------------------
 
 
 ## Engine Components
@@ -72,9 +54,12 @@ Tags are a list of arbitrary properties that a GameObject can have that can be q
 
 You can set a GameObject to have a specific tag using `GameObject::SetTag("tagName", true);` or, more conveniently, set it in the Inspector viewport by clicking the `Tags` button below the object's name:
 
+![tagsbutton](https://github.com/user-attachments/assets/527d1366-83b2-4f64-b54e-90357daab056)
 
+![availableTags](https://github.com/user-attachments/assets/e0030132-1724-416b-bf37-a8dc983eb9a3)
 
-The Tags system is also used by the collision detection system to prevent objects that should not interact from interacting, based on the tags each GameObject has and is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar.</br>
+The Tags system is also used by the collision detection system to prevent objects that should not interact from interacting, based on the Tags each GameObject has and is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar. This is also how you reload any customizations you've made to the color scheme of FlatEngine2D in the `Colors.lua` file or engine icons in `Textures.lua` located in the same directory as `Tags.lua`.  (Your changes will also go into effect upon relaunching the engine)</br></br>
+![reloadTags](https://github.com/user-attachments/assets/203d64aa-9d41-4e50-8a6e-e62461c1d266)
 
 Tags must remain in the format present in the `Tags.lua` file: Comma-separated strings inside a Lua table named `F_Tags`</br>
 
@@ -84,15 +69,15 @@ Tags must remain in the format present in the `Tags.lua` file: Comma-separated s
   "Tagname3"
 }`</br>
 or</br>
-`F_Tags = {</br>
-  "Tagname",</br>
-  "Tagname2",</br>
-  "Tagname3"</br>
-}`</br>
+`F_Tags =` {</br>
+  `"Tagname",`</br>
+  `"Tagname2",`</br>
+  `"Tagname3"`</br>
+`}`</br>
 
 ## Components
 
-FlatEngines GameObjects require components be attached for their functionality.  The current list of components included in FlatEngine are:
+FlatEngine2D's GameObjects require components be attached for their functionality.  The current list of components included in FlatEngine are:
 
 1. Transform
 2. Sprite
@@ -125,7 +110,7 @@ All GameObjects MUST have a Transform and are created with one that cannot be re
 
 ### Sprite
 
-Sprites are the visual representation of GameObjects in the scene.  Currently only PNG is supported.  Sprites have the followiing properties
+Sprites are the visual representation of GameObjects in the Scenes.  Sprites have the following properties
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -183,7 +168,7 @@ The Audio component allows you to attach several different audio clips and music
 |:--------------------|:---------------|
 |Name| The name used to play the Audio clip.|
 |Filepath| The path of the audio file to be played.|
-|Is Music?| This may be removed in the future because I am not sure the end user should care about whether the Audio is music or a sound clip.. This is more of a backend option, but each are handled differently by SDL_Mixer so that will have to be sorted out eventually.|
+|Sounds| An unlimited number of sounds can be attached to each Audio component and can be accessed using their individual names.|
 
 
 ### Text
@@ -202,7 +187,7 @@ Text|The actual text to be rendered.|
 
 ### Collision Components
 
-The Collision components are not all complete.  The BoxCollider component is complete but it does not take rotation into account.  This is a feature I will be working on in the near future.  The CircleCollider can detect collisions, but it does not yet know how to handle positioning based on collisions.  The CompositeCollider I am waiting until the other Collision components are finished to continue work on it.  As a result, I have disabled the use of Circle and Composite colliders from the engine temporarily.  The BoxCollider uses a simple AABB collision detection approach.  The collision system is connected to the Tags system and will not check collisions between GameObjects that are ignoring each other based on the Tags they pocess.  The BoxCollider component has the following properties:
+The Collision components are not all complete.  The BoxCollider component is complete but it does not take rotation into account.  This is a feature I will be working on in the near future.  The CircleCollider can detect collisions, but it does not yet know how to handle positioning based on collisions.  The CompositeCollider I am waiting until the other Collision components are finished to continue work on it.  As a result, I have disabled the use of Composite colliders from the engine temporarily, and CircleColliders cannot be made solid and can only really function as a trigger because of it.  The BoxCollider uses a simple AABB collision detection approach.  The collision system is connected to the Tags system and will not check collisions between GameObjects that are ignoring each other based on the Tags they pocess.  The BoxCollider component has the following properties:
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -211,13 +196,13 @@ The Collision components are not all complete.  The BoxCollider component is com
 |Active Layer|This feature is neglected due to the Tags system being in place, but it will be updated when I do the necessary overhaul of the collision system as a whole.  Colliders should only interact with other colliders on the same layer.|
 |Is Continuous?|Determines how often this collider needs to be checked for collision. Currently it is set to every 10 frames for non continuous colliders, this is subject to change.|
 |Is Static?|If a collider is static it may not need to be checked or updated as often as non static colliders, this saves on performance.|
-|Is Solid?|Determines whether other collisiders should pass through this collider or if it is just a trigger. (Is Solid is disabled for CircleColliders at the moment but they can be used as triggers instead.)|
+|Is Solid?|Determines whether other collisiders should pass through this collider or if it is just a trigger. (isSolid is disabled for CircleColliders at the moment but they can be used as triggers instead.)|
 |Is Composite?|For adding this Collider to the CompositeCollider component on the GameObject (work in progress).|
 |Show Active Radius?|Before the AABB testing occurs, each tested collision is tested using a less expensive radius check, this enables you to see that radius for each particular collider.|
 
 ### RigidBody
 
-The RigidBody component is responsible for handling all of the phyiscs that an object can be subjected to.  Using the RigidBody, you can add forces and torques to an object to manipulate its velocity and rotation.  The RigidBody component has the following properties:
+The RigidBody component is responsible for handling all of the physics that an object can be subjected to.  Using the RigidBody, you can add forces and torques to an object to manipulate its velocity and rotation.  The RigidBody component has the following properties:
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -262,59 +247,30 @@ The TileMap component allows the user to quickly draw scenes using TileSets crea
 
 ## Engine Assets
 
-<div>
-  <h2>Projects</h2>
-<picture>
- <img alt="Projects" src="https://github.com/user-attachments/assets/7fa21df7-cfc4-490e-8d17-836775eb90b5">
-</picture>
-<p>Projects contain all the data associated with a particular project including scene to load up at the start of a game but mostly information that is not relevant to the end user.</p>
-</div>
+<img alt="Scenes" src="https://github.com/user-attachments/assets/7fa21df7-cfc4-490e-8d17-836775eb90b5"></br>
+Projects contain all the data associated with a particular project including scene to load up at the start of a game but mostly information that is not relevant to the end user.|
 
-<div>
-  <h2>Scenes</h2>
-<picture>
- <img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc">
-</picture>
+<img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc">
 <p>Scenes are the container for all GameObjects and are saved in JSON format using a JSON Formatting library for simple parsing.</p>
 </div>
 
-<div>
-  <h2>TileSet</h2>
-<picture>
- <img alt="TileSet" src="https://github.com/user-attachments/assets/33c561a0-40b5-4d0d-ab76-2a4ff9b8d828">
-</picture>
+<img alt="TileSet" src="https://github.com/user-attachments/assets/33c561a0-40b5-4d0d-ab76-2a4ff9b8d828">
 <p>TileSets are used by the TileMap system to allow them to draw texture tiles.</p>
 </div>
 
-<div>
-  <h2>Script</h2>
-<picture>
- <img alt="Script" src="https://github.com/user-attachments/assets/9c2e9d4b-ab18-4624-b7ab-b213d16e306a">
-</picture>
+<img alt="Script" src="https://github.com/user-attachments/assets/9c2e9d4b-ab18-4624-b7ab-b213d16e306a">
 <p>Lua script files for scripting.  In FlatEngine, these files have the extension ".scp.lua".</p>
 </div>
 
-<div>
-  <h2>Mapping Context</h2>
-<picture>
- <img alt="Mapping Context" src="https://github.com/user-attachments/assets/fc6ed04f-5fb0-476d-a076-c1c7c1b9d181">
-</picture>
+<img alt="Mapping Context" src="https://github.com/user-attachments/assets/fc6ed04f-5fb0-476d-a076-c1c7c1b9d181">
 <p>Mapping Contexts (and the Mapping Context Editor) are the interface for binding input actions to specific controls.  Currently mouse/keyboard and XInput (Xbox controller) are supported with more planned to be added in the future.  The Mapping Context system is not yet exposed to the Scripting system so it is not yet possible to dynamically set key bindings (in a game settings menu for example) but that is a feature that is easy to implement and is toward the top of the list of priorities.</p>
 </div>
 
-<div>
-  <h2>Animation</h2>
-<picture>
- <img alt="Animation" src="https://github.com/user-attachments/assets/e88f98cd-855e-40c8-8b32-e3759fcbdd08">
-</picture>
+<img alt="Animation" src="https://github.com/user-attachments/assets/e88f98cd-855e-40c8-8b32-e3759fcbdd08">
 <p>Animations are what the Animation components use to... play animations.  Animations are edited using the Animator window in combination with the Keyframe Editor.  If you have used Unity you should be familiar with how this functions.</p>
 </div>
 
-<div>
-  <h2>Prefabs</h2>
-<picture>
- <img alt="Prefab" src="https://github.com/user-attachments/assets/f0bb4978-2afe-425b-9ac0-6a09710e92ca">
-</picture>
+<img alt="Prefab" src="https://github.com/user-attachments/assets/f0bb4978-2afe-425b-9ac0-6a09710e92ca">
 <p>Prefabs are saved GameObjects (including any children and components) that can be instantiated at runtime, or at any time.</p>
 </div>
 
@@ -323,51 +279,94 @@ The TileMap component allows the user to quickly draw scenes using TileSets crea
 --------------------------------------------------------------------------------------
 
 
-## Viewports - (Descriptions under construction)
+## Viewports
 
-### SceneView
+### Scene View
 
-Where your scenes are edited.
+The Scene View is the viewport where you'll be spending most of your time.  Here you will layout your GameObjects and set up your Scenes and are able to see the active boundaries of GameObject components like Canvases, Cameras, BoxColliders and Buttons.
+____________________________________________________________________________________________________________
+![sceneView](https://github.com/user-attachments/assets/01fc138e-8675-4182-b6fc-154918711973)
 
-### GameView
+### Game View
 
-Where you can see what the game will look like when it is run.
+The Game View displays the actual final look your game will have when it is built and running.  There are no widgets displayed here, only the final result of all your hard work.
+____________________________________________________________________________________________________________
+![gameView](https://github.com/user-attachments/assets/279db1db-4a67-476e-8c7c-b52eb80ca0a3)
 
 ### Inspector
 
-Where you edit and view GameObject Component data.
+The Inspector viewport is where you will edit all of the values of each GameObject's components.  Click on a GameObject either in the Scene Hierarchy, Persistant GameObject Hierarchy, or within the Scene View to focus it in the Inspector window.  Once focused, each component attached to the object will be shown and editable and you are able to rename the GameObject.  Each component can be collapsed to conserve space within the view and you can even collapse them all at the same time by clicking the button to the left of the "Tags" button.
+____________________________________________________________________________________________________________
+![inspector](https://github.com/user-attachments/assets/173fc721-7a84-4edd-85a5-6b805c9a9a74)
+____________________________________________________________________________________________________________
+Speaking of Tags, this is where you go to set a GameObject's Tags within the editor.  The final, and most important part of the Inspector is the ability to add new components to GameObjects.  You can do this either by clicking the three dots hamburger button on the top right or using the big purple "Add Component" button on the very bottom of the viewport.
+____________________________________________________________________________________________________________
+![addComponent](https://github.com/user-attachments/assets/3cf147ac-54d5-41b9-a3fc-55e668d022bc)
 
 ### Hierarchy
 
-The list of all GameObjects in the loaded scene.
+The Hierarchies are where you will find the list of all GameObjects in your Scene and in your Project.  Individual Scenes each hold their own set of GameObjects.  In addition to those objects there are also a set of Persistant GameObjects that belong to each Project.  These objects don't get unloaded when you change Scenes and they are visible in the Persistant Hierarchy.  All regular Scene objects are found in the Hierarchy viewport.  These viewports function identically to one another and allow you to visually see the structure of your Scene.  Each GameObject can have many nested children that will appear in a collapsable section under each parent object.  You can click and drag GameObjects onto other GameObjects to set them as children of those objects.  Remove a GameObject as a child by dragging it into a space between two GameObjects in the Hierarchy.
+____________________________________________________________________________________________________________
+![hierarchies](https://github.com/user-attachments/assets/9cd84272-a9e5-4bb7-b74a-579032597c8a)
+
 
 ### Logger
 
-Where all text output and error messages are displayed.
+Where all text output and error messages are displayed.  Messages from the engine are prefixed `[C++]` and messages from Lua scripts you've written are prefixed `[LUA]`.  All logging functions available to you are in the Lua sections of this README toward the bottom.
+____________________________________________________________________________________________________________
+![logger](https://github.com/user-attachments/assets/74cf062b-8c8a-4417-861a-e5c2a64c840d)
 
-### Profiler (work in progress)
+### Animator & Keyframe Editor
 
-Where you can see how long processes take to complete.  This is currently not well-suited to be very useful to the end user and is in need of an overhaul to be made useful and extendable.  Here you can see collider pairs that the engine has made based on the Tags associated with each GameObject with a BoxCollider component.
-
-### Animator
-
-Used to animate components attached to the animated GameObject.
-
-### Keyframe Editor
-
-Used to edit the animated properties in an Animation.
+The Animator lets you animate component properties of GameObjects.  You can select a component property to animate in the dropdown menu and add it to the Animation to cause it to pop up in the timeline window with a new keyframe to edit.  If you select the keyframe with the Keyframe Editor open like it is in the photo, you can see all of the properties you are able to edit on the selected keyframe.  If you want to animate a specific property, make sure the checkbox is checked next to it.  You can move the keyframe pip inside the Animation Timeline directly to change the time it is played by clicking and dragging it or you can directly input the keyframe time in the Keyframe Editor window.  Don't forget to save any changes made to the Animation using the three dots hamburger button in the main Animation viewport.
+____________________________________________________________________________________________________________
+![animatorKeyFrameEditor](https://github.com/user-attachments/assets/f996a862-6877-4a80-b406-43727f4ca49e)
 
 ### File Explorer
 
-A real-time representation of the folder structure of the project directory.  Not feature complete but it supports basic creation of assets and deletion through a right-click context and drag and drop functionality into the SceneView to create object using assets and into the Inspector to attach references to images, audio files, animations to their respective components.
+The File Exploerer is a real-time representation of the folder structure of the project directory.  It supports basic creation of assets and deletion through a right-click context menu.
+____________________________________________________________________________________________________________
+![rightClickContext](https://github.com/user-attachments/assets/be7a3472-92dc-473e-afde-d40923da1c49)
+____________________________________________________________________________________________________________
+You can also drag and drop assets directly into the Scene View to create GameObjects from them like prefabs and images. You can also drag images, animation files, audio files, and font (.tff) files directly from the File Explorer into GameObject components to use them as references in Sprite, Text, Animation and Audio compnonents.
+____________________________________________________________________________________________________________
+![fileExplorer](https://github.com/user-attachments/assets/bea7a924-216d-4592-b425-65a5a686290e)
 
 ### Mapping Context Editor
 
-Used to bind input actions to specific keys and buttons in a Mapping Context asset.
+Using the Mapping Context Editor you can bind input actions to specific keys and buttons and save them to be accessed through Lua scripts.  You can either create new Mapping Contexts through the editor or through the right-click context menu in the File Explorer window.  Doing so will automatically open the editor with the new Mapping Context opened and ready to edit.  Don't forget to save all your changes after adding your input actions!
+____________________________________________________________________________________________________________
+![mappingContextEditor](https://github.com/user-attachments/assets/d45c57da-b8b8-4a23-bf1e-d6259d3f21d8)
 
 ### TileSet Editor
 
-Used to create TileSets that are used by the TileMap component.
+Using the TileSet Editor you can create the TileSets that you'll use inside the TileMap components.  All you have to do is create a new TileSet either in the TileSet Editor or in the File Explorer right-click context menu and drag and drop an image from the File Explorer into the input as your tiling image.  This component is still early in development so it only allows a 16x16 selection for each tile for now.  Once an image is chosen, click on each tile you want to be included in your TileSet and if your TileSet is selected in a TileMap component, you should see them start to appear as available tiles to paint with.
+____________________________________________________________________________________________________________
+![tileSetEditor](https://github.com/user-attachments/assets/2319b498-71ee-432c-92af-523a79acfdd6)
+____________________________________________________________________________________________________________
+Change your brush mode to Tile Drawing mode by clicking on the brush icon in the top left corner of the Scene View.  Your other options are:
+1. Translate mode (default, for moving GameObjects around within the Scene View)
+2. Tile Brush mode: For drawing selected tiles on a selected TileMap
+3. Erase mode: For erasing tiles drawn
+4. BoxCollider draw mode: This mode allows you to create collision areas for your TileMaps that line up with the tile grid nicely.  It's still a very young feature and is pretty unpolished, but it works in it's current state.
+5. Tile Select mode: For selecting multiple tiles in order to move them to somewhere else within the TileMap using the Tile Move mode.
+6. Tile Move mode: For moving selected groups of tiles within the TileMap.  This feature is also very unpolished and I don't recommend relying on it too much.
+   
+Once you're in Tile Brush mode, click on the tile you want to draw in the TileMap component and start drawing!
+
+![brushModeSelect](https://github.com/user-attachments/assets/767f2555-066b-4cfd-ac20-94e0fb90d668)
+
+If you want to try out the collision area drawing feature, great!  Scroll down to the bottom of the TileMap component to create a Collision Area.  Then either click "Draw Collision Areas" or choose the BoxCollision Draw Mode brush in the top right of the Scene View again:
+
+![boxCollisionDrawMode](https://github.com/user-attachments/assets/2a9205b8-4bff-4a6d-8206-93fe12cfee61)
+
+Click and drag to create as many BoxColliders as you wish:
+____________________________________________________________________________________________________________
+![collisionAreaDrawn](https://github.com/user-attachments/assets/bdaf0134-8856-4d88-8a29-e7f4fa009e1e)
+____________________________________________________________________________________________________________
+When you're done, back in the TileMap component click "Generate Colliders" and your Collision Areas will be combined into one big collider.  You can then give the attached GameObject any Tags (just like any other GameObject) and the Collision system will respect those Tags.  Remember, the TileMap system is still underdeveloped, so your experience with it will vary.</br>
+____________________________________________________________________________________________________________
+![collisionAreaGenerated](https://github.com/user-attachments/assets/12fe97a2-40d8-414c-b4d5-1ec1b96d0eca)
 
 
 --------------------------------------------------------------------------------------
@@ -375,9 +374,9 @@ Used to create TileSets that are used by the TileMap component.
 
 ## Using FlatEngine
 
-WARNING: FlatEngine is NOT a complete engine and as such, I CAN GUARANTEE IT WILL CRASH and cause you to lose unsaved progress so SAVE YOUR SCENES OFTEN.  If you do experience a crash, which you will eventually, please do your best to recreate the crash and submit an issue in the repository with the details on how to recreate it.  That would be extremely helpful to me and I would greatly appreciate it.
+WARNING: FlatEngine is NOT a complete engine and as such, it will almost certainly crash and cause you to lose unsaved progress so please save both your Scenes and your Project often.  There's a handy dropdown in both of the Hierarchies that lets you "Save all", which will save both the loaded Scene and the Project in one click.  If you do experience a crash, which you likely will eventually, if you are willing, please submit an issue in the repository with the details on how to recreate it.  That would be extremely helpful to me and I would greatly appreciate it!  If not, that's okay too.
 
-With the warning out of the way... FlatEngine is intended to be vary straightforward to use and very fast to get up and running on a project.  
+With the warning out of the way... FlatEngine is intended to be very straightforward to use and very fast to get up and running on a project.  
 
 In FlatEngine, the general flow is:
 

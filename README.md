@@ -43,6 +43,143 @@ I've spent a lot of time with the Unity game engine and so have found comfort in
 |Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine2D. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
 
 
+--------------------------------------------------------------------------------------
+
+
+## Viewports
+
+All available viewports can be seen in the Viewports dropdown menu on the main top bar menu.  Here you can toggle each one visible or invisible.  You can freely drag each viewport to whatever location in the engine you want and can dock them inside each other.  Just grab a viewport by the top tab bar and put it where you want it.
+
+![viewports](https://github.com/user-attachments/assets/b1bf8081-cfd3-4ee3-8903-f43aae22ad2f)
+
+----------------------------------------------------------------------------------------
+
+### Scene View
+
+The Scene View is the viewport where you'll be spending most of your time.  Here you will layout your GameObjects and set up your Scenes and are able to see the active boundaries of GameObject components like Canvases, Cameras, BoxColliders and Buttons.
+____________________________________________________________________________________________________________
+![sceneView](https://github.com/user-attachments/assets/01fc138e-8675-4182-b6fc-154918711973)
+
+### Game View
+
+The Game View displays the actual final look your game will have when it is built and running.  There are no widgets displayed here, only the final result of all your hard work.
+____________________________________________________________________________________________________________
+![gameView](https://github.com/user-attachments/assets/279db1db-4a67-476e-8c7c-b52eb80ca0a3)
+
+### Inspector
+
+The Inspector viewport is where you will edit all of the values of each GameObject's components.  Click on a GameObject either in the Scene Hierarchy, Persistant GameObject Hierarchy, or within the Scene View to focus it in the Inspector window.  Once focused, each component attached to the object will be shown and editable and you are able to rename the GameObject.  Each component can be collapsed to conserve space within the view and you can even collapse them all at the same time by clicking the button to the left of the "Tags" button.
+____________________________________________________________________________________________________________
+![inspector](https://github.com/user-attachments/assets/173fc721-7a84-4edd-85a5-6b805c9a9a74)
+____________________________________________________________________________________________________________
+Speaking of Tags, this is where you go to set a GameObject's Tags within the editor.  The final, and most important part of the Inspector is the ability to add new components to GameObjects.  You can do this either by clicking the three dots hamburger button on the top right or using the big purple "Add Component" button on the very bottom of the viewport.
+____________________________________________________________________________________________________________
+![addComponent](https://github.com/user-attachments/assets/3cf147ac-54d5-41b9-a3fc-55e668d022bc)
+
+### Hierarchy
+
+The Hierarchies are where you will find the list of all GameObjects in your Scene and in your Project.  Individual Scenes each hold their own set of GameObjects.  In addition to those objects there are also a set of Persistant GameObjects that belong to each Project.  These objects don't get unloaded when you change Scenes and they are visible in the Persistant Hierarchy.  All regular Scene objects are found in the Hierarchy viewport.  These viewports function identically to one another and allow you to visually see the structure of your Scene.  Each GameObject can have many nested children that will appear in a collapsable section under each parent object.  You can click and drag GameObjects onto other GameObjects to set them as children of those objects.  Remove a GameObject as a child by dragging it into a space between two GameObjects in the Hierarchy.
+____________________________________________________________________________________________________________
+![hierarchies](https://github.com/user-attachments/assets/9cd84272-a9e5-4bb7-b74a-579032597c8a)
+
+
+### Log
+
+Where all text output and error messages are displayed.  Messages from the engine are prefixed `[C++]` and messages from Lua scripts you've written are prefixed `[LUA]`.  All logging functions available to you are in the Lua sections of this README toward the bottom.
+____________________________________________________________________________________________________________
+![logger](https://github.com/user-attachments/assets/74cf062b-8c8a-4417-861a-e5c2a64c840d)
+
+### Animator & Keyframe Editor
+
+The Animator lets you animate component properties of GameObjects.  You can select a component property to animate in the dropdown menu and add it to the Animation to cause it to pop up in the timeline window with a new keyframe to edit.  If you select the keyframe with the Keyframe Editor open like it is in the photo, you can see all of the properties you are able to edit on the selected keyframe.  If you want to animate a specific property, make sure the checkbox is checked next to it.  You can move the keyframe pip inside the Animation Timeline directly to change the time it is played by clicking and dragging it or you can directly input the keyframe time in the Keyframe Editor window.  Don't forget to save any changes made to the Animation using the three dots hamburger button in the main Animation viewport.
+____________________________________________________________________________________________________________
+![animatorKeyFrameEditor](https://github.com/user-attachments/assets/f996a862-6877-4a80-b406-43727f4ca49e)
+
+### File Explorer
+
+The File Exploerer is a real-time representation of the folder structure of the project directory.  It supports basic creation of assets and deletion through a right-click context menu.
+____________________________________________________________________________________________________________
+![rightClickContext](https://github.com/user-attachments/assets/be7a3472-92dc-473e-afde-d40923da1c49)
+____________________________________________________________________________________________________________
+You can also drag and drop assets directly into the Scene View to create GameObjects from them like prefabs and images. You can also drag images, animation files, audio files, and font (.tff) files directly from the File Explorer into GameObject components to use them as references in Sprite, Text, Animation and Audio compnonents.
+____________________________________________________________________________________________________________
+![fileExplorer](https://github.com/user-attachments/assets/bea7a924-216d-4592-b425-65a5a686290e)
+
+### Mapping Context Editor
+
+Using the Mapping Context Editor you can bind input actions to specific keys and buttons and save them to be accessed through Lua scripts.  You can either create new Mapping Contexts through the editor or through the right-click context menu in the File Explorer window.  Doing so will automatically open the editor with the new Mapping Context opened and ready to edit.  Don't forget to save all your changes after adding your input actions!
+____________________________________________________________________________________________________________
+![mappingContextEditor](https://github.com/user-attachments/assets/d45c57da-b8b8-4a23-bf1e-d6259d3f21d8)
+
+### TileSet Editor
+
+Using the TileSet Editor you can create the TileSets that you'll use inside the TileMap components.  All you have to do is create a new TileSet either in the TileSet Editor or in the File Explorer right-click context menu and drag and drop an image from the File Explorer into the input as your tiling image.  This component is still early in development so it only allows a 16x16 selection for each tile for now.  Once an image is chosen, click on each tile you want to be included in your TileSet and if your TileSet is selected in a TileMap component, you should see them start to appear as available tiles to paint with.
+____________________________________________________________________________________________________________
+![tileSetEditor](https://github.com/user-attachments/assets/2319b498-71ee-432c-92af-523a79acfdd6)
+____________________________________________________________________________________________________________
+Change your brush mode to Tile Drawing mode by clicking on the brush icon in the top left corner of the Scene View.  Your other options are:
+1. Translate mode (default, for moving GameObjects around within the Scene View)
+2. Tile Brush mode: For drawing selected tiles on a selected TileMap
+3. Erase mode: For erasing tiles drawn
+4. BoxCollider draw mode: This mode allows you to create collision areas for your TileMaps that line up with the tile grid nicely.  It's still a very young feature and is pretty unpolished, but it works in it's current state.
+5. Tile Select mode: For selecting multiple tiles in order to move them to somewhere else within the TileMap using the Tile Move mode.
+6. Tile Move mode: For moving selected groups of tiles within the TileMap.  This feature is also very unpolished and I don't recommend relying on it too much.
+   
+Once you're in Tile Brush mode, click on the tile you want to draw in the TileMap component and start drawing!
+
+![brushModeSelect](https://github.com/user-attachments/assets/767f2555-066b-4cfd-ac20-94e0fb90d668)
+
+If you want to try out the collision area drawing feature, great!  Scroll down to the bottom of the TileMap component to create a Collision Area.  Then either click "Draw Collision Areas" or choose the BoxCollision Draw Mode brush in the top right of the Scene View again:
+
+![boxCollisionDrawMode](https://github.com/user-attachments/assets/2a9205b8-4bff-4a6d-8206-93fe12cfee61)
+
+Click and drag to create as many BoxColliders as you wish:
+____________________________________________________________________________________________________________
+![collisionAreaDrawn](https://github.com/user-attachments/assets/bdaf0134-8856-4d88-8a29-e7f4fa009e1e)
+____________________________________________________________________________________________________________
+When you're done, back in the TileMap component click "Generate Colliders" and your Collision Areas will be combined into one big collider.  You can then give the attached GameObject any Tags (just like any other GameObject) and the Collision system will respect those Tags.  Remember, the TileMap system is still underdeveloped, so your experience with it will vary.</br>
+____________________________________________________________________________________________________________
+![collisionAreaGenerated](https://github.com/user-attachments/assets/12fe97a2-40d8-414c-b4d5-1ec1b96d0eca)
+
+
+--------------------------------------------------------------------------------------
+
+
+## Engine Assets
+
+There are several key assets that you will be spending a lot of time with in FlatEngine2D.  Most of these can be created in several ways, but the main two are through the main menu top bar: `Create -> Assets -> asset`, and through the right-click context menue in the File Explorer window.
+
+-------------------------------------------------------------------------------------------
+![newAssets2](https://github.com/user-attachments/assets/85b10b5b-9f6c-4b77-9c7b-f4ed3a3ba8da)
+![createAssets1](https://github.com/user-attachments/assets/20b386f5-3647-481c-89af-15811e38a3ff)
+-------------------------------------------------------------------------------------------
+<img alt="Scenes" src="https://github.com/user-attachments/assets/7fa21df7-cfc4-490e-8d17-836775eb90b5"></br>
+Projects contain all the data associated with a particular game-in-progress including the Scene to load up at the start of a game and the list of Persistant GameObjects in the game, (game managers, etc.), Sav but mostly information that is not relevant to the end user. Project files are saved in JSON format.  New Projects are made in the Project Hub when you first launch the engine.
+
+<img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc">
+<p>Scenes are the container for all GameObjects and are saved in JSON format using a JSON Formatting library for simple parsing.</p>
+
+<img alt="TileSet" src="https://github.com/user-attachments/assets/33c561a0-40b5-4d0d-ab76-2a4ff9b8d828">
+<p>TileSets are used by the TileMap system to allow them to draw texture tiles onto TileMap components in the Scene View.</p>
+
+<img alt="Script" src="https://github.com/user-attachments/assets/9c2e9d4b-ab18-4624-b7ab-b213d16e306a">
+<p>Lua script files are for scripting.  In FlatEngine, these files have the extension ".scp.lua" in order to be seen and processed by the engine correctly. You create new Script files in the File Explorer window by right clicking and adding the new asset or inside a Script component in the Inspector window.</p>
+
+![newScript](https://github.com/user-attachments/assets/6bba31c5-beb4-4ed7-a1a2-9fce5679b5b4)
+
+<img alt="Mapping Context" src="https://github.com/user-attachments/assets/fc6ed04f-5fb0-476d-a076-c1c7c1b9d181">
+<p>Mapping Contexts (and the Mapping Context Editor) are the interface for binding input actions to specific controls.  Currently mouse/keyboard and XInput (Xbox controller) are supported with more planned to be added in the future.  You can programmatically change bindings using Lua Scripts.</p>
+
+<img alt="Animation" src="https://github.com/user-attachments/assets/e88f98cd-855e-40c8-8b32-e3759fcbdd08">
+<p>Animations are what the Animation components use to... play animations.  Animations are edited using the Animator window in combination with the Keyframe Editor and Animation Timeline.  If you have used Unity then you should be familiar with how this functions.</p>
+
+<img alt="Prefab" src="https://github.com/user-attachments/assets/f0bb4978-2afe-425b-9ac0-6a09710e92ca">
+<p>Prefabs are saved GameObjects (including any children and components) that can be instantiated at runtime, or at any time, into the Scene.  You can drag and drop them from the File Explorer into the Scene or create them from the top menu bar in `Create -> Prefabs -> your_existing_prefab`.</p>
+
+![createPrefabs](https://github.com/user-attachments/assets/ca76e4f5-5aad-46be-ab91-ea3a88ef5a12)
+
+--------------------------------------------------------------------------------------
+
 
 ## Engine Components
 
@@ -241,136 +378,7 @@ The TileMap component allows the user to quickly draw scenes using TileSets crea
 | TileSets        | The list of available TileSets you can use to draw with for this TileMap.
 | Collision Areas | Sets of colliders that the user can draw in the TileMap that function identically to the BoxCollider components (because they are under the hood).|
 
-
---------------------------------------------------------------------------------------
-
-
-## Engine Assets
-
-<img alt="Scenes" src="https://github.com/user-attachments/assets/7fa21df7-cfc4-490e-8d17-836775eb90b5"></br>
-Projects contain all the data associated with a particular project including scene to load up at the start of a game but mostly information that is not relevant to the end user.|
-
-<img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc">
-<p>Scenes are the container for all GameObjects and are saved in JSON format using a JSON Formatting library for simple parsing.</p>
-</div>
-
-<img alt="TileSet" src="https://github.com/user-attachments/assets/33c561a0-40b5-4d0d-ab76-2a4ff9b8d828">
-<p>TileSets are used by the TileMap system to allow them to draw texture tiles.</p>
-</div>
-
-<img alt="Script" src="https://github.com/user-attachments/assets/9c2e9d4b-ab18-4624-b7ab-b213d16e306a">
-<p>Lua script files for scripting.  In FlatEngine, these files have the extension ".scp.lua".</p>
-</div>
-
-<img alt="Mapping Context" src="https://github.com/user-attachments/assets/fc6ed04f-5fb0-476d-a076-c1c7c1b9d181">
-<p>Mapping Contexts (and the Mapping Context Editor) are the interface for binding input actions to specific controls.  Currently mouse/keyboard and XInput (Xbox controller) are supported with more planned to be added in the future.  The Mapping Context system is not yet exposed to the Scripting system so it is not yet possible to dynamically set key bindings (in a game settings menu for example) but that is a feature that is easy to implement and is toward the top of the list of priorities.</p>
-</div>
-
-<img alt="Animation" src="https://github.com/user-attachments/assets/e88f98cd-855e-40c8-8b32-e3759fcbdd08">
-<p>Animations are what the Animation components use to... play animations.  Animations are edited using the Animator window in combination with the Keyframe Editor.  If you have used Unity you should be familiar with how this functions.</p>
-</div>
-
-<img alt="Prefab" src="https://github.com/user-attachments/assets/f0bb4978-2afe-425b-9ac0-6a09710e92ca">
-<p>Prefabs are saved GameObjects (including any children and components) that can be instantiated at runtime, or at any time.</p>
-</div>
-
-
-
---------------------------------------------------------------------------------------
-
-
-## Viewports
-
-### Scene View
-
-The Scene View is the viewport where you'll be spending most of your time.  Here you will layout your GameObjects and set up your Scenes and are able to see the active boundaries of GameObject components like Canvases, Cameras, BoxColliders and Buttons.
-____________________________________________________________________________________________________________
-![sceneView](https://github.com/user-attachments/assets/01fc138e-8675-4182-b6fc-154918711973)
-
-### Game View
-
-The Game View displays the actual final look your game will have when it is built and running.  There are no widgets displayed here, only the final result of all your hard work.
-____________________________________________________________________________________________________________
-![gameView](https://github.com/user-attachments/assets/279db1db-4a67-476e-8c7c-b52eb80ca0a3)
-
-### Inspector
-
-The Inspector viewport is where you will edit all of the values of each GameObject's components.  Click on a GameObject either in the Scene Hierarchy, Persistant GameObject Hierarchy, or within the Scene View to focus it in the Inspector window.  Once focused, each component attached to the object will be shown and editable and you are able to rename the GameObject.  Each component can be collapsed to conserve space within the view and you can even collapse them all at the same time by clicking the button to the left of the "Tags" button.
-____________________________________________________________________________________________________________
-![inspector](https://github.com/user-attachments/assets/173fc721-7a84-4edd-85a5-6b805c9a9a74)
-____________________________________________________________________________________________________________
-Speaking of Tags, this is where you go to set a GameObject's Tags within the editor.  The final, and most important part of the Inspector is the ability to add new components to GameObjects.  You can do this either by clicking the three dots hamburger button on the top right or using the big purple "Add Component" button on the very bottom of the viewport.
-____________________________________________________________________________________________________________
-![addComponent](https://github.com/user-attachments/assets/3cf147ac-54d5-41b9-a3fc-55e668d022bc)
-
-### Hierarchy
-
-The Hierarchies are where you will find the list of all GameObjects in your Scene and in your Project.  Individual Scenes each hold their own set of GameObjects.  In addition to those objects there are also a set of Persistant GameObjects that belong to each Project.  These objects don't get unloaded when you change Scenes and they are visible in the Persistant Hierarchy.  All regular Scene objects are found in the Hierarchy viewport.  These viewports function identically to one another and allow you to visually see the structure of your Scene.  Each GameObject can have many nested children that will appear in a collapsable section under each parent object.  You can click and drag GameObjects onto other GameObjects to set them as children of those objects.  Remove a GameObject as a child by dragging it into a space between two GameObjects in the Hierarchy.
-____________________________________________________________________________________________________________
-![hierarchies](https://github.com/user-attachments/assets/9cd84272-a9e5-4bb7-b74a-579032597c8a)
-
-
-### Logger
-
-Where all text output and error messages are displayed.  Messages from the engine are prefixed `[C++]` and messages from Lua scripts you've written are prefixed `[LUA]`.  All logging functions available to you are in the Lua sections of this README toward the bottom.
-____________________________________________________________________________________________________________
-![logger](https://github.com/user-attachments/assets/74cf062b-8c8a-4417-861a-e5c2a64c840d)
-
-### Animator & Keyframe Editor
-
-The Animator lets you animate component properties of GameObjects.  You can select a component property to animate in the dropdown menu and add it to the Animation to cause it to pop up in the timeline window with a new keyframe to edit.  If you select the keyframe with the Keyframe Editor open like it is in the photo, you can see all of the properties you are able to edit on the selected keyframe.  If you want to animate a specific property, make sure the checkbox is checked next to it.  You can move the keyframe pip inside the Animation Timeline directly to change the time it is played by clicking and dragging it or you can directly input the keyframe time in the Keyframe Editor window.  Don't forget to save any changes made to the Animation using the three dots hamburger button in the main Animation viewport.
-____________________________________________________________________________________________________________
-![animatorKeyFrameEditor](https://github.com/user-attachments/assets/f996a862-6877-4a80-b406-43727f4ca49e)
-
-### File Explorer
-
-The File Exploerer is a real-time representation of the folder structure of the project directory.  It supports basic creation of assets and deletion through a right-click context menu.
-____________________________________________________________________________________________________________
-![rightClickContext](https://github.com/user-attachments/assets/be7a3472-92dc-473e-afde-d40923da1c49)
-____________________________________________________________________________________________________________
-You can also drag and drop assets directly into the Scene View to create GameObjects from them like prefabs and images. You can also drag images, animation files, audio files, and font (.tff) files directly from the File Explorer into GameObject components to use them as references in Sprite, Text, Animation and Audio compnonents.
-____________________________________________________________________________________________________________
-![fileExplorer](https://github.com/user-attachments/assets/bea7a924-216d-4592-b425-65a5a686290e)
-
-### Mapping Context Editor
-
-Using the Mapping Context Editor you can bind input actions to specific keys and buttons and save them to be accessed through Lua scripts.  You can either create new Mapping Contexts through the editor or through the right-click context menu in the File Explorer window.  Doing so will automatically open the editor with the new Mapping Context opened and ready to edit.  Don't forget to save all your changes after adding your input actions!
-____________________________________________________________________________________________________________
-![mappingContextEditor](https://github.com/user-attachments/assets/d45c57da-b8b8-4a23-bf1e-d6259d3f21d8)
-
-### TileSet Editor
-
-Using the TileSet Editor you can create the TileSets that you'll use inside the TileMap components.  All you have to do is create a new TileSet either in the TileSet Editor or in the File Explorer right-click context menu and drag and drop an image from the File Explorer into the input as your tiling image.  This component is still early in development so it only allows a 16x16 selection for each tile for now.  Once an image is chosen, click on each tile you want to be included in your TileSet and if your TileSet is selected in a TileMap component, you should see them start to appear as available tiles to paint with.
-____________________________________________________________________________________________________________
-![tileSetEditor](https://github.com/user-attachments/assets/2319b498-71ee-432c-92af-523a79acfdd6)
-____________________________________________________________________________________________________________
-Change your brush mode to Tile Drawing mode by clicking on the brush icon in the top left corner of the Scene View.  Your other options are:
-1. Translate mode (default, for moving GameObjects around within the Scene View)
-2. Tile Brush mode: For drawing selected tiles on a selected TileMap
-3. Erase mode: For erasing tiles drawn
-4. BoxCollider draw mode: This mode allows you to create collision areas for your TileMaps that line up with the tile grid nicely.  It's still a very young feature and is pretty unpolished, but it works in it's current state.
-5. Tile Select mode: For selecting multiple tiles in order to move them to somewhere else within the TileMap using the Tile Move mode.
-6. Tile Move mode: For moving selected groups of tiles within the TileMap.  This feature is also very unpolished and I don't recommend relying on it too much.
-   
-Once you're in Tile Brush mode, click on the tile you want to draw in the TileMap component and start drawing!
-
-![brushModeSelect](https://github.com/user-attachments/assets/767f2555-066b-4cfd-ac20-94e0fb90d668)
-
-If you want to try out the collision area drawing feature, great!  Scroll down to the bottom of the TileMap component to create a Collision Area.  Then either click "Draw Collision Areas" or choose the BoxCollision Draw Mode brush in the top right of the Scene View again:
-
-![boxCollisionDrawMode](https://github.com/user-attachments/assets/2a9205b8-4bff-4a6d-8206-93fe12cfee61)
-
-Click and drag to create as many BoxColliders as you wish:
-____________________________________________________________________________________________________________
-![collisionAreaDrawn](https://github.com/user-attachments/assets/bdaf0134-8856-4d88-8a29-e7f4fa009e1e)
-____________________________________________________________________________________________________________
-When you're done, back in the TileMap component click "Generate Colliders" and your Collision Areas will be combined into one big collider.  You can then give the attached GameObject any Tags (just like any other GameObject) and the Collision system will respect those Tags.  Remember, the TileMap system is still underdeveloped, so your experience with it will vary.</br>
-____________________________________________________________________________________________________________
-![collisionAreaGenerated](https://github.com/user-attachments/assets/12fe97a2-40d8-414c-b4d5-1ec1b96d0eca)
-
-
---------------------------------------------------------------------------------------
-
+-----------------------------------------------------------------------------------------------------------------
 
 ## Using FlatEngine
 
@@ -495,11 +503,13 @@ Your results and the usefulness of FlatEngine may vary.
 
 ### Lua Scripting in FlatEngine
 
-Please see the section at the very bottom where every function exposed to Lua will eventually be listed along with a description of what it does.
+Please see the section at the very bottom where every engine and class function exposed to Lua is listed along with a description of what it does and what it returns.
 
 Scripting in FlatEngine is done in a specific way due to how Lua is implemented in it.  Before each script is run, a Lua table is created for each Lua Script that exists.  These tables will be used by each script of the same name to keep track of and access each instance of the GameObject that "owns" a copy, using the GameObjects ID.  For example:
 
-A Script named "Health" is created.  At time of creation, a new Lua table is made called Health.  Then, in the `Awake()` function of the `PlayerController.scp.lua` script file, a new index in the Health table is created using the ID of the GameObject.  This means that each GameObject can only have ONE script component for each script that exists.  You cannot have two script components that have the same Script attached in one GameObject (I am not sure why you would want to anyway).  IMPORTANT: All data that is specific to this script that needs to be tracked and accessed on a per-object basis MUST be put inside this table if you want to access it later in the script and from other script files.
+A Script named "Health" is created.  At time of creation, a new Lua table is made called Health.  Then, in the `Awake()` function of the `PlayerController.scp.lua` script file, a new index in the Health table is created using the ID of the GameObject.  This means that each GameObject can only have ONE script component for each script that exists.  You cannot have two script components that have the same Script attached in one GameObject (I am not sure why you would want to anyway).  IMPORTANT: All data that is specific to this script that needs to be tracked and accessed on a per-object basis MUST be put inside this table if you want to access it later in the script and from other script files.  This is because of the global nature of the Lua implementation. Every Script sees every other Script and every other function.
+
+*Note: GameObject IDs can be viewed by hovering over a GameObject in the Hierarchies and holding `left alt`.  The same can be done to view the IDs of components in the Inspector View.*
 
 Let us say that you want to track the health of whatever GameObject that is using this script.  In the `Awake()` function of this script you would add your health variables like so:
 
@@ -599,16 +609,15 @@ If this doesn't make sense, I recommend looking into Lua and what is really happ
 
 Here is a list of every function that is called by the engine at specific times and therefore is guaranteed to have the my_id and this_object variables set to whatever GameObject is currently being referred to by the script:
 
-
 `Awake()` -- Called at upon instantiation of the GameObject
 `Start()` -- Called after all Awake functions have been called upon instantiation of the GameObject
 `Update()` -- Called once per frame
-`OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening 
-`OnBoxCollisionEnter(collidedWith)` -- Called on the first frame a collision happens
-`OnBoxCollisionLeave(collidedWith)` -- Called when a collision ceases
-`OnCircleCollision(collidedWith)` -- Called every frame there is a collision happening 
-`OnCircleCollisionEnter(collidedWith)` -- Called on the first frame a collision happens
-`OnCircleCollisionLeave(collidedWith)` -- Called when a collision ceases
+`OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a BoxCollider that is colliding
+`OnBoxCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a BoxCollider that is colliding
+`OnBoxCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a BoxCollider that is now no longer colliding
+`OnCircleCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a CircleCollider that is colliding
+`OnCircleCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a CircleCollider that is colliding
+`OnCircleCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a CircleCollider that is now no longer colliding
 `OnButtonMouseOver()` -- Called every frame the mouse is hovering a Button
 `OnButtonMouseEnter()` -- Called on the first frame a mouse is hovering a Button
 `OnButtonMouseLeave()` -- Called when the mouse stops hovering a Button
@@ -624,7 +633,7 @@ Any Animation Event function that is called during an Animation
 
 ## Lua Functions Available
 
-This is a comprehensive list of all functions that can be called in Lua to interact with FlatEngine2D, GameObjects, and components:
+This is a comprehensive list of all functions that can be called in Lua to interact with FlatEngine2D, GameObjects, and their components:
 
 `CreateGameObject(long parentID = -1)`<br/>
 Action: Creates a GameObject.<br/>
@@ -807,13 +816,11 @@ Parameters: `std::string contextName`, `std::string inputAction` - InputAction t
 Returns: `void`<br/>
 
 
-# UNDER CONSTRUCTION
-
 ### FlatEngine classes exposed to Lua and their methods (Lua usertypes)
 
 
 
-## Scene
+## Class Scene
 
 |Method|Details|
 |:-----|-------|
@@ -830,7 +837,7 @@ Action: Returns the filepath of the calling Scene.</br>
 Parameters: `none`</br>
 Returns: `std::string`|
 
-## Vector2
+## Class Vector2
 
 |Method|Details|
 |:-----|-------|
@@ -904,7 +911,7 @@ Parameters: </br>
 Returns: `void`|
 
 
-## GameObject
+## Class GameObject
 |Method|Details|
 |:-----|-------|
 |`GetID()`|Action: Gets GameObject ID.</br>Parameters: `none`</br>Returns: `long`|
@@ -952,7 +959,7 @@ Returns: `void`|
 |`HasScript()`|Action: Returns whether a GameObject Has a Script with specified name.</br>Parameters: `std::string scriptName`</br>Returns: `bool hasScript`|
 |`FindChildByName(std::string childName)`|Action: Gets specified child of GameObject by name.</br>Parameters: `std::string childName`</br>Returns: `GameObject*` or `nullptr` if no child exists with that name.|
 
-## Transform
+## Class Transform
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -967,7 +974,7 @@ Returns: `void`|
 |`GetScale()`|Action: Gets the x and y scale of the GameObject.</br>Parameters: `none`</br>Returns: `Vector2 scale`|
 |`LookAt()`|Action: Causes the GameObject to rotate at the specified position.</br>Parameters: `Vector2 position`</br>Returns: `void`|
 
-## Sprite
+## Class Sprite
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -987,7 +994,7 @@ Returns: `void`|
 |`GetAlpha()`|Action: Gets the value of the alpha channel of the texture's tint color.</br>Parameters: `none`</br>Returns: `float alpha`|
 |`SetPivotPoint()`|Action: Sets the location the texture should pivot on when rotating.</br>Parameters: `std::string pivotPoint` - syntax expected for pivot point selection:Parameters: `std::string pivotPoint` - string syntax expected for pivot point selection: "PivotCenter", "PivotLeft", "PivotRight", "PivotTop", "PivotBottom", "PivotTopLeft", "PivotTopRight", "PivotBottomRight","PivotBottomLeft"</br>Returns: `void`|
 
-## Text
+## Class Text
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -998,7 +1005,7 @@ Returns: `void`|
 |`SetText()`|Action: Sets the text displayed by the Text component.</br>Parameters: `std::string displayedText`</br>Returns: `void`|
 |`SetPivotPoint()`|Action: Sets the location the text should pivot on when rotating.</br>Parameters: `std::string pivotPoint` - string syntax expected for pivot point selection: "PivotCenter", "PivotLeft", "PivotRight", "PivotTop", "PivotBottom", "PivotTopLeft", "PivotTopRight", "PivotBottomRight","PivotBottomLeft"</br>Returns: `void`|
 
-## Audio
+## Class Audio
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1012,7 +1019,7 @@ Returns: `void`|
 |`Stop(std::string soundName)`|Action: Stops playing the specified sound attached to Audio component.</br>Parameters: `std::string soundName`</br>Returns: `void`|
 |`StopAll()`|Action: Stops all sounds that are currently playing on the Audio component.</br>Parameters: `none`</br>Returns: `void`|
 
-## Button
+## Class Button
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1036,7 +1043,7 @@ Returns: `void`|
 |`GetLuaFunctionName()`|Action: Get the Lua function name that will be called when the Button is activated.</br>Parameters: `none`</br>Returns: `std::string functionName`|
 |`SetLuaFunctionParams(ParameterList functionParameters)`|Action: Set the list of function parameters, (ParameterList), that will be passed to the Button when it is activated.</br>Parameters: `ParameterList functionParameters`</br>Returns: `void`|
 
-## Script
+## Class Script
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1046,7 +1053,7 @@ Returns: `void`|
 |`GetAttachedScript()`|Action: Gets the Script that is attached to the Script component.</br>Parameters: `none`</br>Returns: `std::string attachedScriptName`|
 |`RunAwakeAndStart()`|Action: Run the Awake() and Start() Lua methods on the attached Script.</br>Parameters: `none`</br>Returns: `void`|
 
-## Animation
+## Class Animation
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1060,7 +1067,7 @@ Returns: `void`|
 |`IsPlaying(std::string animationName)`|Action: Returns true if the specified Animation is playing.</br>Parameters: `std::string animationName`</br>Returns: `bool isPlaying`|
 |`HasAnimation(std::string animationName)`|Action: Returns true if the Animation component has an Animation with specified name.</br>Parameters: `std::string animationName`</br>Returns: `bool hasAnimation`|
 
-## ScriptParameter
+## Class ScriptParameter
 |Method|Details|
 |:-----|-------|
 |`type()`|Action: Gets the type of the ScriptParameter. ("string", "int", "float", "double", "long", "bool", "Vector2") </br>Parameters: `none`</br>Returns: `std::string type`|
@@ -1080,13 +1087,13 @@ Returns: `void`|
 |`SetBool()`|Action: Sets the bool value inside the ScriptParameter.</br>Parameters: `bool boolValue`</br>Returns: `none`|
 |`SetVector2()`|Action: Sets the Vector2 value inside the ScriptParameter.</br>Parameters: `Vector2 vector2Value`</br>Returns: `none`|
 
-## ParameterList
+## Class ParameterList
 |Method|Details|
 |:-----|-------|
 |`SetParameters(std::vector<ScriptParameter> parameters)`|Action: Sets the ScriptParameters member variable of the ParameterList.</br>Parameters: `std::vector<ScriptParameter> parameters`</br>Returns: `void`|
 |`AddParameter(ScriptParameter parameters)`|Action: Add a the ScriptParameter to the ParameterList.</br>Parameters: `ScriptParameter parameter`</br>Returns: `void`|
 
-## RigidBody
+## Class RigidBody
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1117,7 +1124,7 @@ Returns: `void`|
 |`GetTerminalVelocity()`|Action: Gets the terminal velocity of the RigidBody.</br>Parameters:  `none`</br>Returns: `float terminalVelocity`|
 |`IsGrounded()`|Action: Returns whether the GameObject is grounded. (uses attached BoxCollider to determine)</br> Parameters: `none`</br> Returns: `bool isGrounded`|
 
-## Collider
+## Class Collider
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1126,7 +1133,7 @@ Returns: `void`|
 |`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
 |`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
 
-## BoxCollider - inherits from Collider
+## Class BoxCollider - inherits from Collider
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1135,7 +1142,7 @@ Returns: `void`|
 |`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
 |`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
 
-## CircleCollider - inherits from Collider
+## Class CircleCollider - inherits from Collider
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1144,7 +1151,7 @@ Returns: `void`|
 |`SetActive(bool isActive)`|Action: Sets the component as active or inactive.</br>Parameters: `bool isActive`</br>Returns: `none`|
 |`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
 
-## CharacterController
+## Class CharacterController
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|
@@ -1154,13 +1161,13 @@ Returns: `void`|
 |`IsActive()`|Action: Returns whether the component is active.</br>Parameters: `none`</br>Returns: `bool isActive`|
 |`MoveToward(Vector2 direction)`|Action: Causes the GameObject to move in specified direction at the `maxSpeed` indicated inside the component settings.</br>Parameters: `Vector2 direction`</br>Returns: `void`|
 
-## InputMapping
+## Class InputMapping
 |Method|Details|
 |:-----|-------|
 |`KeyCode()`|Action: Gets the key code associated with the InputMapping.</br>Parameters: `none`</br>Returns: `std::string keyCode`|
 |`InputActionName()`|Action: Gets the name of the InputAction associated with the InputMapping.</br>Parameters: `none`</br>Returns: `std::string inputActionName`|
 
-## MappingContext
+## Class MappingContext
 |Method|Details|
 |:-----|-------|
 |`Fired()`|Action: Returns true on initial press of InputAction key code.</br>Parameters: `none`</br>Returns: `bool inputActionFired`|
@@ -1171,7 +1178,7 @@ Returns: `void`|
 
 --------------------------------------------------------------------------------------
 
-### Editing Engine Colors and Adding More
-You may access and customize the colors of FlatEngine2D by opening and editing the file located at `engine/scripts/Colors.lua`.
-You may access and customize the textures used by FlatEngine2D by opening and editing the file located at `engine/scripts/Textures.lua`.
+### Editing Engine Colors and More
+You may access and customize the colors of FlatEngine2D by opening and editing the file located at `engine/scripts/Colors.lua`.</br>
+You may access and customize the textures used by FlatEngine2D by opening and editing the file located at `engine/scripts/Textures.lua`.</br>
 You may access and customize the Tags used by FlatEngine2D GameObjects by opening and editing the file located at `engine/scripts/Tags.lua`.

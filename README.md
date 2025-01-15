@@ -97,13 +97,34 @@ ________________________________________________________________________________
 
 ### File Explorer
 
-The File Exploerer is a real-time representation of the folder structure of the project directory.  It supports basic creation of assets and deletion through a right-click context menu.
+The File Exploerer is a real-time representation of the folder structure of the project directory.  It supports basic creation of assets and deletion through a right-click context menu.</br>
 ____________________________________________________________________________________________________________
 ![rightClickContext](https://github.com/user-attachments/assets/be7a3472-92dc-473e-afde-d40923da1c49)
 ____________________________________________________________________________________________________________
-You can also drag and drop assets directly into the Scene View to create GameObjects from them like prefabs and images. You can also drag images, animation files, audio files, and font (.tff) files directly from the File Explorer into GameObject components to use them as references in Sprite, Text, Animation and Audio compnonents.
+You can also drag and drop assets directly into the Scene View to create GameObjects from them like prefabs and images. You can also drag images, animation files, audio files, and font (.tff) files directly from the File Explorer into GameObject components to use them as references in Sprite, Text, Animation and Audio compnonents.</br>
 ____________________________________________________________________________________________________________
 ![fileExplorer](https://github.com/user-attachments/assets/bea7a924-216d-4592-b425-65a5a686290e)
+____________________________________________________________________________________________________________
+### Project File Structure in FlatEngine2D
+When a Project is created in FlatEngine2D, a new directory with the Projects name is created inside the `projects/` directory.  Each project folder is created with the same directories at creation.  When a game Project is done and built, only the Project that is currently being worked on will be moved over to the build location, so please only put assets you are using for each project within the directory with the Projects name.
+____________________________________________________________________________________________________________
+![projectStructure](https://github.com/user-attachments/assets/4ea0b962-4aaa-450c-843b-a93dc40e916d)
+____________________________________________________________________________________________________________
+
+### Building The Final Project
+To build a game Project, open the Project Settings by clicking `Settings -> Project Settings`:
+____________________________________________________________________________________________________________
+![navigateToProjectSettings](https://github.com/user-attachments/assets/ca6ce978-99fb-4b10-88cd-5e2e82909ca8)</br>
+Then make sure to set the `Game start Scene path` and the `Final project build path`.  The Game start Scene path must be relative to the FlatEngine-Runtime folder. ie. `../projects/project_name/scenes/scene_name.scn`.
+The build path can be an absolute path.  Neither paths should contain quotation marks.
+____________________________________________________________________________________________________________
+![projectSettings](https://github.com/user-attachments/assets/20a7e9f8-efd4-4061-bbb5-a3ff6a51a34d)
+____________________________________________________________________________________________________________
+Then, you can build your final game by clicking the `Settings -> Build Project` button in the main menu bar.  FlatEngine2D will create a directory in the location you specified and move all the required files over:</br>
+![buildproject](https://github.com/user-attachments/assets/021dcf24-a5b5-4fec-a6e7-a38aa92c198c)
+____________________________________________________________________________________________________________
+
+
 
 ### Mapping Context Editor
 

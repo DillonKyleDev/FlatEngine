@@ -66,19 +66,29 @@ See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in Fla
 
 ### Tags
 
-Tags are a list of properties that a GameObject can have that can be queried using 
+Tags are a list of arbitrary properties that a GameObject can have that can be queried using 
 
 `GameObject::HasTag("tagName")` 
 
-The Tags system is also used in the collision detection system to prevent objects that should not interact from interacting, based on the tags each GameObject is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove Tags and they will appear in the engine upon either closing and reopening the engine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar.</br>
+You can set a GameObject to have a specific tag using `GameObject::SetTag("tagName", true);` or, more conveniently, set it in the Inspector viewport by clicking the `Tags` button below the object's name:
 
-Tags must remain in the format present in the `Tags.lua` file: Comma-separated strings inside a Lua table named `F_Tags`
+
+
+The Tags system is also used by the collision detection system to prevent objects that should not interact from interacting, based on the tags each GameObject has and is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar.</br>
+
+Tags must remain in the format present in the `Tags.lua` file: Comma-separated strings inside a Lua table named `F_Tags`</br>
 
 `F_Tags = {
   "Tagname",
   "Tagname2",
   "Tagname3"
-}`
+}`</br>
+or</br>
+`F_Tags = {</br>
+  "Tagname",</br>
+  "Tagname2",</br>
+  "Tagname3"</br>
+}`</br>
 
 ## Components
 

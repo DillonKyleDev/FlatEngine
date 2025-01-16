@@ -49,7 +49,7 @@ I've spent a lot of time with the Unity game engine and so have found comfort in
 ## Viewports
 
 All available viewports can be seen in the Viewports dropdown menu on the main top bar menu.  Here you can toggle each one visible or invisible.  You can freely drag each viewport to whatever location in the engine you want and can dock them inside each other.  Just grab a viewport by the top tab bar and put it where you want it.
-
+____________________________________________________________________________________________________________
 ![viewports](https://github.com/user-attachments/assets/b1bf8081-cfd3-4ee3-8903-f43aae22ad2f)
 
 ----------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ The Inspector viewport is where you will edit all of the values of each GameObje
 ____________________________________________________________________________________________________________
 ![inspector](https://github.com/user-attachments/assets/173fc721-7a84-4edd-85a5-6b805c9a9a74)
 ____________________________________________________________________________________________________________
-Speaking of Tags, this is where you go to set a GameObject's Tags within the editor.  The final, and most important part of the Inspector is the ability to add new components to GameObjects.  You can do this either by clicking the three dots hamburger button on the top right or using the big purple "Add Component" button on the very bottom of the viewport.
+The final and perhaps most important feature of the Inspector window is the ability to add new components to GameObjects.  You can do this either by clicking the three dots expand button on the top right or using the big purple "Add Component" button on the very bottom of the viewport.
 ____________________________________________________________________________________________________________
 ![addComponent](https://github.com/user-attachments/assets/3cf147ac-54d5-41b9-a3fc-55e668d022bc)
 
@@ -91,41 +91,36 @@ ________________________________________________________________________________
 
 ### Animator & Keyframe Editor
 
-The Animator lets you animate component properties of GameObjects.  You can select a component property to animate in the dropdown menu and add it to the Animation to cause it to pop up in the timeline window with a new keyframe to edit.  If you select the keyframe with the Keyframe Editor open like it is in the photo, you can see all of the properties you are able to edit on the selected keyframe.  If you want to animate a specific property, make sure the checkbox is checked next to it.  You can move the keyframe pip inside the Animation Timeline directly to change the time it is played by clicking and dragging it or you can directly input the keyframe time in the Keyframe Editor window.  Don't forget to save any changes made to the Animation using the three dots hamburger button in the main Animation viewport.
+The Animator lets you animate component properties of GameObjects.  You can select a component property to animate in the dropdown menu and add it to the Animation to cause it to pop up in the timeline window with a new keyframe to edit.  If you select the keyframe with the Keyframe Editor open like it is in the photo, you can see all of the properties you are able to edit on the selected keyframe.  If you want to animate a specific property, make sure the checkbox is checked next to it.  You can move the keyframe pip inside the Animation Timeline directly to change the time it is played by clicking and dragging it or you can directly input the keyframe time in the Keyframe Editor window.  Don't forget to save any changes made to the Animation using the three dots expand button in the main Animation viewport.
 ____________________________________________________________________________________________________________
 ![animatorKeyFrameEditor](https://github.com/user-attachments/assets/f996a862-6877-4a80-b406-43727f4ca49e)
 
 ### File Explorer
 
-The File Exploerer is a real-time representation of the folder structure of the project directory.  It supports basic creation of assets and deletion through a right-click context menu.</br>
+The File Explorer is a real-time representation of the folder structure in the current Project directory.  The currently loaded Project's asset directory will be displayed in the `Directories` hierarchy on the left-hand panel.  It is navigable either via the directory tree or by double clicking folders in the right-hand panel.</br>
 ____________________________________________________________________________________________________________
-![rightClickContext](https://github.com/user-attachments/assets/be7a3472-92dc-473e-afde-d40923da1c49)
+![fileExplorerLayout](https://github.com/user-attachments/assets/ed8de4d5-e7e6-4143-a5ac-896e506d7a06)</br>
+____________________________________________________________________________________________________________
+The File Explorer supports creation and deletion of assets through the right-click context menu. *Files deleted here are well and truly deleted from your computer*.</br>
+  ____________________________________________________________________________________________________________
+![rightClickContext](https://github.com/user-attachments/assets/be7a3472-92dc-473e-afde-d40923da1c49)</br>
 ____________________________________________________________________________________________________________
 You can also drag and drop assets directly into the Scene View to create GameObjects from them like prefabs and images. You can also drag images, animation files, audio files, and font (.tff) files directly from the File Explorer into GameObject components to use them as references in Sprite, Text, Animation and Audio compnonents.</br>
-____________________________________________________________________________________________________________
-![fileExplorer](https://github.com/user-attachments/assets/bea7a924-216d-4592-b425-65a5a686290e)
-____________________________________________________________________________________________________________
+
 ### Project File Structure in FlatEngine2D
-When a Project is created in FlatEngine2D, a new directory with the Projects name is created inside the `projects/` directory.  Each project folder is created with the same directories at creation.  When a game Project is done and built, only the Project that is currently being worked on will be moved over to the build location, so please only put assets you are using for each project within the directory with the Projects name.
-____________________________________________________________________________________________________________
-![projectStructure](https://github.com/user-attachments/assets/4ea0b962-4aaa-450c-843b-a93dc40e916d)
-____________________________________________________________________________________________________________
+When a Project is created in FlatEngine2D, a new directory with the Project's name is created inside the `projects/` directory.  Each project folder is created with the same set of directories upon creation:</br>
+1. animations/
+2. audio/
+3. images/
+4. images/tileTextures/
+5. mappingContexts/
+6. prefabs/
+7. scenes/
+8. scripts/
+9. tileSets/
 
-### Building The Final Project
-To build a game Project, open the Project Settings by clicking `Settings -> Project Settings`:
+When a game Project is finished and built, only the Project that is currently open in the editor will be copied over to the build location, so please only put assets you are using for the current Project in the directory with the Project's name. *Don't use assets in other Project folders.*
 ____________________________________________________________________________________________________________
-![navigateToProjectSettings](https://github.com/user-attachments/assets/ca6ce978-99fb-4b10-88cd-5e2e82909ca8)</br>
-Then make sure to set the `Game start Scene path` and the `Final project build path`.  The Game start Scene path must be relative to the FlatEngine-Runtime folder. ie. `../projects/project_name/scenes/scene_name.scn`.
-The build path can be an absolute path.  Neither paths should contain quotation marks.
-____________________________________________________________________________________________________________
-![projectSettings](https://github.com/user-attachments/assets/20a7e9f8-efd4-4061-bbb5-a3ff6a51a34d)
-____________________________________________________________________________________________________________
-Then, you can build your final game by clicking the `Settings -> Build Project` button in the main menu bar.  FlatEngine2D will create a directory in the location you specified and move all the required files over:</br>
-![buildproject](https://github.com/user-attachments/assets/021dcf24-a5b5-4fec-a6e7-a38aa92c198c)
-____________________________________________________________________________________________________________
-
-
-
 ### Mapping Context Editor
 
 Using the Mapping Context Editor you can bind input actions to specific keys and buttons and save them to be accessed through Lua scripts.  You can either create new Mapping Contexts through the editor or through the right-click context menu in the File Explorer window.  Doing so will automatically open the editor with the new Mapping Context opened and ready to edit.  Don't forget to save all your changes after adding your input actions!
@@ -171,31 +166,32 @@ ________________________________________________________________________________
 There are several key assets that you will be spending a lot of time with in FlatEngine2D.  Most of these can be created in several ways, but the main two are through the main menu top bar: `Create -> Assets -> asset`, and through the right-click context menue in the File Explorer window.
 
 -------------------------------------------------------------------------------------------
+![createAssets1](https://github.com/user-attachments/assets/20b386f5-3647-481c-89af-15811e38a3ff) or 
 ![newAssets2](https://github.com/user-attachments/assets/85b10b5b-9f6c-4b77-9c7b-f4ed3a3ba8da)
-![createAssets1](https://github.com/user-attachments/assets/20b386f5-3647-481c-89af-15811e38a3ff)
 -------------------------------------------------------------------------------------------
 <img alt="Scenes" src="https://github.com/user-attachments/assets/7fa21df7-cfc4-490e-8d17-836775eb90b5"></br>
-Projects contain all the data associated with a particular game-in-progress including the Scene to load up at the start of a game and the list of Persistant GameObjects in the game, (game managers, etc.), Sav but mostly information that is not relevant to the end user. Project files are saved in JSON format.  New Projects are made in the Project Hub when you first launch the engine.
+Projects contain all the data associated with a particular game-in-progress including the Scene to load up at the start of a game and the list of Persistant GameObjects in the game, (game managers, etc.), Sav but mostly information that is not relevant to the end user. Project files are saved in JSON format.  New Projects are made in the Project Hub when you first launch the engine.</br>
 
-<img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc">
-<p>Scenes are the container for all GameObjects and are saved in JSON format using a JSON Formatting library for simple parsing.</p>
+<img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc"></br>
+Scenes are the container for all GameObjects and are saved in JSON format using a JSON Formatting library for simple parsing.</br>
 
-<img alt="TileSet" src="https://github.com/user-attachments/assets/33c561a0-40b5-4d0d-ab76-2a4ff9b8d828">
-<p>TileSets are used by the TileMap system to allow them to draw texture tiles onto TileMap components in the Scene View.</p>
+<img alt="TileSet" src="https://github.com/user-attachments/assets/33c561a0-40b5-4d0d-ab76-2a4ff9b8d828"></br>
+TileSets are used by the TileMap system to allow them to draw texture tiles onto TileMap components in the Scene View.</br>
 
-<img alt="Script" src="https://github.com/user-attachments/assets/9c2e9d4b-ab18-4624-b7ab-b213d16e306a">
-<p>Lua script files are for scripting.  In FlatEngine, these files have the extension ".scp.lua" in order to be seen and processed by the engine correctly. You create new Script files in the File Explorer window by right clicking and adding the new asset or inside a Script component in the Inspector window.</p>
+<img alt="Script" src="https://github.com/user-attachments/assets/9c2e9d4b-ab18-4624-b7ab-b213d16e306a"></br>
+Lua script files are for scripting.  In FlatEngine, these files have the extension ".scp.lua" in order to be seen and processed by the engine correctly. You create new Script files in the File Explorer window by right clicking and adding the new asset or inside a Script component in the Inspector window.</br>
 
 ![newScript](https://github.com/user-attachments/assets/6bba31c5-beb4-4ed7-a1a2-9fce5679b5b4)
 
-<img alt="Mapping Context" src="https://github.com/user-attachments/assets/fc6ed04f-5fb0-476d-a076-c1c7c1b9d181">
-<p>Mapping Contexts (and the Mapping Context Editor) are the interface for binding input actions to specific controls.  Currently mouse/keyboard and XInput (Xbox controller) are supported with more planned to be added in the future.  You can programmatically change bindings using Lua Scripts.</p>
+<img alt="Mapping Context" src="https://github.com/user-attachments/assets/fc6ed04f-5fb0-476d-a076-c1c7c1b9d181"></br>
+Mapping Contexts (and the Mapping Context Editor) are the interface for binding input actions to specific controls.  Currently mouse/keyboard and XInput (Xbox controller) are supported with more planned to be added in the future.  You can programmatically change bindings using Lua Scripts.</br>
 
-<img alt="Animation" src="https://github.com/user-attachments/assets/e88f98cd-855e-40c8-8b32-e3759fcbdd08">
-<p>Animations are what the Animation components use to... play animations.  Animations are edited using the Animator window in combination with the Keyframe Editor and Animation Timeline.  If you have used Unity then you should be familiar with how this functions.</p>
+<img alt="Animation" src="https://github.com/user-attachments/assets/e88f98cd-855e-40c8-8b32-e3759fcbdd08"></br>
+Animations are what the Animation components use to play component Animations.  Animations are edited using the Animator window in combination with the Keyframe Editor and Animation Timeline.  If you have used Unity then you should be familiar with how this functions.</br>
 
-<img alt="Prefab" src="https://github.com/user-attachments/assets/f0bb4978-2afe-425b-9ac0-6a09710e92ca">
-<p>Prefabs are saved GameObjects (including any children and components) that can be instantiated at runtime, or at any time, into the Scene.  To create a newe Prefab, right click a GameObject in either of the two Hierarchy windows and select `Create Prefab`.  GameObjects that are already Prefabs will show more options to select when right clicking.  You will be able to save changes made to this object and extend those changes to all other Prefabs of the same name, unpack the Prefab (Remove it from the Prefab system without changing any of it's properties so that any changes made to it can be saved without effecting the Prefab family), or create a brand new Prefab with a new name based on that GameObject.  Creating a new Prefab from an existing Prefab won't change any Prefabs that were made using the old Prefab name. You can drag and drop Prefabs from the File Explorer into the Scene or create them from the top menu bar in `Create -> Prefabs -> your_existing_prefab`.</p>
+<img alt="Prefab" src="https://github.com/user-attachments/assets/f0bb4978-2afe-425b-9ac0-6a09710e92ca"></br>
+
+Prefabs are saved GameObjects (including any children and components) that can be instantiated at runtime, or at any time, into the Scene.  To create a new Prefab, right click a GameObject in either of the two Hierarchy windows and select `Create Prefab`.  GameObjects that are already Prefabs will show more options to select when right clicking.  You will be able to save changes made to this object and extend those changes to all other Prefabs of the same name, unpack the Prefab (Remove it from the Prefab system without changing any of it's properties so that any changes made to it can be saved without effecting the Prefab family), or create a brand new Prefab with a new name based on that GameObject.  Creating a new Prefab from an existing Prefab won't change any Prefabs that were made using the old Prefab name. You can drag and drop Prefabs from the File Explorer into the Scene or create them from the top menu bar in `Create -> Prefabs -> your_existing_prefab`.  You can also instantiate prefabs using Lua with `Instantiate(std::string prefabName, Vector2 position)` where the `position` is the (x,y) position to instantiate the Prefab in the Scene.
 
 ![createPrefabs](https://github.com/user-attachments/assets/ca76e4f5-5aad-46be-ab91-ea3a88ef5a12)
 
@@ -212,8 +208,7 @@ Tags are a list of arbitrary properties that a GameObject can have that can be q
 
 You can set a GameObject to have a specific tag using `GameObject::SetTag("tagName", true);` or, more conveniently, set it in the Inspector viewport by clicking the `Tags` button below the object's name:
 
-![tagsbutton](https://github.com/user-attachments/assets/527d1366-83b2-4f64-b54e-90357daab056)
-
+![tagsbutton](https://github.com/user-attachments/assets/527d1366-83b2-4f64-b54e-90357daab056) <b>--->>>></b>
 ![availableTags](https://github.com/user-attachments/assets/e0030132-1724-416b-bf37-a8dc983eb9a3)
 
 The Tags system is also used by the collision detection system to prevent objects that should not interact from interacting, based on the Tags each GameObject has and is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar. This is also how you reload any customizations you've made to the color scheme of FlatEngine2D in the `Colors.lua` file or engine icons in `Textures.lua` located in the same directory as `Tags.lua`.  (Your changes will also go into effect upon relaunching the engine)</br></br>
@@ -254,7 +249,7 @@ FlatEngine2D's GameObjects require components be attached for their functionalit
 15. CharacterController
 16. TileMap (work in progress)
 
-
+____________________________________________________________________________________________________________
 ### Transform
 
 All GameObjects MUST have a Transform and are created with one that cannot be removed.  Transforms handle:
@@ -265,10 +260,17 @@ All GameObjects MUST have a Transform and are created with one that cannot be re
 |Position| An (x,y) Vector2 that holds position relative to the Origin point.|
 |Scale| The Scale of the entire object and its components (seperate from any additional component scale parameters, ie.. Sprite scale). Children are not yet affected by the scale of their parent. I am still working out how I want this aspect of scaling to be handled.|
 |Rotation| The rotation in degrees of the object.  Currently the collision system does not account for rotations of objects so Sprites are all that are affected by this.|
-
+____________________________________________________________________________________________________________
 ### Sprite
 
-Sprites are the visual representation of GameObjects in the Scenes.  Sprites have the following properties
+Sprites are the visual representation of GameObjects in the Scenes.  Supported image formats for Sprites are:</br>
+- .png
+- .jpg
+- .tif
+- .webp
+- .jxl
+
+Sprites have the following properties:
 
 | Property        | Description |
 |:--------------------|:---------------|
@@ -435,7 +437,7 @@ You can add GameObjects to the Scene using the top menu bar in several ways:
 <h3>Add Components to the GameObjects</h3>
 If the Inspector window is open, (Viewports -> Inspector) you can click on a GameObject to focus on it and view its components in the Inspecor viewport.  Here you have two options to add components:
 
-1. Hamburger button under the GameObjects name then click "Add Component"
+1. Three dots expand button under the GameObjects name then click "Add Component"
 2. The purple Add Component button at the bottom of the Inspector viewport
 
 
@@ -496,11 +498,11 @@ Animations can be used to do nearly everything sequencial you need to accomplish
 
 Open the newly created Animation by double clicking the file in the File Explorer or by opening the Animator window (`Viewports > Animator`) along with the Keyframe Editor (`Viewports > Keyframe Editor`).
 
-From here you can open your Animation file using the hamburger menu in the Animator window. (If you double clicked it should be opened in the Animator by default).  Add properties to the new Animation using the dropdown menu.  Select Transform from the dropdown and click "Add".  To add keyframes, click on the new Transform button that appeared and click "Add Keyframe" just above the Animator Timeline.  To edit the new keyframe, be sure you have the Keyframe Editor open and click on the keyframe diamond pip in the Animation timeline.  You are free to drag each animation keyframe along the timeline grid to change the time the keyframe is played.  You can also zoom in and out in the timeline window for more precision.
+From here you can open your Animation file using the expand button menu in the Animator window. (If you double clicked it should be opened in the Animator by default).  Add properties to the new Animation using the dropdown menu.  Select Transform from the dropdown and click "Add".  To add keyframes, click on the new Transform button that appeared and click "Add Keyframe" just above the Animator Timeline.  To edit the new keyframe, be sure you have the Keyframe Editor open and click on the keyframe diamond pip in the Animation timeline.  You are free to drag each animation keyframe along the timeline grid to change the time the keyframe is played.  You can also zoom in and out in the timeline window for more precision.
 
-In the Keyframe Editor, the properties you can animate for any component are listed with a checkbox next to them.  If you would like to animate a property you must check the box next to it to enable it.  Change the scale property from x = 1, y = 1 to x = 2, y = 2 and save the animation using the same hamburger menu you used to load the Animation.
+In the Keyframe Editor, the properties you can animate for any component are listed with a checkbox next to them.  If you would like to animate a property you must check the box next to it to enable it.  Change the scale property from x = 1, y = 1 to x = 2, y = 2 and save the animation using the same expand button menu you used to load the Animation.
 
-Now we have to attach the Animation to a GameObject.  Create a new GameObject with a Sprite component and add an image path to the Sprite by dragging one from the File Explorer viewport or by using the folder button next to the input.  Now add an Animation component to the GameObject and drag our new Animation into the input or click the folder button next to the input and give the Animation a name that we can use to reference it, then click "Add Animation" to officially add the animation to our GameObject.  Don't forget to save the scene using `File > Save Scene` ... or click on the hamburger menu in the top right of the Hierarchy viewport and click "Quick Save".  Now that our GameObject has the Animation attached to it we can click "Preview" in the Animation component to preview the Animation on our GameObject in the SceneView.  Do keep in mind though that if you Play Animation while the gameloop is not running, the `Awake()` and `Start()` functions will not have been run on any scripts yet, so if you are using Event functions in your Animations, be mindful of that.  Also keep in mind that when you preview an animation, it changes the GameObjects properties and there is currently nothing built in to revert its properties to before you previewed it, so please make sure to save your changes before previewing animations, that way you can easily reload the scene to revert back to the original object properties.
+Now we have to attach the Animation to a GameObject.  Create a new GameObject with a Sprite component and add an image path to the Sprite by dragging one from the File Explorer viewport or by using the folder button next to the input.  Now add an Animation component to the GameObject and drag our new Animation into the input or click the folder button next to the input and give the Animation a name that we can use to reference it, then click "Add Animation" to officially add the animation to our GameObject.  Don't forget to save the scene using `File > Save Scene` ... or click on the expand button menu in the top right of the Hierarchy viewport and click "Quick Save".  Now that our GameObject has the Animation attached to it we can click "Preview" in the Animation component to preview the Animation on our GameObject in the SceneView.  Do keep in mind though that if you Play Animation while the gameloop is not running, the `Awake()` and `Start()` functions will not have been run on any scripts yet, so if you are using Event functions in your Animations, be mindful of that.  Also keep in mind that when you preview an animation, it changes the GameObjects properties and there is currently nothing built in to revert its properties to before you previewed it, so please make sure to save your changes before previewing animations, that way you can easily reload the scene to revert back to the original object properties.
 
 To call this animation and play it using scripts we can use:
 
@@ -509,13 +511,33 @@ To call this animation and play it using scripts we can use:
 Where `nameOfAnimation` is the name we gave it in the Animation component of the GameObject.
 
 
-That is the general intended flow of using FlatEngine.  This concludes this brief introduction into using FlatEngine.  This will be updated as development progresses but I hope this is enough to get you started.  This project is in active development so there are a few things you need to keep in mind if you plan to use FlatEngine:
+____________________________________________________________________________________________________________
 
-This is a hobby project.
-It will crash eventually so save often. THERE IS NO AUTOSAVE.
-Things will change, sometimes drastically, with updates.
-Your results and the usefulness of FlatEngine may vary.
+### Building The Final Project
+To build a game Project, open the Project Settings by clicking `Settings -> Project Settings`:
+____________________________________________________________________________________________________________
+![navigateToProjectSettings](https://github.com/user-attachments/assets/ca6ce978-99fb-4b10-88cd-5e2e82909ca8)</br>
+____________________________________________________________________________________________________________
+Then make sure to set the `Game start Scene path` and the `Final project build path`.  The Game start Scene path must be relative to the FlatEngine-Runtime folder. ie. `../projects/project_name/scenes/scene_name.scn`.  The build path can be an absolute path.  Neither paths should contain quotation marks.
+____________________________________________________________________________________________________________
+![projectSettings](https://github.com/user-attachments/assets/20a7e9f8-efd4-4061-bbb5-a3ff6a51a34d)
+____________________________________________________________________________________________________________
+Then, you can build your final game by clicking the `Settings -> Build Project` button in the main menu bar.  FlatEngine2D will create a directory in the location you specified and move all the required files over.</br>
+____________________________________________________________________________________________________________
+![buildproject](https://github.com/user-attachments/assets/021dcf24-a5b5-4fec-a6e7-a38aa92c198c)
+____________________________________________________________________________________________________________
+If you've configured the settings correctly as stated above, you should end up with a folder containing something like this:</br>
+____________________________________________________________________________________________________________
+![finalBuildDirectory](https://github.com/user-attachments/assets/581323a7-6143-4d25-8cd9-356fa1c479c2)</br>
+____________________________________________________________________________________________________________
+Go into the `Runtime` folder and you'll see:</br>
+____________________________________________________________________________________________________________
+![executable](https://github.com/user-attachments/assets/8e2e5a40-425c-45bf-82ad-1d4c9a4adef4)</br>
+____________________________________________________________________________________________________________
+All of these files are important for your game to work properly except for the `log_output.txt` files and the `.pdd` files, which can safely be deleted.  You can now rename the `.exe` file to anything you want and run it.  Your game is now ready to be zipped up and distributed! Congratulations!
+____________________________________________________________________________________________________________
 
+That is the general intended work flow of FlatEngine2D. This will be updated as development progresses but I hope this is enough to get you started.  Read on for specifics about scripting in FlatEngine2D using Lua.
 
 
 --------------------------------------------------------------------------------------
@@ -526,7 +548,7 @@ Your results and the usefulness of FlatEngine may vary.
 
 Please see the section at the very bottom where every engine and class function exposed to Lua is listed along with a description of what it does and what it returns.
 
-Scripting in FlatEngine is done in a specific way due to how Lua is implemented in it.  Before each script is run, a Lua table is created for each Lua Script that exists.  These tables will be used by each script of the same name to keep track of and access each instance of the GameObject that "owns" a copy, using the GameObjects ID.  For example:
+Scripting in FlatEngine2D is done in a specific way due to how Lua is implemented in it.  Before each script is run, a Lua table is created for each Lua Script that exists.  These tables will be used by each script of the same name to keep track of and access each instance of the GameObject that "owns" a copy, using the GameObjects ID.  For example:
 
 A Script named "Health" is created.  At time of creation, a new Lua table is made called Health.  Then, in the `Awake()` function of the `PlayerController.scp.lua` script file, a new index in the Health table is created using the ID of the GameObject.  This means that each GameObject can only have ONE script component for each script that exists.  You cannot have two script components that have the same Script attached in one GameObject (I am not sure why you would want to anyway).  IMPORTANT: All data that is specific to this script that needs to be tracked and accessed on a per-object basis MUST be put inside this table if you want to access it later in the script and from other script files.  This is because of the global nature of the Lua implementation. Every Script sees every other Script and every other function.
 
@@ -836,101 +858,40 @@ Action: Begins a timer that allows the next button press to map to the specified
 Parameters: `std::string contextName`, `std::string inputAction` - InputAction to remap, `int timeoutTime` - how long in milliseconds to allow for input before timing out.<br/>
 Returns: `void`<br/>
 
+-----------------------------------------------------------
 
-### FlatEngine classes exposed to Lua and their methods (Lua usertypes)
-
-
-
-## Class Scene
-
-|Method|Details|
-|:-----|-------|
-|`SetName(std::string name)`|
-Action: Sets the name of calling Scene.</br>
-Parameters: `std::string name`</br>
-Returns: `void`|
-|`GetName()`|
-Action: Gets the name of calling Scene.</br>
-Parameters: `none`</br>
-Returns: `std::string`|
-|`GetPath()`|
-Action: Returns the filepath of the calling Scene.</br>
-Parameters: `none`</br>
-Returns: `std::string`|
+## FlatEngine classes exposed to Lua - Lua usertypes
 
 ## Class Vector2
-
 |Method|Details|
 |:-----|-------|
-|`Vector2(), Vector2(float x,float y)`|
-Action: Constructors</br>
-Parameters: `float x, float y` - values to set x and y to.</br>\
-Returns: `Vector2`|
-|`SetX(float x)`|
-Action: Sets the x-value of the Vector2.</br>
-Parameters: `float x` - the value to set x to.</br>
-Returns: `void`|
-|`x()`|
-Action: Gets the x component.</br>
-Parameters: `none`</br>
-Returns: `float`|
-|`SetY(float y)`|
-Action: Sets the y-value of the Vector2.</br>
-Parameters: `float y` - the value to set y to.</br>
-Returns: `void`|
-|`y()`|
-Action: Gets the y component.</br>
-Parameters: `none`</br>
-Returns: `float`|
-|`SetXY(float x, float y)`|
-Action: Sets both the x and y components.</br>
-Parameters: `float x, float y`</br>
-Returns: `none`|
+|`Vector2(), Vector2(float x,float y)`|Action: Constructors</br>Parameters: `float x, float y` - values to set x and y to.</br>\Returns: `Vector2`|
+|`SetX(float x)`|Action: Sets the x-value of the Vector2.</br>Parameters: `float x` - the value to set x to.</br>Returns: `void`|
+|`x()`|Action: Gets the x component.</br>Parameters: `none`</br>Returns: `float`|
+|`SetY(float y)`|Action: Sets the y-value of the Vector2.</br>Parameters: `float y` - the value to set y to.</br>Returns: `void`|
+|`y()`|Action: Gets the y component.</br>Parameters: `none`</br>Returns: `float`|
+|`SetXY(float x, float y)`|Action: Sets both the x and y components.</br>Parameters: `float x, float y`</br>Returns: `none`|
 
-## Vector4
+## Class Vector4
 |Method|Details|
 |:-----|-------|
-|`Vector4(), Vector4(float x, float y, float z, float w)`|
-Action: Constructors</br>
-Parameters: `float x, float y, float z, float w` - values to set x, y, z, and w to.</br>
-Returns: `Vector4`|
-|`SetX(float x)`|
-Action: Sets the x-value of the Vector2.</br>
-Parameters: `float x` - the value to set x to.</br>
-Returns: `void`|
-|`x()`|
-Action: Gets the x component.</br>
-Parameters: `none`</br>
-Returns: `float x`|
-|`SetY(float y)`|
-Action: Sets the y-value of the Vector2.</br>
-Parameters: `float y` - the value to set y to.</br>
-Returns: `void`|
-|`y()`|
-Action: Gets the y component.</br>
-Parameters: `none`</br>
-Returns: `float y`|
-|`SetZ()`|
-Action: Sets the z component.</br>
-Parameters: </br>
-Returns: `void`| 
-|`z()`|
-Action: Gets the z component.</br>
-Parameters: </br>
-Returns: `float z`|
-|`SetW()`|
-Action: Sets the w component.</br>
-Parameters: </br>
-Returns: `void`| 
-|`w()`|
-Action: Gets the w component.</br>
-Parameters: </br>
-Returns: `float w`|
-|`SetXYZW()`|
-Action: Sets all four components.</br>
-Parameters: </br>
-Returns: `void`|
+|`Vector4(), Vector4(float x, float y, float z, float w)`|Action: Constructors</br>Parameters: `float x, float y, float z, float w` - values to set x, y, z, and w to.</br>Returns: `Vector4`|
+|`SetX(float x)`|Action: Sets the x-value of the Vector2.</br>Parameters: `float x` - the value to set x to.</br>Returns: `void`|
+|`x()`|Action: Gets the x component.</br>Parameters: `none`</br>Returns: `float x`|
+|`SetY(float y)`|Action: Sets the y-value of the Vector2.</br>Parameters: `float y` - the value to set y to.</br>Returns: `void`|
+|`y()`|Action: Gets the y component.</br>Parameters: `none`</br>Returns: `float y`|
+|`SetZ()`|Action: Sets the z component.</br>Parameters: </br>Returns: `void`| 
+|`z()`|Action: Gets the z component.</br>Parameters: </br>Returns: `float z`|
+|`SetW()`|Action: Sets the w component.</br>Parameters: </br>Returns: `void`| 
+|`w()`|Action: Gets the w component.</br>Parameters: </br>Returns: `float w`|
+|`SetXYZW()`|Action: Sets all four components.</br>Parameters: </br>Returns: `void`|
 
+## Class Scene
+|Method|Details|
+|:-----|-------|
+|`SetName(std::string name)`|Action: Sets the name of calling Scene.</br>Parameters: `std::string name`</br>Returns: `void`|
+|`GetName()`|Action: Gets the name of calling Scene.</br>Parameters: `none`</br>Returns: `std::string`|
+|`GetPath()`|Action: Returns the filepath of the calling Scene.</br>Parameters: `none`</br>Returns: `std::string`|
 
 ## Class GameObject
 |Method|Details|

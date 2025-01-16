@@ -3,26 +3,27 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 309,
+                    "id": 323,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 7.142857074737549,
+                    "xPos": 6.625,
                     "xScale": 0.15000000596046448,
                     "yOrigin": 0.0,
-                    "yPos": -8.75,
+                    "yPos": -6.125,
                     "yScale": 0.15000000596046448
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 310,
+                    "id": 322,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 16,
@@ -40,7 +41,7 @@
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "BlasterRound",
-                    "id": 311,
+                    "id": 321,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -54,7 +55,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 312,
+                    "id": 319,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -63,7 +64,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 313,
+                    "id": 318,
                     "soundData": [
                         {
                             "b_isMusic": false,
@@ -92,52 +93,104 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.0,
-                    "id": 314,
+                    "id": 324,
                     "type": "BoxCollider"
                 }
             ],
-            "id": 63,
-            "ignoreTags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": true,
-                "PlayerDamage": true,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": true,
-                "TerrainTrigger": false
-            },
+            "id": 64,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": true
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "BlasterRound",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 7.142857074737549,
-            "spawnLocationY": -8.75,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": true,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 6.625,
+            "spawnLocationY": -6.125,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

@@ -236,7 +236,6 @@ namespace FlatGui
 
 	void RunOnceAfterInitialization()
 	{
-		FL::InitializeMappingContexts();
 		SetupProfilerProcesses();
 	}
 

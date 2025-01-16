@@ -12,7 +12,7 @@ namespace FlatGui
 	{
 		std::vector<std::string> projectPaths = std::vector<std::string>();
 
-		for (std::string projectPath : FL::FindAllFilesWithExtension(FL::GetDir("projectDir"), ".prj"))
+		for (std::string projectPath : FL::FindAllFilesWithExtension("../projects", ".prj"))
 		{
 			projectPaths.push_back(projectPath);
 		}

@@ -3,20 +3,21 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 280,
+                    "id": 619,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 0.0,
+                    "xPos": 6.26086950302124,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -2.4000000953674316,
+                    "yPos": 0.1304347813129425,
                     "yScale": 1.0
                 },
                 {
@@ -32,13 +33,13 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 281,
+                    "id": 620,
                     "type": "Animation"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 282,
+                    "id": 621,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\satellite\\satellite_green.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -56,7 +57,7 @@
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "Satellite",
-                    "id": 283,
+                    "id": 622,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -99,7 +100,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 1.100000023841858,
-                    "id": 284,
+                    "id": 623,
                     "type": "BoxCollider"
                 },
                 {
@@ -112,55 +113,107 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 285,
+                    "id": 624,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
                 }
             ],
-            "id": 58,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": true,
-                "EnemyTrigger": true,
-                "EnvironmentalDamage": true,
-                "EnvironmentalTrigger": true,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": true,
-                "TerrainTrigger": false
-            },
+            "id": 93,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": true
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "Satellite",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 0.0,
-            "spawnLocationY": -2.4000000953674316,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 6.26086950302124,
+            "spawnLocationY": 0.1304347813129425,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": true
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

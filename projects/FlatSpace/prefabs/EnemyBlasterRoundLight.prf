@@ -3,26 +3,27 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 435,
+                    "id": 613,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -18.521739959716797,
+                    "xPos": 7.17391300201416,
                     "xScale": 0.15000000596046448,
                     "yOrigin": 0.0,
-                    "yPos": 0.3913043439388275,
+                    "yPos": -7.130434989929199,
                     "yScale": 0.15000000596046448
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 436,
+                    "id": 614,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 16,
@@ -40,7 +41,8 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "EnemyBlasterRound",
-                    "id": 437,
+                    "id": 615,
+                    "scriptParameters": [],
                     "type": "Script"
                 },
                 {
@@ -53,7 +55,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 438,
+                    "id": 616,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -62,7 +64,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 439,
+                    "id": 617,
                     "soundData": [
                         {
                             "b_isMusic": false,
@@ -91,52 +93,104 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.0,
-                    "id": 440,
+                    "id": 618,
                     "type": "BoxCollider"
                 }
             ],
-            "id": 62,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": true,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": true,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": true,
-                "TerrainTrigger": false
-            },
+            "id": 92,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": true
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "EnemyBlasterRoundLight",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -18.521739959716797,
-            "spawnLocationY": 0.3913043439388275,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": true,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 7.17391300201416,
+            "spawnLocationY": -7.130434989929199,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": true
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

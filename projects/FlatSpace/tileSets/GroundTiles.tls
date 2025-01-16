@@ -1,23 +1,10 @@
 {
     "tileSetData": {
         "name": "GroundTiles",
-        "texturePath": "../projects/Clash/images/tilesets/BrickWall.png",
+        "texturePath": "..\\projects\\Clash\\images\\tileTextures\\BrickWall.png",
         "tileHeight": 16,
-        "tileSetPath": "../projects/Clash/tileSets/GroundTiles.tls",
+        "tileSetPath": "../projects/FlatSpace/tileSets/GroundTiles.tls",
         "tileWidth": 16
     },
-    "tiles": [
-        {
-            "index": 0
-        },
-        {
-            "index": 30
-        },
-        {
-            "index": 5
-        },
-        {
-            "index": 35
-        }
-    ]
+    "tiles": []
 }

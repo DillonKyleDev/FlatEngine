@@ -58,7 +58,6 @@ public:
 	{
 		A_GameLoop = new RuntimeGameLoop();
 		m_recreateWindow = false;
-		SetDirectoryType(FL::RuntimeDir);
 	}
 	~RuntimeApplication()
 	{
@@ -150,10 +149,14 @@ public:
 		if (!b_hasRunOnce)
 		{
 			json projectJson;
-			FL::InitializeTileSets();
-			FL::InitializeMappingContexts();
-			FL::F_PrefabManager->InitializePrefabs();
 			FL::LoadGameProject(FL::FindAllFilesWithExtension("..\\", ".prj").front(), projectJson);
+			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
+			FL::F_AssetManager.CollectColors();
+			FL::F_AssetManager.CollectTextures();
+			FL::InitializeTileSets();
+			FL::F_PrefabManager->InitializePrefabs();
+			FL::RetrieveLuaScriptPaths();
+			FL::InitializeMappingContexts();
 			b_hasRunOnce = true;
 		}
 	}

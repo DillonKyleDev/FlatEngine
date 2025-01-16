@@ -6,12 +6,6 @@
 
 namespace FlatEngine
 {
-	enum DirectoryType {
-		RuntimeDir,
-		EditorDir,
-		NoDir
-	};
-
 	class GameLoop;
 
 	class Application
@@ -23,7 +17,6 @@ namespace FlatEngine
 			m_b_windowResized = false;
 			m_windowWidth = 1920;
 			m_windowHeight = 1080;
-			m_directoryType = NoDir;
 		}
 		~Application() {};
 
@@ -36,8 +29,6 @@ namespace FlatEngine
 		void WindowResized() { m_b_windowResized = true; };
 		void BeginRender(); // Defined in Application.cpp
 		void EndRender();   // Defined in Application.cpp
-		DirectoryType GetDirectoryType() { return m_directoryType; };
-		void SetDirectoryType(DirectoryType dirType) { m_directoryType = dirType; };
 		virtual GameLoop* GetGameLoop() { return nullptr; };
 		virtual bool GameLoopStarted() { return false; };
 		virtual bool GameLoopPaused() { return false; };
@@ -56,6 +47,5 @@ namespace FlatEngine
 		bool m_b_windowResized;
 		int m_windowWidth;
 		int m_windowHeight;
-		DirectoryType m_directoryType;
 	};
 }

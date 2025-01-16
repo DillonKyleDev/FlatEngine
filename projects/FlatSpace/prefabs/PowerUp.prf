@@ -3,28 +3,29 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                13
+                72
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 44,
+                    "id": 359,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 4.599999904632568,
+                    "xPos": 5.3125,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -9.199999809265137,
+                    "yPos": -6.1875,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 45,
+                    "id": 360,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUp.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 54,
@@ -52,14 +53,14 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 0.875,
-                    "id": 46,
+                    "id": 361,
                     "type": "BoxCollider"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "PowerUp",
-                    "id": 47,
+                    "id": 362,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -73,7 +74,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 48,
+                    "id": 363,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -82,7 +83,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 49,
+                    "id": 364,
                     "soundData": [
                         {
                             "b_isMusic": false,
@@ -93,71 +94,124 @@
                     "type": "Audio"
                 }
             ],
-            "id": 12,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": true,
-                "EnemyTrigger": true,
-                "EnvironmentalDamage": true,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": true,
-                "PlayerTrigger": true,
-                "Projectile": true,
-                "Terrain": true,
-                "TerrainTrigger": false
-            },
+            "id": 71,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "PowerUp",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 4.599999904632568,
-            "spawnLocationY": -9.199999809265137,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 5.3125,
+            "spawnLocationY": -6.1875,
+            "tags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         },
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 50,
+                    "id": 365,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": 4.599999904632568,
+                    "xOrigin": 5.3125,
                     "xPos": 0.0,
                     "xScale": 1.0,
-                    "yOrigin": -9.199999809265137,
+                    "yOrigin": -6.1875,
                     "yPos": 0.0,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -175,14 +229,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "PowerUp",
-                    "id": 52,
+                    "id": 367,
                     "scriptParameters": [],
                     "type": "Script"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -199,7 +253,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -217,14 +271,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "PowerUp",
-                    "id": 55,
+                    "id": 370,
                     "scriptParameters": [],
                     "type": "Script"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -241,7 +295,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -258,7 +312,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -275,7 +329,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 51,
+                    "id": 366,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\powerUpGlow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 53,
@@ -290,48 +344,100 @@
                     "yScale": 1.0
                 }
             ],
-            "id": 13,
-            "ignoreTags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 72,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "Glow",
-            "parent": 12,
+            "parent": 71,
             "prefabName": "",
             "spawnLocationX": 0.0,
             "spawnLocationY": 0.0,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

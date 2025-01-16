@@ -3,28 +3,29 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                61
+                80
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 286,
+                    "id": 421,
                     "rotation": 180.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 12.34000015258789,
+                    "xPos": 3.82608699798584,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -6.420000076293945,
+                    "yPos": -7.73913049697876,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 287,
+                    "id": 420,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\FlatSpace\\queen.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -52,7 +53,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 3.375,
-                    "id": 288,
+                    "id": 418,
                     "type": "BoxCollider"
                 },
                 {
@@ -65,7 +66,7 @@
                     "fallingGravity": 0.0,
                     "friction": 0.9950000047683716,
                     "gravity": 0.0,
-                    "id": 289,
+                    "id": 417,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -75,7 +76,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "airControl": 0.20000000298023224,
-                    "id": 290,
+                    "id": 416,
                     "maxAcceleration": 0.5,
                     "maxSpeed": 10.0,
                     "type": "CharacterController"
@@ -93,14 +94,14 @@
                             "path": "..\\projects\\FlatSpace\\animations\\ShipExplode.anm"
                         }
                     ],
-                    "id": 291,
+                    "id": 422,
                     "type": "Animation"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "Queen",
-                    "id": 292,
+                    "id": 423,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -130,71 +131,124 @@
                     "type": "Script"
                 }
             ],
-            "id": 60,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 79,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "Queen",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 12.34000015258789,
-            "spawnLocationY": -6.420000076293945,
-            "tags": {
-                "Enemy": true,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 3.82608699798584,
+            "spawnLocationY": -7.73913049697876,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         },
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 293,
+                    "id": 424,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": 12.34000015258789,
+                    "xOrigin": 3.82608699798584,
                     "xPos": -1.100000023841858,
                     "xScale": 1.100000023841858,
-                    "yOrigin": -6.420000076293945,
+                    "yOrigin": -7.73913049697876,
                     "yPos": 1.399999976158142,
                     "yScale": 0.10000000149011612
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -211,7 +265,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -228,7 +282,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -245,7 +299,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -262,7 +316,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -279,7 +333,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -296,7 +350,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -313,7 +367,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -330,7 +384,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -347,7 +401,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -364,7 +418,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -381,7 +435,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -398,7 +452,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -415,7 +469,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -432,7 +486,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -449,7 +503,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -466,7 +520,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -483,7 +537,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -500,7 +554,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -517,7 +571,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -534,7 +588,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -551,7 +605,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -568,7 +622,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -585,7 +639,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -602,7 +656,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -619,7 +673,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -636,7 +690,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -653,7 +707,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -670,7 +724,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -687,7 +741,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -704,7 +758,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -721,7 +775,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -738,7 +792,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -755,7 +809,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -772,7 +826,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -789,7 +843,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -806,7 +860,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -823,7 +877,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -840,7 +894,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -857,7 +911,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -874,7 +928,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -891,7 +945,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -908,7 +962,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -925,7 +979,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -942,7 +996,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -959,7 +1013,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -976,7 +1030,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -993,7 +1047,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1010,7 +1064,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1027,7 +1081,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1044,7 +1098,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1061,7 +1115,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1078,7 +1132,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1095,7 +1149,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1112,7 +1166,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1129,7 +1183,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1146,7 +1200,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1163,7 +1217,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1180,7 +1234,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1197,7 +1251,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1214,7 +1268,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1231,7 +1285,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1248,7 +1302,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1265,7 +1319,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1282,7 +1336,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1299,7 +1353,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1316,7 +1370,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1333,7 +1387,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1350,7 +1404,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1367,7 +1421,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1384,7 +1438,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1401,7 +1455,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1418,7 +1472,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1435,7 +1489,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1452,7 +1506,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1469,7 +1523,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1486,7 +1540,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1503,7 +1557,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1520,7 +1574,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1537,7 +1591,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1554,7 +1608,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1571,7 +1625,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1588,7 +1642,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1605,7 +1659,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1622,7 +1676,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1639,7 +1693,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1656,7 +1710,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1673,7 +1727,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1690,7 +1744,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1707,7 +1761,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1724,7 +1778,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1741,7 +1795,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1758,7 +1812,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1775,7 +1829,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1792,7 +1846,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1809,7 +1863,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1826,7 +1880,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1843,7 +1897,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1860,7 +1914,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1877,7 +1931,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1894,7 +1948,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1911,7 +1965,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1928,7 +1982,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1945,7 +1999,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1962,7 +2016,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1979,7 +2033,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -1996,7 +2050,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2013,7 +2067,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2030,7 +2084,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2047,7 +2101,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2064,7 +2118,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2081,7 +2135,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2098,7 +2152,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2115,7 +2169,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2132,7 +2186,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2149,7 +2203,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2166,7 +2220,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2183,7 +2237,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2200,7 +2254,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2217,7 +2271,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 425,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -2232,48 +2286,100 @@
                     "yScale": 1.0
                 }
             ],
-            "id": 61,
-            "ignoreTags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 80,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "Healthbar",
-            "parent": 60,
+            "parent": 79,
             "prefabName": "",
             "spawnLocationX": -1.100000023841858,
             "spawnLocationY": 1.399999976158142,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

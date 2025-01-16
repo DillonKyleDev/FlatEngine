@@ -3,28 +3,29 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                68
+                99
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 299,
+                    "id": 639,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -16.636363983154297,
+                    "xPos": -5.695652008056641,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -9.090909004211426,
+                    "yPos": 0.95652174949646,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 300,
+                    "id": 640,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\transport\\transportFourCar.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 0,
@@ -42,7 +43,7 @@
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "Transport",
-                    "id": 301,
+                    "id": 641,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -69,7 +70,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 302,
+                    "id": 642,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -84,7 +85,7 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 303,
+                    "id": 643,
                     "type": "Animation"
                 },
                 {
@@ -101,114 +102,219 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 9.25,
-                    "id": 304,
+                    "id": 644,
                     "type": "BoxCollider"
                 }
             ],
-            "id": 67,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": true,
-                "EnemyTrigger": true,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": true,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": true,
-                "TerrainTrigger": false
-            },
+            "id": 98,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": true
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": true
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": true
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "Transport4",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -16.636363983154297,
-            "spawnLocationY": -9.090909004211426,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": -5.695652008056641,
+            "spawnLocationY": 0.95652174949646,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": true
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         },
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 305,
+                    "id": 645,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": -16.636363983154297,
+                    "xOrigin": -5.695652008056641,
                     "xPos": 4.5,
                     "xScale": 1.0,
-                    "yOrigin": -9.090909004211426,
+                    "yOrigin": 0.95652174949646,
                     "yPos": -0.10000000149011612,
                     "yScale": 1.0
                 }
             ],
-            "id": 68,
-            "ignoreTags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 99,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "Engines",
-            "parent": 67,
+            "parent": 98,
             "prefabName": "",
             "spawnLocationX": 4.5,
             "spawnLocationY": -0.10000000149011612,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

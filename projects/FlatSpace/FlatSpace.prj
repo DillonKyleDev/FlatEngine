@@ -20,21 +20,21 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "C:\\Users\\Dillon Kyle\\Desktop\\FlatSpace",
-            "currentFileDirectory": "..\\projects\\FlatSpace\\prefabs",
+            "currentFileDirectory": "..\\projects\\FlatSpace\\images\\sprites",
             "effectsVolume": 13,
             "focusedGameObjectID": -1,
             "loadedAnimationPath": "..\\projects\\FlatSpace\\animations\\Level1.anm",
-            "loadedScenePath": "..\\projects\\FlatSpace\\scenes\\Level2.scn",
+            "loadedScenePath": "..\\projects\\FlatSpace\\scenes\\MainMenu.scn",
             "musicVolume": 9,
             "path": "..\\projects\\FlatSpace\\FlatSpace.prj",
             "persistantGameObjectsScenePath": "",
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "..\\projects\\FlatSpace\\scenes\\MainMenu.scn",
-            "sceneViewGridStepX": 50.0,
-            "sceneViewGridStepY": 50.0,
-            "sceneViewScrollingX": 0.0,
-            "sceneViewScrollingY": 0.0
+            "sceneViewGridStepX": 20.0,
+            "sceneViewGridStepY": 20.0,
+            "sceneViewScrollingX": 404.0,
+            "sceneViewScrollingY": 195.0
         }
     ]
 }

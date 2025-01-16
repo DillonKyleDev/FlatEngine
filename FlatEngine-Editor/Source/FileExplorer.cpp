@@ -410,7 +410,7 @@ namespace FlatGui
 			icon = "luaFile";
 			openIn = "in Script Editor";
 		}
-		else if (extension == ".png")
+		else if (extension == ".png" || extension == ".jpg" || extension == ".tif" || extension == ".webp" || extension == ".jxl")
 		{
 			icon = "pngFile";
 			if (FG_visibleThumbnails.count(fs_filepath.string()) < 1)

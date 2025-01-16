@@ -85,7 +85,6 @@ public:
 	{
 		A_GameLoop = new EditorGameLoop();
 		m_b_recreateWindow = false;
-		SetDirectoryType(FL::EditorDir);
 	}
 	~EditorApplication()
 	{
@@ -206,7 +205,7 @@ public:
 			FlatGui::RenderProjectHub(FL::F_b_projectSelected, m_startupProject);
 			if (FL::F_b_projectSelected)
 			{
-				m_b_recreateWindow = true;
+				m_b_recreateWindow = true;				
 			}
 		}
 		else
@@ -221,25 +220,22 @@ public:
 
 		// Application specific rendering tasks
 		
-		/////////////////////////////
-		////////  WARNING!  /////////
-		/////////////////////////////
-		//  After recreating the window, you need to recreate any assets that were created using that window!!!
-		//  This can lead to assets not appearing even though everything seems like it should be working and fine
-		
 		// If window was recreated this frame ( for after selecting a project )
 		if (m_b_recreateWindow)
 		{
 			m_b_recreateWindow = false;
 			FL::F_Window->SetScreenDimensions(1500, 850);
+			FL::RestartImGui();
+			FlatGui::LoadProject(m_startupProject);
+			FL::LoadScene(FL::GetLoadedProject().GetLoadedScenePath());
+			FL::F_AssetManager.CollectDirectories();
+			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
 			FL::F_AssetManager.CollectColors();
-			FL::RestartImGui(); // ImGui setup relies on global colors
-			FL::F_AssetManager.CollectTextures(); 
+			FL::F_AssetManager.CollectTextures();
 			FL::InitializeTileSets();
 			FL::F_PrefabManager->InitializePrefabs();
-			FlatGui::LoadProject(m_startupProject);
-			FlatEngine::LoadScene(FlatEngine::GetLoadedProject().GetLoadedScenePath());
-			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
+			FL::RetrieveLuaScriptPaths();	
+			FL::InitializeMappingContexts();
 		}
 	}
 	void Quit()

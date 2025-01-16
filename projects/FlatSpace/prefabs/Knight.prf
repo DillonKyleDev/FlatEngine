@@ -3,28 +3,29 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                61
+                74
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 287,
+                    "id": 375,
                     "rotation": 180.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 10.779999732971191,
+                    "xPos": 2.08695650100708,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -9.039999961853027,
+                    "yPos": 1.3043478727340698,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 288,
+                    "id": 376,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\FlatSpace\\knight.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -52,7 +53,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 1.625,
-                    "id": 289,
+                    "id": 377,
                     "type": "BoxCollider"
                 },
                 {
@@ -64,14 +65,14 @@
                             "path": "..\\projects\\FlatSpace\\animations\\ShipExplode.anm"
                         }
                     ],
-                    "id": 290,
+                    "id": 378,
                     "type": "Animation"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "Knight",
-                    "id": 291,
+                    "id": 379,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -79,7 +80,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "airControl": 0.20000000298023224,
-                    "id": 292,
+                    "id": 380,
                     "maxAcceleration": 0.800000011920929,
                     "maxSpeed": 30.0,
                     "type": "CharacterController"
@@ -94,78 +95,131 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 293,
+                    "id": 381,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
                 }
             ],
-            "id": 60,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 73,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "Knight",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 10.779999732971191,
-            "spawnLocationY": -9.039999961853027,
-            "tags": {
-                "Enemy": true,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 2.08695650100708,
+            "spawnLocationY": 1.3043478727340698,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         },
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 294,
+                    "id": 382,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": 10.779999732971191,
+                    "xOrigin": 2.08695650100708,
                     "xPos": -0.800000011920929,
                     "xScale": 0.800000011920929,
-                    "yOrigin": -9.039999961853027,
+                    "yOrigin": 1.3043478727340698,
                     "yPos": 1.2999999523162842,
                     "yScale": 0.10000000149011612
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -182,7 +236,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -199,7 +253,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -216,7 +270,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -233,7 +287,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -250,7 +304,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -267,7 +321,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -284,7 +338,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -301,7 +355,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -318,7 +372,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -335,7 +389,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -352,7 +406,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -369,7 +423,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -386,7 +440,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -403,7 +457,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 295,
+                    "id": 383,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -418,48 +472,100 @@
                     "yScale": 1.0
                 }
             ],
-            "id": 61,
-            "ignoreTags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 74,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "Healthbar",
-            "parent": 60,
+            "parent": 73,
             "prefabName": "",
             "spawnLocationX": -0.800000011920929,
             "spawnLocationY": 1.2999999523162842,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

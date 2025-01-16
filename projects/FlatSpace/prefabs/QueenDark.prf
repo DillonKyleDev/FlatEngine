@@ -3,28 +3,29 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                59
+                82
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 276,
+                    "id": 545,
                     "rotation": 180.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 13.220000267028809,
+                    "xPos": -4.65217399597168,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -4.139999866485596,
+                    "yPos": -2.4782607555389404,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 277,
+                    "id": 546,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\FlatSpace\\queen.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -52,7 +53,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 3.375,
-                    "id": 278,
+                    "id": 547,
                     "type": "BoxCollider"
                 },
                 {
@@ -65,7 +66,7 @@
                     "fallingGravity": 0.0,
                     "friction": 0.9950000047683716,
                     "gravity": 0.0,
-                    "id": 279,
+                    "id": 548,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -75,7 +76,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "airControl": 0.20000000298023224,
-                    "id": 280,
+                    "id": 549,
                     "maxAcceleration": 0.5,
                     "maxSpeed": 10.0,
                     "type": "CharacterController"
@@ -93,14 +94,14 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 281,
+                    "id": 550,
                     "type": "Animation"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "Queen",
-                    "id": 282,
+                    "id": 551,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -130,71 +131,124 @@
                     "type": "Script"
                 }
             ],
-            "id": 58,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 81,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "QueenDark",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 13.220000267028809,
-            "spawnLocationY": -4.139999866485596,
-            "tags": {
-                "Enemy": true,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": -4.65217399597168,
+            "spawnLocationY": -2.4782607555389404,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         },
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 283,
+                    "id": 552,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": 13.220000267028809,
+                    "xOrigin": -4.65217399597168,
                     "xPos": -1.100000023841858,
                     "xScale": 1.100000023841858,
-                    "yOrigin": -4.139999866485596,
+                    "yOrigin": -2.4782607555389404,
                     "yPos": 1.399999976158142,
                     "yScale": 0.10000000149011612
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 284,
+                    "id": 553,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -211,7 +265,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 284,
+                    "id": 553,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotLeft",
                     "renderOrder": 27,
@@ -226,48 +280,100 @@
                     "yScale": 1.0
                 }
             ],
-            "id": 59,
-            "ignoreTags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            },
+            "id": 82,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "name": "Healthbar",
-            "parent": 58,
+            "parent": 81,
             "prefabName": "",
             "spawnLocationX": -1.100000023841858,
             "spawnLocationY": 1.399999976158142,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": false,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

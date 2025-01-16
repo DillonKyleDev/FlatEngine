@@ -3,26 +3,27 @@
     "Prefab": [
         {
             "_isActive": true,
+            "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 311,
+                    "id": 334,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -29.33333396911621,
+                    "xPos": 4.782608509063721,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -27.77777862548828,
+                    "yPos": -8.043478012084961,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 299,
+                    "id": 352,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\asteroid\\asteroid_3.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 0,
@@ -40,7 +41,7 @@
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "Asteroid",
-                    "id": 302,
+                    "id": 350,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -79,7 +80,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 303,
+                    "id": 349,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -99,7 +100,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.75,
-                    "id": 314,
+                    "id": 348,
                     "type": "BoxCollider"
                 },
                 {
@@ -111,52 +112,104 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 315,
+                    "id": 347,
                     "type": "Animation"
                 }
             ],
-            "id": 61,
-            "ignoreTags": {
-                "Enemy": true,
-                "EnemyDamage": true,
-                "EnemyTrigger": true,
-                "EnvironmentalDamage": true,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": true,
-                "TerrainTrigger": false
-            },
+            "id": 68,
+            "ignoreTags": [
+                {
+                    "Collectable": true
+                },
+                {
+                    "Enemy": true
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": true
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": true
+                },
+                {
+                    "Terrain": true
+                }
+            ],
             "name": "Asteroid2",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -29.33333396911621,
-            "spawnLocationY": -27.77777862548828,
-            "tags": {
-                "Enemy": false,
-                "EnemyDamage": false,
-                "EnemyTrigger": false,
-                "EnvironmentalDamage": false,
-                "EnvironmentalTrigger": false,
-                "InteractableItem": false,
-                "InteractableObject": true,
-                "Item": false,
-                "Npc": false,
-                "NpcTrigger": false,
-                "Player": false,
-                "PlayerDamage": false,
-                "PlayerTrigger": false,
-                "Projectile": false,
-                "Terrain": false,
-                "TerrainTrigger": false
-            }
+            "spawnLocationX": 4.782608509063721,
+            "spawnLocationY": -8.043478012084961,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": true
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
         }
     ]
 }

@@ -30,6 +30,7 @@ namespace FlatEngine
 	{
 		std::string projectName = GetFilenameFromPath(projectPath);
 
+		m_directories.emplace("projectDir", "..\\projects\\" + projectName + "\\");
 		m_directories.emplace("mappingContexts", "..\\projects\\" + projectName + "\\mappingContexts\\");
 		m_directories.emplace("prefabs", "..\\projects\\" + projectName + "\\prefabs\\");
 		m_directories.emplace("animations", "..\\projects\\" + projectName + "\\animations\\");
@@ -41,24 +42,13 @@ namespace FlatEngine
 		m_directories.emplace("tileTextures", "..\\projects\\" + projectName + "\\imagese\\tileTextures\\");
 	}
 
-	void AssetManager::CollectDirectories(DirectoryType dirType)
+	void AssetManager::CollectDirectories()
 	{
 		m_directories.clear();
+		m_directories.emplace("projects", "../projects/");
 		m_files.clear();
 
-		std::string dirPath = "";
-
-		switch (dirType)
-		{
-		case RuntimeDir:
-			dirPath = F_RuntimeDirectoriesLuaFilepath;
-			break;
-		case EditorDir:
-			dirPath = F_EditorDirectoriesLuaFilepath;
-			break;
-		default:
-			break;
-		}
+		std::string dirPath = "..\\engine\\scripts\\RuntimeDirectories.lua";
 
 		// Load in lua script
 		if (DoesFileExist(dirPath))
@@ -66,25 +56,8 @@ namespace FlatEngine
 			try
 			{
 				auto script = F_Lua.safe_script_file(dirPath);
+				std::optional<sol::table> pathTable = F_Lua["F_Paths"];								
 
-				std::optional<sol::table> dirTable = F_Lua["F_Dirs"];
-				std::optional<sol::table> pathTable = F_Lua["F_Paths"];
-
-				// Directories
-				if (dirTable)
-				{
-					for (const auto& entry : dirTable.value())
-					{
-						sol::object key = entry.first;
-						sol::object value = entry.second;
-						std::string sKey = key.as<std::string>();    // cast key as a string
-						std::string sValue = value.as<std::string>();
-
-						m_directories.emplace(sKey, sValue);
-					}
-				}
-
-				// File Paths
 				if (pathTable)
 				{
 					for (const auto& entry : pathTable.value())

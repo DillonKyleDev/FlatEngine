@@ -223,7 +223,10 @@ namespace FlatEngine
 			transformPtr = GetLoadedScene()->AddTransform(transform, m_ID);
 		}
 
-		m_components.push_back(transformPtr);
+		if (transformPtr != nullptr)
+		{
+			m_components.push_back(transformPtr);
+		}
 		return transformPtr;
 	}
 
@@ -246,7 +249,7 @@ namespace FlatEngine
 		sprite.SetActive(b_active);
 		sprite.SetCollapsed(b_collapsed);
 		
-		Sprite* spritePtr;		
+		Sprite* spritePtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			spritePtr = GetLoadedProject().GetPersistantGameObjectScene()->AddSprite(sprite, m_ID);
@@ -256,7 +259,10 @@ namespace FlatEngine
 			spritePtr = GetLoadedScene()->AddSprite(sprite, m_ID);
 		}
 
-		m_components.push_back(spritePtr);
+		if (spritePtr != nullptr)
+		{
+			m_components.push_back(spritePtr);
+		}
 		return spritePtr;
 	}
 
@@ -279,7 +285,7 @@ namespace FlatEngine
 		camera.SetActive(b_active);
 		camera.SetCollapsed(b_collapsed);
 		
-		Camera* cameraPtr;
+		Camera* cameraPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			cameraPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCamera(camera, m_ID);
@@ -289,7 +295,10 @@ namespace FlatEngine
 			cameraPtr = GetLoadedScene()->AddCamera(camera, m_ID);
 		}
 
-		m_components.push_back(cameraPtr);
+		if (cameraPtr != nullptr)
+		{
+			m_components.push_back(cameraPtr);
+		}
 		return cameraPtr;
 	}
 
@@ -312,7 +321,7 @@ namespace FlatEngine
 		script.SetActive(b_active);
 		script.SetCollapsed(b_collapsed);
 
-		Script* scriptPtr;
+		Script* scriptPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			scriptPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddScript(script, m_ID);
@@ -322,7 +331,10 @@ namespace FlatEngine
 			scriptPtr = GetLoadedScene()->AddScript(script, m_ID);
 		}
 
-		m_components.push_back(scriptPtr);
+		if (scriptPtr != nullptr)
+		{
+			m_components.push_back(scriptPtr);
+		}
 		return scriptPtr;
 	}
 
@@ -345,7 +357,7 @@ namespace FlatEngine
 		button.SetActive(b_active);
 		button.SetCollapsed(b_collapsed);
 		
-		Button* buttonPtr;
+		Button* buttonPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			buttonPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddButton(button, m_ID);
@@ -355,7 +367,10 @@ namespace FlatEngine
 			buttonPtr = GetLoadedScene()->AddButton(button, m_ID);
 		}
 
-		m_components.push_back(buttonPtr);
+		if (buttonPtr != nullptr)
+		{
+			m_components.push_back(buttonPtr);
+		}
 		return buttonPtr;
 	}
 
@@ -378,7 +393,7 @@ namespace FlatEngine
 		canvas.SetActive(b_active);
 		canvas.SetCollapsed(b_collapsed);
 
-		Canvas* canvasPtr;
+		Canvas* canvasPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			canvasPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCanvas(canvas, m_ID);
@@ -388,7 +403,10 @@ namespace FlatEngine
 			canvasPtr = GetLoadedScene()->AddCanvas(canvas, m_ID);
 		}
 
-		m_components.push_back(canvasPtr);
+		if (canvasPtr != nullptr)
+		{
+			m_components.push_back(canvasPtr);
+		}
 		return canvasPtr;
 	}
 
@@ -411,7 +429,7 @@ namespace FlatEngine
 		animation.SetActive(b_active);
 		animation.SetCollapsed(b_collapsed);
 	
-		Animation* animationPtr;
+		Animation* animationPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			animationPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddAnimation(animation, m_ID);
@@ -421,7 +439,10 @@ namespace FlatEngine
 			animationPtr = GetLoadedScene()->AddAnimation(animation, m_ID);
 		}
 
-		m_components.push_back(animationPtr);
+		if (animationPtr != nullptr)
+		{
+			m_components.push_back(animationPtr);
+		}
 		return animationPtr;
 	}
 
@@ -444,7 +465,7 @@ namespace FlatEngine
 		audio.SetActive(b_active);
 		audio.SetCollapsed(b_collapsed);
 
-		Audio* audioPtr;
+		Audio* audioPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			audioPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddAudio(audio, m_ID);
@@ -454,7 +475,10 @@ namespace FlatEngine
 			audioPtr = GetLoadedScene()->AddAudio(audio, m_ID);
 		}
 
-		m_components.push_back(audioPtr);
+		if (audioPtr != nullptr)
+		{
+			m_components.push_back(audioPtr);
+		}
 		return audioPtr;
 	}
 
@@ -477,7 +501,7 @@ namespace FlatEngine
 		text.SetActive(b_active);
 		text.SetCollapsed(b_collapsed);
 		
-		Text* textPtr;
+		Text* textPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			textPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddText(text, m_ID);
@@ -487,7 +511,10 @@ namespace FlatEngine
 			textPtr = GetLoadedScene()->AddText(text, m_ID);
 		}
 
-		m_components.push_back(textPtr);
+		if (textPtr != nullptr)
+		{
+			m_components.push_back(textPtr);
+		}
 		return textPtr;
 	}
 
@@ -518,7 +545,7 @@ namespace FlatEngine
 		boxCollider.SetActive(b_active);
 		boxCollider.SetCollapsed(b_collapsed);
 
-		BoxCollider* colliderPtr;
+		BoxCollider* colliderPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			colliderPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBoxCollider(boxCollider, m_ID);
@@ -533,7 +560,10 @@ namespace FlatEngine
 			colliderPtr->SetActiveDimensions(dimensions.x, dimensions.y);
 		}
 
-		m_components.push_back(colliderPtr);
+		if (colliderPtr != nullptr)
+		{
+			m_components.push_back(colliderPtr);
+		}
 		return colliderPtr;
 	}
 
@@ -556,7 +586,7 @@ namespace FlatEngine
 		circleCollider.SetActive(b_active);
 		circleCollider.SetCollapsed(b_collapsed);
 
-		CircleCollider* colliderPtr;
+		CircleCollider* colliderPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			colliderPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCircleCollider(circleCollider, m_ID);
@@ -566,7 +596,10 @@ namespace FlatEngine
 			colliderPtr = GetLoadedScene()->AddCircleCollider(circleCollider, m_ID);
 		}
 
-		m_components.push_back(colliderPtr);
+		if (colliderPtr != nullptr)
+		{
+			m_components.push_back(colliderPtr);
+		}
 		return colliderPtr;
 	}
 
@@ -589,7 +622,7 @@ namespace FlatEngine
 		compositeCollider.SetActive(b_active);
 		compositeCollider.SetCollapsed(b_collapsed);
 
-		CompositeCollider* colliderPtr;
+		CompositeCollider* colliderPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			colliderPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCompositeCollider(compositeCollider, m_ID);
@@ -599,7 +632,10 @@ namespace FlatEngine
 			colliderPtr = GetLoadedScene()->AddCompositeCollider(compositeCollider, m_ID);
 		}
 
-		m_components.push_back(colliderPtr);
+		if (colliderPtr != nullptr)
+		{
+			m_components.push_back(colliderPtr);
+		}
 		return colliderPtr;
 	}
 
@@ -622,7 +658,7 @@ namespace FlatEngine
 		rigidBody.SetActive(b_active);
 		rigidBody.SetCollapsed(b_collapsed);
 
-		RigidBody* rigidBodyPtr;
+		RigidBody* rigidBodyPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			rigidBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddRigidBody(rigidBody, m_ID);
@@ -632,7 +668,10 @@ namespace FlatEngine
 			rigidBodyPtr = GetLoadedScene()->AddRigidBody(rigidBody, m_ID);
 		}
 
-		m_components.push_back(rigidBodyPtr);
+		if (rigidBodyPtr != nullptr)
+		{
+			m_components.push_back(rigidBodyPtr);
+		}
 		return rigidBodyPtr;
 	}
 
@@ -655,7 +694,7 @@ namespace FlatEngine
 		characterController.SetActive(b_active);
 		characterController.SetCollapsed(b_collapsed);
 
-		CharacterController* characterControllerPtr;
+		CharacterController* characterControllerPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			characterControllerPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCharacterController(characterController, m_ID);
@@ -665,7 +704,10 @@ namespace FlatEngine
 			characterControllerPtr = GetLoadedScene()->AddCharacterController(characterController, m_ID);
 		}
 		
-		m_components.push_back(characterControllerPtr);
+		if (characterControllerPtr != nullptr)
+		{
+			m_components.push_back(characterControllerPtr);
+		}
 		return characterControllerPtr;
 	}
 
@@ -687,8 +729,8 @@ namespace FlatEngine
 		TileMap tileMap = TileMap(nextID, m_ID);
 		tileMap.SetActive(b_active);
 		tileMap.SetCollapsed(b_collapsed);
+		TileMap* tileMapPtr = nullptr;
 
-		TileMap* tileMapPtr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			tileMapPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddTileMap(tileMap, m_ID);
@@ -698,7 +740,10 @@ namespace FlatEngine
 			tileMapPtr = GetLoadedScene()->AddTileMap(tileMap, m_ID);
 		}
 
-		m_components.push_back(tileMapPtr);
+		if (tileMapPtr != nullptr)
+		{
+			m_components.push_back(tileMapPtr);
+		}
 		return tileMapPtr;
 	}
 
@@ -711,7 +756,6 @@ namespace FlatEngine
 				return m_components[i];
 			}
 		}
-
 		return nullptr;
 	}
 
@@ -742,6 +786,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetTransformByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	Sprite* GameObject::GetSprite()
 	{
@@ -753,6 +798,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetSpriteByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	Camera* GameObject::GetCamera()
 	{
@@ -764,6 +810,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetCameraByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	Animation* GameObject::GetAnimation()
 	{
@@ -775,6 +822,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetAnimationByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	Audio* GameObject::GetAudio()
 	{
@@ -786,6 +834,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetAudioByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	Button* GameObject::GetButton()
 	{
@@ -797,6 +846,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetButtonByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	Canvas* GameObject::GetCanvas()
 	{
@@ -808,6 +858,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetCanvasByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	std::vector<Script*> GameObject::GetScripts()
 	{
@@ -819,6 +870,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetScriptsByOwner(m_ID);
 		}
+		return std::vector<Script*>();
 	}
 	Text* GameObject::GetText()
 	{
@@ -830,6 +882,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetTextByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	CharacterController* GameObject::GetCharacterController()
 	{
@@ -841,6 +894,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetCharacterControllerByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	RigidBody* GameObject::GetRigidBody()
 	{
@@ -852,6 +906,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetRigidBodyByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	std::vector<BoxCollider*> GameObject::GetBoxColliders()
 	{
@@ -863,6 +918,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetBoxCollidersByOwner(m_ID);
 		}
+		return std::vector<BoxCollider*>();
 	}
 	BoxCollider* GameObject::GetBoxCollider()
 	{
@@ -881,10 +937,7 @@ namespace FlatEngine
 		{
 			return colliders[0];
 		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 	std::vector<CircleCollider*> GameObject::GetCircleColliders()
 	{
@@ -896,6 +949,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetCircleCollidersByOwner(m_ID);
 		}
+		return std::vector<CircleCollider*>();
 	}
 	CircleCollider* GameObject::GetCircleCollider()
 	{
@@ -914,10 +968,7 @@ namespace FlatEngine
 		{
 			return colliders[0];
 		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return nullptr;
-		}
+		return nullptr;
 	}
 	CompositeCollider* GameObject::GetCompositeCollider()
 	{
@@ -929,6 +980,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetCompositeColliderByOwner(m_ID);
 		}
+		return nullptr;
 	}
 	TileMap* GameObject::GetTileMap()
 	{
@@ -940,6 +992,7 @@ namespace FlatEngine
 		{
 			return GetLoadedScene()->GetTileMapByOwner(m_ID);
 		}
+		return nullptr;
 	}
 
 	std::vector<Component*> GameObject::GetComponents()

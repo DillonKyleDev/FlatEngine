@@ -36,7 +36,7 @@ namespace FlatEngine
 
 			if (loadedSurface == NULL)
 			{
-				printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
+				LogError("Unable to load image %s! SDL_image Error: %s\n" + path + IMG_GetError());
 			}
 			else
 			{
@@ -47,7 +47,7 @@ namespace FlatEngine
 				newTexture = SDL_CreateTextureFromSurface(F_Window->GetRenderer(), loadedSurface);
 				if (newTexture == NULL)
 				{
-					printf("Unable to create texture from %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
+					LogError("Unable to create texture from %s! SDL Error: %s\n" + path + SDL_GetError());
 				}
 				else
 				{
@@ -74,7 +74,7 @@ namespace FlatEngine
 
 		if (loadedSurface == NULL)
 		{
-			printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
+			LogError("Unable to create texture from %s! SDL Error: %s\n" + path + SDL_GetError());
 		}
 		else
 		{

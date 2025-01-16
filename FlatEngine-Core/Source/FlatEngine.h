@@ -274,12 +274,11 @@ namespace FlatEngine
 
 	// SDL
 	extern Vector2 AddImageToDrawList(SDL_Texture* texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offset, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation = 0, ImU32 addColor = GetColor32("white"), Vector2 uvStart = Vector2(0, 0), Vector2 uvEnd = Vector2(1, 1));
-
 	extern void SetMusicVolume(int volume);
 	extern void SetEffectsVolume(int volume);
 
 	// Engine
-	extern bool Init(int windowWidth, int windowHeight, DirectoryType dirType);
+	extern bool Init(int windowWidth, int windowHeight);
 	extern void CloseProgram();
 	extern Uint32 GetEngineTime();
 	extern void ManageControllers();

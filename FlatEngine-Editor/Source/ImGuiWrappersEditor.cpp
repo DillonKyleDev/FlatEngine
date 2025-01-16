@@ -252,7 +252,7 @@ namespace FlatGui
 			if (droppedValue >= 0)
 			{
 				std::filesystem::path fsPath(FL::F_selectedFiles[droppedValue - 1]);
-				if (fsPath.extension() == ".png")
+				if (fsPath.extension() == ".png" || fsPath.extension() == ".jpg" || fsPath.extension() == ".tif" || fsPath.extension() == ".webp" || fsPath.extension() == ".jxl")
 				{
 					sprite->SetTexture(fsPath.string());
 				}
@@ -1789,16 +1789,16 @@ namespace FlatGui
 				tileMap->SetHeight(height);
 				//tileMap->RecalcCollisionAreaValues();
 			}
-			if (FL::RenderIntDragTableRow("##TileWidth" + std::to_string(ID), "Tile Width", tileWidth, 1, 1, INT_MAX))
-			{
-				tileMap->SetTileWidth(tileWidth);
-				//tileMap->RecalcCollisionAreaValues();
-			}
-			if (FL::RenderIntDragTableRow("##TileHeight" + std::to_string(ID), "Tile Height", tileHeight, 1, 1, INT_MAX))
-			{
-				tileMap->SetTileHeight(tileHeight);
-				//tileMap->RecalcCollisionAreaValues();
-			}
+			//if (FL::RenderIntDragTableRow("##TileWidth" + std::to_string(ID), "Tile Width", tileWidth, 1, 1, INT_MAX))
+			//{
+			//	tileMap->SetTileWidth(tileWidth);
+			//	//tileMap->RecalcCollisionAreaValues();
+			//}
+			//if (FL::RenderIntDragTableRow("##TileHeight" + std::to_string(ID), "Tile Height", tileHeight, 1, 1, INT_MAX))
+			//{
+			//	tileMap->SetTileHeight(tileHeight);
+			//	//tileMap->RecalcCollisionAreaValues();
+			//}
 			if (FL::RenderIntDragTableRow("##RenderOrder" + std::to_string(ID), "Render Order", renderOrder, 1, 0, FL::F_maxSpriteLayers))
 			{
 				tileMap->SetRenderOrder(renderOrder);
@@ -1916,44 +1916,56 @@ namespace FlatGui
 			// Render Palette Tile Icons
 			float availableWidth = ImGui::GetWindowSize().x;
 			int iconsThisRow = 0;
-			std::map<int, std::pair<Vector2, Vector2>> allTiles = selectedTileSet->GetTileSet();
+			std::map<int, std::pair<Vector2, Vector2>> allTiles;
+
+			allTiles = selectedTileSet->GetTileSet();
+
 			float horizontalSpacing = 5;
 			float verticalSpacing = 2;
 			int maxIconsPerRow = (int)(((regionAvailable.x - 20) / (iconSize + (horizontalSpacing))) - 1);
 
 			for (int index : selectedTileSet->GetTileSetIndices())
-			{				
+			{
 				// Drawing the first button in the row
 				if (iconsThisRow == 0)
 				{
-					FL::MoveScreenCursor(horizontalSpacing + 5, verticalSpacing);					
+					FL::MoveScreenCursor(horizontalSpacing + 5, verticalSpacing);
 				}
-
-				Vector2 currentPos = ImGui::GetCursorScreenPos();
-				SDL_Texture* texture = selectedTileSet->GetTexture()->GetTexture();
-				int textureWidth = selectedTileSet->GetTexture()->GetWidth();
-				int textureHeight = selectedTileSet->GetTexture()->GetHeight();
-				Vector2 uvStart = allTiles.at(index).first;
-				Vector2 uvEnd = allTiles.at(index).second;
-				uvStart = Vector2(uvStart.x / textureWidth, uvStart.y / textureHeight);
-				uvEnd = Vector2(uvEnd.x / textureWidth, uvEnd.y / textureHeight);
-
-				std::string tileButtonID = "##TileSelect" + std::to_string(index);				
-				if (FL::RenderImageButton(tileButtonID, texture, Vector2(iconSize, iconSize), 0, FL::GetColor("imageButton"), FL::GetColor("imageButtonTint"), FL::GetColor("tileSetIconHovered"), FL::GetColor("imageButtonActive"), uvStart, uvEnd))
+					
+				if (selectedTileSet->GetTexture() != nullptr)
 				{
-					std::pair<std::string, int> tileBrushPair = { selectedTileSet->GetName(), index };
-					FL::F_tileSetAndIndexOnBrush = tileBrushPair;
-					FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_BRUSH;
-				}
+					Vector2 currentPos = ImGui::GetCursorScreenPos();
+					SDL_Texture* texture = selectedTileSet->GetTexture()->GetTexture();
+					int textureWidth = selectedTileSet->GetTexture()->GetWidth();
+					int textureHeight = selectedTileSet->GetTexture()->GetHeight();
+					Vector2 uvStart;
+					Vector2 uvEnd;
 
-				if (iconsThisRow < maxIconsPerRow)
-				{
-					ImGui::SetCursorScreenPos(Vector2(currentPos.x + iconSize + horizontalSpacing, currentPos.y)); // Ready to draw the next button
-					iconsThisRow++;
-				}
-				else
-				{
-					iconsThisRow = 0;
+					if (allTiles.count(index) > 0)
+					{
+						uvStart = allTiles.at(index).first;
+						uvEnd = allTiles.at(index).second;
+						uvStart = Vector2(uvStart.x / textureWidth, uvStart.y / textureHeight);
+						uvEnd = Vector2(uvEnd.x / textureWidth, uvEnd.y / textureHeight);
+
+						std::string tileButtonID = "##TileSelect" + std::to_string(index);
+						if (FL::RenderImageButton(tileButtonID, texture, Vector2(iconSize, iconSize), 0, FL::GetColor("imageButton"), FL::GetColor("imageButtonTint"), FL::GetColor("tileSetIconHovered"), FL::GetColor("imageButtonActive"), uvStart, uvEnd))
+						{
+							std::pair<std::string, int> tileBrushPair = { selectedTileSet->GetName(), index };
+							FL::F_tileSetAndIndexOnBrush = tileBrushPair;
+							FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_BRUSH;
+						}
+
+						if (iconsThisRow < maxIconsPerRow)
+						{
+							ImGui::SetCursorScreenPos(Vector2(currentPos.x + iconSize + horizontalSpacing, currentPos.y)); // Ready to draw the next button
+							iconsThisRow++;
+						}
+						else
+						{
+							iconsThisRow = 0;
+						}
+					}
 				}
 			}
 			FL::MoveScreenCursor(0, iconSize + verticalSpacing + 10);

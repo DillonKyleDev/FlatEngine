@@ -18,7 +18,7 @@ namespace FlatEngine
 			FlatEngine::F_Application = CreateApplication(argc, argv);
 
 			// Initialize FlatEngine. Start up SDL and create window
-			if (!FlatEngine::Init(F_Application->WindowWidth(), F_Application->WindowHeight(), F_Application->GetDirectoryType()))
+			if (!FlatEngine::Init(F_Application->WindowWidth(), F_Application->WindowHeight()))
 			{
 				printf("Failed to initialize.\n");
 			}

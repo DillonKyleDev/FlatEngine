@@ -21,7 +21,7 @@ namespace FlatEngine
 		~AssetManager();	
 
 		void UpdateProjectDirs(std::string projectPath);
-		void CollectDirectories(DirectoryType dirType);
+		void CollectDirectories();
 		void CollectColors();
 		void CollectTextures();
 		void CollectTags();

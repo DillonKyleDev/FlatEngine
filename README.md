@@ -23,6 +23,15 @@ Key systems are not optimized.
 
 Some things in this README are out of date so keep that in mind when reading. I will do my best to mark the out of date information as "Outdated", but the general architecture of FlatEngine won't change.
 
+--------------------------------------------------------------------------------------
+Quick links:
+1. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#components">Components</a>
+2. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#using-flatengine">Quick Start Guide</a>
+3. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#building-the-final-project">Building a completed Project</a>
+4. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#lua-scripting-in-flatengine">Lua Scripting in FlatEngine2D</a>
+5. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#lua-functions-available">Lua-FlatEngine2D scripting functions</a>
+6. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#flatengine-classes-exposed-to-lua---lua-usertypes">FlatEngine2D classes exposed to Lua (Lua usertypes)</a>
+--------------------------------------------------------------------------------------
 
 ## About:
 
@@ -44,7 +53,6 @@ I've spent a lot of time with the Unity game engine and so have found comfort in
 
 
 --------------------------------------------------------------------------------------
-
 
 ## Viewports
 
@@ -163,7 +171,7 @@ ________________________________________________________________________________
 
 ## Engine Assets
 
-There are several key assets that you will be spending a lot of time with in FlatEngine2D.  Most of these can be created in several ways, but the main two are through the main menu top bar: `Create -> Assets -> asset`, and through the right-click context menue in the File Explorer window.
+There are several key assets that you will be spending a lot of time with in FlatEngine2D.  Most of these can be created in several ways, but the main two are through the main menu top bar: `Create -> Asset files -> asset_type`, and through the right-click context menue in the File Explorer window.
 
 -------------------------------------------------------------------------------------------
 ![createAssets1](https://github.com/user-attachments/assets/20b386f5-3647-481c-89af-15811e38a3ff) or 
@@ -476,7 +484,7 @@ function Awake()
 end 
 ```
 
-You can then in a later function access the `mappingContext` variable to query whether an action.  There are two ways to query an input action:
+You can then in a later function access the `mappingContext` variable to query the input action.  There are two ways to query an input action:
 
 ```
 function Update()
@@ -508,7 +516,7 @@ From here you can open your Animation file using the expand button menu in the A
 
 In the Keyframe Editor, the properties you can animate for any component are listed with a checkbox next to them.  If you would like to animate a property you must check the box next to it to enable it.  Change the scale property from x = 1, y = 1 to x = 2, y = 2 and save the animation using the same expand button menu you used to load the Animation.
 
-Now we have to attach the Animation to a GameObject.  Create a new GameObject with a Sprite component and add an image path to the Sprite by dragging one from the File Explorer viewport or by using the folder button next to the input.  Now add an Animation component to the GameObject and drag our new Animation into the input or click the folder button next to the input and give the Animation a name that we can use to reference it, then click "Add Animation" to officially add the animation to our GameObject.  Don't forget to save the scene using `File > Save Scene` ... or click on the expand button menu in the top right of the Hierarchy viewport and click "Quick Save".  Now that our GameObject has the Animation attached to it we can click "Preview" in the Animation component to preview the Animation on our GameObject in the SceneView.  Do keep in mind though that if you Play Animation while the gameloop is not running, the `Awake()` and `Start()` functions will not have been run on any scripts yet, so if you are using Event functions in your Animations, be mindful of that.  Also keep in mind that when you preview an animation, it changes the GameObjects properties and there is currently nothing built in to revert its properties to before you previewed it, so please make sure to save your changes before previewing animations, that way you can easily reload the scene to revert back to the original object properties.
+Now we have to attach the Animation to a GameObject.  Create a new GameObject with a Sprite component and add an image path to the Sprite by dragging one from the File Explorer viewport or by using the folder button next to the input.  Now add an Animation component to the GameObject and drag our new Animation into the input or click the folder button next to the input and give the Animation a name that we can use to reference it, then click "Add Animation" to officially add the animation to our GameObject.  Don't forget to save the scene using `File > Save Scene` ... or click on the expand button menu in the top right of the Hierarchy viewport and click "Save Scene" or "Save all".  Now that our GameObject has the Animation attached to it we can click "Preview" in the Animation component to preview the Animation on our GameObject in the SceneView while the game loop is running.
 
 To call this animation and play it using scripts we can use:
 

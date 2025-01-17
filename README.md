@@ -208,11 +208,17 @@ Tags are a list of arbitrary properties that a GameObject can have that can be q
 
 You can set a GameObject to have a specific tag using `GameObject::SetTag("tagName", true);` or, more conveniently, set it in the Inspector viewport by clicking the `Tags` button below the object's name:
 
+--------------------------------------------------------------------------------------
+
 ![tagsbutton](https://github.com/user-attachments/assets/527d1366-83b2-4f64-b54e-90357daab056) <b>--->>>></b>
 ![availableTags](https://github.com/user-attachments/assets/e0030132-1724-416b-bf37-a8dc983eb9a3)
 
+--------------------------------------------------------------------------------------
+
 The Tags system is also used by the collision detection system to prevent objects that should not interact from interacting, based on the Tags each GameObject has and is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar. This is also how you reload any customizations you've made to the color scheme of FlatEngine2D in the `Colors.lua` file or engine icons in `Textures.lua` located in the same directory as `Tags.lua`.  (Your changes will also go into effect upon relaunching the engine)</br></br>
 ![reloadTags](https://github.com/user-attachments/assets/203d64aa-9d41-4e50-8a6e-e62461c1d266)
+
+--------------------------------------------------------------------------------------
 
 Tags must remain in the format present in the `Tags.lua` file: Comma-separated strings inside a Lua table named `F_Tags`</br>
 

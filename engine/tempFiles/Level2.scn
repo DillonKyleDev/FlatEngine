@@ -603,7 +603,7 @@
                     "Projectile": false
                 },
                 {
-                    "Terrain": false
+                    "Terrain": true
                 }
             ]
         },
@@ -735,7 +735,7 @@
                     "Projectile": false
                 },
                 {
-                    "Terrain": false
+                    "Terrain": true
                 }
             ]
         },
@@ -987,7 +987,7 @@
                     "Projectile": false
                 },
                 {
-                    "Terrain": false
+                    "Terrain": true
                 }
             ]
         },
@@ -1119,7 +1119,7 @@
                     "Projectile": false
                 },
                 {
-                    "Terrain": false
+                    "Terrain": true
                 }
             ]
         },

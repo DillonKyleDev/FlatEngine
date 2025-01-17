@@ -91,17 +91,59 @@ namespace FlatEngine
 		return m_persistantGameObjectsScenePath;
 	}
 
-	void Project::LoadPersistantScene()
+	void Project::CreateFreshPersistantScene()
+	{
+		m_persistantGameObjectsScene.UnloadSceneObjects();
+		m_persistantGameObjectsScene.UnloadECSManager();
+		m_persistantGameObjectsScene = Scene();
+		// Set persistant gameobjects starting ID's at arbitrarily high values so they will never collide with the regular scene object ID's
+		m_persistantGameObjectsScene.SetNextComponentID(10000000);
+		m_persistantGameObjectsScene.SetNextGameObjectID(10000000);
+	}
+
+	void Project::SavePersistantScene(std::string filePath)
+	{
+		std::ofstream file_obj;
+		std::ifstream ifstream(filePath);
+
+		file_obj.open(filePath, std::ofstream::out | std::ofstream::trunc);
+		file_obj.close();
+
+		file_obj.open(filePath, std::ios::app);
+		json sceneObjectsJsonArray;
+
+		std::map<long, GameObject>& sceneObjects = m_persistantGameObjectsScene.GetSceneObjects();
+		if (sceneObjects.size() > 0)
+		{
+			for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
+			{
+				sceneObjectsJsonArray.push_back(CreateJsonFromObject(iter->second));
+			}
+		}
+		else
+		{
+			sceneObjectsJsonArray.push_back("NULL");
+		}
+
+		json newFileObject = json::object({ {"Persistant GameObjects", sceneObjectsJsonArray } });
+		file_obj << newFileObject.dump(4).c_str() << std::endl;
+		file_obj.close();
+	}
+
+	void Project::LoadPersistantScene(std::string actualPath)
 	{
 		if (F_LoadedProject.GetPersistantGameObjectsScenePath() != "")
 		{
-			m_persistantGameObjectsScene.UnloadSceneObjects();
-			m_persistantGameObjectsScene.UnloadECSManager();
+			std::string pathToLoad = actualPath;
+			if (pathToLoad == "")
+			{
+				pathToLoad = m_persistantGameObjectsScenePath;
+			}
 
 			std::ofstream file_obj;
-			std::ifstream ifstream(m_persistantGameObjectsScenePath);
+			std::ifstream ifstream(pathToLoad);
 
-			file_obj.open(m_persistantGameObjectsScenePath, std::ios::in);
+			file_obj.open(pathToLoad, std::ios::in);
 			std::string fileContent = "";
 
 			if (file_obj.good())
@@ -120,11 +162,7 @@ namespace FlatEngine
 			file_obj.close();
 
 			if (file_obj.good() && fileContent != "")
-			{
-				m_persistantGameObjectsScene = Scene();
-				// Set persistant gameobjects starting ID's at arbitrarily high values so they will never collide with the regular scene object ID's
-				m_persistantGameObjectsScene.SetNextComponentID(10000000);
-				m_persistantGameObjectsScene.SetNextGameObjectID(10000000);
+			{			
 				m_persistantGameObjectsScene.SetName(GetFilenameFromPath(m_persistantGameObjectsScenePath, false));
 				m_persistantGameObjectsScene.SetPersistantScene(true);
 

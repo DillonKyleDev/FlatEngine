@@ -6,26 +6,26 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                68
+                23
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 334,
+                    "id": 82,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 1.8125,
+                    "xPos": 12.920000076293945,
                     "xScale": 0.15000000596046448,
                     "yOrigin": 0.0,
-                    "yPos": -5.9375,
+                    "yPos": -5.099999904632568,
                     "yScale": 0.15000000596046448
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 335,
+                    "id": 83,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 16,
@@ -43,7 +43,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "BlasterRound",
-                    "id": 336,
+                    "id": 84,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -70,7 +70,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 337,
+                    "id": 85,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -79,7 +79,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 338,
+                    "id": 86,
                     "soundData": [
                         {
                             "b_isMusic": false,
@@ -108,14 +108,14 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.0,
-                    "id": 339,
+                    "id": 87,
                     "type": "BoxCollider"
                 }
             ],
-            "id": 67,
+            "id": 22,
             "ignoreTags": [
                 {
-                    "Collectable": false
+                    "Collectable": true
                 },
                 {
                     "Enemy": false
@@ -154,14 +154,14 @@
                     "Projectile": false
                 },
                 {
-                    "Terrain": false
+                    "Terrain": true
                 }
             ],
             "name": "BlasterRoundPoweredLight",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 1.8125,
-            "spawnLocationY": -5.9375,
+            "spawnLocationX": 12.920000076293945,
+            "spawnLocationY": -5.099999904632568,
             "tags": [
                 {
                     "Collectable": false
@@ -200,7 +200,7 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": false
+                    "Projectile": true
                 },
                 {
                     "Terrain": false
@@ -216,20 +216,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 340,
+                    "id": 88,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": 1.8125,
+                    "xOrigin": 12.920000076293945,
                     "xPos": 0.0,
                     "xScale": 0.5,
-                    "yOrigin": -5.9375,
+                    "yOrigin": -5.099999904632568,
                     "yPos": 0.0,
                     "yScale": 0.5
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 341,
+                    "id": 89,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\glow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 6,
@@ -246,7 +246,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 341,
+                    "id": 89,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\glow.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 6,
@@ -261,7 +261,7 @@
                     "yScale": 1.0
                 }
             ],
-            "id": 68,
+            "id": 23,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -307,7 +307,7 @@
                 }
             ],
             "name": "Glow",
-            "parent": 67,
+            "parent": 22,
             "prefabName": "",
             "spawnLocationX": 0.0,
             "spawnLocationY": 0.0,

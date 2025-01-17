@@ -26,7 +26,9 @@ namespace FlatEngine
 		void SetPersistantGameObjectsScenePath(std::string path);
 		Scene* GetPersistantGameObjectScene();
 		std::string GetPersistantGameObjectsScenePath();
-		void LoadPersistantScene();
+		void CreateFreshPersistantScene();
+		void SavePersistantScene(std::string filePath);
+		void LoadPersistantScene(std::string actualPath = "");
 		void SaveScene();
 		std::map<long, GameObject>& GetPersistantObjects();
 		void SetFocusedGameObjectID(long ID);

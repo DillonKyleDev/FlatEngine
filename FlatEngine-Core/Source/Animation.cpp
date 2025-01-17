@@ -103,7 +103,7 @@ namespace FlatEngine
 				}
 				else
 				{
-					animData.startTime = GetEngineTime();
+					animData.startTime = F_Application->GetGameLoop()->TimeEllapsedInMs();
 				}
 			}
 		}

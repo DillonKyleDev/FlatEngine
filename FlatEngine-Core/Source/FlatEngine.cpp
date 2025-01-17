@@ -38,6 +38,8 @@ namespace FlatEngine
 	AssetManager F_AssetManager = AssetManager();
 	std::vector<std::string> F_selectedFiles = std::vector<std::string>();
 
+	long F_FocusedGameObjectID;
+
 	F_CURSOR_MODE F_CursorMode = F_CURSOR_MODE::TRANSLATE;
 
 	bool F_b_closeProgram = false;
@@ -528,7 +530,6 @@ namespace FlatEngine
 		std::ofstream fileObject;
 		std::ifstream ifstream(path);
 
-		// Open file in in mode
 		fileObject.open(path, std::ios::in);		
 		std::string fileContent = "";
 		
@@ -552,47 +553,55 @@ namespace FlatEngine
 			{				
 				for (int i = 0; i < projectJson["Project Properties"].size(); i++)
 				{					
-					json projectData = projectJson["Project Properties"][i];
-					std::string name = GetFilenameFromPath(path);
+					try
+					{
+						json projectData = projectJson["Project Properties"][i];
+						std::string name = GetFilenameFromPath(path);
 
-					newProject.SetPath(CheckJsonString(projectData, "path", name));
-					newProject.SetLoadedScenePath(CheckJsonString(projectData, "loadedScenePath", name));
-					newProject.SetBuildPath(CheckJsonString(projectData, "buildPath", name));
-					newProject.SetLoadedPreviewAnimationPath(CheckJsonString(projectData, "loadedAnimationPath", name));
-					newProject.SetFocusedGameObjectID(CheckJsonLong(projectData, "focusedGameObjectID", name));
-					newProject.SetRuntimeScene(CheckJsonString(projectData, "sceneToLoadAtRuntime", name));		
-					newProject.SetPersistantGameObjectsScenePath(CheckJsonString(projectData, "persistantGameObjectsScenePath", name));
-					newProject.SetSceneViewScrolling(Vector2(CheckJsonFloat(projectData, "sceneViewScrollingX", name), CheckJsonFloat(projectData, "sceneViewScrollingY", name)));					
-					newProject.SetSceneViewGridStep(Vector2(CheckJsonFloat(projectData, "sceneViewGridStepX", name), CheckJsonFloat(projectData, "sceneViewGridStepY", name)));
-					newProject.SetAutoSave(CheckJsonBool(projectData, "_autoSave", name));
-					newProject.SetResolution(Vector2(CheckJsonFloat(projectData, "resolutionWidth", name), CheckJsonFloat(projectData, "resolutionHeight", name)));
-					newProject.SetFullscreen(CheckJsonBool(projectData, "_fullscreen", name));
-					newProject.SetVsyncEnabled(CheckJsonBool(projectData, "_vsyncEnabled", name));
-					newProject.SetMusicVolume(CheckJsonInt(projectData, "musicVolume", name));
-					newProject.SetEffectsVolume(CheckJsonInt(projectData, "effectsVolume", name));
+						newProject.SetPath(CheckJsonString(projectData, "path", name));
+						newProject.SetLoadedScenePath(CheckJsonString(projectData, "loadedScenePath", name));
+						newProject.SetBuildPath(CheckJsonString(projectData, "buildPath", name));
+						newProject.SetLoadedPreviewAnimationPath(CheckJsonString(projectData, "loadedAnimationPath", name));
+						newProject.SetFocusedGameObjectID(CheckJsonLong(projectData, "focusedGameObjectID", name));
+						newProject.SetRuntimeScene(CheckJsonString(projectData, "sceneToLoadAtRuntime", name));
+						newProject.SetPersistantGameObjectsScenePath(CheckJsonString(projectData, "persistantGameObjectsScenePath", name));
+						newProject.SetSceneViewScrolling(Vector2(CheckJsonFloat(projectData, "sceneViewScrollingX", name), CheckJsonFloat(projectData, "sceneViewScrollingY", name)));
+						newProject.SetSceneViewGridStep(Vector2(CheckJsonFloat(projectData, "sceneViewGridStepX", name), CheckJsonFloat(projectData, "sceneViewGridStepY", name)));
+						newProject.SetAutoSave(CheckJsonBool(projectData, "_autoSave", name));
+						newProject.SetResolution(Vector2(CheckJsonFloat(projectData, "resolutionWidth", name), CheckJsonFloat(projectData, "resolutionHeight", name)));
+						newProject.SetFullscreen(CheckJsonBool(projectData, "_fullscreen", name));
+						newProject.SetVsyncEnabled(CheckJsonBool(projectData, "_vsyncEnabled", name));
+						newProject.SetMusicVolume(CheckJsonInt(projectData, "musicVolume", name));
+						newProject.SetEffectsVolume(CheckJsonInt(projectData, "effectsVolume", name));
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 			}
 		}
 
-		SetLoadedProject(newProject);
+		SetLoadedProject(newProject);		
+		F_AssetManager.CollectDirectories();		
+		F_AssetManager.UpdateProjectDirs(F_LoadedProject.GetPath());		
+		InitializeTileSets();		
+		F_PrefabManager->InitializePrefabs();		
+		RetrieveLuaScriptPaths();		
+		InitializeMappingContexts();		
 
-		if (F_LoadedProject.GetPersistantGameObjectsScenePath() != "")
-		{
-			F_LoadedProject.LoadPersistantScene();
-		}
-		//else
-		//{
-		//	LogString("No persistant GameObjects to load.");
-		//}
+
+		F_LoadedProject.CreateFreshPersistantScene();
+		F_LoadedProject.LoadPersistantScene();
 
 		if (F_LoadedProject.GetLoadedScenePath() != "")
 		{
 			LoadScene(F_LoadedProject.GetLoadedScenePath());
 		}
-		//else
-		//{
-		//	LogString("No project scene to load.");
-		//}
+		else
+		{
+			printf("No project scene to load.");
+		}
 	}
 
 	void BuildProject()
@@ -686,18 +695,9 @@ namespace FlatEngine
 	{				
 		if (DoesFileExist(actualPath))
 		{
+			RemovePrimaryCamera();
 			F_SoundController.StopMusic();
-
-			if (F_SceneManager.LoadScene(actualPath, pointTo))
-			{
-				if (F_SceneManager.GetLoadedScene() != nullptr)
-				{
-					F_SceneManager.SaveAnimationPreviewObjects();
-				}
-
-				F_SceneManager.LoadAnimationPreviewObjects();
-				F_PlayerObject = GetObjectByTag("Player");
-			}
+			F_SceneManager.LoadScene(actualPath, pointTo);
 		}
 		else
 		{
@@ -858,12 +858,18 @@ namespace FlatEngine
 
 	void SetPrimaryCamera(Camera* primaryCamera)
 	{
-		if (F_primaryCamera != nullptr)
+		if (primaryCamera != nullptr)
 		{
-			F_primaryCamera->SetPrimaryCamera(false);
+			if (F_primaryCamera != nullptr)
+			{
+				F_primaryCamera->SetPrimaryCamera(false);
+			}
+			F_primaryCamera = primaryCamera;
 		}
-		F_primaryCamera = primaryCamera;
-		F_primaryCamera->SetPrimaryCamera(true);
+		else
+		{
+			printf("Failed to set primary Camera.");
+		}
 	}
 
 	void RemovePrimaryCamera()
@@ -1115,12 +1121,14 @@ namespace FlatEngine
 		if (event.type == SDL_KEYDOWN)
 		{
 			// Scene View keybinds
-			if (F_b_sceneViewFocused)
+			if (true)
 			{
 				switch (event.key.keysym.sym)
 				{
 				case SDLK_1:
 					F_CursorMode = F_CURSOR_MODE::TRANSLATE;
+					LoadScene(GetLoadedScenePath());
+					LogString("Scene Reloaded");
 					break;
 
 				case SDLK_2:
@@ -1362,7 +1370,6 @@ namespace FlatEngine
 		ImGui_ImplSDLRenderer2_NewFrame();
 		ImGui_ImplSDL2_NewFrame();
 		ImGui::NewFrame();
-		ImGui::GetIO().MouseDelta;
 
 		//Create dockable background space for all viewports
 		ImGui::DockSpaceOverViewport();
@@ -1691,185 +1698,276 @@ namespace FlatEngine
 				json eventProps = animationJson["animationProperties"]["event"];
 				for (int i = 0; i < eventProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Event> frame = std::make_shared<Animation::S_Event>();
-					frame->name = "Event";
-					frame->functionName = CheckJsonString(eventProps[i], "functionName", animName);
-					frame->time = CheckJsonFloat(eventProps[i], "time", animName);
-
-					for (int p = 0; p < eventProps[i]["parameters"].size(); p++)
+					try
 					{
-						json param = eventProps[i]["parameters"][p];						
-						Animation::S_EventFunctionParam parameter;
-						parameter.type = CheckJsonString(param, "type", animName);
-						parameter.e_string = CheckJsonString(param, "string", animName);
-						parameter.e_int = CheckJsonInt(param, "int", animName);
-						parameter.e_float = CheckJsonFloat(param, "float", animName);
-						parameter.e_long = CheckJsonLong(param, "long", animName);
-						parameter.e_double = CheckJsonDouble(param, "double", animName);
-						parameter.e_boolean = CheckJsonBool(param, "bool", animName);
-						parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", animName), CheckJsonFloat(param, "vector2Y", animName));
+						std::shared_ptr<Animation::S_Event> frame = std::make_shared<Animation::S_Event>();
+						frame->name = "Event";
+						frame->functionName = CheckJsonString(eventProps.at(i), "functionName", animName);
+						frame->time = CheckJsonFloat(eventProps.at(i), "time", animName);
 
-						frame->parameters.push_back(parameter);
+						for (int p = 0; p < eventProps.at(i)["parameters"].size(); p++)
+						{
+							json param = eventProps.at(i)["parameters"][p];
+							Animation::S_EventFunctionParam parameter;
+							parameter.type = CheckJsonString(param, "type", animName);
+							parameter.e_string = CheckJsonString(param, "string", animName);
+							parameter.e_int = CheckJsonInt(param, "int", animName);
+							parameter.e_float = CheckJsonFloat(param, "float", animName);
+							parameter.e_long = CheckJsonLong(param, "long", animName);
+							parameter.e_double = CheckJsonDouble(param, "double", animName);
+							parameter.e_boolean = CheckJsonBool(param, "bool", animName);
+							parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", animName), CheckJsonFloat(param, "vector2Y", animName));
+
+							frame->parameters.push_back(parameter);
+						}
+
+						animProps->eventProps.push_back(frame);
 					}
-
-					animProps->eventProps.push_back(frame);				
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json transformProps = animationJson["animationProperties"]["transform"];
 				for (int i = 0; i < transformProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Transform> frame = std::make_shared<Animation::S_Transform>();
-					frame->name = "Transform";
-					frame->transformInterpType = (Animation::InterpType)CheckJsonInt(transformProps[i], "transformInterpType", animName);
-					frame->scaleInterpType = (Animation::InterpType)CheckJsonInt(transformProps[i], "scaleInterpType", animName);
-					frame->scaleSpeed = CheckJsonFloat(transformProps[i], "scaleSpeed", animName);
-					frame->time = CheckJsonFloat(transformProps[i], "time", animName);
-					frame->xPos = CheckJsonFloat(transformProps[i], "xPos", animName);
-					frame->yPos = CheckJsonFloat(transformProps[i], "yPos", animName);
-					frame->xScale = CheckJsonFloat(transformProps[i], "xScale", animName);
-					frame->yScale = CheckJsonFloat(transformProps[i], "yScale", animName);
-					frame->b_posAnimated = CheckJsonBool(transformProps[i], "_posAnimated", animName);
-					frame->b_scaleAnimated = CheckJsonBool(transformProps[i], "_scaleAnimated", animName);
-					animProps->transformProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Transform> frame = std::make_shared<Animation::S_Transform>();
+						frame->name = "Transform";
+						frame->transformInterpType = (Animation::InterpType)CheckJsonInt(transformProps.at(i), "transformInterpType", animName);
+						frame->scaleInterpType = (Animation::InterpType)CheckJsonInt(transformProps.at(i), "scaleInterpType", animName);
+						frame->scaleSpeed = CheckJsonFloat(transformProps.at(i), "scaleSpeed", animName);
+						frame->time = CheckJsonFloat(transformProps.at(i), "time", animName);
+						frame->xPos = CheckJsonFloat(transformProps.at(i), "xPos", animName);
+						frame->yPos = CheckJsonFloat(transformProps.at(i), "yPos", animName);
+						frame->xScale = CheckJsonFloat(transformProps.at(i), "xScale", animName);
+						frame->yScale = CheckJsonFloat(transformProps.at(i), "yScale", animName);
+						frame->b_posAnimated = CheckJsonBool(transformProps.at(i), "_posAnimated", animName);
+						frame->b_scaleAnimated = CheckJsonBool(transformProps.at(i), "_scaleAnimated", animName);
+						animProps->transformProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json spriteProps = animationJson["animationProperties"]["sprite"];
 				for (int i = 0; i < spriteProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Sprite> frame = std::make_shared<Animation::S_Sprite>();
-					frame->name = "Sprite";
-					frame->interpType = (Animation::InterpType)CheckJsonInt(spriteProps[i], "interpType", animName);
-					frame->speed = CheckJsonFloat(spriteProps[i], "speed", animName);
-					frame->time = CheckJsonFloat(spriteProps[i], "time", animName);
-					frame->xOffset = CheckJsonFloat(spriteProps[i], "xOffset", animName);
-					frame->yOffset = CheckJsonFloat(spriteProps[i], "yOffset", animName);
-					frame->path = CheckJsonString(spriteProps[i], "path", animName);
-					frame->b_instantTintChange = CheckJsonBool(spriteProps[i], "_instantTintChange", animName);
-					frame->tintColor = Vector4(
-						CheckJsonFloat(spriteProps[i], "tintColorX", animName),
-						CheckJsonFloat(spriteProps[i], "tintColorY", animName),
-						CheckJsonFloat(spriteProps[i], "tintColorZ", animName),
-						CheckJsonFloat(spriteProps[i], "tintColorW", animName)
-					);
-					frame->b_pathAnimated = CheckJsonBool(spriteProps[i], "_pathAnimated", animName);
-					frame->b_scaleAnimated = CheckJsonBool(spriteProps[i], "_scaleAnimated", animName);
-					frame->b_offsetAnimated = CheckJsonBool(spriteProps[i], "_offsetAnimated", animName);
-					frame->b_tintColorAnimated = CheckJsonBool(spriteProps[i], "_tintColorAnimated", animName);
-					animProps->spriteProps.push_back(frame);			
+					try
+					{
+						std::shared_ptr<Animation::S_Sprite> frame = std::make_shared<Animation::S_Sprite>();
+						frame->name = "Sprite";
+						frame->interpType = (Animation::InterpType)CheckJsonInt(spriteProps.at(i), "interpType", animName);
+						frame->speed = CheckJsonFloat(spriteProps.at(i), "speed", animName);
+						frame->time = CheckJsonFloat(spriteProps.at(i), "time", animName);
+						frame->xOffset = CheckJsonFloat(spriteProps.at(i), "xOffset", animName);
+						frame->yOffset = CheckJsonFloat(spriteProps.at(i), "yOffset", animName);
+						frame->path = CheckJsonString(spriteProps.at(i), "path", animName);
+						frame->b_instantTintChange = CheckJsonBool(spriteProps.at(i), "_instantTintChange", animName);
+						frame->tintColor = Vector4(
+							CheckJsonFloat(spriteProps.at(i), "tintColorX", animName),
+							CheckJsonFloat(spriteProps.at(i), "tintColorY", animName),
+							CheckJsonFloat(spriteProps.at(i), "tintColorZ", animName),
+							CheckJsonFloat(spriteProps.at(i), "tintColorW", animName)
+						);
+						frame->b_pathAnimated = CheckJsonBool(spriteProps.at(i), "_pathAnimated", animName);
+						frame->b_scaleAnimated = CheckJsonBool(spriteProps.at(i), "_scaleAnimated", animName);
+						frame->b_offsetAnimated = CheckJsonBool(spriteProps.at(i), "_offsetAnimated", animName);
+						frame->b_tintColorAnimated = CheckJsonBool(spriteProps.at(i), "_tintColorAnimated", animName);
+						animProps->spriteProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json cameraProps = animationJson["animationProperties"]["camera"];
 				for (int i = 0; i < cameraProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Camera> frame = std::make_shared<Animation::S_Camera>();
-					frame->name = "Camera";
-					frame->time = CheckJsonFloat(cameraProps[i], "time", animName);
-					frame->b_isPrimaryCamera = CheckJsonBool(cameraProps[i], "_isPrimaryCamera", animName);
-					animProps->cameraProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Camera> frame = std::make_shared<Animation::S_Camera>();
+						frame->name = "Camera";
+						frame->time = CheckJsonFloat(cameraProps.at(i), "time", animName);
+						frame->b_isPrimaryCamera = CheckJsonBool(cameraProps.at(i), "_isPrimaryCamera", animName);
+						animProps->cameraProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json scriptProps = animationJson["animationProperties"]["script"];
 				for (int i = 0; i < scriptProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Script> frame = std::make_shared<Animation::S_Script>();
-					frame->name = "Script";
-					frame->time = CheckJsonFloat(scriptProps[i], "time", animName);
-					frame->path = CheckJsonString(scriptProps[i], "path", animName);
-					animProps->scriptProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Script> frame = std::make_shared<Animation::S_Script>();
+						frame->name = "Script";
+						frame->time = CheckJsonFloat(scriptProps.at(i), "time", animName);
+						frame->path = CheckJsonString(scriptProps.at(i), "path", animName);
+						animProps->scriptProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json buttonProps = animationJson["animationProperties"]["button"];
 				for (int i = 0; i < buttonProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Button> frame = std::make_shared<Animation::S_Button>();
-					frame->name = "Button";
-					frame->time = CheckJsonFloat(buttonProps[i], "time", animName);
-					frame->b_isActive = CheckJsonBool(buttonProps[i], "_isActive", animName);
-					animProps->buttonProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Button> frame = std::make_shared<Animation::S_Button>();
+						frame->name = "Button";
+						frame->time = CheckJsonFloat(buttonProps.at(i), "time", animName);
+						frame->b_isActive = CheckJsonBool(buttonProps.at(i), "_isActive", animName);
+						animProps->buttonProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json canvasProps = animationJson["animationProperties"]["canvas"];
 				for (int i = 0; i < canvasProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Canvas> frame = std::make_shared<Animation::S_Canvas>();
-					frame->name = "Canvas";
-					frame->time = CheckJsonFloat(canvasProps[i], "time", animName);
-					animProps->canvasProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Canvas> frame = std::make_shared<Animation::S_Canvas>();
+						frame->name = "Canvas";
+						frame->time = CheckJsonFloat(canvasProps.at(i), "time", animName);
+						animProps->canvasProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json audioProps = animationJson["animationProperties"]["audio"];
 				for (int i = 0; i < audioProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Audio> frame = std::make_shared<Animation::S_Audio>();
-					frame->name = "Audio";
-					frame->time = CheckJsonFloat(audioProps[i], "time", animName);
-					frame->soundName = CheckJsonString(audioProps[i], "soundName", animName);
-					frame->b_stopAllOtherSounds = CheckJsonBool(audioProps[i], "_stopAllOtherSounds", animName);
-					animProps->audioProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Audio> frame = std::make_shared<Animation::S_Audio>();
+						frame->name = "Audio";
+						frame->time = CheckJsonFloat(audioProps.at(i), "time", animName);
+						frame->soundName = CheckJsonString(audioProps.at(i), "soundName", animName);
+						frame->b_stopAllOtherSounds = CheckJsonBool(audioProps.at(i), "_stopAllOtherSounds", animName);
+						animProps->audioProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json textProps = animationJson["animationProperties"]["text"];
 				for (int i = 0; i < textProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_Text> frame = std::make_shared<Animation::S_Text>();
-					frame->name = "Text";
-					frame->time = CheckJsonFloat(textProps[i], "time", animName);
-					frame->fontPath = CheckJsonString(textProps[i], "fontPath", frame->name);
-					frame->text = CheckJsonString(textProps[i], "text", frame->name);
-					frame->tintColor = Vector4(
-						CheckJsonFloat(textProps[i], "tintColorX", frame->name),
-						CheckJsonFloat(textProps[i], "tintColorY", frame->name),
-						CheckJsonFloat(textProps[i], "tintColorZ", frame->name),
-						CheckJsonFloat(textProps[i], "tintColorW", frame->name)
-					);
-					frame->b_fontPathAnimated = CheckJsonBool(textProps[i], "_fontPathAnimated", animName);
-					frame->b_textAnimated = CheckJsonBool(textProps[i], "_textAnimated", animName);
-					frame->b_tintColorAnimated = CheckJsonBool(textProps[i], "_tintColorAnimated", animName);
-					frame->b_offsetAnimated = CheckJsonBool(textProps[i], "_offsetAnimated", animName);
-					animProps->textProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_Text> frame = std::make_shared<Animation::S_Text>();
+						frame->name = "Text";
+						frame->time = CheckJsonFloat(textProps.at(i), "time", animName);
+						frame->fontPath = CheckJsonString(textProps.at(i), "fontPath", frame->name);
+						frame->text = CheckJsonString(textProps.at(i), "text", frame->name);
+						frame->tintColor = Vector4(
+							CheckJsonFloat(textProps.at(i), "tintColorX", frame->name),
+							CheckJsonFloat(textProps.at(i), "tintColorY", frame->name),
+							CheckJsonFloat(textProps.at(i), "tintColorZ", frame->name),
+							CheckJsonFloat(textProps.at(i), "tintColorW", frame->name)
+						);
+						frame->b_fontPathAnimated = CheckJsonBool(textProps.at(i), "_fontPathAnimated", animName);
+						frame->b_textAnimated = CheckJsonBool(textProps.at(i), "_textAnimated", animName);
+						frame->b_tintColorAnimated = CheckJsonBool(textProps.at(i), "_tintColorAnimated", animName);
+						frame->b_offsetAnimated = CheckJsonBool(textProps.at(i), "_offsetAnimated", animName);
+						animProps->textProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json boxColliderProps = animationJson["animationProperties"]["boxCollider"];
 				for (int i = 0; i < boxColliderProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_BoxCollider> frame = std::make_shared<Animation::S_BoxCollider>();
-					frame->name = "BoxCollider";
-					frame->time = CheckJsonFloat(boxColliderProps[i], "time", animName);
-					frame->b_isActive = CheckJsonBool(boxColliderProps[i], "_isActive", animName);
-					animProps->boxColliderProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_BoxCollider> frame = std::make_shared<Animation::S_BoxCollider>();
+						frame->name = "BoxCollider";
+						frame->time = CheckJsonFloat(boxColliderProps.at(i), "time", animName);
+						frame->b_isActive = CheckJsonBool(boxColliderProps.at(i), "_isActive", animName);
+						animProps->boxColliderProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json circleColliderProps = animationJson["animationProperties"]["circleCollider"];
 				for (int i = 0; i < circleColliderProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_CircleCollider> frame = std::make_shared<Animation::S_CircleCollider>();
-					frame->name = "CircleCollider";
-					frame->time = CheckJsonFloat(circleColliderProps[i], "time", animName);
-					frame->b_isActive = CheckJsonBool(circleColliderProps[i], "_isActive", animName);
-					animProps->circleColliderProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_CircleCollider> frame = std::make_shared<Animation::S_CircleCollider>();
+						frame->name = "CircleCollider";
+						frame->time = CheckJsonFloat(circleColliderProps.at(i), "time", animName);
+						frame->b_isActive = CheckJsonBool(circleColliderProps.at(i), "_isActive", animName);
+						animProps->circleColliderProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json rigidBodyProps = animationJson["animationProperties"]["rigidBody"];
 				for (int i = 0; i < rigidBodyProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_RigidBody> frame = std::make_shared<Animation::S_RigidBody>();
-					frame->name = "RigidBody";
-					frame->time = CheckJsonFloat(rigidBodyProps[i], "time", animName);
-					frame->b_isActive = CheckJsonBool(rigidBodyProps[i], "_isActive", animName);
-					frame->interpType = (Animation::InterpType)CheckJsonInt(rigidBodyProps[i], "interpType", animName);
-					frame->speed = CheckJsonFloat(rigidBodyProps[i], "speed", animName);
-					frame->gravityScale = CheckJsonFloat(rigidBodyProps[i], "gravityScale", animName);
-					animProps->rigidBodyProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_RigidBody> frame = std::make_shared<Animation::S_RigidBody>();
+						frame->name = "RigidBody";
+						frame->time = CheckJsonFloat(rigidBodyProps.at(i), "time", animName);
+						frame->b_isActive = CheckJsonBool(rigidBodyProps.at(i), "_isActive", animName);
+						frame->interpType = (Animation::InterpType)CheckJsonInt(rigidBodyProps.at(i), "interpType", animName);
+						frame->speed = CheckJsonFloat(rigidBodyProps.at(i), "speed", animName);
+						frame->gravityScale = CheckJsonFloat(rigidBodyProps.at(i), "gravityScale", animName);
+						animProps->rigidBodyProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 				
 				json characterControllerProps = animationJson["animationProperties"]["characterController"];
 				for (int i = 0; i < characterControllerProps.size(); i++)
 				{
-					std::shared_ptr<Animation::S_CharacterController> frame = std::make_shared<Animation::S_CharacterController>();
-					frame->name = "CharacterController";
-					frame->time = CheckJsonFloat(characterControllerProps[i], "time", animName);
-					frame->b_isActive = CheckJsonBool(characterControllerProps[i], "_isActive", animName);
-					animProps->characterControllerProps.push_back(frame);
+					try
+					{
+						std::shared_ptr<Animation::S_CharacterController> frame = std::make_shared<Animation::S_CharacterController>();
+						frame->name = "CharacterController";
+						frame->time = CheckJsonFloat(characterControllerProps.at(i), "time", animName);
+						frame->b_isActive = CheckJsonBool(characterControllerProps.at(i), "_isActive", animName);
+						animProps->characterControllerProps.push_back(frame);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
 				}
 			}
 		}
@@ -2656,7 +2754,7 @@ namespace FlatEngine
 		float value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2670,7 +2768,7 @@ namespace FlatEngine
 		float value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2684,7 +2782,7 @@ namespace FlatEngine
 		int value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2698,7 +2796,7 @@ namespace FlatEngine
 		int value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2712,7 +2810,7 @@ namespace FlatEngine
 		long value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2726,7 +2824,7 @@ namespace FlatEngine
 		long value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2740,7 +2838,7 @@ namespace FlatEngine
 		double value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2754,7 +2852,7 @@ namespace FlatEngine
 		double value = -1;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2767,7 +2865,7 @@ namespace FlatEngine
 		bool value = false;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2781,7 +2879,7 @@ namespace FlatEngine
 		bool value = false;
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2795,7 +2893,7 @@ namespace FlatEngine
 		std::string value = "";
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2809,7 +2907,7 @@ namespace FlatEngine
 		std::string value = "";
 		if (obj.contains(checkFor))
 		{
-			value = obj[checkFor];
+			value = obj.at(checkFor);
 		}
 		else
 		{
@@ -2851,14 +2949,14 @@ namespace FlatEngine
 			}
 		}
 		else
-		{
+		{			
 			loadedObject = CreateGameObject(loadedParentID, loadedID, scene);
-			
+
 			if (loadedObject != nullptr)
 			{
-				loadedObject->SetName(objectName);
+				loadedObject->SetName(objectName);				
 				loadedObject->SetActive(b_isActive);
-
+				
 				// TagList			
 				if (JsonContains(objectJson, "tags", objectName))
 				{
@@ -2879,313 +2977,354 @@ namespace FlatEngine
 						bool b_ignoresTag = jsonIgnoreTag.items().begin().value();
 						tags.SetIgnore(ignoreTag, b_ignoresTag);
 					}
-				}
+				}				
 
 				loadedObject->SetTagList(tags);
 
 				float objectRotation = 0;
-
-				// Loop through the components in this GameObjects json
-				for (int j = 0; j < objectJson["components"].size(); j++)
+				try
 				{
-					json componentJson = objectJson["components"][j];
-					std::string type = CheckJsonString(componentJson, "type", objectName);
-					long id = CheckJsonLong(componentJson, "id", objectName);
-					bool b_isCollapsed = CheckJsonBool(componentJson, "_isCollapsed", objectName);
-					bool b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
-
-					if (type == "Transform")
+					if (objectJson.contains("components"))
 					{
-						Transform* transform = loadedObject->GetTransform();
-						float rotation = CheckJsonFloat(componentJson, "rotation", objectName);
-						transform->SetID(id);
-						transform->SetActive(b_isActive);
-						transform->SetCollapsed(b_isCollapsed);
-						transform->SetOrigin(Vector2(CheckJsonFloat(componentJson, "xOrigin", objectName), CheckJsonFloat(componentJson, "yOrigin", objectName)));
-						transform->SetInitialPosition(Vector2(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName)));
-						transform->SetScale(Vector2(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName)));
-						transform->SetRotation(rotation);
-						objectRotation = rotation;
-					}
-					else if (type == "Sprite")
-					{
-						Sprite* newSprite = loadedObject->AddSprite(id, b_isActive, b_isCollapsed);
-						std::string pivotPoint = "Center";
-						newSprite->SetPivotPoint(CheckJsonString(componentJson, "pivotPoint", objectName));
-						newSprite->SetScale(Vector2(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName)));
-						newSprite->SetRenderOrder(CheckJsonInt(componentJson, "renderOrder", objectName));
-						newSprite->SetTintColor(Vector4(
-							CheckJsonFloat(componentJson, "tintColorX", objectName),
-							CheckJsonFloat(componentJson, "tintColorY", objectName),
-							CheckJsonFloat(componentJson, "tintColorZ", objectName),
-							CheckJsonFloat(componentJson, "tintColorW", objectName)
-						));
-						std::string path = CheckJsonString(componentJson, "path", objectName);
-						if (path != "" && !DoesFileExist(path))
+						for (int j = 0; j < objectJson.at("components").size(); j++)
 						{
-							LogError("Sprite file not found for GameObject: \"" + objectName + "\". This may lead to unexpected behavior.  \npath: " + path);
-						}
-						newSprite->SetTexture(path);
-						newSprite->SetOffset(Vector2(CheckJsonFloat(componentJson, "xOffset", objectName), CheckJsonFloat(componentJson, "yOffset", objectName)));
-					}
-					else if (type == "Camera")
-					{
-						Camera* newCamera = loadedObject->AddCamera(id, b_isActive, b_isCollapsed);
-						bool b_isPrimaryCamera = CheckJsonBool(componentJson, "_isPrimaryCamera", objectName);
-						newCamera->SetDimensions(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
-						newCamera->SetPrimaryCamera(b_isPrimaryCamera);
-						newCamera->SetZoom(CheckJsonFloat(componentJson, "zoom", objectName));
-						newCamera->SetFrustrumColor(Vector4(
-							CheckJsonFloat(componentJson, "frustrumRed", objectName),
-							CheckJsonFloat(componentJson, "frustrumGreen", objectName),
-							CheckJsonFloat(componentJson, "frustrumBlue", objectName),
-							CheckJsonFloat(componentJson, "frustrumAlpha", objectName)
-						));
-						newCamera->SetShouldFollow(CheckJsonBool(componentJson, "_follow", objectName));
-						newCamera->SetFollowSmoothing(CheckJsonFloat(componentJson, "followSmoothing", objectName));
-						newCamera->SetToFollowID(CheckJsonLong(componentJson, "following", objectName));
+							json componentJson = objectJson.at("components").at(j);
+							std::string type = CheckJsonString(componentJson, "type", objectName);
+							long id = CheckJsonLong(componentJson, "id", objectName);
+							bool b_isCollapsed = CheckJsonBool(componentJson, "_isCollapsed", objectName);
+							bool b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 
-						if (b_isPrimaryCamera)
-						{
-							SetPrimaryCamera(newCamera);
-						}
-					}
-					else if (type == "Script")
-					{
-						Script* newScript = loadedObject->AddScript(id, b_isActive, b_isCollapsed);
-						newScript->SetAttachedScript(CheckJsonString(componentJson, "attachedScript", objectName));
+							if (type == "Transform")
+							{								
+								Transform* transform = loadedObject->GetTransform();
+								float rotation = CheckJsonFloat(componentJson, "rotation", objectName);
+								transform->SetID(id);
+								transform->SetActive(b_isActive);
+								transform->SetCollapsed(b_isCollapsed);
+								transform->SetOrigin(Vector2(CheckJsonFloat(componentJson, "xOrigin", objectName), CheckJsonFloat(componentJson, "yOrigin", objectName)));
+								transform->SetInitialPosition(Vector2(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName)));
+								transform->SetScale(Vector2(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName)));
+								transform->SetRotation(rotation);
+								objectRotation = rotation;
 
-						json scriptParamsJson = componentJson["scriptParameters"];
-
-						for (int i = 0; i < scriptParamsJson.size(); i++)
-						{
-							json param = scriptParamsJson[i];
-							Animation::S_EventFunctionParam parameter;
-							std::string paramName = CheckJsonString(param, "paramName", objectName);
-							parameter.type = CheckJsonString(param, "type", objectName);
-							parameter.e_string = CheckJsonString(param, "string", objectName);
-							parameter.e_int = CheckJsonInt(param, "int", objectName);
-							parameter.e_float = CheckJsonFloat(param, "float", objectName);
-							parameter.e_long = CheckJsonLong(param, "long", objectName);
-							parameter.e_double = CheckJsonDouble(param, "double", objectName);
-							parameter.e_boolean = CheckJsonBool(param, "bool", objectName);
-							parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", objectName), CheckJsonFloat(param, "vector2Y", objectName));
-
-							newScript->AddScriptParam(paramName, parameter);
-						}
-					}
-					else if (type == "Button")
-					{
-						Button* newButton = loadedObject->AddButton(id, b_isActive, b_isCollapsed);
-						newButton->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
-						newButton->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-						newButton->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
-						newButton->SetLuaFunctionName(CheckJsonString(componentJson, "luaFunctionName", objectName));
-						newButton->SetLeftClick(CheckJsonBool(componentJson, "_leftClick", objectName));
-						newButton->SetRightClick(CheckJsonBool(componentJson, "_rightClick", objectName));
-
-						json functionParamsJson = componentJson["luaFunctionParameters"];
-						std::shared_ptr<Animation::S_Event> functionParams = std::make_shared<Animation::S_Event>();
-
-						for (int i = 0; i < functionParamsJson.size(); i++)
-						{
-							json param = functionParamsJson[i];
-							Animation::S_EventFunctionParam parameter;
-							parameter.type = CheckJsonString(param, "type", objectName);
-							parameter.e_string = CheckJsonString(param, "string", objectName);
-							parameter.e_int = CheckJsonInt(param, "int", objectName);
-							parameter.e_float = CheckJsonFloat(param, "float", objectName);
-							parameter.e_long = CheckJsonLong(param, "long", objectName);
-							parameter.e_double = CheckJsonDouble(param, "double", objectName);
-							parameter.e_boolean = CheckJsonBool(param, "bool", objectName);
-							parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", objectName), CheckJsonFloat(param, "vector2Y", objectName));
-
-							functionParams->parameters.push_back(parameter);
-						}
-
-						newButton->SetLuaFunctionParams(functionParams);
-					}
-					else if (type == "Canvas")
-					{
-						Canvas* newCanvas = loadedObject->AddCanvas(id, b_isActive, b_isCollapsed);
-						newCanvas->SetDimensions(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
-						newCanvas->SetLayerNumber(CheckJsonInt(componentJson, "layerNumber", objectName));
-						newCanvas->SetBlocksLayers(CheckJsonBool(componentJson, "_blocksLayers", objectName));
-					}
-					else if (type == "Animation")
-					{
-						Animation* newAnimation = loadedObject->AddAnimation(id, b_isActive, b_isCollapsed);
-
-						if (JsonContains(componentJson, "animationData", objectName))
-						{
-							for (int anim = 0; anim < componentJson["animationData"].size(); anim++)
-							{
-								json animationJson = componentJson["animationData"][anim];
-								std::string path = CheckJsonString(animationJson, "path", objectName);
-								std::string animationName = CheckJsonString(animationJson, "name", objectName);
+							}
+							else if (type == "Sprite")
+							{								
+								Sprite* newSprite = loadedObject->AddSprite(id, b_isActive, b_isCollapsed);
+								std::string pivotPoint = "Center";
+								newSprite->SetPivotPoint(CheckJsonString(componentJson, "pivotPoint", objectName));
+								newSprite->SetScale(Vector2(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName)));
+								newSprite->SetRenderOrder(CheckJsonInt(componentJson, "renderOrder", objectName));
+								newSprite->SetTintColor(Vector4(
+									CheckJsonFloat(componentJson, "tintColorX", objectName),
+									CheckJsonFloat(componentJson, "tintColorY", objectName),
+									CheckJsonFloat(componentJson, "tintColorZ", objectName),
+									CheckJsonFloat(componentJson, "tintColorW", objectName)
+								));
+								std::string path = CheckJsonString(componentJson, "path", objectName);
 								if (!DoesFileExist(path))
 								{
-									LogError("Animation file not found for GameObject: \"" + objectName + "\" - on Animation: \"" + animationName + "\". This may lead to unexpected behavior.  \npath: " + path);
-								}
-								newAnimation->AddAnimation(animationName, path);
-							}
-						}
-					}
-					else if (type == "Audio")
-					{
-						Audio* newAudio = loadedObject->AddAudio(id, b_isActive, b_isCollapsed);
-
-						if (JsonContains(componentJson, "soundData", objectName))
-						{
-							for (int sound = 0; sound < componentJson["soundData"].size(); sound++)
-							{
-								json soundJson = componentJson["soundData"][sound];
-								std::string path = CheckJsonString(soundJson, "path", objectName);
-								std::string soundName = CheckJsonString(soundJson, "name", objectName);
-								if (!DoesFileExist(path))
-								{
-									LogError("Audio file not found for GameObject: \"" + objectName + "\" - on Audio: \"" + soundName + "\". This may lead to unexpected behavior.  \npath: " + path);
-								}
-								bool b_isMusic = CheckJsonBool(soundJson, "b_isMusic", objectName);
-
-								newAudio->AddSound(soundName, path);
-							}
-						}
-					}
-					else if (type == "Text")
-					{
-						Text* newText = loadedObject->AddText(id, b_isActive, b_isCollapsed);
-						std::string fontPath = CheckJsonString(componentJson, "fontPath", objectName);
-						if (!DoesFileExist(fontPath))
-						{
-							LogError("Font file not found for GameObject: \"" + objectName + "\". This may lead to unexpected behavior.  \npath: " + fontPath);
-						}
-						newText->SetFontPath(fontPath);
-						newText->SetFontSize(CheckJsonInt(componentJson, "fontSize", objectName));
-						newText->SetPivotPoint(CheckJsonString(componentJson, "pivotPoint", objectName));
-						newText->SetColor(Vector4(
-							CheckJsonFloat(componentJson, "tintColorX", objectName),
-							CheckJsonFloat(componentJson, "tintColorY", objectName),
-							CheckJsonFloat(componentJson, "tintColorZ", objectName),
-							CheckJsonFloat(componentJson, "tintColorW", objectName)
-						));
-						newText->SetText(CheckJsonString(componentJson, "text", objectName));
-						newText->SetRenderOrder(CheckJsonInt(componentJson, "renderOrder", objectName));
-						newText->SetOffset(Vector2(CheckJsonFloat(componentJson, "xOffset", objectName), CheckJsonFloat(componentJson, "yOffset", objectName)));
-					}
-					else if (type == "CharacterController")
-					{
-						CharacterController* newCharacterController = loadedObject->AddCharacterController(id, b_isActive, b_isCollapsed);
-						newCharacterController->SetMaxAcceleration(CheckJsonFloat(componentJson, "maxAcceleration", objectName));
-						newCharacterController->SetMaxSpeed(CheckJsonFloat(componentJson, "maxSpeed", objectName));
-						newCharacterController->SetAirControl(CheckJsonFloat(componentJson, "airControl", objectName));
-					}
-					else if (type == "BoxCollider")
-					{
-						BoxCollider* newBoxCollider = loadedObject->AddBoxCollider(id, b_isActive, b_isCollapsed);
-						newBoxCollider->SetTileMapCollider(false);
-						newBoxCollider->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
-						newBoxCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-						newBoxCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));
-						newBoxCollider->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
-						newBoxCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
-						newBoxCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
-						newBoxCollider->SetRotation(objectRotation);
-						newBoxCollider->SetShowActiveRadius(CheckJsonBool(componentJson, "_showActiveRadius", objectName));
-						newBoxCollider->SetIsComposite(CheckJsonBool(componentJson, "_isComposite", objectName));
-					}
-					else if (type == "CircleCollider")
-					{
-						CircleCollider* newCircleCollider = loadedObject->AddCircleCollider(id, b_isActive, b_isCollapsed);
-						newCircleCollider->SetActiveRadiusGrid(CheckJsonFloat(componentJson, "activeRadius", objectName));
-						newCircleCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-						newCircleCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));
-						newCircleCollider->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
-						newCircleCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
-						newCircleCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
-						newCircleCollider->SetIsComposite(CheckJsonBool(componentJson, "_isComposite", objectName));
-					}
-					else if (type == "RigidBody")
-					{
-						RigidBody* newRigidBody = loadedObject->AddRigidBody(id, b_isActive, b_isCollapsed);
-						newRigidBody->SetMass(CheckJsonFloat(componentJson, "mass", objectName));
-						newRigidBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
-						newRigidBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
-						newRigidBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
-						newRigidBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-						newRigidBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));
-						newRigidBody->SetEquilibriumForce(CheckJsonFloat(componentJson, "equilibriumForce", objectName));
-						newRigidBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));
-						newRigidBody->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
-						newRigidBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
-					}
-					else if (type == "TileMap")
-					{
-						TileMap* newTileMap = loadedObject->AddTileMap(id, b_isActive, b_isCollapsed);
-						newTileMap->SetWidth(CheckJsonInt(componentJson, "width", objectName));
-						newTileMap->SetHeight(CheckJsonInt(componentJson, "height", objectName));
-						newTileMap->SetTileWidth(CheckJsonInt(componentJson, "tileWidth", objectName));
-						newTileMap->SetTileHeight(CheckJsonInt(componentJson, "tileHeight", objectName));
-
-						// Get used TileSet names
-						if (JsonContains(componentJson, "tileSets", objectName))
-						{
-							for (int tileSet = 0; tileSet < componentJson["tileSets"].size(); tileSet++)
-							{
-								json tileSetJson = componentJson["tileSets"][tileSet];
-								std::string tileSetName = CheckJsonString(tileSetJson, "name", objectName);
-								if (GetTileSet(tileSetName) != nullptr)
-								{
-									newTileMap->AddTileSet(tileSetName);
+									LogError("Sprite file not found for GameObject: \"" + objectName + "\". This may lead to unexpected behavior.  \npath: " + path);
 								}
 								else
 								{
-									LogError("TileSet: \"" + tileSetName + "\" could not be found.");
+									newSprite->SetTexture(path);
+								}
+								newSprite->SetOffset(Vector2(CheckJsonFloat(componentJson, "xOffset", objectName), CheckJsonFloat(componentJson, "yOffset", objectName)));
+
+							}
+							else if (type == "Camera")
+							{								
+								Camera* newCamera = loadedObject->AddCamera(id, b_isActive, b_isCollapsed);
+								bool b_isPrimaryCamera = CheckJsonBool(componentJson, "_isPrimaryCamera", objectName);
+								newCamera->SetDimensions(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
+								newCamera->SetPrimaryCamera(b_isPrimaryCamera);
+								SetPrimaryCamera(newCamera);
+								newCamera->SetZoom(CheckJsonFloat(componentJson, "zoom", objectName));
+								newCamera->SetFrustrumColor(Vector4(
+									CheckJsonFloat(componentJson, "frustrumRed", objectName),
+									CheckJsonFloat(componentJson, "frustrumGreen", objectName),
+									CheckJsonFloat(componentJson, "frustrumBlue", objectName),
+									CheckJsonFloat(componentJson, "frustrumAlpha", objectName)
+								));
+								newCamera->SetShouldFollow(CheckJsonBool(componentJson, "_follow", objectName));
+								newCamera->SetFollowSmoothing(CheckJsonFloat(componentJson, "followSmoothing", objectName));
+								newCamera->SetToFollowID(CheckJsonLong(componentJson, "following", objectName));
+							}
+							else if (type == "Script")
+							{								
+								Script* newScript = loadedObject->AddScript(id, b_isActive, b_isCollapsed);
+								newScript->SetAttachedScript(CheckJsonString(componentJson, "attachedScript", objectName));
+
+								json scriptParamsJson = componentJson.at("scriptParameters");
+
+								for (int i = 0; i < scriptParamsJson.size(); i++)
+								{
+									try
+									{
+										json param = scriptParamsJson.at(i);
+										Animation::S_EventFunctionParam parameter;
+										std::string paramName = CheckJsonString(param, "paramName", objectName);
+										parameter.type = CheckJsonString(param, "type", objectName);
+										parameter.e_string = CheckJsonString(param, "string", objectName);
+										parameter.e_int = CheckJsonInt(param, "int", objectName);
+										parameter.e_float = CheckJsonFloat(param, "float", objectName);
+										parameter.e_long = CheckJsonLong(param, "long", objectName);
+										parameter.e_double = CheckJsonDouble(param, "double", objectName);
+										parameter.e_boolean = CheckJsonBool(param, "bool", objectName);
+										parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", objectName), CheckJsonFloat(param, "vector2Y", objectName));
+
+										newScript->AddScriptParam(paramName, parameter);
+									}
+									catch (const json::out_of_range& e)
+									{
+										LogError(e.what());
+									}
 								}
 							}
-						}
-						// Get Tile data
-						if (JsonContains(componentJson, "tiles", objectName))
-						{
-							for (int tile = 0; tile < componentJson["tiles"].size(); tile++)
-							{
-								json tileJson = componentJson["tiles"][tile];
-								float x = CheckJsonFloat(tileJson, "tileCoordX", objectName);
-								float y = CheckJsonFloat(tileJson, "tileCoordY", objectName);
-								std::string tileSetName = CheckJsonString(tileJson, "tileSetName", objectName);
-								int tileSetIndex = CheckJsonInt(tileJson, "tileSetIndex", objectName);
+							else if  (type == "Button")
+							{						
+								Button* newButton = loadedObject->AddButton(id, b_isActive, b_isCollapsed);
+								newButton->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
+								newButton->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
+								newButton->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
+								newButton->SetLuaFunctionName(CheckJsonString(componentJson, "luaFunctionName", objectName));
+								newButton->SetLeftClick(CheckJsonBool(componentJson, "_leftClick", objectName));
+								newButton->SetRightClick(CheckJsonBool(componentJson, "_rightClick", objectName));
 
-								if (tileSetName != "" && GetTileSet(tileSetName) != nullptr && tileSetIndex != -1)
+								json functionParamsJson = componentJson.at("luaFunctionParameters");
+								std::shared_ptr<Animation::S_Event> functionParams = std::make_shared<Animation::S_Event>();
+
+								for (int i = 0; i < functionParamsJson.size(); i++)
 								{
-									newTileMap->SetTile(Vector2(x, y), GetTileSet(tileSetName), tileSetIndex);
+									try
+									{
+										json param = functionParamsJson.at(i);
+										Animation::S_EventFunctionParam parameter;
+										parameter.type = CheckJsonString(param, "type", objectName);
+										parameter.e_string = CheckJsonString(param, "string", objectName);
+										parameter.e_int = CheckJsonInt(param, "int", objectName);
+										parameter.e_float = CheckJsonFloat(param, "float", objectName);
+										parameter.e_long = CheckJsonLong(param, "long", objectName);
+										parameter.e_double = CheckJsonDouble(param, "double", objectName);
+										parameter.e_boolean = CheckJsonBool(param, "bool", objectName);
+										parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", objectName), CheckJsonFloat(param, "vector2Y", objectName));
+
+										functionParams->parameters.push_back(parameter);
+									}
+									catch (const json::out_of_range& e)
+									{
+										LogError(e.what());
+									}
+								}
+
+								newButton->SetLuaFunctionParams(functionParams);
+
+							}
+							else if (type == "Canvas")
+							{								
+								Canvas* newCanvas = loadedObject->AddCanvas(id, b_isActive, b_isCollapsed);
+								newCanvas->SetDimensions(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
+								newCanvas->SetLayerNumber(CheckJsonInt(componentJson, "layerNumber", objectName));
+								newCanvas->SetBlocksLayers(CheckJsonBool(componentJson, "_blocksLayers", objectName));
+
+							}
+							else if  (type == "Animation")
+							{								
+								Animation* newAnimation = loadedObject->AddAnimation(id, b_isActive, b_isCollapsed);
+
+								if (JsonContains(componentJson, "animationData", objectName))
+								{
+									for (int anim = 0; anim < componentJson.at("animationData").size(); anim++)
+									{
+										try
+										{
+											json animationJson = componentJson.at("animationData").at(anim);
+											std::string path = CheckJsonString(animationJson, "path", objectName);
+											std::string animationName = CheckJsonString(animationJson, "name", objectName);
+											if (!DoesFileExist(path))
+											{
+												LogError("Animation file not found for GameObject: \"" + objectName + "\" - on Animation: \"" + animationName + "\". This may lead to unexpected behavior.  \npath: " + path);
+											}
+											newAnimation->AddAnimation(animationName, path);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+
+							}
+							else if (type == "Audio")
+							{								
+								Audio* newAudio = loadedObject->AddAudio(id, b_isActive, b_isCollapsed);
+
+								if (JsonContains(componentJson, "soundData", objectName))
+								{
+									for (int sound = 0; sound < componentJson.at("soundData").size(); sound++)
+									{										
+										json soundJson = componentJson.at("soundData").at(sound);
+										std::string path = CheckJsonString(soundJson, "path", objectName);
+										std::string soundName = CheckJsonString(soundJson, "name", objectName);
+										if (!DoesFileExist(path))
+										{
+											LogError("Audio file not found for GameObject: \"" + objectName + "\" - on Audio: \"" + soundName + "\". This may lead to unexpected behavior.  \npath: " + path);
+										}
+										bool b_isMusic = CheckJsonBool(soundJson, "b_isMusic", objectName);
+
+										newAudio->AddSound(soundName, path);
+									}
 								}
 							}
-						}
-						// Get Collision Area data
-						if (JsonContains(componentJson, "collisionAreas", objectName))
-						{
-							for (int collisionArea = 0; collisionArea < componentJson["collisionAreas"].size(); collisionArea++)
-							{
-								json colliderAreaJson = componentJson["collisionAreas"][collisionArea];
-								json colliderDataJson = colliderAreaJson["areaData"];
-								std::string collisionAreaName = CheckJsonString(colliderAreaJson, "name", objectName);
-								std::vector<std::pair<Vector2, Vector2>> collisionCoordBuffer;
-
-								for (int colArea = 0; colArea < colliderDataJson.size(); colArea++)
+							else if (type == "Text")
+							{								
+								Text* newText = loadedObject->AddText(id, b_isActive, b_isCollapsed);
+								std::string fontPath = CheckJsonString(componentJson, "fontPath", objectName);
+								if (!DoesFileExist(fontPath))
 								{
-									Vector2 startCoord = Vector2(CheckJsonFloat(colliderDataJson[colArea], "startCoordX", objectName), CheckJsonFloat(colliderDataJson[colArea], "startCoordY", objectName));
-									Vector2 endCoord = Vector2(CheckJsonFloat(colliderDataJson[colArea], "endCoordX", objectName), CheckJsonFloat(colliderDataJson[colArea], "endCoordY", objectName));
-									std::pair<Vector2, Vector2> colPair = { startCoord, endCoord };
-									collisionCoordBuffer.push_back(colPair);
+									LogError("Font file not found for GameObject: \"" + objectName + "\". This may lead to unexpected behavior.  \npath: " + fontPath);
 								}
+								newText->SetFontPath(fontPath);
+								newText->SetFontSize(CheckJsonInt(componentJson, "fontSize", objectName));
+								newText->SetPivotPoint(CheckJsonString(componentJson, "pivotPoint", objectName));
+								newText->SetColor(Vector4(
+									CheckJsonFloat(componentJson, "tintColorX", objectName),
+									CheckJsonFloat(componentJson, "tintColorY", objectName),
+									CheckJsonFloat(componentJson, "tintColorZ", objectName),
+									CheckJsonFloat(componentJson, "tintColorW", objectName)
+								));
+								newText->SetText(CheckJsonString(componentJson, "text", objectName));
+								newText->SetRenderOrder(CheckJsonInt(componentJson, "renderOrder", objectName));
+								newText->SetOffset(Vector2(CheckJsonFloat(componentJson, "xOffset", objectName), CheckJsonFloat(componentJson, "yOffset", objectName)));
 
-								if (collisionCoordBuffer.size() > 0)
+							}
+							else if (type == "CharacterController")
+							{								
+								CharacterController* newCharacterController = loadedObject->AddCharacterController(id, b_isActive, b_isCollapsed);
+								newCharacterController->SetMaxAcceleration(CheckJsonFloat(componentJson, "maxAcceleration", objectName));
+								newCharacterController->SetMaxSpeed(CheckJsonFloat(componentJson, "maxSpeed", objectName));
+								newCharacterController->SetAirControl(CheckJsonFloat(componentJson, "airControl", objectName));
+
+							}
+							else if (type == "BoxCollider")
+							{								
+								BoxCollider* newBoxCollider = loadedObject->AddBoxCollider(id, b_isActive, b_isCollapsed);
+								newBoxCollider->SetTileMapCollider(false);
+								newBoxCollider->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
+								newBoxCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
+								newBoxCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));
+								newBoxCollider->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
+								newBoxCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
+								newBoxCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
+								newBoxCollider->SetRotation(objectRotation);
+								newBoxCollider->SetShowActiveRadius(CheckJsonBool(componentJson, "_showActiveRadius", objectName));
+								newBoxCollider->SetIsComposite(CheckJsonBool(componentJson, "_isComposite", objectName));
+							}
+							else if (type == "CircleCollider")
+							{								
+								CircleCollider* newCircleCollider = loadedObject->AddCircleCollider(id, b_isActive, b_isCollapsed);
+								newCircleCollider->SetActiveRadiusGrid(CheckJsonFloat(componentJson, "activeRadius", objectName));
+								newCircleCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
+								newCircleCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));
+								newCircleCollider->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
+								newCircleCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
+								newCircleCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
+								newCircleCollider->SetIsComposite(CheckJsonBool(componentJson, "_isComposite", objectName));
+
+							}
+							else if (type == "RigidBody")
+							{
+								RigidBody* newRigidBody = loadedObject->AddRigidBody(id, b_isActive, b_isCollapsed);
+								newRigidBody->SetMass(CheckJsonFloat(componentJson, "mass", objectName));
+								newRigidBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
+								newRigidBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
+								newRigidBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
+								newRigidBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
+								newRigidBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));
+								newRigidBody->SetEquilibriumForce(CheckJsonFloat(componentJson, "equilibriumForce", objectName));
+								newRigidBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));
+								newRigidBody->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
+								newRigidBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
+
+							}
+							else if (type == "TileMap")
+							{
+								TileMap* newTileMap = loadedObject->AddTileMap(id, b_isActive, b_isCollapsed);
+								newTileMap->SetWidth(CheckJsonInt(componentJson, "width", objectName));
+								newTileMap->SetHeight(CheckJsonInt(componentJson, "height", objectName));
+								newTileMap->SetTileWidth(CheckJsonInt(componentJson, "tileWidth", objectName));
+								newTileMap->SetTileHeight(CheckJsonInt(componentJson, "tileHeight", objectName));
+
+								// Get used TileSet names
+								if (JsonContains(componentJson, "tileSets", objectName))
 								{
-									newTileMap->SetCollisionAreaValues(collisionAreaName, collisionCoordBuffer);
+									for (int tileSet = 0; tileSet < componentJson.at("tileSets").size(); tileSet++)
+									{
+										json tileSetJson = componentJson.at("tileSets").at(tileSet);
+										std::string tileSetName = CheckJsonString(tileSetJson, "name", objectName);
+										if (GetTileSet(tileSetName) != nullptr)
+										{
+											newTileMap->AddTileSet(tileSetName);
+										}
+										else
+										{
+											LogError("TileSet: \"" + tileSetName + "\" could not be found.");
+										}
+									}
+								}
+								// Get Tile data
+								if (JsonContains(componentJson, "tiles", objectName))
+								{
+									for (int tile = 0; tile < componentJson.at("tiles").size(); tile++)
+									{
+										json tileJson = componentJson["tiles"][tile];
+										float x = CheckJsonFloat(tileJson, "tileCoordX", objectName);
+										float y = CheckJsonFloat(tileJson, "tileCoordY", objectName);
+										std::string tileSetName = CheckJsonString(tileJson, "tileSetName", objectName);
+										int tileSetIndex = CheckJsonInt(tileJson, "tileSetIndex", objectName);
+
+										if (tileSetName != "" && GetTileSet(tileSetName) != nullptr && tileSetIndex != -1)
+										{
+											newTileMap->SetTile(Vector2(x, y), GetTileSet(tileSetName), tileSetIndex);
+										}
+									}
+								}
+								// Get Collision Area data
+								if (JsonContains(componentJson, "collisionAreas", objectName))
+								{
+									for (int collisionArea = 0; collisionArea < componentJson.at("collisionAreas").size(); collisionArea++)
+									{
+										json colliderAreaJson = componentJson.at("collisionAreas").at(collisionArea);
+										json colliderDataJson = colliderAreaJson.at("areaData");
+										std::string collisionAreaName = CheckJsonString(colliderAreaJson, "name", objectName);
+										std::vector<std::pair<Vector2, Vector2>> collisionCoordBuffer;
+
+										for (int colArea = 0; colArea < colliderDataJson.size(); colArea++)
+										{
+											Vector2 startCoord = Vector2(CheckJsonFloat(colliderDataJson.at(colArea), "startCoordX", objectName), CheckJsonFloat(colliderDataJson[colArea], "startCoordY", objectName));
+											Vector2 endCoord = Vector2(CheckJsonFloat(colliderDataJson.at(colArea), "endCoordX", objectName), CheckJsonFloat(colliderDataJson[colArea], "endCoordY", objectName));
+											std::pair<Vector2, Vector2> colPair = { startCoord, endCoord };
+											collisionCoordBuffer.push_back(colPair);
+										}
+
+										if (collisionCoordBuffer.size() > 0)
+										{
+											newTileMap->SetCollisionAreaValues(collisionAreaName, collisionCoordBuffer);
+										}
+									}
 								}
 							}
 						}
 					}
+				}
+				catch (const json::out_of_range& e)
+				{
+					std::cout << e.what() << '\n';
+				}
+				catch (const json::type_error& e)
+				{
+					std::cout << e.what() << '\n';
 				}
 			}
 		}

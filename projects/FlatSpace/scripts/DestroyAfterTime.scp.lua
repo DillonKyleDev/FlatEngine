@@ -26,8 +26,7 @@ function Update()
           data.sprite:SetAlpha(newAlpha)
      end
      
-     if (GetTime() >= (data.startTime + 2000)) then 
-          LogString("Destroying")         
+     if (GetTime() >= (data.startTime + 2000)) then      
           Destroy(my_id)
      end
 end

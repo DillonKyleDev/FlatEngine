@@ -195,7 +195,7 @@ namespace FlatEngine
 				{
 					if (animData.b_playing)
 					{
-						animation->PlayAnimation(animData.name, GetEngineTime());						
+						animation->PlayAnimation(animData.name, F_Application->GetGameLoop()->TimeEllapsedInMs());
 					}
 				}
 			}

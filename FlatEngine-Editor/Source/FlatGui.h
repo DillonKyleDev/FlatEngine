@@ -93,7 +93,7 @@ namespace FlatGui
 	extern std::string FG_currentDirectory;
 
 	// Focused GameObject
-	extern long FG_FocusedGameObjectID;
+
 	extern void SetFocusedGameObjectID(long ID);
 	extern long GetFocusedGameObjectID();
 

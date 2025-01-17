@@ -10,20 +10,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 341,
+                    "id": 79,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 4.5217390060424805,
+                    "xPos": 5.279356002807617,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -5.82608699798584,
+                    "yPos": -5.769656181335449,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 340,
+                    "id": 80,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\asteroid\\asteroid_1.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 0,
@@ -39,9 +39,9 @@
                 },
                 {
                     "_isActive": true,
-                    "_isCollapsed": true,
+                    "_isCollapsed": false,
                     "attachedScript": "Asteroid",
-                    "id": 339,
+                    "id": 81,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -58,7 +58,7 @@
                         {
                             "bool": false,
                             "double": 0.0,
-                            "float": 0.4000000059604645,
+                            "float": -0.4000000059604645,
                             "int": 0,
                             "long": 0,
                             "paramName": "rotationSpeed",
@@ -80,7 +80,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 338,
+                    "id": 82,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -100,7 +100,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 1.25,
-                    "id": 337,
+                    "id": 83,
                     "type": "BoxCollider"
                 },
                 {
@@ -112,11 +112,11 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 335,
+                    "id": 84,
                     "type": "Animation"
                 }
             ],
-            "id": 67,
+            "id": 21,
             "ignoreTags": [
                 {
                     "Collectable": true
@@ -155,7 +155,7 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
                     "Terrain": false
@@ -164,8 +164,8 @@
             "name": "Asteroid",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 4.5217390060424805,
-            "spawnLocationY": -5.82608699798584,
+            "spawnLocationX": 5.279356002807617,
+            "spawnLocationY": -5.769656181335449,
             "tags": [
                 {
                     "Collectable": false

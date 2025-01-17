@@ -29,7 +29,7 @@ function Update()
      local rotation = data.transform:GetRotation()
      data.transform:SetRotation(rotation + GetScriptParam("rotationSpeed", my_id):float())
 
-     if GetTime() >= (data.startTime + data.lifeTime) then          
+     if (GetTime() >= (data.startTime + data.lifeTime)) and (GetScriptParam("b_despawns", my_id):bool() == true) then          
           Destroy(my_id)
      end
 end

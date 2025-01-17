@@ -5,6 +5,7 @@
 #include <vector>
 #include "json.hpp"
 
+#define JSON_NOEXCEPTION
 using json = nlohmann::json;
 using namespace nlohmann::literals;
 

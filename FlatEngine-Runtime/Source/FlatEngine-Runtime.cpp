@@ -150,6 +150,7 @@ public:
 		{
 			json projectJson;
 			FL::LoadGameProject(FL::FindAllFilesWithExtension("..\\", ".prj").front(), projectJson);
+			FL::F_AssetManager.CollectDirectories();
 			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
 			FL::F_AssetManager.CollectColors();
 			FL::F_AssetManager.CollectTextures();
@@ -157,6 +158,7 @@ public:
 			FL::F_PrefabManager->InitializePrefabs();
 			FL::RetrieveLuaScriptPaths();
 			FL::InitializeMappingContexts();
+
 			b_hasRunOnce = true;
 		}
 	}

@@ -85,9 +85,9 @@ namespace FlatEngine
 			pointToPath = loadFrom;
 		}
 		bool b_success = true;
-
-		m_loadedScene.UnloadSceneObjects();
-		m_loadedScene.UnloadECSManager();
+				
+		//m_loadedScene.UnloadSceneObjects();
+		//m_loadedScene.UnloadECSManager();
 
 		std::ofstream file_obj;
 		std::ifstream ifstream(loadFrom);
@@ -109,49 +109,63 @@ namespace FlatEngine
 		}
 
 		file_obj.close();
-
 		if (file_obj.good() && fileContent != "")
 		{
-			m_loadedScene = Scene();
-			m_loadedScenePath = pointToPath;
-			m_loadedScene.SetPath(pointToPath);
-			m_loadedScene.SetName(GetFilenameFromPath(pointToPath, false));
-
-			json fileContentJson = json::parse(fileContent);
-
-			if (fileContentJson.contains("Scene GameObjects") && fileContentJson["Scene GameObjects"][0] != "NULL")
+			try
 			{
-				auto firstObjectName = fileContentJson["Scene GameObjects"];
+				m_loadedScene = Scene();
+				m_loadedScenePath = pointToPath;
+				m_loadedScene.SetPath(pointToPath);
+				m_loadedScene.SetName(GetFilenameFromPath(pointToPath, false));
 
-				// Loop through the saved GameObjects in the JSON file
-				for (int i = 0; i < fileContentJson["Scene GameObjects"].size(); i++)
+				json fileContentJson = json::parse(fileContent);
+
+				try
 				{
-					// Add created GameObject to our freshScene
-					GameObject *loadedObject = CreateObjectFromJson(fileContentJson["Scene GameObjects"][i], &m_loadedScene);
-					// Check for primary camera
-					if (loadedObject != nullptr && loadedObject->HasComponent("Camera") && loadedObject->GetCamera()->IsPrimary())
+					if (fileContentJson.contains("Scene GameObjects") && fileContentJson.at("Scene GameObjects").at(0) != "NULL")
 					{
-						SetPrimaryCamera(loadedObject->GetCamera());
-					}
-				}
-
-				// Just in case any parent objects had not been created at the time of children being created on scene load,
-				// loop through objects with parents and add them as children to their parent objects
-				for (std::pair<long, GameObject> sceneObject : GetLoadedScene()->GetSceneObjects())
-				{
-					long myID = sceneObject.first;
-					long parentID = sceneObject.second.GetParentID();
-
-					if (parentID != -1)
-					{
-						if (GetObjectByID(parentID) != nullptr)
-						{
-							GetObjectByID(parentID)->AddChild(myID);
+						auto sceneObjectsjson = fileContentJson.at("Scene GameObjects");
+						
+						for (int i = 0; i < sceneObjectsjson.size(); i++)
+						{												
+							try
+							{
+								json objectJson = fileContentJson.at("Scene GameObjects").at(i);
+								GameObject* loadedObject = CreateObjectFromJson(objectJson, &m_loadedScene);								
+							}
+							catch (const json::out_of_range& e)
+							{
+								LogError(e.what());
+							}
 						}
+
+						// Just in case any parent objects had not been created at the time of children being created on scene load,
+						// loop through objects with parents and add them as children to their parent objects
+						for (std::pair<long, GameObject> sceneObject : GetLoadedScene()->GetSceneObjects())
+						{
+							long myID = sceneObject.first;
+							long parentID = sceneObject.second.GetParentID();
+
+							if (parentID != -1)
+							{
+								if (GetObjectByID(parentID) != nullptr)
+								{
+									GetObjectByID(parentID)->AddChild(myID);
+								}
+							}
+						}
+
+						F_Application->OnLoadScene(pointToPath);
 					}
 				}
-
-				F_Application->OnLoadScene(pointToPath);
+				catch (const json::out_of_range& e)
+				{
+					LogError(e.what());
+				}
+			}
+			catch (json::exception err)
+			{
+				LogError(err.what());
 			}
 		}
 		else

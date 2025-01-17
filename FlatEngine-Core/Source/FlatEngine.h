@@ -85,6 +85,8 @@ namespace FlatEngine
 	extern std::map<std::string, sol::protected_function> F_LoadedSceneScriptFiles;
 	extern std::map<std::string, sol::protected_function> F_LoadedPersistantScriptFiles;
 
+	extern long F_FocusedGameObjectID;
+
 	extern std::vector<std::string> F_TagsAvailable;
 
 	extern bool F_b_projectSelected;

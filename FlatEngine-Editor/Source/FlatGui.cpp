@@ -247,18 +247,17 @@ namespace FlatGui
 
 	void SetFocusedGameObjectID(long ID)
 	{
-		FG_FocusedGameObjectID = ID;
+		FL::F_FocusedGameObjectID = ID;
 		if (ID != -1)
 		{
 			GameObject *focusedObject = FL::GetObjectByID(ID);
-			Animation* animationComponent = focusedObject->GetAnimation();
 			std::string animationPath = "";
 		}
 	}
 
 	long GetFocusedGameObjectID()
 	{
-		return FG_FocusedGameObjectID;
+		return FL::F_FocusedGameObjectID;
 	}
 
 	void DestroySelf(std::shared_ptr<FL::GameObject> thisObject)
@@ -350,11 +349,6 @@ namespace FlatGui
 					}
 				}
 			}
-		}
-
-		if (FL::F_LoadedProject.GetLoadedPreviewAnimationPath() != "")
-		{
-			SetFocusedAnimation(FL::LoadAnimationFile(FL::F_LoadedProject.GetLoadedPreviewAnimationPath()));
 		}
 
 		Vector2 scrolling = FL::F_LoadedProject.GetSceneViewScrolling();

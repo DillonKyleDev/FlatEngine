@@ -515,7 +515,7 @@
             "id": 5,
             "ignoreTags": [
                 {
-                    "Collectable": true
+                    "Collectable": false
                 },
                 {
                     "Enemy": true
@@ -533,7 +533,7 @@
                     "EnvironmentalTrigger": false
                 },
                 {
-                    "InteractableObject": true
+                    "InteractableObject": false
                 },
                 {
                     "Npc": false
@@ -551,10 +551,10 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
-                    "Terrain": true
+                    "Terrain": false
                 }
             ],
             "name": "Left",
@@ -647,7 +647,7 @@
             "id": 6,
             "ignoreTags": [
                 {
-                    "Collectable": true
+                    "Collectable": false
                 },
                 {
                     "Enemy": true
@@ -665,7 +665,7 @@
                     "EnvironmentalTrigger": false
                 },
                 {
-                    "InteractableObject": true
+                    "InteractableObject": false
                 },
                 {
                     "Npc": false
@@ -683,10 +683,10 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
-                    "Terrain": true
+                    "Terrain": false
                 }
             ],
             "name": "Right",
@@ -899,7 +899,7 @@
             "id": 8,
             "ignoreTags": [
                 {
-                    "Collectable": true
+                    "Collectable": false
                 },
                 {
                     "Enemy": true
@@ -917,7 +917,7 @@
                     "EnvironmentalTrigger": false
                 },
                 {
-                    "InteractableObject": true
+                    "InteractableObject": false
                 },
                 {
                     "Npc": false
@@ -935,10 +935,10 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
-                    "Terrain": true
+                    "Terrain": false
                 }
             ],
             "name": "Top",
@@ -1031,7 +1031,7 @@
             "id": 9,
             "ignoreTags": [
                 {
-                    "Collectable": true
+                    "Collectable": false
                 },
                 {
                     "Enemy": true
@@ -1049,7 +1049,7 @@
                     "EnvironmentalTrigger": false
                 },
                 {
-                    "InteractableObject": true
+                    "InteractableObject": false
                 },
                 {
                     "Npc": false
@@ -1067,10 +1067,10 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
-                    "Terrain": true
+                    "Terrain": false
                 }
             ],
             "name": "Bottom",

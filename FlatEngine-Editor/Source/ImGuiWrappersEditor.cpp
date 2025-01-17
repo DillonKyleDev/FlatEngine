@@ -1173,11 +1173,11 @@ namespace FlatGui
 			{
 				queuedAnimationForDelete = IDCounter;
 			}
-
-			if (FL::RenderCheckbox("Play on Start", animData.b_playing))
-			{
-				animData.b_playing = !animData.b_playing;
-			}
+	
+			//if (FL::RenderCheckbox("Play on Start", animData.b_playing))
+			//{
+			//	animData.b_playing = !animData.b_playing;
+			//}
 
 			if (animData.name != animations.back().name)
 			{

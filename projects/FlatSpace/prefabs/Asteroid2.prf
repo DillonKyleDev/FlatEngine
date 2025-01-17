@@ -10,20 +10,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 334,
+                    "id": 67,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 4.782608509063721,
+                    "xPos": 0.7096773982048035,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": -8.043478012084961,
+                    "yPos": -5.22580623626709,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 352,
+                    "id": 68,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\asteroid\\asteroid_3.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 0,
@@ -41,7 +41,7 @@
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "Asteroid",
-                    "id": 350,
+                    "id": 69,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -80,7 +80,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 349,
+                    "id": 70,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -100,7 +100,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.75,
-                    "id": 348,
+                    "id": 71,
                     "type": "BoxCollider"
                 },
                 {
@@ -112,11 +112,11 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 347,
+                    "id": 72,
                     "type": "Animation"
                 }
             ],
-            "id": 68,
+            "id": 19,
             "ignoreTags": [
                 {
                     "Collectable": true
@@ -155,7 +155,7 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
                     "Terrain": true
@@ -164,8 +164,8 @@
             "name": "Asteroid2",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 4.782608509063721,
-            "spawnLocationY": -8.043478012084961,
+            "spawnLocationX": 0.7096773982048035,
+            "spawnLocationY": -5.22580623626709,
             "tags": [
                 {
                     "Collectable": false

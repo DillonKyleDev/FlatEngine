@@ -6,26 +6,26 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [
-                95
+                65
             ],
             "components": [
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 625,
+                    "id": 318,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 5.34782600402832,
+                    "xPos": 0.9354838728904724,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 2.4782607555389404,
+                    "yPos": -5.967741966247559,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 626,
+                    "id": 319,
                     "path": "..\\projects\\FlatSpace\\images\\sprites\\transport\\transportTwoCar.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 0,
@@ -43,7 +43,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "Transport",
-                    "id": 627,
+                    "id": 320,
                     "scriptParameters": [
                         {
                             "bool": false,
@@ -70,7 +70,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 628,
+                    "id": 321,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -85,7 +85,7 @@
                             "path": "..\\projects\\FlatSpace\\animations\\Explode.anm"
                         }
                     ],
-                    "id": 629,
+                    "id": 322,
                     "type": "Animation"
                 },
                 {
@@ -102,11 +102,11 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 4.75,
-                    "id": 630,
+                    "id": 323,
                     "type": "BoxCollider"
                 }
             ],
-            "id": 94,
+            "id": 64,
             "ignoreTags": [
                 {
                     "Collectable": true
@@ -145,7 +145,7 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": true
+                    "Projectile": false
                 },
                 {
                     "Terrain": true
@@ -154,8 +154,8 @@
             "name": "Transport2",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 5.34782600402832,
-            "spawnLocationY": 2.4782607555389404,
+            "spawnLocationX": 0.9354838728904724,
+            "spawnLocationY": -5.967741966247559,
             "tags": [
                 {
                     "Collectable": false
@@ -210,18 +210,18 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 631,
+                    "id": 324,
                     "rotation": 0.0,
                     "type": "Transform",
-                    "xOrigin": 5.34782600402832,
+                    "xOrigin": 0.9354838728904724,
                     "xPos": 2.2300000190734863,
                     "xScale": 1.0,
-                    "yOrigin": 2.4782607555389404,
+                    "yOrigin": -5.967741966247559,
                     "yPos": -0.10000000149011612,
                     "yScale": 1.0
                 }
             ],
-            "id": 95,
+            "id": 65,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -267,7 +267,7 @@
                 }
             ],
             "name": "Engines",
-            "parent": 94,
+            "parent": 64,
             "prefabName": "",
             "spawnLocationX": 2.2300000190734863,
             "spawnLocationY": -0.10000000149011612,

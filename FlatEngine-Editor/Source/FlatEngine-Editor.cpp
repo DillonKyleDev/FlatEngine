@@ -42,6 +42,7 @@ public:
 	EditorGameLoop() 
 	{
 		m_startedScenePath = "";
+		m_startedPersistantScenePath = "";
 	};
 	~EditorGameLoop() {};
 
@@ -51,7 +52,12 @@ public:
 		FL::AddProfilerProcess("Not GameLoop");
 		FL::AddProfilerProcess("Collision Testing");	
 		m_startedScenePath = FL::GetLoadedScenePath();
+		m_startedPersistantScenePath = FL::GetLoadedProject().GetPersistantGameObjectsScenePath();
 		FL::SaveScene(FL::GetLoadedScene(), "..\\engine\\tempFiles\\" + FL::GetLoadedScene()->GetName() + ".scn");
+		if (m_startedPersistantScenePath != "" && FL::GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			FL::F_LoadedProject.SavePersistantScene("..\\engine\\tempFiles\\" + FL::GetLoadedProject().GetPersistantGameObjectScene()->GetName() + ".scn");
+		}
 		FL::GameLoop::Start();
 	};
 	void Stop()
@@ -60,8 +66,11 @@ public:
 		FL::RemoveProfilerProcess("Not GameLoop");
 		FL::RemoveProfilerProcess("Collision Testing");
 		FL::GameLoop::Stop();
-		FL::LoadScene("..\\engine\\tempFiles\\" + FL::GetFilenameFromPath(m_startedScenePath, true), m_startedScenePath);
-		FL::GetLoadedProject().LoadPersistantScene();
+		if (m_startedPersistantScenePath != "")
+		{
+			FL::GetLoadedProject().LoadPersistantScene("..\\engine\\tempFiles\\" + FL::GetFilenameFromPath(m_startedPersistantScenePath, true));
+		}
+		FL::LoadScene("..\\engine\\tempFiles\\" + FL::GetFilenameFromPath(m_startedScenePath, true), m_startedScenePath);		
 	};
 	void Update()
 	{
@@ -73,6 +82,7 @@ public:
 	};
 private:
 	std::string m_startedScenePath;
+	std::string m_startedPersistantScenePath;
 };
 
 
@@ -227,15 +237,9 @@ public:
 			FL::F_Window->SetScreenDimensions(1500, 850);
 			FL::RestartImGui();
 			FlatGui::LoadProject(m_startupProject);
-			FL::LoadScene(FL::GetLoadedProject().GetLoadedScenePath());
-			FL::F_AssetManager.CollectDirectories();
-			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
 			FL::F_AssetManager.CollectColors();
 			FL::F_AssetManager.CollectTextures();
-			FL::InitializeTileSets();
-			FL::F_PrefabManager->InitializePrefabs();
-			FL::RetrieveLuaScriptPaths();	
-			FL::InitializeMappingContexts();
+
 		}
 	}
 	void Quit()

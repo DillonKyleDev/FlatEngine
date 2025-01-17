@@ -10,20 +10,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 323,
+                    "id": 76,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 6.625,
+                    "xPos": 9.140000343322754,
                     "xScale": 0.15000000596046448,
                     "yOrigin": 0.0,
-                    "yPos": -6.125,
+                    "yPos": -6.119999885559082,
                     "yScale": 0.15000000596046448
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 322,
+                    "id": 77,
                     "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 16,
@@ -41,7 +41,7 @@
                     "_isActive": true,
                     "_isCollapsed": true,
                     "attachedScript": "BlasterRound",
-                    "id": 321,
+                    "id": 78,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -55,7 +55,7 @@
                     "fallingGravity": 0.0,
                     "friction": 1.0,
                     "gravity": 0.0,
-                    "id": 319,
+                    "id": 79,
                     "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -64,7 +64,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 318,
+                    "id": 80,
                     "soundData": [
                         {
                             "b_isMusic": false,
@@ -93,14 +93,14 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.0,
-                    "id": 324,
+                    "id": 81,
                     "type": "BoxCollider"
                 }
             ],
-            "id": 64,
+            "id": 21,
             "ignoreTags": [
                 {
-                    "Collectable": false
+                    "Collectable": true
                 },
                 {
                     "Enemy": false
@@ -139,14 +139,14 @@
                     "Projectile": false
                 },
                 {
-                    "Terrain": false
+                    "Terrain": true
                 }
             ],
             "name": "BlasterRound",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 6.625,
-            "spawnLocationY": -6.125,
+            "spawnLocationX": 9.140000343322754,
+            "spawnLocationY": -6.119999885559082,
             "tags": [
                 {
                     "Collectable": false
@@ -185,7 +185,7 @@
                     "PlayerTrigger": false
                 },
                 {
-                    "Projectile": false
+                    "Projectile": true
                 },
                 {
                     "Terrain": false

@@ -25,12 +25,13 @@ Some things in this README are out of date so keep that in mind when reading. I 
 
 --------------------------------------------------------------------------------------
 Quick links:
-1. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#components">Components</a>
-2. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#using-flatengine">Quick Start Guide</a>
-3. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#building-the-final-project">Building a completed Project</a>
+1. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#viewports">Viewports</a>
+1. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#engine-components">Engine Components</a>
+2. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#using-flatengine">Quick Start Guide</a>
+3. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#building-the-final-project">Building a completed Project</a>
 4. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#lua-scripting-in-flatengine">Lua Scripting in FlatEngine2D</a>
-5. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#lua-functions-available">Lua-FlatEngine2D scripting functions</a>
-6. <a href="https://github.com/DillonKyleDev/FlatEngine2D/edit/main/README.md#flatengine-classes-exposed-to-lua---lua-usertypes">FlatEngine2D classes exposed to Lua (Lua usertypes)</a>
+5. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#lua-functions-available">Lua-FlatEngine2D scripting functions</a>
+6. <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#flatengine-classes-exposed-to-lua---lua-usertypes">FlatEngine2D classes exposed to Lua (Lua usertypes)</a>
 --------------------------------------------------------------------------------------
 
 ## About:

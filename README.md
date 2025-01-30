@@ -667,7 +667,7 @@ If this doesn't make sense, I recommend looking into Lua and what is really happ
 
 Here is a list of every function that is called by the engine at specific times and therefore is guaranteed to have the my_id and this_object variables set to whatever GameObject is currently being referred to by the script:
 
-`Awake()` -- Called at upon instantiation of the GameObject</br>
+`Awake()` -- Called upon instantiation of the GameObject</br>
 `Start()` -- Called after all Awake functions have been called upon instantiation of the GameObject</br>
 `Update()` -- Called once per frame</br>
 `OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a BoxCollider that is colliding</br>
@@ -681,7 +681,7 @@ Here is a list of every function that is called by the engine at specific times 
 `OnButtonMouseLeave()` -- Called when the mouse stops hovering a Button</br>
 `OnButtonLeftClick()` -- Called when a Button is left clicked</br>
 `OnButtonRightClick()` -- Called when a Button is right clicked</br>
-Any Animation Event function that is called during an Animation</br>
+Animation Events -- Any Animation Event function that is called during an Animation</br>
 
 
 

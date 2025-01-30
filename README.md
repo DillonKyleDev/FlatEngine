@@ -179,7 +179,7 @@ There are several key assets that you will be spending a lot of time with in Fla
 ![newAssets2](https://github.com/user-attachments/assets/85b10b5b-9f6c-4b77-9c7b-f4ed3a3ba8da)
 -------------------------------------------------------------------------------------------
 <img alt="Scenes" src="https://github.com/user-attachments/assets/7fa21df7-cfc4-490e-8d17-836775eb90b5"></br>
-Projects contain all the data associated with a particular game-in-progress including the Scene to load up at the start of a game and the list of Persistant GameObjects in the game, (game managers, etc.), Sav but mostly information that is not relevant to the end user. Project files are saved in JSON format.  New Projects are made in the Project Hub when you first launch the engine.</br>
+Projects contain all the data associated with a particular game-in-progress including the Scene to load up at the start of a game and the list of Persistant GameObjects in the game, (game managers, etc.), but mostly information that is not relevant to the end user. Project files are saved in JSON format.  New Projects are made in the Project Hub when you first launch the engine.</br>
 
 <img alt="Scenes" src="https://github.com/user-attachments/assets/24bb752a-9bd9-45d1-937a-5692bfa1b1bc"></br>
 Scenes are the container for all GameObjects and are saved in JSON format using a JSON Formatting library for simple parsing.</br>
@@ -549,7 +549,7 @@ Go into the `Runtime` folder and you'll see:</br>
 ____________________________________________________________________________________________________________
 ![executable](https://github.com/user-attachments/assets/8e2e5a40-425c-45bf-82ad-1d4c9a4adef4)</br>
 ____________________________________________________________________________________________________________
-All of these files are important for your game to work properly except for the `log_output.txt` files and the `.pdd` files, which can safely be deleted.  You can now rename the `.exe` file to anything you want and run it.  Your game is now ready to be zipped up and distributed! Congratulations!
+All of these files are important for your game to work properly except for the `log_output.txt` files and the `.pdb` files, which can safely be deleted.  You can now rename the `.exe` file to anything you want and run it.  Your game is now ready to be zipped up and distributed! Congratulations!
 ____________________________________________________________________________________________________________
 
 That is the general intended work flow of FlatEngine2D. This will be updated as development progresses but I hope this is enough to get you started.  Read on for specifics about scripting in FlatEngine2D using Lua.
@@ -662,26 +662,26 @@ Then when the Damage function is called from BlasterRound in the `OnBoxCollision
 
 Hopefully this distinction makes sense because it is essential in understanding how Lua operates on GameObjects within FlatEngine.
 
-If this doesn't make sense, I recommend looking into Lua and what is really happening when a Lua script file is opened.  The short of it is that the script files are just for show.  All Lua is run in the same environment so all of the functions in every script (except those that live inside other functions) are accessable by all other functions in all other script files at any time.  So every time a script is loaded, it is just pooling the functions in that script into a table to be operated on within the same global environment as all the other scripts.  That is why we need to enclose the data specific to each object in a table that is only accessable via Script names GameObject IDs as keys.  Otherwise there would be no way to know whose data any given function needs to access at any given moment.
+If this doesn't make sense, I recommend looking into Lua and what is really happening when a Lua script file is opened.  The short of it is that the script files are just for show.  All Lua is run within the same environment so all of the functions in every script (except those that live inside of other functions) are accessable by all other functions in all other script files at any time.  So every time a script is loaded, it is just pooling the functions in that script into a table to be operated on within the same global environment as all the other scripts.  That is why we need to enclose the data specific to each object in a table that is only accessable via Script name tables with GameObject IDs as keys.  Otherwise there would be no way to know whose data any given function needs to access at any given moment.
 
 
 Here is a list of every function that is called by the engine at specific times and therefore is guaranteed to have the my_id and this_object variables set to whatever GameObject is currently being referred to by the script:
 
-`Awake()` -- Called at upon instantiation of the GameObject
-`Start()` -- Called after all Awake functions have been called upon instantiation of the GameObject
-`Update()` -- Called once per frame
-`OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a BoxCollider that is colliding
-`OnBoxCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a BoxCollider that is colliding
-`OnBoxCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a BoxCollider that is now no longer colliding
-`OnCircleCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a CircleCollider that is colliding
-`OnCircleCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a CircleCollider that is colliding
-`OnCircleCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a CircleCollider that is now no longer colliding
-`OnButtonMouseOver()` -- Called every frame the mouse is hovering a Button
-`OnButtonMouseEnter()` -- Called on the first frame a mouse is hovering a Button
-`OnButtonMouseLeave()` -- Called when the mouse stops hovering a Button
-`OnButtonLeftClick()` -- Called when a Button is left clicked
-`OnButtonRightClick()` -- Called when a Button is right clicked
-Any Animation Event function that is called during an Animation
+`Awake()` -- Called at upon instantiation of the GameObject</br>
+`Start()` -- Called after all Awake functions have been called upon instantiation of the GameObject</br>
+`Update()` -- Called once per frame</br>
+`OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a BoxCollider that is colliding</br>
+`OnBoxCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a BoxCollider that is colliding</br>
+`OnBoxCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a BoxCollider that is now no longer colliding</br>
+`OnCircleCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a CircleCollider that is colliding</br>
+`OnCircleCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a CircleCollider that is colliding</br>
+`OnCircleCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a CircleCollider that is now no longer colliding</br>
+`OnButtonMouseOver()` -- Called every frame the mouse is hovering a Button</br>
+`OnButtonMouseEnter()` -- Called on the first frame a mouse is hovering a Button</br>
+`OnButtonMouseLeave()` -- Called when the mouse stops hovering a Button</br>
+`OnButtonLeftClick()` -- Called when a Button is left clicked</br>
+`OnButtonRightClick()` -- Called when a Button is right clicked</br>
+Any Animation Event function that is called during an Animation</br>
 
 
 

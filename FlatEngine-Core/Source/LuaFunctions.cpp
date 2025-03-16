@@ -839,7 +839,7 @@ namespace FlatEngine
 
 		if (path == "")
 		{
-			fileNameWExtention = GetDir("projectDir") + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\scripts\\" + fileName + ".scp.lua";
+			fileNameWExtention = "..\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\scripts\\" + fileName + ".scp.lua";
 		}
 		else
 		{

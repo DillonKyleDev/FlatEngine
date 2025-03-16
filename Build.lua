@@ -2,7 +2,7 @@
 workspace "FlatEngine"
    architecture "x64"
    configurations { "Debug", "Release", "Dist" }
-   startproject "FlatEngine-Runtime"
+   startproject "FlatEngine-Editor"
 
    -- Workspace-wide build options for MSVC
    filter "system:windows"

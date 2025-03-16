@@ -13,6 +13,8 @@ As a note, FlatSpace was made before the implementation of persistant GameObject
 
 ### Building and using FlatEngine2D from source
 
+If you are using the Release build of FlatEngine2D found in Releases you can safely ignore this section.
+
 To build FlatEngine2D yourself and get the benefit of editing the source code directly:
 1. Download the .zip and extract
 2. Go into these three files and change the `targetdir` and `objdir` variables to locations you want FlatEngine2D to be built to (if default location is undesired):</br>

@@ -13,8 +13,8 @@ project "FlatEngine-Editor"
    includedirs
    {
       "Source",
-	  -- Include Core
-	  "../FlatEngine-Core/Source",
+      -- Include Core
+      "../FlatEngine-Core/Source",
       "../scripts",
       "../Vendor/includes/ImGui/Backends",
       "../Vendor/includes/ImGui/ImGui_Docking",

@@ -17,7 +17,7 @@ If you are using the Release build of FlatEngine2D found in Releases you can saf
 
 To build FlatEngine2D yourself and get the benefit of editing the source code directly:
 1. Download the .zip and extract
-2. Go into these three files and change the `targetdir` and `objdir` variables to locations you want FlatEngine2D to be built to (if default location is undesired):</br>
+2. Go into these three files and change the `targetdir` and `objdir` variables to locations you want FlatEngine2D to be built to (if default location is undesired) and of course be sure to change `<UserName>` to your users name path on your computer:</br>
 
    `FlatEngine-Core/Build-Core.lua`</br>
    `FlatEngine-Editor/Build-Editor.lua`</br>
@@ -25,8 +25,8 @@ To build FlatEngine2D yourself and get the benefit of editing the source code di
    
 Change these to desired output location in each .lua file above.</br>
 
-   `targetdir ("C:/FlatEngine2DBuild/" .. OutputDir .. "/%{prj.name}")`</br>
-   `objdir ("C:/FlatEngine2DBuild/Intermediates/" .. OutputDir .. "/%{prj.name}")`</br>
+   `targetdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")`</br>
+   `objdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")`</br>
    
 3. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
 4. Open the solution file that was created in the root directory and build it. The default project is set to `FlatEngine-Editor`. After the Editor is built, change the start-up project in the solution properties to `FlatEngine-Runtime` and build again.

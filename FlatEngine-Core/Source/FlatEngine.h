@@ -333,6 +333,7 @@ namespace FlatEngine
 
 	// File Explorer
 	extern void CreateNewLuaScript(std::string fileName, std::string path = "");
+	extern void CreateNewCPPScript(std::string fileName, std::string path = "");
 	extern std::string CreateNewSceneFile(std::string fileName, std::string path = "");
 	extern void CreateNewAnimationFile(std::string fileName, std::string path = "");
 	extern void AddMappingContext(std::string path);

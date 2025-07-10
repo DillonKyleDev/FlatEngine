@@ -523,7 +523,8 @@ namespace FlatGui
 			}
 		}
 
-		std::string newScriptModalLabel = "Create Lua Script";
+		std::string newLuaScriptModalLabel = "Create Lua Script";
+		std::string newLCPPScriptModalLabel = "Create C++ Script";
 		std::string newScriptName = "";
 
 		if (FL::RenderSelectable("##SelectLuaScript", FL::F_luaScriptNames, currentLuaScript))
@@ -531,15 +532,28 @@ namespace FlatGui
 			script->SetAttachedScript(FL::F_luaScriptNames[currentLuaScript]);
 		}
 
-		bool b_openModal = false;
-		if (FL::RenderButton("New Script", Vector2(100, 20)))
+		bool b_openLuaModal = false;
+		if (FL::RenderButton("New Lua Script", Vector2(110, 20)))
 		{
-			b_openModal = true;
+			b_openLuaModal = true;
 		}
 
-		if (FL::RenderInputModal(newScriptModalLabel.c_str(), "Enter a name for the Lua script", newScriptName, b_openModal))
+		ImGui::SameLine(0,5);
+
+		bool b_openCPPModal = false;
+		if (FL::RenderButton("New C++ Script", Vector2(110, 20)))
+		{
+			b_openCPPModal = true;
+		}
+
+		if (FL::RenderInputModal(newLuaScriptModalLabel.c_str(), "Enter a name for the Lua script", newScriptName, b_openLuaModal))
 		{
 			FL::CreateNewLuaScript(newScriptName);
+		}
+
+		if (FL::RenderInputModal(newLCPPScriptModalLabel.c_str(), "Enter a name for the C++ script", newScriptName, b_openCPPModal))
+		{
+			FL::CreateNewCPPScript(newScriptName);
 		}
 
 		FL::RenderSeparator(3, 3);

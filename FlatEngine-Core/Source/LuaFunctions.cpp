@@ -907,6 +907,83 @@ namespace FlatEngine
 		RetrieveLuaScriptPaths();
 	}
 
+	void CreateNewCPPScript(std::string fileName, std::string path)
+	{
+		for (std::string scriptPath : F_luaScriptPaths)
+		{
+			if (fileName == GetFilenameFromPath(scriptPath))
+			{
+				LogError("Script name already taken.  Please enter a different name for your new C++ script.");
+				return;
+			}
+		}
+
+		std::ofstream outfile;
+		std::string cppFileNameWExtention;
+		std::string hFileNameWExtention;
+
+		if (path == "")
+		{
+			cppFileNameWExtention = "..\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\scripts\\" + fileName + ".cpp";
+			hFileNameWExtention = "..\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath()) + "\\scripts\\" + fileName + ".h";
+		}
+		else
+		{
+			cppFileNameWExtention = path + "/" + fileName + ".cpp";
+			hFileNameWExtention = path + "/" + fileName + ".h";
+		}
+
+		outfile.open(cppFileNameWExtention, std::ios_base::app);
+		outfile <<
+			"// " + fileName + ".cpp\n\n" +
+
+			"#include \"FlatEngine.h\"\n" +
+
+			"void " + fileName + "::Awake()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::Start()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::Update()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnBoxCollision(FlatEngine::Collider* collidedWith)\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnBoxCollisionEnter(FlatEngine::Collider* collidedWith)\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnBoxCollisionLeave(FlatEngine::Collider* collidedWith)\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnCircleCollision(FlatEngine::Collider* collidedWith)\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnCircleCollisionEnter(FlatEngine::Collider* collidedWith)\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnCircleCollisionLeave(FlatEngine::Collider* collidedWith)\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnButtonMouseOver()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnButtonMouseEnter()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnButtonMouseLeave()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnButtonLeftClick()\n{\n" +
+			"}\n\n" +
+
+			"void " + fileName + "::OnButtonRightClick()\n{\n" +
+			"}";
+
+		RetrieveLuaScriptPaths();
+	}
+
 	bool CheckLuaScriptFile(std::string filePath)
 	{
 		try

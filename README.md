@@ -11,6 +11,47 @@ I've included a sample project inside FlatEngine2D called FlatSpace.  With it, h
 
 As a note, FlatSpace was made before the implementation of persistant GameObjects which enable you to have some GameObjects stick around even when changing scenes.  Creation of new persistant GameObjects is located in the Assets dropdown menu.  Persistant objects are tied to the Project, so make sure to save your Scenes AND your Projects often to keep your progress saved!
 
+### Building and using FlatEngine2D from source
+
+If you are using the Release build of FlatEngine2D found in Releases you can safely ignore this section.
+
+To build FlatEngine2D yourself and get the benefit of editing the source code directly:
+1. Download the .zip and extract
+2. Go into these three files and change the `targetdir` and `objdir` variables to locations you want FlatEngine2D to be built to (if default location is undesired) and of course be sure to change `<UserName>` to your users name path on your computer:</br>
+
+   `FlatEngine-Core/Build-Core.lua`</br>
+   `FlatEngine-Editor/Build-Editor.lua`</br>
+   `FlatEngine-Runtime/Build-Runtime.lua`</br>
+   
+Change these to desired output location in each .lua file above.</br>
+
+   `targetdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")`</br>
+   `objdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")`</br>
+   
+3. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
+4. Open the solution file that was created in the root directory and build it. The default project is set to `FlatEngine-Editor`. After the Editor is built, change the start-up project in the solution properties to `FlatEngine-Runtime` and build again.
+5. After building, move the .dll files from the `DLLFiles` directory to each of these built directories (the ones you see will be based on how you built the project, debug or release):</br>
+
+  `FlatEngine2DBuild/windows-x86_64/Debug/FlatEngine-Editor/`</br>
+  `FlatEngine2DBuild/windows-x86_64/Debug/FlatEngine-Runtime/`</br>
+  `FlatEngine2DBuild/windows-x86_64/Release/FlatEngine-Editor/`</br>
+  `FlatEngine2DBuild/windows-x86_64/Release/FlatEngine-Runtime/`</br>
+
+You're now set up to use the engine and edit it's source code as you wish. To open the Editor, you'll need to change the start-up project back to FlatEngine-Editor in the solution properties. From here, you can edit and debug source code from the solution.  (You can also create and edit entire projects and assets entirely from the source solution's Editor, but if you do so just remember to copy over the `projects/` directory from the solution directory to the build location when you're done and ready to build the final game project, as outlined below.)  building a finished project is slightly different than in the Release version of FlatEngine2D (and more complicated).  When you build a finished project, the FlatEngine-Editor code is not built into the release. You'll notice there are three projects in the solution: Core, Editor, and Runtime.  The Core project is a static library that both the Editor and Runtime use to function.  The Editor project is only code that is used for the display and functionality of the Editor which is not needed once the game logic is hooked up and scenes are made.  The Runtime project just uses the Core library and reads the game project files (scenes, scripts, etc.) to load and run the final game project.  
+
+When you are finished editing the source code, you need to build the Editor project and the Runtime project in Release mode again. If you've made changes to the Core library, the Runtime project needs to know about those changes.
+
+After building, if this is your first time building you'll also need to copy over these directories from the solution directory and put them in the built `Release/` directory:</br>
+
+`engine/`</br>
+`projects/`</br>
+`Vendor/`</br>
+And to carry over the ImGui editor layout, you'll also need to copy the `imgui.ini` file from `FlatEngine-Editor/` in the solution directory to `Release/FlatEngine-Editor/`.</br>
+
+(If it is not your first time building, you don't need to copy any of the above folders or the `imgui.ini` file unless you were making changes to project assets from the solution that you want to keep, in which case you'll just need to copy the `projects/` folder to the built `Release/` directory.)
+
+Now you should be able to go into the build location and open the FlatEngine-Editor.exe with all of your source code changes and project asset changes (if you made any) present in the build.  From here, you can follow the project building guide found in the quick links below to build your project normally.</br>
+
 ### Disclaimer
 
 This project is in active development.
@@ -19,9 +60,7 @@ This is a hobby project.
 It will likely crash eventually so save often. THERE IS NO AUTOSAVE.
 Things will change with updates.
 Your results and the usefulness of FlatEngine may vary.
-Key systems are not optimized.
-
-Some things in this README are out of date so keep that in mind when reading. I will do my best to mark the out of date information as "Outdated", but the general architecture of FlatEngine won't change.
+Some key systems are not optimized.
 
 --------------------------------------------------------------------------------------
 Quick links:

@@ -13,7 +13,7 @@ project "FlatEngine-Runtime"
    includedirs
    {
       "Source",
-	  -- Include Core
+      -- Include Core
       "../FlatEngine-Core/Source",
       "../Vendor/includes/SDL2/lib/x64",
       "../Vendor/includes/SDL2_Image/lib/x64",
@@ -67,8 +67,8 @@ project "FlatEngine-Runtime"
 --    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
 --    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
-    targetdir ("C:/FlatEngine2DBuild/" .. OutputDir .. "/%{prj.name}")
-    objdir ("C:/FlatEngine2DBuild/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    targetdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
+    objdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"

@@ -1,0 +1,40 @@
+{
+    "Project Properties": [
+        {
+            "_autoSave": true,
+            "_clearLogBuffer": false,
+            "_fullscreen": false,
+            "_showAnimationPreview": false,
+            "_showAnimator": false,
+            "_showFileExplorer": true,
+            "_showGameView": true,
+            "_showHierarchy": true,
+            "_showInspector": true,
+            "_showKeyFrameEditor": false,
+            "_showLogger": true,
+            "_showMappingContextEditor": false,
+            "_showPersistantHierarchy": true,
+            "_showProfiler": false,
+            "_showSceneView": true,
+            "_showScriptEditor": false,
+            "_showTileSetEditor": false,
+            "_vsyncEnabled": true,
+            "buildPath": "",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\scripts",
+            "effectsVolume": 10,
+            "focusedGameObjectID": 0,
+            "loadedAnimationPath": "",
+            "loadedScenePath": "",
+            "musicVolume": 10,
+            "path": "..\\projects\\ClosedLoop\\ClosedLoop.prj",
+            "persistantGameObjectsScenePath": "..\\projects\\ClosedLoop\\persistant_objects_ClosedLoop.scn",
+            "resolutionHeight": 1080.0,
+            "resolutionWidth": 1920.0,
+            "sceneToLoadAtRuntime": "",
+            "sceneViewGridStepX": 50.0,
+            "sceneViewGridStepY": 50.0,
+            "sceneViewScrollingX": 0.0,
+            "sceneViewScrollingY": 0.0
+        }
+    ]
+}

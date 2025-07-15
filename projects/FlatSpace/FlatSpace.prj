@@ -20,7 +20,7 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "C:\\Users\\Dillon Kyle\\Desktop\\FlatSpace",
-            "currentFileDirectory": "..\\projects\\FlatSpace\\scripts",
+            "currentFileDirectory": "..\\projects\\FlatSpace\\scripts\\cpp",
             "effectsVolume": 13,
             "focusedGameObjectID": 0,
             "loadedAnimationPath": "..\\projects\\FlatSpace\\animations\\Level1.anm",
@@ -33,8 +33,8 @@
             "sceneToLoadAtRuntime": "..\\projects\\FlatSpace\\scenes\\MainMenu.scn",
             "sceneViewGridStepX": 16.0,
             "sceneViewGridStepY": 16.0,
-            "sceneViewScrollingX": 658.0,
-            "sceneViewScrollingY": 341.0
+            "sceneViewScrollingX": 507.0,
+            "sceneViewScrollingY": 264.0
         }
     ]
 }

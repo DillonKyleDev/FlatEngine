@@ -1,0 +1,16 @@
+std::shared_ptr<Bonk> BonkScript = std::make_shared<Bonk>(); 
+CPPScriptsMap.emplace("Bonk", BonkScript); 
+std::shared_ptr<Bonker> BonkerScript = std::make_shared<Bonker>(); 
+CPPScriptsMap.emplace("Bonker", BonkerScript); 
+std::shared_ptr<Bonk> BonkScript = std::make_shared<Bonk>(); 
+CPPScriptsMap.emplace("Bonk", BonkScript); 
+std::shared_ptr<Bonk> BonkScript = std::make_shared<Bonk>(); 
+CPPScriptsMap.emplace("Bonk", BonkScript); 
+std::shared_ptr<Bonk> BonkScript = std::make_shared<Bonk>(); 
+CPPScriptsMap.emplace("Bonk", BonkScript); 
+std::shared_ptr<Bonk> BonkScript = std::make_shared<Bonk>(); 
+CPPScriptsMap.emplace("Bonk", BonkScript); 
+std::shared_ptr<Tester> TesterScript = std::make_shared<Tester>(); 
+CPPScriptsMap.emplace("Tester", TesterScript); 
+std::shared_ptr<Bonk> BonkScript = std::make_shared<Bonk>(); 
+CPPScriptsMap.emplace("Bonk", BonkScript); 

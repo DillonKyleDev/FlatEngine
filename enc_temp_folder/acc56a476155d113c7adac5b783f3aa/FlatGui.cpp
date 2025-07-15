@@ -394,8 +394,6 @@ namespace FlatGui
 		std::filesystem::create_directory(path + "\\prefabs");
 		std::filesystem::create_directory(path + "\\scenes");
 		std::filesystem::create_directory(path + "\\scripts");
-		std::filesystem::create_directory(path + "\\scripts\\cpp");
-		std::filesystem::create_directory(path + "\\scripts\\lua");
 		std::filesystem::create_directory(path + "\\tileSets");
 	}
 

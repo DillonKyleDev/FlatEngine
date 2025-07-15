@@ -236,7 +236,7 @@ namespace FlatEngine
 	extern void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param3 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param4 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param5 = Animation::S_EventFunctionParam());
 	
 	// C++ Scripts
-	extern void InitCPPScripts();
+	extern void InitializeScriptTypes();
 
 
 	// Profiler

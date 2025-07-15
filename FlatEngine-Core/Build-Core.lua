@@ -8,6 +8,8 @@ project "FlatEngine-Core"
    files { 
         "Source/**.h",
         "Source/**.cpp", 
+        "../projects/*/scripts/cpp/**.cpp",
+        "../projects/*/scripts/cpp/**.h",
         "../Vendor/includes/ImGui/Backends/**",
         "../Vendor/includes/ImGui/ImGui_Docking/**.h",
         "../Vendor/includes/ImGui/ImGui_Docking/**.cpp",
@@ -18,7 +20,8 @@ project "FlatEngine-Core"
 
    includedirs
     {
-      "Source"
+      "Source",
+      "../projects/*/scripts/cpp"
     }
 
     externalincludedirs 
@@ -49,8 +52,8 @@ project "FlatEngine-Core"
     "_WINDOWS"
    }
 
-   targetdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
-   objdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
+   targetdir ("C:/Users/Dillon/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
+   objdir ("C:/Users/Dillon/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"

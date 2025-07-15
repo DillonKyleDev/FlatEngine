@@ -21,6 +21,8 @@
 #include <process.h>
 #include <crtdefs.h>
 
+#include "CPPScriptHeaders.h"
+#include "CPPScript.h"
 
 namespace FL = FlatEngine;
 
@@ -503,7 +505,8 @@ namespace FlatEngine
 		//processTime = (float)GetEngineTime() - processTime;
 		//LogFloat(processTime, "Update Scripts: ");
 
-		//F_CPPScriptsMap.at("Bonker")->Awake();
+		InitializeScriptTypes();
+		F_CPPScriptsMap.at("Bonker")->Awake();
 	}
 
 	void GameLoop::AddObjectToDeleteQueue(long objectID)

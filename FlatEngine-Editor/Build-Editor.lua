@@ -16,6 +16,7 @@ project "FlatEngine-Editor"
       -- Include Core
       "../FlatEngine-Core/Source",
       "../scripts",
+      "../projects/*/scripts/cpp",
       "../Vendor/includes/ImGui/Backends",
       "../Vendor/includes/ImGui/ImGui_Docking",
       "../Vendor/includes/ImGui/ImGui_Docking/misc/debuggers",
@@ -64,8 +65,8 @@ project "FlatEngine-Editor"
 --    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
 --    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
-    targetdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
-    objdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    targetdir ("C:/Users/Dillon/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
+    objdir ("C:/Users/Dillon/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"

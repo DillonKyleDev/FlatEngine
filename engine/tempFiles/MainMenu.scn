@@ -48,6 +48,27 @@
                     "xScale": 20.0,
                     "yOffset": 8.0,
                     "yScale": 10.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "",
+                    "id": 104,
+                    "scriptParameters": [
+                        {
+                            "bool": false,
+                            "double": 0.0,
+                            "float": 0.0,
+                            "int": 0,
+                            "long": 0,
+                            "paramName": "stringName",
+                            "string": "",
+                            "type": "string",
+                            "vector2X": 0.0,
+                            "vector2Y": 0.0
+                        }
+                    ],
+                    "type": "Script"
                 }
             ],
             "id": 0,

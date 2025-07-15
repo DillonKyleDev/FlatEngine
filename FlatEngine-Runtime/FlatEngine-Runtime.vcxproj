@@ -55,22 +55,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>C:\FlatEngine2DBuild\windows-x86_64\Debug\FlatEngine-Runtime\</OutDir>
-    <IntDir>C:\FlatEngine2DBuild\Intermediates\windows-x86_64\Debug\FlatEngine-Runtime\</IntDir>
+    <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Debug\FlatEngine-Runtime\</OutDir>
+    <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Debug\FlatEngine-Runtime\</IntDir>
     <TargetName>FlatEngine-Runtime</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>C:\FlatEngine2DBuild\windows-x86_64\Release\FlatEngine-Runtime\</OutDir>
-    <IntDir>C:\FlatEngine2DBuild\Intermediates\windows-x86_64\Release\FlatEngine-Runtime\</IntDir>
+    <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Release\FlatEngine-Runtime\</OutDir>
+    <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Release\FlatEngine-Runtime\</IntDir>
     <TargetName>FlatEngine-Runtime</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>C:\FlatEngine2DBuild\windows-x86_64\Dist\FlatEngine-Runtime\</OutDir>
-    <IntDir>C:\FlatEngine2DBuild\Intermediates\windows-x86_64\Dist\FlatEngine-Runtime\</IntDir>
+    <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Dist\FlatEngine-Runtime\</OutDir>
+    <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Dist\FlatEngine-Runtime\</IntDir>
     <TargetName>FlatEngine-Runtime</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -125,7 +125,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

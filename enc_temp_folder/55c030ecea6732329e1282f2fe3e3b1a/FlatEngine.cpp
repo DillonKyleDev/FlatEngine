@@ -299,9 +299,6 @@ namespace FlatEngine
 						InitLua();
 						printf("Lua initialized...\n");
 
-						InitCPPScripts();
-						printf("C++ scripts initialized...\n");
-
 						F_AssetManager.CollectDirectories();
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
 						F_AssetManager.CollectTextures();	                   // Collect and create Texture icons from Textures.lua
@@ -310,6 +307,7 @@ namespace FlatEngine
 						SetImGuiColors();
 
 						printf("Engine Assets initialized...\n");
+						printf("System Ready...\n");
 						LogSeparator();
 						LogString("System ready. Begin logging...");
 						LogSeparator();

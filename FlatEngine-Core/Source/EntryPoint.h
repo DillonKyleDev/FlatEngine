@@ -1,6 +1,7 @@
 #pragma once
 #include "Application.h"
 #include "FlatEngine.h"
+#include <cstdlib>
 
 
 namespace FlatEngine
@@ -36,6 +37,11 @@ namespace FlatEngine
 
 			SaveDebugLogToFile();
 			CloseProgram();
+
+			if (F_b_shouldReloadProjectFiles)
+			{
+				std::system("..\\Premake\\Setup-Windows.bat");
+			}
 		}
 
 		return 1;

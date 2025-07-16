@@ -10,6 +10,7 @@
 #include "MappingContext.h"
 #include "Scene.h"
 #include "Animation.h"
+#include "CPPScript.h"
 
 #include <fstream>
 #include <string>
@@ -19,6 +20,9 @@
 #include "implot.h"
 #include "imgui_internal.h"
 #include <random>
+#include <memory>
+#include <vector>
+#include <map>
 
 
 
@@ -298,9 +302,6 @@ namespace FlatEngine
 
 						InitLua();
 						printf("Lua initialized...\n");
-
-						InitCPPScripts();
-						printf("C++ scripts initialized...\n");
 
 						F_AssetManager.CollectDirectories();
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
@@ -590,6 +591,7 @@ namespace FlatEngine
 		InitializeTileSets();		
 		F_PrefabManager->InitializePrefabs();		
 		RetrieveLuaScriptPaths();		
+		RetrieveCPPScriptNames();
 		InitializeMappingContexts();		
 
 
@@ -3056,8 +3058,9 @@ namespace FlatEngine
 							else if (type == "Script")
 							{								
 								Script* newScript = loadedObject->AddScript(id, b_isActive, b_isCollapsed);
-								newScript->SetAttachedScript(CheckJsonString(componentJson, "attachedScript", objectName));
-
+								std::string attachedScript = CheckJsonString(componentJson, "attachedScript", objectName);
+								newScript->SetAttachedScript(attachedScript);
+								
 								json scriptParamsJson = componentJson.at("scriptParameters");
 
 								for (int i = 0; i < scriptParamsJson.size(); i++)

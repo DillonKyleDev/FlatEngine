@@ -103,7 +103,7 @@ namespace FlatEngine
 	extern std::vector<std::string> F_luaScriptPaths;
 	extern std::vector<std::string> F_luaScriptNames;
 	extern std::map<std::string, std::string> F_LuaScriptsMap;
-	extern std::map<std::string, std::shared_ptr<CPPScript>> F_CPPScriptsMap;
+	extern std::vector<std::string> F_CPPScriptNames;
 	extern bool F_b_shouldReloadProjectFiles;
 	extern AssetManager F_AssetManager;
 	extern std::vector<std::string> F_selectedFiles;
@@ -236,7 +236,8 @@ namespace FlatEngine
 	extern void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param3 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param4 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param5 = Animation::S_EventFunctionParam());
 	
 	// C++ Scripts
-	extern void InitCPPScripts();
+	extern void RetrieveCPPScriptNames();
+	extern std::shared_ptr<CPPScript> InstantiateCPPScript(std::string scriptName);
 
 
 	// Profiler

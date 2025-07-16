@@ -157,6 +157,7 @@ public:
 			FL::InitializeTileSets();
 			FL::F_PrefabManager->InitializePrefabs();
 			FL::RetrieveLuaScriptPaths();
+			FL::RetrieveCPPScriptNames();
 			FL::InitializeMappingContexts();
 
 			b_hasRunOnce = true;

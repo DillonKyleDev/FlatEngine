@@ -20,21 +20,21 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\scripts",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\sprites\\asteroid",
             "effectsVolume": 10,
             "focusedGameObjectID": 0,
             "loadedAnimationPath": "",
-            "loadedScenePath": "",
+            "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
             "musicVolume": 10,
             "path": "..\\projects\\ClosedLoop\\ClosedLoop.prj",
             "persistantGameObjectsScenePath": "..\\projects\\ClosedLoop\\persistant_objects_ClosedLoop.scn",
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 50.0,
-            "sceneViewGridStepY": 50.0,
-            "sceneViewScrollingX": 0.0,
-            "sceneViewScrollingY": 0.0
+            "sceneViewGridStepX": 17.0,
+            "sceneViewGridStepY": 17.0,
+            "sceneViewScrollingX": 375.0,
+            "sceneViewScrollingY": 198.0
         }
     ]
 }

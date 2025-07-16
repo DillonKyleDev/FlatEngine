@@ -691,8 +691,18 @@ namespace FlatEngine
 			{
 				if (script.second.IsActive() && script.second.GetAttachedScript() != "")
 				{
+					std::string scriptName = script.second.GetAttachedScript();
+					if (script.second.GetCPPScript() != nullptr)
+					{
+						script.second.GetCPPScript()->Update();
+					}
+					else
+					{
+						RunLuaFuncOnSingleScript(&script.second, functionName);
+					}
+
 					//float processTime = (float)GetEngineTime();
-					RunLuaFuncOnSingleScript(&script.second, functionName);
+					
 					//processTime = (float)GetEngineTime() - processTime;
 					//if (script.second.GetAttachedScript() == "PropSpawner")
 					//{
@@ -756,8 +766,16 @@ namespace FlatEngine
 			{
 				if (script.second.IsActive() && script.second.GetAttachedScript() != "")
 				{
-					InitLuaScript(&script.second, F_LoadedSceneScriptFiles);
-					RunLuaFuncOnSingleScript(&script.second, "Awake");
+					std::string scriptName = script.second.GetAttachedScript();
+					if (scriptName.find("C++") != std::string::npos)
+					{
+						script.second.GetCPPScript()->Awake();
+					}
+					else
+					{
+						InitLuaScript(&script.second, F_LoadedSceneScriptFiles);
+						RunLuaFuncOnSingleScript(&script.second, "Awake");
+					}
 				}
 			}
 		}
@@ -767,8 +785,16 @@ namespace FlatEngine
 			{
 				if (script.second.IsActive() && script.second.GetAttachedScript() != "")
 				{
-					InitLuaScript(&script.second, F_LoadedSceneScriptFiles);
-					RunLuaFuncOnSingleScript(&script.second, "Start");
+					std::string scriptName = script.second.GetAttachedScript();
+					if (scriptName.find("C++") != std::string::npos)
+					{
+						script.second.GetCPPScript()->Start();
+					}
+					else
+					{
+						InitLuaScript(&script.second, F_LoadedSceneScriptFiles);
+						RunLuaFuncOnSingleScript(&script.second, "Start");
+					}
 				}
 			}
 		}
@@ -814,8 +840,8 @@ namespace FlatEngine
 		for (std::string path : scriptPaths)
 		{			
 			F_luaScriptPaths.push_back(path);
-			F_luaScriptNames.push_back(GetFilenameFromPath(path));
-			F_LuaScriptsMap.emplace(GetFilenameFromPath(path), path);
+			F_luaScriptNames.push_back(GetFilenameFromPath(path) + " (Lua)");
+			F_LuaScriptsMap.emplace(GetFilenameFromPath(path) + " (Lua)", path);
 
 			F_Lua.script({
 				GetFilenameFromPath(path) + " = {} "
@@ -829,7 +855,7 @@ namespace FlatEngine
 		{
 			if (fileName == GetFilenameFromPath(scriptPath))
 			{
-				LogError("Script name already taken.  Please enter a different name for your new lua script.");
+				LogError("Script name already taken.  Please enter a different name for the Lua script.");
 				return;
 			}
 		}

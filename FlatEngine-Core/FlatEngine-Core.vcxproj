@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -274,6 +274,7 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\variadic_results.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
+    <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetManager.h" />
@@ -330,6 +331,7 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
+    <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AssetManager.cpp" />
@@ -337,6 +339,7 @@
     <ClCompile Include="Source\BoxCollider.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\CPPScript.cpp" />
+    <ClCompile Include="Source\CPPScriptMethods.cpp" />
     <ClCompile Include="Source\CPPScriptsHookup.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Canvas.cpp" />

@@ -15,6 +15,7 @@ namespace FlatEngine
 		SetID(myID);
 		SetParentID(parentID);
 		m_attachedScript = "";
+		m_CPPScript = nullptr;
 	}
 
 	Script::~Script()
@@ -61,6 +62,16 @@ namespace FlatEngine
 	void Script::SetAttachedScript(std::string script)
 	{
 		m_attachedScript = script;
+
+		if (m_attachedScript.find("C++") != std::string::npos)
+		{
+			m_CPPScript = InstantiateCPPScript(m_attachedScript);
+			m_CPPScript->SetParentID(GetParentID());
+		}
+		else
+		{
+			m_CPPScript = nullptr;
+		}
 	}
 
 	std::string Script::GetAttachedScript()
@@ -112,9 +123,22 @@ namespace FlatEngine
 		}
 	}
 
+	std::shared_ptr<CPPScript> Script::GetCPPScript()
+	{
+		return m_CPPScript;
+	}
+
 	void Script::RunAwakeAndStart()
 	{
-		RunLuaFuncOnSingleScript(this, "Awake");
-		RunLuaFuncOnSingleScript(this, "Start");
+		if (m_CPPScript != nullptr)
+		{
+			m_CPPScript->Awake();
+			m_CPPScript->Start();
+		}
+		else
+		{
+			RunLuaFuncOnSingleScript(this, "Awake");
+			RunLuaFuncOnSingleScript(this, "Start");
+		}
 	}
 }

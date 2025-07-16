@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\scripts;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\scripts;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\scripts;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\scripts;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -125,7 +125,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\scripts;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\FlatEngine-Core\Source;..\scripts;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

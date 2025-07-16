@@ -67,14 +67,14 @@
     <Filter Include="..\projects">
       <UniqueIdentifier>{1A37B1AD-86EC-29A3-0FE1-237A7B9520A7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\projects\FlatSpace">
-      <UniqueIdentifier>{FC2D8E38-689A-4933-318E-E1909DB96B9B}</UniqueIdentifier>
+    <Filter Include="..\projects\ClosedLoop">
+      <UniqueIdentifier>{BD07EC05-A901-1558-926E-AB687E077BC4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\projects\FlatSpace\scripts">
-      <UniqueIdentifier>{53E9A254-BF01-8A7E-88AE-1918F4851E18}</UniqueIdentifier>
+    <Filter Include="..\projects\ClosedLoop\scripts">
+      <UniqueIdentifier>{14F49A7C-001A-65E3-E95F-EAAED5248AAF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\projects\FlatSpace\scripts\cpp">
-      <UniqueIdentifier>{A5D4E853-1143-3ED3-5A2C-F9D2C6D9336F}</UniqueIdentifier>
+    <Filter Include="..\projects\ClosedLoop\scripts\cpp">
+      <UniqueIdentifier>{E6577A7A-D293-7DE4-3BA6-95DB270126FF}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
@@ -480,6 +480,9 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp">
       <Filter>..\Vendor\includes\Sol2\include\sol</Filter>
     </ClInclude>
+    <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h">
+      <Filter>..\projects\ClosedLoop\scripts\cpp</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Animation.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -644,6 +647,9 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp">
       <Filter>..\Vendor\includes\ImPlot</Filter>
     </ClCompile>
+    <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp">
+      <Filter>..\projects\ClosedLoop\scripts\cpp</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Animation.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -663,6 +669,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\CPPScript.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CPPScriptMethods.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\CPPScriptsHookup.cpp">

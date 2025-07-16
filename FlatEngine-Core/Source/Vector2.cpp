@@ -107,10 +107,6 @@ namespace FlatEngine
 	Vector2 Vector2::Normalize()
 	{
 		float hypotenuse = std::sqrt((x * x) + (y * y));
-		if (hypotenuse > 0)
-		{
-			hypotenuse *= -1;
-		}
 
 		x = x / hypotenuse;
 		y = y / hypotenuse;

@@ -25,6 +25,9 @@ namespace FlatEngine
 		m_nextActiveBottom = 0;
 		m_nextActiveTop = 0;
 		m_nextCorners;
+		m_previousRotation = 0;
+		m_lastGridStep = 0;
+		m_lastViewportCenter = Vector2();
 	}
 
 	BoxCollider::~BoxCollider()
@@ -150,6 +153,12 @@ namespace FlatEngine
 			}
 		}
 
+		if (GetParent()->GetTransform()->GetRotation() != m_previousRotation)
+		{
+			b_shouldUpdate = true;
+		}
+		m_previousRotation = GetParent()->GetTransform()->GetRotation();
+
 		if (b_shouldUpdate)
 		{
 			m_b_activeEdgesSet = true;
@@ -238,7 +247,7 @@ namespace FlatEngine
 		Vector2 topRight = { m_activeRight, m_activeTop };
 		Vector2 bottomLeft = { m_activeLeft, m_activeBottom };
 
-		if (GetRotation() != 0)
+		if (/*GetRotation() != 0*/ true)
 		{
 			// Corners with rotation
 			topLeft = ImRotate(Vector2(-m_activeWidth * gridStep / 2 * scale.x, -m_activeHeight * gridStep / 2 * scale.y), cos_a, sin_a);
@@ -255,17 +264,17 @@ namespace FlatEngine
 			};
 
 			SetCorners(newCorners);
-		}
-		else
-		{
-			Vector2 newCorners[4] =
-			{
-				topLeft,
-				topRight,
-				bottomRight,
-				bottomLeft
-			};
-			SetCorners(newCorners);
+		//}
+		//else
+		//{
+		//	Vector2 newCorners[4] =
+		//	{
+		//		topLeft,
+		//		topRight,
+		//		bottomRight,
+		//		bottomLeft
+		//	};
+		//	SetCorners(newCorners);
 		}
 
 		// Calculate activeRadius with pythag
@@ -347,6 +356,15 @@ namespace FlatEngine
 		//UpdateCenter();
 		//UpdateCorners();
 		//UpdateNormals();
-		UpdateActiveEdges(gridStep, viewportCenter);
+		if (gridStep != 0)
+		{
+			m_lastGridStep = gridStep;
+		}
+		if (viewportCenter.x != 0 && viewportCenter.y != 0)
+		{
+			m_lastViewportCenter = viewportCenter;
+		}
+
+		UpdateActiveEdges(m_lastGridStep, m_lastViewportCenter);
 	}
 }

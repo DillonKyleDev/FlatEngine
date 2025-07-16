@@ -2,6 +2,7 @@
 #include "FlatEngine.h"
 #include "GameObject.h"
 #include "Button.h"
+#include "BoxCollider.h"
 
 
 namespace FlatEngine
@@ -148,6 +149,15 @@ namespace FlatEngine
 	void Transform::SetRotation(float newRotation)
 	{
 		m_rotation = newRotation;
+
+		// Just for debugging, not for release, since it would update at least once per frame otherwise
+		if (GetParent()->GetBoxColliders().size())
+		{
+			for (BoxCollider* collider : GetParent()->GetBoxColliders())
+			{
+				collider->RecalculateBounds();
+			}
+		}
 	}
 
 	Vector2 Transform::GetPosition()

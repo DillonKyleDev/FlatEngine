@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "Vector2.h"
 #include "Vector4.h"
+#include "Matrix.h"
 
 #include <string>
 #include "imgui_internal.h"
@@ -924,7 +925,7 @@ namespace FlatGui
 
 				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
-				if (/*transform->GetRotation() == 0*/ true)
+				if (transform->GetRotation() == 0)
 				{
 					if (b_isActive && !b_isColliding)
 					{
@@ -941,25 +942,31 @@ namespace FlatGui
 				}
 				else
 				{
+					float cosA = cosf(rotation * 2.0f * (float)M_PI / 360.0f);
+					float sinA = sinf(rotation * 2.0f * (float)M_PI / 360.0f);
+
+					FlatEngine::Matrix2 rotationMatrix(cosA, -sinA, sinA, cosA);
+
 					Vector2 corners[4] = {
 						boxCollider->GetCorners()[0],
 						boxCollider->GetCorners()[1],
 						boxCollider->GetCorners()[2],
 						boxCollider->GetCorners()[3],
 					};
-					Vector2 normals[4] =
-					{
-						boxCollider->GetNormals()[0],
-						boxCollider->GetNormals()[1],
-						boxCollider->GetNormals()[2],
-						boxCollider->GetNormals()[3],
-					};
 
-					// Draw Normals
-					FL::DrawLine(center, normals[0], FL::GetColor("colliderInactive"), 2.0f, drawList);
-					FL::DrawLine(center, normals[1], FL::GetColor("colliderInactive"), 2.0f, drawList);
-					FL::DrawLine(center, normals[2], FL::GetColor("colliderInactive"), 2.0f, drawList);
-					FL::DrawLine(center, normals[3], FL::GetColor("colliderInactive"), 2.0f, drawList);
+					//Vector2 normals[4] =
+					//{
+					//	boxCollider->GetNormals()[0],
+					//	boxCollider->GetNormals()[1],
+					//	boxCollider->GetNormals()[2],
+					//	boxCollider->GetNormals()[3],
+					//};
+
+					//// Draw Normals
+					//FL::DrawLine(center, normals[0], FL::GetColor("colliderInactive"), 2.0f, drawList);
+					//FL::DrawLine(center, normals[1], FL::GetColor("colliderInactive"), 2.0f, drawList);
+					//FL::DrawLine(center, normals[2], FL::GetColor("colliderInactive"), 2.0f, drawList);
+					//FL::DrawLine(center, normals[3], FL::GetColor("colliderInactive"), 2.0f, drawList);
 
 					if (b_isActive && !b_isColliding)
 					{

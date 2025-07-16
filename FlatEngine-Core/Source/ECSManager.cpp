@@ -410,7 +410,14 @@ namespace FlatEngine
 		}
 		else if (component->GetTypeString() == "Script")
 		{
-			F_Lua[static_cast<Script*>(component)->GetAttachedScript()][ownerID] = "nil";
+			std::string attachedScript = static_cast<Script*>(component)->GetAttachedScript();
+			
+			if (attachedScript.find("Lua") != std::string::npos && attachedScript != "")
+			{
+				attachedScript = attachedScript.substr(0, attachedScript.size() - 6);
+				F_Lua[attachedScript][ownerID] = "nil";
+			}
+
 			return RemoveScript(ownerID, component->GetID());
 		}
 		else if (component->GetTypeString() == "Button")

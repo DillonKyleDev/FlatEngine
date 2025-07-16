@@ -27,7 +27,6 @@ namespace FlatEngine
 	Matrix2::~Matrix2()
 	{
 	}
-
 	Matrix2::Matrix2(float oneOne, float oneTwo, float twoOne, float twoTwo) : Matrix(2)
 	{
 		m_oneOne = oneOne;

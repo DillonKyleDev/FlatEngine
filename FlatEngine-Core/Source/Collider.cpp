@@ -1198,7 +1198,7 @@ namespace FlatEngine
 
 	float Collider::GetRotation()
 	{
-		return m_rotation;
+		return GetParent()->GetTransform()->GetRotation();;
 	}
 
 	void Collider::SetIsComposite(bool b_isComposite)

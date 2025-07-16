@@ -158,4 +158,14 @@ namespace FlatEngine
 	{
 		return !(x == right.x && y == right.y);
 	}
+
+	Vector2 Vector2::Dot(Vector2 with)
+	{
+		return Vector2(x * with.x, y * with.y);
+	}
+
+	bool Vector2::IsPointProjectedInside(Vector2 point)
+	{
+
+	}
 }

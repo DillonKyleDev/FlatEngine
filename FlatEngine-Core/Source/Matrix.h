@@ -27,9 +27,9 @@ namespace FlatEngine
 	public:
 		Matrix2();
 		~Matrix2();
-
 		Matrix2(float oneOne, float oneTwo, float twoOne, float twoTwo);
 		//Matrix2(const Matrix2& toCopy);
+
 		Vector2 LMultiply(Vector2 vec);
 
 		int GivesInt();

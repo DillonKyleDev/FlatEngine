@@ -20,7 +20,7 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\sprites\\asteroid",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\tileTextures",
             "effectsVolume": 10,
             "focusedGameObjectID": 0,
             "loadedAnimationPath": "",
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 17.0,
-            "sceneViewGridStepY": 17.0,
-            "sceneViewScrollingX": 375.0,
-            "sceneViewScrollingY": 198.0
+            "sceneViewGridStepX": 30.0,
+            "sceneViewGridStepY": 30.0,
+            "sceneViewScrollingX": 425.0,
+            "sceneViewScrollingY": 231.0
         }
     ]
 }

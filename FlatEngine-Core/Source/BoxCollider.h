@@ -39,9 +39,10 @@ namespace FlatEngine
 		void SetCorners(Vector2 corners[4]);
 		void SetNextCorners(Vector2 corners[4]);
 		Vector2* GetCorners();
+		Vector2* GetNextCorners();
 		void SetNormals(Vector2 normals[4]);
 		Vector2* GetNormals();
-		void RecalculateBounds(float gridstep, Vector2 viewportCenter);
+		void RecalculateBounds(float gridstep = 0, Vector2 viewportCenter = Vector2());
 
 	private:		
 		bool m_b_isTileMapCollider;
@@ -65,5 +66,9 @@ namespace FlatEngine
 		Vector2 m_corners[4];
 		Vector2 m_nextCorners[4];
 		Vector2 m_normals[4];
+
+		float m_previousRotation;
+		float m_lastGridStep;
+		Vector2 m_lastViewportCenter;
 	};
 }

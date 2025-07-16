@@ -10,22 +10,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 0,
-                    "rotation": 0.0,
+                    "rotation": 18.799999237060547,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 0.0,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 0.0,
+                    "yPos": 3.884615898132324,
                     "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "Player (C++)",
-                    "id": 1,
-                    "scriptParameters": [],
-                    "type": "Script"
                 },
                 {
                     "_isActive": true,
@@ -45,14 +37,6 @@
                     "yScale": 1.0
                 },
                 {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "Character (Lua)",
-                    "id": 6,
-                    "scriptParameters": [],
-                    "type": "Script"
-                },
-                {
                     "_allowTorques": true,
                     "_isActive": true,
                     "_isCollapsed": false,
@@ -63,10 +47,27 @@
                     "friction": 0.8600000143051147,
                     "gravity": 1.0,
                     "id": 8,
-                    "mass": 0.0,
+                    "mass": 1.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isComposite": false,
+                    "_isContinuous": true,
+                    "_isSolid": true,
+                    "_isStatic": false,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 0.875,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 1.0,
+                    "id": 10,
+                    "type": "BoxCollider"
                 }
             ],
             "id": 0,
@@ -118,7 +119,7 @@
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 0.0,
-            "spawnLocationY": 0.0,
+            "spawnLocationY": 3.884615898132324,
             "tags": [
                 {
                     "Collectable": false
@@ -177,16 +178,16 @@
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 0.0,
+                    "xPos": 4.285715103149414,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 0.0,
+                    "yPos": 2.4458584785461426,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "attachedScript": "Player (C++)",
+                    "attachedScript": "",
                     "id": 3,
                     "scriptParameters": [],
                     "type": "Script"
@@ -207,6 +208,23 @@
                     "xScale": 1.0,
                     "yOffset": 10.5,
                     "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isComposite": false,
+                    "_isContinuous": true,
+                    "_isSolid": true,
+                    "_isStatic": false,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 2.625,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 2.75,
+                    "id": 11,
+                    "type": "BoxCollider"
                 }
             ],
             "id": 1,
@@ -257,8 +275,157 @@
             "name": "GameObject(1)",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 0.0,
-            "spawnLocationY": 0.0,
+            "spawnLocationX": 4.285715103149414,
+            "spawnLocationY": 2.4458584785461426,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 12,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.8387107849121094,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -6.931033134460449,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 13,
+                    "path": "..\\projects\\ClosedLoop\\images\\tileTextures\\BrickWall.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 48.0,
+                    "xScale": 1.0,
+                    "yOffset": 48.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isComposite": false,
+                    "_isContinuous": true,
+                    "_isSolid": true,
+                    "_isStatic": false,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 12.0,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 12.0,
+                    "id": 14,
+                    "type": "BoxCollider"
+                }
+            ],
+            "id": 2,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "name": "GameObject(2)",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 0.8387107849121094,
+            "spawnLocationY": -6.931033134460449,
             "tags": [
                 {
                     "Collectable": false

@@ -100,7 +100,24 @@ namespace FlatEngine
 				BoxCollider* boxCol1 = static_cast<BoxCollider*>(collider1);
 				BoxCollider* boxCol2 = static_cast<BoxCollider*>(collider2);
 
-				b_colliding = CheckForCollisionBoxBox(boxCol1, boxCol2);
+				b_colliding = CheckForCollisionBoxBoxSAT(boxCol1, boxCol2);
+			}
+			// First BoxCollider second RayCast
+			if (collider1->GetTypeString() == "BoxCollider" && collider2->GetTypeString() == "RayCast")
+			{
+				BoxCollider* boxCol = static_cast<BoxCollider*>(collider1);
+				RayCast* rayCast = static_cast<RayCast*>(collider2);
+			
+				return CheckForCollisionBoxRayCastSAT(boxCol, rayCast);
+				
+			}
+			// First RayCast second BoxCollider
+			if (collider1->GetTypeString() == "RayCast" && collider2->GetTypeString() == "BoxCollider")
+			{
+				BoxCollider* boxCol = static_cast<BoxCollider*>(collider2);
+				RayCast* rayCast = static_cast<RayCast*>(collider1);
+
+				return CheckForCollisionBoxRayCastSAT(boxCol, rayCast);
 			}
 			// First CircleCollider second BoxCollider
 			else if (collider1->GetTypeString() == "CircleCollider" && collider2->GetTypeString() == "BoxCollider")
@@ -177,6 +194,28 @@ namespace FlatEngine
 		}
 
 		return b_colliding;
+	}
+
+	bool Collider::IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point, bool& b_sameDirection, bool& b_oppositeDirection)
+	{
+		Vector2 insideVector = Vector2(ending.x - starting.x, ending.y - starting.y);
+		Vector2 testVector = Vector2(point.x - starting.x, point.y - starting.y);
+		float dotProduct = (insideVector.Dot(testVector)) / (insideVector.Dot(insideVector));
+		Vector2 projectedVector = Vector2(dotProduct * insideVector.x, dotProduct * insideVector.y);
+
+		if ((projectedVector.x * insideVector.x >= 0) && (projectedVector.y * insideVector.y >= 0))
+		{
+			b_sameDirection = true;
+		}
+		else
+		{
+			b_oppositeDirection = true;
+		}
+
+		float insideVectorMagnitude = std::sqrt((insideVector.x * insideVector.x) + (insideVector.y * insideVector.y));
+		float projMagnitude = std::sqrt((projectedVector.x * projectedVector.x) + (projectedVector.y * projectedVector.y));
+
+		return (projMagnitude <= insideVectorMagnitude && (projectedVector.x * insideVector.x >= 0) && (projectedVector.y * insideVector.y >= 0));
 	}
 
 	bool Collider::CheckForCollisionBoxCircle(BoxCollider* boxCol, CircleCollider* circleCol)
@@ -884,6 +923,126 @@ namespace FlatEngine
 					}
 				}
 			}
+		}
+
+		return b_colliding;
+	}
+
+	bool Collider::CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2)
+	{
+		int insideCounter = 0;
+		bool b_noneInBox1 = false;
+		bool b_noneInBox2 = false;
+		bool b_sameDirection = false;
+		bool b_oppositeDirection = false;
+
+		Vector2* box1Corners = boxCol1->GetCorners();
+		Vector2* box2Corners = boxCol2->GetCorners();
+
+		for (int i = 0; i < 4; i++)
+		{
+			if (IsPointProjectedInside(box1Corners[0], box1Corners[1], box2Corners[i], b_sameDirection, b_oppositeDirection))
+			{
+				insideCounter++;
+			}
+		}
+		if (b_sameDirection && b_oppositeDirection)
+		{
+			insideCounter++;
+		}
+		if (insideCounter == 0)
+		{
+			b_noneInBox1 = true;
+		}
+		insideCounter = 0;
+		b_sameDirection = false;
+		b_oppositeDirection = false;
+
+		if (!b_noneInBox1)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (IsPointProjectedInside(box1Corners[1], box1Corners[2], box2Corners[i], b_sameDirection, b_oppositeDirection))
+				{
+					insideCounter++;
+				}
+			}
+			if (b_sameDirection && b_oppositeDirection)
+			{
+				insideCounter++;
+			}
+			if (insideCounter == 0)
+			{
+				b_noneInBox1 = true;
+			}
+
+			insideCounter = 0;
+			b_sameDirection = false;
+			b_oppositeDirection = false;
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			if (IsPointProjectedInside(box2Corners[0], box2Corners[1], box1Corners[i], b_sameDirection, b_oppositeDirection))
+			{
+				insideCounter++;
+			}
+		}
+		if (b_sameDirection && b_oppositeDirection)
+		{
+			insideCounter++;			
+		}
+		if (insideCounter == 0)
+		{
+			b_noneInBox2 = true;
+		}
+		insideCounter = 0;
+		b_sameDirection = false;
+		b_oppositeDirection = false;
+
+		if (!b_noneInBox2)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (IsPointProjectedInside(box2Corners[1], box2Corners[2], box1Corners[i], b_sameDirection, b_oppositeDirection))
+				{
+					insideCounter++;
+				}
+			}
+			if (b_sameDirection && b_oppositeDirection)
+			{
+				insideCounter++;
+			}
+			if (insideCounter == 0)
+			{
+				b_noneInBox2 = true;
+			}
+		}
+		
+		return !(b_noneInBox1 || b_noneInBox2);
+	}
+
+	bool Collider::CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast)
+	{
+		bool b_colliding = true;
+		bool b_sameDirection = false;
+		bool b_oppositeDirection = false;
+
+		Vector2* boxCorners = boxCol->GetCorners();
+		Vector2 castPoint = ConvertWorldToScreen(rayCast->GetPoint(), F_sceneViewCenter, F_sceneViewGridStep.x);
+
+		if (!IsPointProjectedInside(boxCorners[0], boxCorners[1], castPoint, b_sameDirection, b_oppositeDirection))
+		{
+			b_colliding = false;
+		}
+		if (!IsPointProjectedInside(boxCorners[1], boxCorners[2], castPoint, b_sameDirection, b_oppositeDirection))
+		{
+			b_colliding = false;
+		}
+
+		if (b_colliding)
+		{
+			rayCast->OnHit(boxCol);
 		}
 
 		return b_colliding;

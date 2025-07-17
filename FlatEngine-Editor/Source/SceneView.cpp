@@ -61,6 +61,7 @@ namespace FlatGui
 			DYNAMIC_VIEWPORT_HEIGHT = trunc(canvas_p1.y - canvas_p0.y);
 			
 			FG_sceneViewportCenter = Vector2(canvas_p0.x + DYNAMIC_VIEWPORT_WIDTH, canvas_p0.y + DYNAMIC_VIEWPORT_HEIGHT);
+			FL::F_sceneViewCenter = FG_sceneViewCenter;
 
 			ImGuiIO& inputOutput = ImGui::GetIO();
 			Vector2 currentPos = ImGui::GetCursorScreenPos();

@@ -97,6 +97,10 @@ namespace FlatEngine
 			return "Text";
 			break;
 
+		case T_RayCast:
+			return "RayCast";
+			break;
+
 		case T_BoxCollider:
 			return "BoxCollider";
 			break;

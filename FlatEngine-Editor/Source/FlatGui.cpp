@@ -356,6 +356,7 @@ namespace FlatGui
 		FG_sceneViewScrolling = scrolling;
 		Vector2 gridStep = FL::F_LoadedProject.GetSceneViewGridStep();
 		FG_sceneViewGridStep = gridStep;
+		FL::F_sceneViewGridStep = FG_sceneViewGridStep;
 
 		if (FL::F_LoadedProject.GetFocusedGameObjectID() != -1 && FL::GetObjectByID(FL::F_LoadedProject.GetFocusedGameObjectID()) != nullptr)
 		{
@@ -1654,6 +1655,8 @@ namespace FlatGui
 						gridStep.y = minGridStep;
 					}
 				}
+
+				FL::F_sceneViewGridStep = gridStep;
 			}
 		}
 	}

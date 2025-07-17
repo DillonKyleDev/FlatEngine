@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\tileTextures",
             "effectsVolume": 10,
-            "focusedGameObjectID": 0,
+            "focusedGameObjectID": 1,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 30.0,
-            "sceneViewGridStepY": 30.0,
-            "sceneViewScrollingX": 425.0,
-            "sceneViewScrollingY": 231.0
+            "sceneViewGridStepX": 25.0,
+            "sceneViewGridStepY": 25.0,
+            "sceneViewScrollingX": 411.0,
+            "sceneViewScrollingY": 271.0
         }
     ]
 }

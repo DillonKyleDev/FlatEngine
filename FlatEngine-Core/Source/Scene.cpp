@@ -356,6 +356,12 @@ namespace FlatEngine
 		return m_ECSManager.AddText(text, ownerID);
 	}
 
+	RayCast* Scene::AddRayCast(RayCast rayCast, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(rayCast.GetID());
+		return m_ECSManager.AddRayCast(rayCast, ownerID);
+	}
+
 	CompositeCollider* Scene::AddCompositeCollider(CompositeCollider collider, long ownerID)
 	{
 		KeepNextComponentIDUpToDate(collider.GetID());
@@ -534,6 +540,10 @@ namespace FlatEngine
 	std::vector<Collider*> Scene::GetColliders()
 	{
 		return m_ECSManager.GetColliders();
+	}
+	std::map<long, RayCast>& Scene::GetRayCasts()
+	{
+		return m_ECSManager.GetRayCasts();
 	}
 	std::map<long, CompositeCollider>& Scene::GetCompositeColliders()
 	{

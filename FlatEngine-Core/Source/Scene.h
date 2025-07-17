@@ -11,6 +11,7 @@
 #include "Audio.h"
 #include "Text.h"
 #include "CharacterController.h"
+#include "RayCast.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 #include "CompositeCollider.h"
@@ -65,6 +66,7 @@ namespace FlatEngine
 		Canvas* AddCanvas(Canvas canvas, long ownerID);
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);
+		RayCast* AddRayCast(RayCast rayCast, long ownerID);
 		CompositeCollider* AddCompositeCollider(CompositeCollider collider, long ownerID);
 		BoxCollider* AddBoxCollider(BoxCollider collider, long ownerID);
 		CircleCollider* AddCircleCollider(CircleCollider collider, long ownerID);
@@ -103,6 +105,7 @@ namespace FlatEngine
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
 		std::vector<Collider*> GetColliders();
+		std::map<long, RayCast>& GetRayCasts();
 		std::map<long, CompositeCollider>& GetCompositeColliders();
 		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
 		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();

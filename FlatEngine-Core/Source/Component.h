@@ -15,6 +15,7 @@ namespace FlatEngine
 		T_Animation,
 		T_Audio,
 		T_Text,
+		T_RayCast,
 		T_BoxCollider,
 		T_CircleCollider,
 		T_CompositeCollider,

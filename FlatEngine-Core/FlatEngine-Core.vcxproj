@@ -275,6 +275,7 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
+    <ClInclude Include="Source\RayCast.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetManager.h" />
@@ -332,6 +333,7 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
     <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
+    <ClCompile Include="Source\RayCast.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AssetManager.cpp" />

@@ -25,7 +25,7 @@ namespace FlatEngine
 		m_pendingTorques = 0;
 		m_angularVelocity = 0;
 		m_angularAcceleration = 0;
-		m_angularDrag = 1;
+		m_angularDrag = 0.99f;
 		m_b_allowTorques = true;
 
 		m_equilibriumForce = 2;				

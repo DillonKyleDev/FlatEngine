@@ -7,6 +7,17 @@
 
 namespace FlatEngine
 {
+	void CallbackFunction(RayCast* rayCast, GameObject* collidedWith)
+	{
+		Vector2 forceDirection = (rayCast->GetPoint() - rayCast->GetTail());
+		Vector2 impactToCenter = (collidedWith->GetTransform()->GetTruePosition() - rayCast->GetPoint()).Normalize();
+		float forceInDirectionOfCenter = forceDirection.Dot(impactToCenter);
+		float torque = forceDirection.GetMagnitude() - forceInDirectionOfCenter;
+		collidedWith->GetRigidBody()->AddTorque(torque, 1);
+		collidedWith->GetRigidBody()->AddForce(impactToCenter, forceInDirectionOfCenter);
+	}
+
+
 	Player::Player()
 	{
 
@@ -24,13 +35,11 @@ namespace FlatEngine
 
 	void Player::Start()
 	{
-		m_initialXPos = GetRandInt(0, 10);
-		GetParent()->GetTransform()->SetPosition(Vector2(m_initialXPos, 0));
+		CastRay(GetParent()->GetTransform()->GetPosition(), Vector2(1, 0), 1, 10, CallbackFunction, true);
 	}
 
 	void Player::Update()
     {
-		Vector2 currentPos = GetParent()->GetTransform()->GetPosition();
-		GetParent()->GetTransform()->SetPosition(Vector2((float)currentPos.x + 0.01, 0));
+
 	}
 }

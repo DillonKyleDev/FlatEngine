@@ -93,6 +93,10 @@ namespace FlatEngine
 	// Collision Detection
 	std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
 
+	// Scene View
+	Vector2 F_sceneViewCenter = Vector2();
+	Vector2 F_sceneViewGridStep = Vector2();
+
 
 	bool LoadFonts()
 	{
@@ -2000,25 +2004,22 @@ namespace FlatEngine
 	// Collision Detection
 	void UpdateColliderPairs()
 	{
+		std::map<long, RayCast>& sceneRayCasts = GetLoadedScene()->GetRayCasts();
 		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
 		std::map<long, std::map<long, BoxCollider>> &persistantBoxColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetBoxColliders();
 		std::map<long, std::map<long, CircleCollider>>& sceneCircleColliders = GetLoadedScene()->GetCircleColliders();
 		std::map<long, std::map<long, CircleCollider>>& persistantCircleColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleColliders();
 
-		//if (GetLoadedScene() != nullptr)
-		//{
-		//	sceneBoxColliders = ;
-		//}
-		//if (GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		//{
-		//	persistantBoxColliders = 
-		//}
-
 		// Remake colliderPairs
 		F_ColliderPairs.clear();
 		std::vector<Collider*> colliders;
 
-		// Collect BoxColliders into a simple to navigate vector
+		// Collect Colliders into a simple to navigate vector
+		for (std::map<long, RayCast>::iterator colliderMap = sceneRayCasts.begin(); colliderMap != sceneRayCasts.end();)
+		{
+			colliders.push_back(&colliderMap->second);
+			colliderMap++;
+		}
 		for (std::map<long, std::map<long, BoxCollider>>::iterator colliderMap = sceneBoxColliders.begin(); colliderMap != sceneBoxColliders.end();)
 		{
 			for (std::map<long, BoxCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
@@ -2061,36 +2062,44 @@ namespace FlatEngine
 		{
 			for (std::vector<Collider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
 			{
-				if ((*collider1)->GetParentID() != (*collider2)->GetParentID())
+				if ((*collider1)->GetParentID() != (*collider2)->GetParentID() && !((*collider1)->GetType() == T_RayCast && (*collider2)->GetType() == T_RayCast))
 				{
-					TagList coll1TagList = (*collider1)->GetParent()->GetTagList();
-					TagList coll2TagList = (*collider2)->GetParent()->GetTagList();
-
-					std::vector<std::string> coll1Ignored = coll1TagList.GetIgnoredTags();
-					std::vector<std::string> coll2Ignored = coll2TagList.GetIgnoredTags();
-
-					bool b_ignorePair = false;
-
-					for (std::string ignoredTag : coll1Ignored)
+					if ((*collider1)->GetType() != T_RayCast && (*collider2)->GetType() != T_RayCast)
 					{
-						if (coll2TagList.HasTag(ignoredTag))
+						TagList coll1TagList = (*collider1)->GetParent()->GetTagList();
+						TagList coll2TagList = (*collider2)->GetParent()->GetTagList();
+
+						std::vector<std::string> coll1Ignored = coll1TagList.GetIgnoredTags();
+						std::vector<std::string> coll2Ignored = coll2TagList.GetIgnoredTags();
+
+						bool b_ignorePair = false;
+
+						for (std::string ignoredTag : coll1Ignored)
 						{
-							b_ignorePair = true;
-							break;
-						}
-					}
-					if (!b_ignorePair)
-					{
-						for (std::string ignoredTag : coll2Ignored)
-						{
-							if (coll1TagList.HasTag(ignoredTag))
+							if (coll2TagList.HasTag(ignoredTag))
 							{
 								b_ignorePair = true;
 								break;
 							}
 						}
+						if (!b_ignorePair)
+						{
+							for (std::string ignoredTag : coll2Ignored)
+							{
+								if (coll1TagList.HasTag(ignoredTag))
+								{
+									b_ignorePair = true;
+									break;
+								}
+							}
+						}
+						if (!b_ignorePair)
+						{
+							std::pair<Collider*, Collider*> newPair = { (*collider1), (*collider2) };
+							F_ColliderPairs.push_back(newPair);
+						}
 					}
-					if (!b_ignorePair)
+					else
 					{
 						std::pair<Collider*, Collider*> newPair = { (*collider1), (*collider2) };
 						F_ColliderPairs.push_back(newPair);
@@ -2175,6 +2184,13 @@ namespace FlatEngine
 		F_Logger.DrawLine(startingPoint, endingPoint, color, thickness, drawList);
 	}
 
+	void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness)
+	{
+		Vector2 start = ConvertWorldToScreen(startingPoint, F_sceneViewCenter, F_sceneViewGridStep.x);
+		Vector2 end = ConvertWorldToScreen(endingPoint, F_sceneViewCenter, F_sceneViewGridStep.x);
+		F_Logger.DrawLine(start, end, color, thickness, ImGui::GetForegroundDrawList());
+	}
+
 	void DrawRectangleFromLines(Vector2* corners, Vector4 color, float thickness, ImDrawList* drawList)
 	{
 		DrawLine(corners[0], corners[1], color, thickness, drawList);
@@ -2203,6 +2219,14 @@ namespace FlatEngine
 		{			
 			WriteStringToFile("..\\log_output.txt", F_Logger.GetBuffer().Buf.Data);
 		}
+	}
+
+	Vector2 ConvertWorldToScreen(Vector2 positionInWorld, Vector2 relativeCenterPoint, float zoomMultiplier)
+	{
+		float x = relativeCenterPoint.x + (positionInWorld.x * zoomMultiplier) - (F_spriteScaleMultiplier * zoomMultiplier);
+		float y = relativeCenterPoint.y - (positionInWorld.y * zoomMultiplier) - (F_spriteScaleMultiplier * zoomMultiplier);
+
+		return Vector2(x, y);
 	}
 
 	// Game Loop

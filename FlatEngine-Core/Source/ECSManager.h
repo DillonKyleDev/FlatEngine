@@ -41,6 +41,7 @@ namespace FlatEngine
 		Canvas* AddCanvas(Canvas canvas, long ownerID);
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);
+		RayCast* AddRayCast(RayCast rayCast, long ownerID);
 		CompositeCollider* AddCompositeCollider(CompositeCollider collider, long ownerID);
 		BoxCollider* AddBoxCollider(BoxCollider collider, long ownerID);
 		CircleCollider* AddCircleCollider(CircleCollider collider, long ownerID);
@@ -58,6 +59,7 @@ namespace FlatEngine
 		bool RemoveCanvas(long ownerID);
 		bool RemoveAudio(long ownerID);
 		bool RemoveText(long ownerID);
+		bool RemoveRayCast(long ownerID);
 		bool RemoveCompositeCollider(long ownerID);
 		bool RemoveBoxCollider(long componentID, long ownerID);
 		bool RemoveCircleCollider(long componentID, long ownerID);
@@ -94,6 +96,7 @@ namespace FlatEngine
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
 		std::vector<Collider*> GetColliders();
+		std::map<long, RayCast>& GetRayCasts();
 		std::map<long, CompositeCollider>& GetCompositeColliders();
 		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
 		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
@@ -113,6 +116,7 @@ namespace FlatEngine
 		std::map<long, Audio> m_Audios;
 		std::map<long, Text> m_Texts;		
 		std::map<long, CompositeCollider> m_CompositeColliders;
+		std::map<long, RayCast> m_RayCasts;
 		std::map<long, std::map<long, BoxCollider>> m_BoxColliders;
 		std::map<long, std::map<long, CircleCollider>> m_CircleColliders;
 		std::map<long, RigidBody> m_RigidBodies;

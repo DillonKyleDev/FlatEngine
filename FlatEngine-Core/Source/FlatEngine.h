@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Animation.h"
 #include "CPPScript.h"
+#include "RayCast.h"
 
 #include <stdio.h>
 #include <string>
@@ -160,10 +161,15 @@ namespace FlatEngine
 
 	extern Camera* F_primaryCamera;
 
+	// Scene View
+	extern Vector2 F_sceneViewCenter;
+	extern Vector2 F_sceneViewGridStep; 
+
 
 	// Collision Detection
 	extern std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs;
 	extern void UpdateColliderPairs();
+	extern RayCast* CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, GameObject*), bool b_visible = false);
 
 	extern bool LoadFonts();
 	extern void FreeFonts();
@@ -315,11 +321,13 @@ namespace FlatEngine
 	extern void LogSeparator();
 	extern void DrawRectangle(Vector2 startingPoint, Vector2 endingPoint, Vector2 canvasP0, Vector2 canvasSize, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawLine(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness, ImDrawList* drawList);
+	extern void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness);
 	extern void DrawRectangleFromLines(Vector2* corners, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawCircle(Vector2 center, float radius, Vector4 color, ImDrawList* drawList, float thickness = 1, int segments = 0);
 	extern void DrawPoint(Vector2 point, Vector4 color, ImDrawList* drawList);
 	extern void DebugRectangle(Vector2 startingPoint, Vector2 endPoint, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void SaveDebugLogToFile(std::string path = "");
+	extern Vector2 ConvertWorldToScreen(Vector2 positionInWorld, Vector2 relativeCenterPoint, float zoomMultiplier);
 
 	// Game View
 	extern void Game_RenderView(bool b_inRuntime = false);

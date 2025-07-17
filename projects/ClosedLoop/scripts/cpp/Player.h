@@ -1,6 +1,7 @@
 #pragma once
 #include "FlatEngine.h"
 #include "CPPScript.h"
+#include "RayCast.h"
 
 namespace FlatEngine
 {
@@ -13,8 +14,5 @@ namespace FlatEngine
 		void Awake();
 		void Start();
 		void Update();
-
-	private:
-		int m_initialXPos = 0;
 	};
 }

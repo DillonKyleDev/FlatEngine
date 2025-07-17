@@ -32,6 +32,7 @@ F_Colors = {
 	colliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
 	colliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
 	colliderColliding = Vector4:new(0.76, 0.42, 0.0, 1.0),
+	rayCast = Vector4:new(0.76, 0.42, 0.0, 1.0),
 	-- Button Components
 	buttonComponentActive = Vector4:new(0.75, 0.06, 0.41, 1.0),
 	buttonComponentInactive = Vector4:new(0.75, 0.06, 0.41, 0.4),

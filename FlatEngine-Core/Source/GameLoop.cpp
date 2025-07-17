@@ -400,6 +400,21 @@ namespace FlatEngine
 
 	void GameLoop::HandleCollisions(float gridstep, Vector2 viewportCenter)
 	{		
+		std::map<long, RayCast>& sceneRayCasts = GetLoadedScene()->GetRayCasts();
+		std::vector<long> rayCastsToDelete = std::vector<long>();
+		for (std::map<long, RayCast>::iterator iter = sceneRayCasts.begin(); iter != sceneRayCasts.end();)
+		{
+			if (!iter->second.IsCasting())
+			{
+				rayCastsToDelete.push_back(iter->first);
+			}
+			iter++;
+		}
+		for (long toDelete : rayCastsToDelete)
+		{
+			sceneRayCasts.erase(toDelete);
+		}
+
 		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
 		for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
 		{
@@ -459,6 +474,25 @@ namespace FlatEngine
 					if (collider1->GetActiveLayer() == collider2->GetActiveLayer())
 					{
 						Collider::CheckForCollision(collider1, collider2);
+					}
+				}
+			}
+			else if (collider1->GetType() == T_RayCast || collider2->GetType() == T_RayCast)
+			{
+				if (collider1->GetType() == T_RayCast)
+				{
+					while (static_cast<RayCast*>(collider1)->IsCasting())
+					{
+						Collider::CheckForCollision(collider1, collider2);
+						static_cast<RayCast*>(collider1)->Update();
+					}
+				}
+				else if (collider2->GetType() == T_RayCast)
+				{
+					while (static_cast<RayCast*>(collider2)->IsCasting())
+					{
+						Collider::CheckForCollision(collider1, collider2);
+						static_cast<RayCast*>(collider2)->Update();
 					}
 				}
 			}

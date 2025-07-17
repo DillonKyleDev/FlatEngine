@@ -12,6 +12,7 @@ using namespace nlohmann::literals;
 
 namespace FlatEngine
 {
+	class RayCast;
 	class BoxCollider;
 	class CircleCollider;
 	class GameObject;
@@ -25,7 +26,10 @@ namespace FlatEngine
 
 		static bool CheckForCollisionBoxCircle(BoxCollider* boxCol, CircleCollider* circleCol);
 		static bool CheckForCollisionBoxBox(BoxCollider* boxCol1, BoxCollider* boxCol2);
+		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2);
+		static bool CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast);
 		static bool CheckForCollision(Collider* collider1, Collider* collider2);
+		static bool IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point, bool& b_sameDirection, bool& b_oppositeDirection);
 
 		virtual void RecalculateBounds() {};
 		virtual void ResetCollisions();		

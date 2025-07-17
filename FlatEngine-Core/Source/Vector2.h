@@ -28,7 +28,7 @@ namespace FlatEngine
 		Vector2 Normalize();
 		bool operator==(const Vector2& right);
 		bool operator!=(const Vector2& right);
-		Vector2 Dot(Vector2 with);
-		bool IsPointProjectedInside(Vector2 point);
+		float Dot(Vector2 with);
+		float GetMagnitude();
 	};
 }

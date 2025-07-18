@@ -12,6 +12,11 @@
 
 namespace FlatEngine
 {
+	void BoxBoxRayCastCallback(RayCast* rayCast, Collider* collidedWith)
+	{		
+	}
+
+
 	Collider::Collider(long myID, long parentID)
 	{		
 		SetID(myID);
@@ -102,23 +107,6 @@ namespace FlatEngine
 
 				b_colliding = CheckForCollisionBoxBoxSAT(boxCol1, boxCol2);
 			}
-			// First BoxCollider second RayCast
-			if (collider1->GetTypeString() == "BoxCollider" && collider2->GetTypeString() == "RayCast")
-			{
-				BoxCollider* boxCol = static_cast<BoxCollider*>(collider1);
-				RayCast* rayCast = static_cast<RayCast*>(collider2);
-			
-				return CheckForCollisionBoxRayCastSAT(boxCol, rayCast);
-				
-			}
-			// First RayCast second BoxCollider
-			if (collider1->GetTypeString() == "RayCast" && collider2->GetTypeString() == "BoxCollider")
-			{
-				BoxCollider* boxCol = static_cast<BoxCollider*>(collider2);
-				RayCast* rayCast = static_cast<RayCast*>(collider1);
-
-				return CheckForCollisionBoxRayCastSAT(boxCol, rayCast);
-			}
 			// First CircleCollider second BoxCollider
 			else if (collider1->GetTypeString() == "CircleCollider" && collider2->GetTypeString() == "BoxCollider")
 			{
@@ -146,15 +134,45 @@ namespace FlatEngine
 		}
 
 		if (b_colliding)
-		{
-			// Set b_colliding
+		{			
 			collider1->SetColliding(true);
 			collider2->SetColliding(true);
+
+			Vector2 box1Direction = collider1->GetParent()->GetRigidBody()->GetVelocity();
+			Vector2 box2Direction = collider2->GetParent()->GetRigidBody()->GetVelocity();
+			Vector2 box1CastDir = box1Direction - box2Direction;
+			Vector2 box2CastDir = box2Direction - box1Direction;
+			float nearestVertexDistance = 100;
+			Vector2 box1HitPos = Vector2();
+			Vector2 box2HitPos = Vector2();
 
 			// Add colliding objects
 			if (!collider1->m_b_isComposite)
 			{
-				collider1->AddCollidingObject(collider2);
+				if (collider1->AddCollidingObject(collider2) && collider1->GetType() == T_BoxCollider)
+				{
+					for (int i = 0; i < 4; i++)
+					{
+						Vector2 cornerCastFrom = static_cast<BoxCollider*>(collider1)->GetNextCorners()[i];
+
+						RayCast rayCast = CastRay(cornerCastFrom, box1CastDir, 0.01f, 5, BoxBoxRayCastCallback, collider1->GetParentID());
+						Vector2 collisionPoint = rayCast.GetPoint();
+						Collider* collidedWith = rayCast.GetCollidedWith();
+
+						if (collidedWith != nullptr && collidedWith->GetID() == collider2->GetID())
+						{
+							float distance = (collisionPoint - cornerCastFrom).GetMagnitude();
+							if (distance < nearestVertexDistance)
+							{
+								nearestVertexDistance = distance;
+								box1HitPos = cornerCastFrom;
+								box2HitPos = collisionPoint;
+							}
+						}						
+					}
+				}
+
+
 				// For Collider events - Fire OnActiveCollision while there is a collision happening
 				if (collider1->GetType() == ComponentTypes::T_BoxCollider)
 				{
@@ -174,7 +192,29 @@ namespace FlatEngine
 
 			if (!collider2->m_b_isComposite)
 			{
-				collider2->AddCollidingObject(collider1);
+				if (collider2->AddCollidingObject(collider1) && collider2->GetType() == T_BoxCollider)
+				{		
+					for (int i = 0; i < 4; i++)
+					{
+						Vector2 cornerCastFrom = static_cast<BoxCollider*>(collider2)->GetNextCorners()[i];
+
+						RayCast rayCast = CastRay(cornerCastFrom, box2CastDir, 0.01f, 5, BoxBoxRayCastCallback, collider2->GetParentID());
+						Vector2 collisionPoint = rayCast.GetPoint();
+						Collider* collidedWith = rayCast.GetCollidedWith();
+	
+						if (collidedWith != nullptr && collidedWith->GetID() == collider1->GetID())
+						{								
+							float distance = (collisionPoint - cornerCastFrom).GetMagnitude();
+							if (distance < nearestVertexDistance)
+							{
+								nearestVertexDistance = distance;
+								box1HitPos = collisionPoint;
+								box2HitPos = cornerCastFrom;
+							}
+						}
+					}
+				}
+
 				// For Collider events - Fire OnActiveCollision while there is a collision happening
 				if (collider2->GetType() == ComponentTypes::T_BoxCollider)
 				{
@@ -190,6 +230,59 @@ namespace FlatEngine
 				CompositeCollider* compositeCollider = collider2->GetParent()->GetCompositeCollider();
 				compositeCollider->AddCollidingObject(collider1);
 				//compositeCollider->OnActiveCollision(collider2->GetParent(), collider1->GetParent());
+			}
+
+			{
+				DrawLineInScene(box1HitPos, box2HitPos + Vector2(.1f, 0), GetColor("red"), 4);
+				Vector2 normalToCollision = (collider1Center - collider2Center).Normalize();
+				Vector2 projBox1DirOntoNormal = normalToCollision * ((normalToCollision.Dot(box1Direction)) / (normalToCollision.Dot(normalToCollision)));
+				Vector2 flippedProjection = projBox1DirOntoNormal * (-1);
+				Vector2 zHat = box1Direction - projBox1DirOntoNormal;
+				Vector2 mirroredBox1Direction = flippedProjection + zHat;
+				collider1->GetParent()->GetRigidBody()->SetPendingForces(Vector2(0,0));
+
+				// Calculate actual force after impact (conervation of momentum)
+
+
+				// Calculate torque and force... Right now only velocity of each object are the only thing considered, not rotational forces that could move
+				// other objects.. box1Direction and box2Direction are velocities but we also need rotation speed so spinning objects can move other objects
+				Vector2 forceDirection = mirroredBox1Direction * 3;
+				Vector2 impactToCenter = (collider1->GetParent()->GetTransform()->GetTruePosition() - box1HitPos).Normalize();
+				float forceInDirectionOfCenter = forceDirection.Dot(impactToCenter);
+				float torque = forceDirection.GetMagnitude() - forceInDirectionOfCenter;
+				float direction = 1;
+				if (forceDirection.CrossKResult(impactToCenter) > 0)
+				{
+					direction = -1;
+				}
+				collider1->GetParent()->GetRigidBody()->AddTorque(torque, direction);
+				collider1->GetParent()->GetRigidBody()->AddForce(impactToCenter, forceInDirectionOfCenter);
+			}
+			{
+				// Calculate direction vector's reflection across the line of collision separation (where it should bounce to)
+				Vector2 normalToCollision = (collider1Center - collider2Center).Normalize();
+				Vector2 projBox2DirOntoNormal = normalToCollision * ((normalToCollision.Dot(box2Direction)) / (normalToCollision.Dot(normalToCollision)));
+				Vector2 flippedProjection = projBox2DirOntoNormal * (-1);
+				Vector2 zHat = box2Direction - projBox2DirOntoNormal;
+				Vector2 mirroredBox2Direction = flippedProjection + zHat;
+				collider2->GetParent()->GetRigidBody()->SetPendingForces(Vector2(0,0));
+				//collider2->GetParent()->GetRigidBody()->AddForce
+
+				// Calculate actual force after impact (conervation of momentum)
+
+
+				// Calculate torque and force
+				Vector2 forceDirection = mirroredBox2Direction * 3;
+				Vector2 impactToCenter = (collider2->GetParent()->GetTransform()->GetTruePosition() - box2HitPos).Normalize();
+				float forceInDirectionOfCenter = forceDirection.Dot(impactToCenter);
+				float torque = forceDirection.GetMagnitude() - forceInDirectionOfCenter;
+				float direction = 1;
+				if (forceDirection.CrossKResult(impactToCenter) > 0)
+				{
+					direction = -1;
+				}
+				collider2->GetParent()->GetRigidBody()->AddTorque(torque, direction);
+				collider2->GetParent()->GetRigidBody()->AddForce(impactToCenter, forceInDirectionOfCenter);
 			}
 		}
 
@@ -936,8 +1029,8 @@ namespace FlatEngine
 		bool b_sameDirection = false;
 		bool b_oppositeDirection = false;
 
-		Vector2* box1Corners = boxCol1->GetCorners();
-		Vector2* box2Corners = boxCol2->GetCorners();
+		Vector2* box1Corners = boxCol1->GetNextCorners();
+		Vector2* box2Corners = boxCol2->GetNextCorners();
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -1018,7 +1111,7 @@ namespace FlatEngine
 				b_noneInBox2 = true;
 			}
 		}
-		
+
 		return !(b_noneInBox1 || b_noneInBox2);
 	}
 
@@ -1029,7 +1122,7 @@ namespace FlatEngine
 		bool b_oppositeDirection = false;
 
 		Vector2* boxCorners = boxCol->GetCorners();
-		Vector2 castPoint = ConvertWorldToScreen(rayCast->GetPoint(), F_sceneViewCenter, F_sceneViewGridStep.x);
+		Vector2 castPoint = rayCast->GetPoint();
 
 		if (!IsPointProjectedInside(boxCorners[0], boxCorners[1], castPoint, b_sameDirection, b_oppositeDirection))
 		{
@@ -1102,13 +1195,14 @@ namespace FlatEngine
 		return (m_previousPosition.x != position.x || m_previousPosition.y != position.y);
 	}
 
-	void Collider::AddCollidingObject(Collider* collidedWith)
+	// Returns true if successfully added for the first time
+	bool Collider::AddCollidingObject(Collider* collidedWith)
 	{		
 		for (GameObject* object : m_collidingObjects)
 		{	
 			if (object->GetID() == collidedWith->GetParent()->GetID())
 			{
-				return;
+				return false;
 			}
 		}		
 		m_collidingObjects.push_back(collidedWith->GetParent());
@@ -1118,7 +1212,7 @@ namespace FlatEngine
 			// Leave function if the object has already fired OnCollisionEnter() (in the lastframe);
 			if (object->GetID() == collidedWith->GetParent()->GetID())
 			{
-				return;
+				return false;
 			}
 		}
 
@@ -1131,6 +1225,8 @@ namespace FlatEngine
 		{			
 			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnCircleCollisionEnter);
 		}
+
+		return true;
 	}
 
 	std::vector<GameObject*> Collider::GetCollidingObjects()
@@ -1143,18 +1239,18 @@ namespace FlatEngine
 		// Check which objects have left collision state since last frame
 		for (GameObject *collidedLastFrame : m_collidingLastFrame)
 		{		
-			bool _objectStillColliding = false;
+			bool b_objectStillColliding = false;
 
 			for (GameObject *collidedThisFrame : m_collidingObjects)
 			{
 				if (collidedLastFrame->GetID() == collidedThisFrame->GetID())
 				{
-					_objectStillColliding = true;
+					b_objectStillColliding = true;
 				}
 			}
 
 			// Fire OnLeave if not colliding
-			if (!_objectStillColliding)
+			if (!b_objectStillColliding)
 			{
 				for (BoxCollider* boxCollider : collidedLastFrame->GetBoxColliders())
 				{

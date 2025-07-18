@@ -186,21 +186,18 @@ namespace FlatEngine
 
 		if (rotation != 0)
 		{
-			float cosA = cosf(rotation * 2.0f * (float)M_PI / 360.0f);
-			float sinA = sinf(rotation * 2.0f * (float)M_PI / 360.0f);
-
-			Vector2 topLeft = ImRotate(Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), cosA, sinA);
-			Vector2 topRight = ImRotate(Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), cosA, sinA);
-			Vector2 bottomRight = ImRotate(Vector2(+(renderEnd.x - renderStart.x) / 2, (renderEnd.y - renderStart.y) / 2), cosA, sinA);
-			Vector2 bottomLeft = ImRotate(Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), cosA, sinA);
+			Vector2 topLeft = Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
+			Vector2 topRight = Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
+			Vector2 bottomRight = Vector2(+(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
+			Vector2 bottomLeft = Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
 
 			Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
 			Vector2 pos[4] =
 			{
-				Vector2(center.x + topLeft.x, center.y + topLeft.y),
-				Vector2(center.x + topRight.x, center.y + topRight.y),
-				Vector2(center.x + bottomRight.x, center.y + bottomRight.y),
-				Vector2(center.x + bottomLeft.x, center.y + bottomLeft.y),
+				center + topLeft,
+				center + topRight,
+				center + bottomRight,
+				center + bottomLeft
 			};
 			Vector2 uvs[4] =
 			{
@@ -2223,8 +2220,8 @@ namespace FlatEngine
 
 	Vector2 ConvertWorldToScreen(Vector2 positionInWorld, Vector2 relativeCenterPoint, float zoomMultiplier)
 	{
-		float x = relativeCenterPoint.x + (positionInWorld.x * zoomMultiplier) - (F_spriteScaleMultiplier * zoomMultiplier);
-		float y = relativeCenterPoint.y - (positionInWorld.y * zoomMultiplier) - (F_spriteScaleMultiplier * zoomMultiplier);
+		float x = relativeCenterPoint.x + (positionInWorld.x * zoomMultiplier);
+		float y = relativeCenterPoint.y - (positionInWorld.y * zoomMultiplier);
 
 		return Vector2(x, y);
 	}

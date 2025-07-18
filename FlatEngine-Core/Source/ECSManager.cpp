@@ -402,9 +402,13 @@ namespace FlatEngine
 		}
 	}
 	
-	bool ECSManager::RemoveComponent(Component *component)
+	bool ECSManager::RemoveComponent(Component *component, long ownerID)
 	{
-		long ownerID = component->GetParentID();
+		if (ownerID == -1)
+		{
+			ownerID = component->GetParentID();
+		}
+
 		if (component->GetTypeString() == "Transform")
 		{
 			return RemoveTransform(ownerID);

@@ -1,6 +1,7 @@
 #pragma once
 #include "Collider.h"
 #include "Vector2.h"
+#include <map>
 
 
 namespace FlatEngine
@@ -8,7 +9,7 @@ namespace FlatEngine
 	class RayCast : public Collider
 	{
 	public:
-		RayCast(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, GameObject*), bool b_visible = false);
+		RayCast(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, Collider*), long parentID, bool b_visible = false);
 		~RayCast();
 
 		void Cast(bool b_visible = false);
@@ -17,6 +18,7 @@ namespace FlatEngine
 		void OnHit(Collider* collidedWith);
 		Vector2 GetPoint();
 		Vector2 GetTail();
+		Collider* GetCollidedWith();
 
 	private:
 		Vector2 m_initialPos;
@@ -26,7 +28,7 @@ namespace FlatEngine
 		float m_length;
 		bool m_b_casting;
 		bool m_b_visible;
-		void (*m_callback)(RayCast*, GameObject*);
-		GameObject* m_collidedWith;
+		void (*m_callback)(RayCast*, Collider*);		
+		Collider* m_collidedWith;
 	};
 }

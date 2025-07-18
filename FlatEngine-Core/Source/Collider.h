@@ -34,7 +34,7 @@ namespace FlatEngine
 		virtual void RecalculateBounds() {};
 		virtual void ResetCollisions();		
 
-		void AddCollidingObject(Collider* collidedWith);		
+		bool AddCollidingObject(Collider* collidedWith);		
 		bool IsColliding();
 		void SetColliding(bool b_isColliding);
 		void UpdatePreviousPosition();

@@ -20,7 +20,7 @@ end
 function Update()
      local data = GetInstanceData("Character", my_id)
 
-     data.rigidBody:AddForce(Vector2:new(0,1), .01)
+     data.rigidBody:AddForce(Vector2:new(1,1), .01)
 end
 
 -- each of these functions must be present in each file if they are to be called otherwise other scripts copies will be used with this object instead

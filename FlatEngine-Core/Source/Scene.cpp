@@ -410,12 +410,12 @@ namespace FlatEngine
 		return m_ECSManager.AddTileMap(tileMap, ownerID);
 	}
 
-	void Scene::RemoveComponent(Component* component)
+	void Scene::RemoveComponent(Component* component, long ownerID)
 	{
 		if (component != nullptr)
 		{
 			long ID = component->GetID();
-			if (m_ECSManager.RemoveComponent(component))
+			if (m_ECSManager.RemoveComponent(component, ownerID))
 			{
 				m_freedComponentIDs.push_back(ID);
 			}

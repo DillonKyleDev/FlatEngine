@@ -414,6 +414,11 @@ namespace FlatEngine
 		{
 			sceneRayCasts.erase(toDelete);
 		}
+		if (rayCastsToDelete.size())
+		{
+			UpdateColliderPairs();
+			rayCastsToDelete.clear();
+		}
 
 		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
 		for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
@@ -467,32 +472,13 @@ namespace FlatEngine
 			Collider* collider1 = colliderPair.first;
 			Collider* collider2 = colliderPair.second;
 
-			if (collider1->GetParent() != nullptr && collider1->GetParent()->IsActive() && collider1 != nullptr && collider1->IsActive() && collider2->GetParent() != nullptr && collider2->GetParent()->IsActive() && collider2 != nullptr && collider2->IsActive() && (!collider1->IsStatic() || !collider2->IsStatic()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
+			if (collider1 != nullptr && collider2 != nullptr)
 			{
-				if (collider2 != nullptr && (collider1->GetID() != collider2->GetID()) && collider2->IsActive())
+				if (collider1->GetParent() != nullptr && collider1->GetParent()->IsActive() && collider1->IsActive() && collider2->GetParent() != nullptr && collider2->GetParent()->IsActive() && collider2->IsActive() && (collider1->GetID() != collider2->GetID()) && (!collider1->IsStatic() || !collider2->IsStatic()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
 				{
 					if (collider1->GetActiveLayer() == collider2->GetActiveLayer())
 					{
 						Collider::CheckForCollision(collider1, collider2);
-					}
-				}
-			}
-			else if (collider1->GetType() == T_RayCast || collider2->GetType() == T_RayCast)
-			{
-				if (collider1->GetType() == T_RayCast)
-				{
-					while (static_cast<RayCast*>(collider1)->IsCasting())
-					{
-						Collider::CheckForCollision(collider1, collider2);
-						static_cast<RayCast*>(collider1)->Update();
-					}
-				}
-				else if (collider2->GetType() == T_RayCast)
-				{
-					while (static_cast<RayCast*>(collider2)->IsCasting())
-					{
-						Collider::CheckForCollision(collider1, collider2);
-						static_cast<RayCast*>(collider2)->Update();
 					}
 				}
 			}

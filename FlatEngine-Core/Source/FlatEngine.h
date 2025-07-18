@@ -169,7 +169,7 @@ namespace FlatEngine
 	// Collision Detection
 	extern std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs;
 	extern void UpdateColliderPairs();
-	extern RayCast* CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, GameObject*), bool b_visible = false);
+	extern RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, Collider*), long parentID, bool b_visible = false);
 
 	extern bool LoadFonts();
 	extern void FreeFonts();

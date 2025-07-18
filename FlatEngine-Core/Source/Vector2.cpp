@@ -1,4 +1,6 @@
 #include "Vector2.h"
+#include "Matrix.h"
+
 #include <cmath>
 
 
@@ -74,34 +76,27 @@ namespace FlatEngine
 
 	Vector2 Vector2::operator*(ImVec2& right)
 	{
-		x *= right.x;
-		y *= right.y;
-
-		return *this;
+		return Vector2(x * right.x, y * right.y);
 	}
 
 	Vector2 Vector2::operator*(Vector2& right)
 	{
-		x *= right.x;
-		y *= right.y;
+		return Vector2(x * right.x, y * right.y);
+	}
 
-		return *this;
+	Vector2 Vector2::operator*(float scalar)
+	{
+		return Vector2(x * scalar, y * scalar);
 	}
 
 	Vector2 Vector2::operator+(const Vector2& right)
 	{
-		x += right.x;
-		y += right.y;
-
-		return *this;
+		return Vector2(x + right.x, y + right.y);
 	}
 
 	Vector2 Vector2::operator-(const Vector2& right)
 	{
-		x -= right.x;
-		y -= right.y;
-
-		return *this;
+		return Vector2(x - right.x, y - right.y);
 	}
 
 	Vector2 Vector2::Normalize()
@@ -164,8 +159,32 @@ namespace FlatEngine
 		return (x * with.x) + (y * with.y);
 	}
 
+	float Vector2::CrossKResult(Vector2 with)
+	{
+		// i   j   k
+		// X1  Y1  0
+		// X2  Y2  0
+		float kComp = (x * with.y) - (with.x * y);
+		return kComp;
+	}
+
 	float Vector2::GetMagnitude()
 	{
 		return std::sqrt((x * x) + (y * y));
+	}
+
+	Vector2 Vector2::Rotate(float degrees)
+	{
+		if (degrees == 0)
+		{
+			return *this;
+		}
+
+		float cosA = cosf(degrees * 2.0f * (float)M_PI / 360.0f);
+		float sinA = sinf(degrees * 2.0f * (float)M_PI / 360.0f);
+
+		Matrix2 rotationMatrix(cosA, -sinA, sinA, cosA);
+
+		return rotationMatrix.LMultiply(*this);
 	}
 }

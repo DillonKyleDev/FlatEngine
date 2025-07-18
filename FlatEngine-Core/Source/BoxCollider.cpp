@@ -235,68 +235,44 @@ namespace FlatEngine
 
 	void BoxCollider::UpdateCorners(float gridStep, Vector2 centerPoint)
 	{
-		float cos_a = cosf(GetRotation() * 2.0f * (float)M_PI / 360.0f); // Convert degrees into radians
-		float sin_a = sinf(GetRotation() * 2.0f * (float)M_PI / 360.0f);
 		Transform* transform = GetParent()->GetTransform();
 		Vector2 scale = transform->GetScale();
-		Vector2 center = GetCenterCoord();
 
-		// Corners without rotation
-		Vector2 topLeft = { m_activeLeft, m_activeTop };
-		Vector2 bottomRight = { m_activeRight, m_activeBottom };
-		Vector2 topRight = { m_activeRight, m_activeTop };
-		Vector2 bottomLeft = { m_activeLeft, m_activeBottom };
+		Vector2 topLeft = Vector2(-m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y).Rotate(GetRotation());
+		Vector2 topRight = Vector2(+m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y).Rotate(GetRotation());
+		Vector2 bottomRight = Vector2(+m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y).Rotate(GetRotation());
+		Vector2 bottomLeft = Vector2(-m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y).Rotate(GetRotation());
 
-		if (/*GetRotation() != 0*/ true)
+		Vector2 position = transform->GetTruePosition();
+		Vector2 newCorners[4] =
 		{
-			// Corners with rotation
-			topLeft = ImRotate(Vector2(-m_activeWidth * gridStep / 2 * scale.x, -m_activeHeight * gridStep / 2 * scale.y), cos_a, sin_a);
-			topRight = ImRotate(Vector2(+m_activeWidth * gridStep / 2 * scale.x, -m_activeHeight * gridStep / 2 * scale.y), cos_a, sin_a);
-			bottomRight = ImRotate(Vector2(+m_activeWidth * gridStep / 2 * scale.x, +m_activeHeight * gridStep / 2 * scale.y), cos_a, sin_a);
-			bottomLeft = ImRotate(Vector2(-m_activeWidth * gridStep / 2 * scale.x, +m_activeHeight * gridStep / 2 * scale.y), cos_a, sin_a);
+			position + topLeft,
+			position + topRight,
+			position + bottomRight,
+			position + bottomLeft
+		};
+		SetCorners(newCorners);
 
-			Vector2 newCorners[4] =
-			{
-				Vector2(center.x + topLeft.x, center.y + topLeft.y),
-				Vector2(center.x + topRight.x, center.y + topRight.y),
-				Vector2(center.x + bottomRight.x, center.y + bottomRight.y),
-				Vector2(center.x + bottomLeft.x, center.y + bottomLeft.y),
-			};
-
-			SetCorners(newCorners);
-		//}
-		//else
-		//{
-		//	Vector2 newCorners[4] =
-		//	{
-		//		topLeft,
-		//		topRight,
-		//		bottomRight,
-		//		bottomLeft
-		//	};
-		//	SetCorners(newCorners);
+		Vector2 nextPosition = position; 
+		if (GetParent()->GetRigidBody() != nullptr)
+		{
+			nextPosition = GetParent()->GetRigidBody()->GetNextPosition();
 		}
+		Vector2 nextCorners[4] =
+		{
+			nextPosition + topLeft,
+			nextPosition + topRight,
+			nextPosition + bottomRight,
+			nextPosition + bottomLeft
+		};
+		SetNextCorners(nextCorners);
+
 
 		// Calculate activeRadius with pythag
 		float rise = std::abs(topLeft.y - GetCenterCoord().y);
 		float run = std::abs(topLeft.x - GetCenterCoord().x);
 		SetActiveRadiusScreen(std::sqrt((rise * rise) + (run * run)));
 		SetActiveRadiusGrid(std::sqrt((rise * rise) + (run * run)) / gridStep);
-
-		// For collision detection
-		Vector2 nextTopLeft = { m_nextActiveLeft, m_nextActiveTop };
-		Vector2 nextTopRight = { m_nextActiveRight, m_nextActiveTop };
-		Vector2 nextBottomRight = { m_nextActiveRight, m_nextActiveBottom };
-		Vector2 nextBottomLeft = { m_nextActiveLeft, m_nextActiveBottom };
-
-		Vector2 newNextCorners[4] =
-		{
-			nextTopLeft,
-			nextTopRight,
-			nextBottomRight,
-			nextBottomLeft
-		};
-		SetNextCorners(newNextCorners);
 	}
 
 	void BoxCollider::UpdateCenter(float gridStep, Vector2 centerPoint)
@@ -334,6 +310,11 @@ namespace FlatEngine
 	Vector2* BoxCollider::GetCorners()
 	{
 		return m_corners;
+	}
+
+	Vector2* BoxCollider::GetNextCorners()
+	{
+		return m_nextCorners;
 	}
 
 	void BoxCollider::SetNormals(Vector2 newNormals[4])

@@ -9,146 +9,6 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 0,
-                    "rotation": 11.600000381469727,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -4.063440322875977,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 4.830018520355225,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "id": 4,
-                    "path": "..\\projects\\ClosedLoop\\images\\sprites\\asteroid\\asteroid_1.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 4.0,
-                    "xScale": 1.0,
-                    "yOffset": 3.5,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "Player (C++)",
-                    "id": 12,
-                    "scriptParameters": [],
-                    "type": "Script"
-                }
-            ],
-            "id": 0,
-            "ignoreTags": [
-                {
-                    "Collectable": false
-                },
-                {
-                    "Enemy": false
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
-            "name": "GameObject(0)",
-            "parent": -1,
-            "prefabName": "",
-            "spawnLocationX": -4.063440322875977,
-            "spawnLocationY": 4.830018520355225,
-            "tags": [
-                {
-                    "Collectable": false
-                },
-                {
-                    "Enemy": false
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ]
-        },
-        {
-            "_isActive": true,
-            "_isPersistant": false,
-            "_isPrefab": false,
-            "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
                     "id": 2,
                     "rotation": 0.0,
                     "type": "Transform",
@@ -206,7 +66,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 1.0,
+                    "angularDrag": 0.9800000190734863,
                     "equilibriumForce": 2.0,
                     "fallingGravity": 1.2000000476837158,
                     "friction": 0.8600000143051147,
@@ -268,6 +128,138 @@
             "prefabName": "",
             "spawnLocationX": 2.640554428100586,
             "spawnLocationY": 3.1527552604675293,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 15,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 2.0588226318359375,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 9.029326438903809,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "PlayerController (Lua)",
+                    "id": 16,
+                    "scriptParameters": [],
+                    "type": "Script"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "airControl": 0.20000000298023224,
+                    "id": 17,
+                    "maxAcceleration": 0.5,
+                    "maxSpeed": 10.0,
+                    "type": "CharacterController"
+                }
+            ],
+            "id": 2,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "name": "BoxShooter",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 2.0588226318359375,
+            "spawnLocationY": 9.029326438903809,
             "tags": [
                 {
                     "Collectable": false

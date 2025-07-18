@@ -509,7 +509,7 @@ namespace FlatGui
 		bool b_isActive = script->IsActive();
 		std::map<std::string, Animation::S_EventFunctionParam> &scriptParams = script->GetScriptParams();
 		long ID = script->GetID();
-		int luaScriptCount = FL::F_luaScriptNames.size();
+		int luaScriptCount = (int)FL::F_luaScriptNames.size();
 		for (std::string CPPScript : FL::F_CPPScriptNames)
 		{
 			allScriptNames.push_back(CPPScript);

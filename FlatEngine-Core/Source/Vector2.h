@@ -22,6 +22,7 @@ namespace FlatEngine
 		Vector2 operator=(ImVec2& toCopy);
 		Vector2 operator*(ImVec2& right);
 		Vector2 operator*(Vector2& right);
+		Vector2 operator*(float scalar);
 		Vector2 operator+(const Vector2& right);
 		Vector2 operator-(const Vector2& right);
 		Vector2 NormalizeCardinal();
@@ -29,6 +30,8 @@ namespace FlatEngine
 		bool operator==(const Vector2& right);
 		bool operator!=(const Vector2& right);
 		float Dot(Vector2 with);
+		float CrossKResult(Vector2 with);
 		float GetMagnitude();
+		Vector2 Rotate(float degrees);
 	};
 }

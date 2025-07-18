@@ -51,7 +51,7 @@ namespace FlatEngine
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);	
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
 
-		bool RemoveComponent(Component* component);
+		bool RemoveComponent(Component* component, long ownerID = -1);
 		bool RemoveTransform(long ownerID);
 		bool RemoveSprite(long ownerID);
 		bool RemoveCamera(long ownerID);

@@ -101,6 +101,11 @@ namespace FlatEngine
 
 	Vector2 Vector2::Normalize()
 	{
+		if (x == 0 && y == 0)
+		{
+			return Vector2(0, 0);
+		}
+
 		float hypotenuse = std::sqrt((x * x) + (y * y));
 
 		x = x / hypotenuse;
@@ -156,7 +161,26 @@ namespace FlatEngine
 
 	float Vector2::Dot(Vector2 with)
 	{
-		return (x * with.x) + (y * with.y);
+		return ((x * with.x) + (y * with.y));
+	}
+
+	float Vector2::AmountProjectedOnto(Vector2 projectedTo)
+	{
+		if (projectedTo.GetMagnitude() == 0)
+		{
+			return 0;
+		}
+		return (((x * projectedTo.x) + (y * projectedTo.y)) / projectedTo.GetMagnitude());
+	}
+
+	Vector2 Vector2::ProjectedOnto(Vector2 projectedTo)
+	{
+		if ((x == 0 && y == 0) || (projectedTo.x == 0 && projectedTo.y == 0))
+		{
+			return Vector2(0, 0);
+		}
+
+		return projectedTo * ((this->Dot(projectedTo)) / (projectedTo.Dot(projectedTo)));
 	}
 
 	float Vector2::CrossKResult(Vector2 with)

@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\ClosedLoop\\prefabs",
             "effectsVolume": 10,
-            "focusedGameObjectID": -1,
+            "focusedGameObjectID": 1,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 33.0,
-            "sceneViewGridStepY": 33.0,
-            "sceneViewScrollingX": 326.0,
-            "sceneViewScrollingY": 443.0
+            "sceneViewGridStepX": 24.0,
+            "sceneViewGridStepY": 24.0,
+            "sceneViewScrollingX": 352.0,
+            "sceneViewScrollingY": 357.0
         }
     ]
 }

@@ -30,6 +30,8 @@ namespace FlatEngine
 		bool operator==(const Vector2& right);
 		bool operator!=(const Vector2& right);
 		float Dot(Vector2 with);
+		float AmountProjectedOnto(Vector2 projectedTo);
+		Vector2 ProjectedOnto(Vector2 projectedTo);
 		float CrossKResult(Vector2 with);
 		float GetMagnitude();
 		Vector2 Rotate(float degrees);

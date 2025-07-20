@@ -9,22 +9,22 @@
             "components": [
                 {
                     "_isActive": true,
-                    "_isCollapsed": false,
+                    "_isCollapsed": true,
                     "id": 18,
-                    "rotation": -39.0,
+                    "rotation": 140.7916259765625,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 7.730838775634766,
+                    "xPos": -0.6427335739135742,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 7.011361122131348,
+                    "yPos": 3.0817291736602783,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
                     "id": 19,
-                    "path": "..\\projects\\ClosedLoop\\images\\sprites\\asteroid\\asteroid_1.png",
+                    "path": "..\\projects\\ClosedLoop\\images\\sprites\\asteroid\\asteroid_3.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
                     "tintColorW": 1.0,
@@ -32,9 +32,9 @@
                     "tintColorY": 1.0,
                     "tintColorZ": 1.0,
                     "type": "Sprite",
-                    "xOffset": 4.0,
+                    "xOffset": 11.0,
                     "xScale": 1.0,
-                    "yOffset": 3.5,
+                    "yOffset": 10.5,
                     "yScale": 1.0
                 },
                 {
@@ -62,11 +62,11 @@
                     "_isStatic": false,
                     "_isTileMapCollider": false,
                     "_showActiveRadius": false,
-                    "activeHeight": 0.875,
+                    "activeHeight": 2.625,
                     "activeLayer": 0,
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
-                    "activeWidth": 1.0,
+                    "activeWidth": 2.75,
                     "id": 21,
                     "type": "BoxCollider"
                 }
@@ -119,8 +119,8 @@
             "name": "Box",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 7.730838775634766,
-            "spawnLocationY": 7.011361122131348,
+            "spawnLocationX": -0.6427335739135742,
+            "spawnLocationY": 3.0817291736602783,
             "tags": [
                 {
                     "Collectable": false

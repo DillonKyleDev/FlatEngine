@@ -189,7 +189,7 @@ namespace FlatGui
 			{
 				transform->SetPosition(Vector2(xPos, yPos));
 			}	
-			if (FL::RenderFloatDragTableRow("##rotation" + std::to_string(ID), "Rotation", rotation, 0.1f, -360, 360))
+			if (FL::RenderFloatDragTableRow("##rotation" + std::to_string(ID), "Rotation", rotation, 0.01f, -FLT_MAX, -FLT_MAX))
 			{
 				transform->SetRotation(rotation);
 			}

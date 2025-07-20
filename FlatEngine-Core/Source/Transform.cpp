@@ -148,7 +148,18 @@ namespace FlatEngine
 
 	void Transform::SetRotation(float newRotation)
 	{
-		m_rotation = newRotation;
+		if (newRotation < 0)
+		{
+			m_rotation = 359.99f;
+		}
+		else if (newRotation > 359.99f)
+		{
+			m_rotation = 0;
+		}
+		else
+		{
+			m_rotation = newRotation;
+		}
 
 		// Just for debugging, not for release, since it would update at least once per frame otherwise
 		if (GetParent()->GetBoxColliders().size())

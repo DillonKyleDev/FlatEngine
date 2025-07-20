@@ -40,6 +40,10 @@ namespace FlatEngine
 		m_b_isSolid = true;
 		m_b_showActiveRadius = false;
 
+		m_b_cornerCollided = false;
+		m_b_sideCollided = false;
+		m_impactNormal = Vector2();
+
 		m_b_isCollidingRight = false;
 		m_b_isCollidingLeft = false;
 		m_b_isCollidingBottom = false;
@@ -137,7 +141,10 @@ namespace FlatEngine
 		{			
 			collider1->SetColliding(true);
 			collider2->SetColliding(true);
-
+			Transform* transform1 = collider1->GetParent()->GetTransform();
+			Transform* transform2 = collider2->GetParent()->GetTransform();
+			RigidBody* rb1 = collider1->GetParent()->GetRigidBody();
+			RigidBody* rb2 = collider2->GetParent()->GetRigidBody();
 			Vector2 box1Direction = collider1->GetParent()->GetRigidBody()->GetVelocity();
 			Vector2 box2Direction = collider2->GetParent()->GetRigidBody()->GetVelocity();
 			Vector2 box1CastDir = box1Direction - box2Direction;
@@ -145,11 +152,88 @@ namespace FlatEngine
 			float nearestVertexDistance = 100;
 			Vector2 box1HitPos = Vector2();
 			Vector2 box2HitPos = Vector2();
+			Vector2 normalToCollision = Vector2();
+			float angleBetween = 0;
+			bool b_collider1Added2 = false;
+			bool b_collider2Added1 = false;
+			float m1 = rb1->GetMass();
+			float m2 = rb2->GetMass();
+			Vector2 v1Initial = rb1->GetVelocity();
+			Vector2 v2Initial = rb2->GetVelocity();
+			Vector2 v1Final = Vector2(); // Final velocity perpendicular to collision point
+			Vector2 v2Final = Vector2();
+
+			v1Final = (v1Initial * ((m1 - m2) / (m1 + m2))) + (v2Initial * 2 * (m2 / (m1 + m2)));
+			v2Final = (v1Initial * 2 * (m1 / (m1 + m2))) - (v2Initial * ((m1 - m2) / (m1 + m2)));
+
+			DrawLineInScene(transform1->GetPosition(), transform1->GetPosition() + v1Final, GetColor("white"), 3);
+			DrawLineInScene(transform2->GetPosition(), transform2->GetPosition() + v2Final, GetColor("white"), 3);
+			rb1->SetPendingForces(Vector2(0, 0));
+			rb2->SetPendingForces(Vector2(0, 0));
+			rb1->AddForce(v1Final, v1Final.GetMagnitude() * 100);
+			rb2->AddForce(v2Final, v2Final.GetMagnitude() * 100);
+
+			if (collider1->m_b_cornerCollided)
+			{
+				Vector2 difference = transform1->GetTruePosition() - transform2->GetTruePosition();
+				Vector2 level = Vector2(1, 0);
+				angleBetween = (float)fmod(((float)std::acos(difference.Dot(level) / difference.GetMagnitude()) * 57.29578) + transform2->GetRotation(), 360);
+				if (difference.Rotate(-transform2->GetRotation()).y < 0)
+				{
+					angleBetween = 360 - angleBetween;
+				}		
+
+				if ((angleBetween >= 0 && angleBetween < 45) || (angleBetween <= 360 && angleBetween >= 315))
+				{
+					normalToCollision = Vector2(1, 0).Rotate(transform2->GetRotation());
+				}
+				else if (angleBetween >= 45 && angleBetween <= 135)
+				{
+					normalToCollision = Vector2(0, 1).Rotate(transform2->GetRotation());
+				}
+				else if (angleBetween > 135 && angleBetween < 225)
+				{
+					normalToCollision = Vector2(-1, 0).Rotate(transform2->GetRotation());
+				}
+				else if (angleBetween >= 225 && angleBetween < 315)
+				{
+					normalToCollision = Vector2(0, -1).Rotate(transform2->GetRotation());
+				}
+			}
+			else if (collider2->m_b_cornerCollided)
+			{
+				Vector2 difference = transform2->GetTruePosition() - transform1->GetTruePosition();
+				Vector2 level = Vector2(1, 0);
+				angleBetween = (float)fmod(((float)std::acos(difference.Dot(level) / difference.GetMagnitude()) * 57.29578) + transform1->GetRotation(), 360);
+				if (difference.Rotate(-transform1->GetRotation()).y < 0)
+				{
+					angleBetween = 360 - angleBetween;
+				}						
+
+				if ((angleBetween >= 0 && angleBetween < 45) || (angleBetween <= 360 && angleBetween >= 315))
+				{
+					normalToCollision = Vector2(1, 0).Rotate(transform1->GetRotation());
+				}
+				else if (angleBetween >= 45 && angleBetween <= 135)
+				{
+					normalToCollision = Vector2(0, 1).Rotate(transform1->GetRotation());
+				}
+				else if (angleBetween > 135 && angleBetween < 225)
+				{
+					normalToCollision = Vector2(-1, 0).Rotate(transform1->GetRotation());
+				}
+				else if (angleBetween >= 225 && angleBetween < 315)
+				{
+					normalToCollision = Vector2(0, -1).Rotate(transform1->GetRotation());
+				}
+			}
 
 			// Add colliding objects
 			if (!collider1->m_b_isComposite)
 			{
-				if (collider1->AddCollidingObject(collider2) && collider1->GetType() == T_BoxCollider)
+				b_collider1Added2 = collider1->AddCollidingObject(collider2);
+
+				if (b_collider1Added2 && collider1->GetType() == T_BoxCollider)
 				{
 					for (int i = 0; i < 4; i++)
 					{
@@ -192,7 +276,8 @@ namespace FlatEngine
 
 			if (!collider2->m_b_isComposite)
 			{
-				if (collider2->AddCollidingObject(collider1) && collider2->GetType() == T_BoxCollider)
+				b_collider2Added1 = collider2->AddCollidingObject(collider1);
+				if (b_collider2Added1 && collider2->GetType() == T_BoxCollider)
 				{		
 					for (int i = 0; i < 4; i++)
 					{
@@ -232,47 +317,57 @@ namespace FlatEngine
 				//compositeCollider->OnActiveCollision(collider2->GetParent(), collider1->GetParent());
 			}
 
-			{
-				DrawLineInScene(box1HitPos, box2HitPos + Vector2(.1f, 0), GetColor("red"), 4);
-				Vector2 normalToCollision = (collider1Center - collider2Center).Normalize();
-				Vector2 projBox1DirOntoNormal = normalToCollision * ((normalToCollision.Dot(box1Direction)) / (normalToCollision.Dot(normalToCollision)));
+		
+			if (b_collider1Added2)
+			{						
+				//rb1->SetPendingForces(Vector2(0, 0));
+				float angularVelocity = rb1->GetAngularVelocity();
+				if (angularVelocity < 0)
+				{
+					angularVelocity *= -1;
+				}
+
+				Vector2 difference = transform1->GetTruePosition() - transform2->GetTruePosition();
+				Vector2 projBox1DirOntoNormal = box1Direction.ProjectedOnto(normalToCollision);				
 				Vector2 flippedProjection = projBox1DirOntoNormal * (-1);
 				Vector2 zHat = box1Direction - projBox1DirOntoNormal;
 				Vector2 mirroredBox1Direction = flippedProjection + zHat;
-				collider1->GetParent()->GetRigidBody()->SetPendingForces(Vector2(0,0));
-
-				// Calculate actual force after impact (conervation of momentum)
-
-
-				// Calculate torque and force... Right now only velocity of each object are the only thing considered, not rotational forces that could move
-				// other objects.. box1Direction and box2Direction are velocities but we also need rotation speed so spinning objects can move other objects
-				Vector2 forceDirection = mirroredBox1Direction * 3;
-				Vector2 impactToCenter = (collider1->GetParent()->GetTransform()->GetTruePosition() - box1HitPos).Normalize();
-				float forceInDirectionOfCenter = forceDirection.Dot(impactToCenter);
-				float torque = forceDirection.GetMagnitude() - forceInDirectionOfCenter;
+				Vector2 bounceDirection = mirroredBox1Direction.Normalize();
+				Vector2 impactToCenter = (transform1->GetTruePosition() - box1HitPos).Normalize();
+				float forceInDirectionOfCenter = bounceDirection.Dot(impactToCenter);
+				float torque = bounceDirection.GetMagnitude() - forceInDirectionOfCenter;
 				float direction = 1;
-				if (forceDirection.CrossKResult(impactToCenter) > 0)
+
+				if (bounceDirection.CrossKResult(impactToCenter) > 0)
 				{
 					direction = -1;
 				}
-				collider1->GetParent()->GetRigidBody()->AddTorque(torque, direction);
-				collider1->GetParent()->GetRigidBody()->AddForce(impactToCenter, forceInDirectionOfCenter);
+
+				bounceDirection = bounceDirection + (difference * angularVelocity);
+
+				//DrawLineInScene(transform1->GetPosition(), transform1->GetPosition() + bounceDirection, GetColor("white"), 1);
+				//collider1->GetParent()->GetRigidBody()->AddTorque(torque, direction);
+				//collider1->GetParent()->GetRigidBody()->AddForce(bounceDirection, 5);
+		
 			}
-			{
-				// Calculate direction vector's reflection across the line of collision separation (where it should bounce to)
-				Vector2 normalToCollision = (collider1Center - collider2Center).Normalize();
-				Vector2 projBox2DirOntoNormal = normalToCollision * ((normalToCollision.Dot(box2Direction)) / (normalToCollision.Dot(normalToCollision)));
+			if (b_collider2Added1)
+			{				
+				Vector2 difference = transform2->GetTruePosition() - transform1->GetTruePosition();
+				Vector2 projBox2DirOntoNormal = box2Direction.ProjectedOnto(normalToCollision);		
+				Vector2 normalizedProj = projBox2DirOntoNormal.Normalize();
+				float angularVelocity = collider2->GetParent()->GetRigidBody()->GetAngularVelocity();
+				float dotProduct = box1Direction.Dot(normalToCollision);
+				if (angularVelocity < 0)
+				{
+					angularVelocity *= -1;
+				}
+
 				Vector2 flippedProjection = projBox2DirOntoNormal * (-1);
 				Vector2 zHat = box2Direction - projBox2DirOntoNormal;
 				Vector2 mirroredBox2Direction = flippedProjection + zHat;
-				collider2->GetParent()->GetRigidBody()->SetPendingForces(Vector2(0,0));
-				//collider2->GetParent()->GetRigidBody()->AddForce
+				//collider2->GetParent()->GetRigidBody()->SetPendingForces(Vector2(0, 0));
 
-				// Calculate actual force after impact (conervation of momentum)
-
-
-				// Calculate torque and force
-				Vector2 forceDirection = mirroredBox2Direction * 3;
+				Vector2 forceDirection = mirroredBox2Direction.Normalize();
 				Vector2 impactToCenter = (collider2->GetParent()->GetTransform()->GetTruePosition() - box2HitPos).Normalize();
 				float forceInDirectionOfCenter = forceDirection.Dot(impactToCenter);
 				float torque = forceDirection.GetMagnitude() - forceInDirectionOfCenter;
@@ -281,8 +376,12 @@ namespace FlatEngine
 				{
 					direction = -1;
 				}
-				collider2->GetParent()->GetRigidBody()->AddTorque(torque, direction);
-				collider2->GetParent()->GetRigidBody()->AddForce(impactToCenter, forceInDirectionOfCenter);
+
+				forceDirection = forceDirection + (difference * angularVelocity);
+
+				//DrawLineInScene(transform2->GetPosition(), transform2->GetPosition() + forceDirection, GetColor("white"), 1);
+				//collider2->GetParent()->GetRigidBody()->AddTorque(torque, direction);
+				//collider2->GetParent()->GetRigidBody()->AddForce(forceDirection, 5);
 			}
 		}
 
@@ -291,9 +390,9 @@ namespace FlatEngine
 
 	bool Collider::IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point, bool& b_sameDirection, bool& b_oppositeDirection)
 	{
-		Vector2 insideVector = Vector2(ending.x - starting.x, ending.y - starting.y);
-		Vector2 testVector = Vector2(point.x - starting.x, point.y - starting.y);
-		float dotProduct = (insideVector.Dot(testVector)) / (insideVector.Dot(insideVector));
+		Vector2 insideVector = ending - starting;
+		Vector2 testVector = point - starting;
+		float dotProduct = (testVector.Dot(insideVector)) / (insideVector.Dot(insideVector));
 		Vector2 projectedVector = Vector2(dotProduct * insideVector.x, dotProduct * insideVector.y);
 
 		if ((projectedVector.x * insideVector.x >= 0) && (projectedVector.y * insideVector.y >= 0))
@@ -1029,6 +1128,13 @@ namespace FlatEngine
 		bool b_sameDirection = false;
 		bool b_oppositeDirection = false;
 
+		std::vector<int> box1CornersInsideBox2 = std::vector<int>();
+		std::vector<int> box2CornersInsideBox1 = std::vector<int>();
+		int box1CornerMatchesCount = 0;
+		int box2CornerMatchesCount = 0;
+		std::vector<int> box1CornersMatches = std::vector<int>();
+		std::vector<int> box2CornersMatches = std::vector<int>();
+
 		Vector2* box1Corners = boxCol1->GetNextCorners();
 		Vector2* box2Corners = boxCol2->GetNextCorners();
 
@@ -1037,6 +1143,7 @@ namespace FlatEngine
 			if (IsPointProjectedInside(box1Corners[0], box1Corners[1], box2Corners[i], b_sameDirection, b_oppositeDirection))
 			{
 				insideCounter++;
+				box2CornersInsideBox1.push_back(i);				
 			}
 		}
 		if (b_sameDirection && b_oppositeDirection)
@@ -1057,6 +1164,14 @@ namespace FlatEngine
 			{
 				if (IsPointProjectedInside(box1Corners[1], box1Corners[2], box2Corners[i], b_sameDirection, b_oppositeDirection))
 				{
+					for (int savedIndex : box2CornersInsideBox1)
+					{
+						if (i == savedIndex)
+						{
+							box2CornerMatchesCount++;
+							box2CornersMatches.push_back(i);
+						}
+					}
 					insideCounter++;
 				}
 			}
@@ -1073,12 +1188,45 @@ namespace FlatEngine
 			b_sameDirection = false;
 			b_oppositeDirection = false;
 		}
+		if (box2CornerMatchesCount == 0)
+		{
+			boxCol2->m_b_cornerCollided = false;
+		}
+		if (box2CornerMatchesCount == 1)
+		{
+			boxCol2->m_b_cornerCollided = true;
+		}
+		else if (box2CornerMatchesCount == 2)
+		{			
+			boxCol2->m_b_cornerCollided = false;
+
+			for (int i = 0; i < 4; i++)
+			{
+				bool b_isAMatch = false;
+				for (int match : box2CornersMatches)
+				{
+					if (match == i)
+					{
+						b_isAMatch = true;
+					}
+				}
+				if (!b_isAMatch)
+				{
+					boxCol1->m_impactNormal = (box2Corners[i] - box2Corners[box2CornersMatches[0]]).Normalize();				
+					boxCol2->m_impactNormal = (box2Corners[i] - box2Corners[box2CornersMatches[0]]).Normalize();
+					boxCol1->m_b_sideCollided = true;
+					boxCol2->m_b_sideCollided = true;
+					break;
+				}
+			}
+		}
 
 		for (int i = 0; i < 4; i++)
 		{
 			if (IsPointProjectedInside(box2Corners[0], box2Corners[1], box1Corners[i], b_sameDirection, b_oppositeDirection))
 			{
 				insideCounter++;
+				box1CornersInsideBox2.push_back(i);
 			}
 		}
 		if (b_sameDirection && b_oppositeDirection)
@@ -1099,7 +1247,48 @@ namespace FlatEngine
 			{
 				if (IsPointProjectedInside(box2Corners[1], box2Corners[2], box1Corners[i], b_sameDirection, b_oppositeDirection))
 				{
+					for (int savedIndex : box1CornersInsideBox2)
+					{
+						if (i == savedIndex)
+						{
+							box1CornerMatchesCount++;
+							box1CornersMatches.push_back(i);
+						}
+					}
+
 					insideCounter++;
+				}
+			}
+			if (box1CornerMatchesCount == 0)
+			{
+				boxCol1->m_b_cornerCollided = false;
+			}
+			if (box1CornerMatchesCount == 1)
+			{
+				boxCol1->m_b_cornerCollided = true;
+			}
+			else if (box1CornerMatchesCount == 2)
+			{
+				boxCol1->m_b_cornerCollided = false;
+
+				for (int i = 0; i < 4; i++)
+				{
+					bool b_isAMatch = false;
+					for (int match : box1CornersMatches)
+					{
+						if (match == i)
+						{
+							b_isAMatch = true;
+						}
+					}
+					if (!b_isAMatch)
+					{
+						boxCol1->m_impactNormal = (box1Corners[i] - box1Corners[box1CornersMatches[0]]).Normalize();
+						boxCol2->m_impactNormal = (box1Corners[i] - box1Corners[box1CornersMatches[0]]).Normalize();
+						boxCol1->m_b_sideCollided = true;
+						boxCol2->m_b_sideCollided = true;
+						break;
+					}
 				}
 			}
 			if (b_sameDirection && b_oppositeDirection)
@@ -1329,6 +1518,10 @@ namespace FlatEngine
 	{
 		ClearCollidingObjects();
 		SetColliding(false);
+
+		m_b_cornerCollided = false;
+		m_b_sideCollided = false;
+		m_impactNormal = Vector2(0, 0);
 
 		m_b_isCollidingRight = false;
 		m_b_isCollidingLeft = false;

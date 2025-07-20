@@ -87,6 +87,10 @@ namespace FlatEngine
 		Vector2 m_topLeftCollidedPosition;
 		Vector2 m_bottomLeftCollidedPosition;
 
+		bool m_b_cornerCollided;
+		Vector2 m_impactNormal;
+		bool m_b_sideCollided;
+
 		float m_rightCollision;
 		float m_leftCollision;
 		float m_bottomCollision;

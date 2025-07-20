@@ -68,7 +68,7 @@ namespace FlatEngine
 
 	void RigidBody::CalculatePhysics()
 	{
-		ApplyCollisionForces();
+		//ApplyCollisionForces();
 		ApplyGravity();
 		ApplyFriction();
 		ApplyEquilibriumForce();
@@ -560,10 +560,13 @@ namespace FlatEngine
 	void RigidBody::AddForce(Vector2 force, float multiplier)
 	{
 		// Normalize the force first, then apply the power factor to the force
-		force.Normalize();
-		Vector2 addedForce = Vector2(force.x * multiplier, force.y * multiplier);
-		m_pendingForces.x += addedForce.x;
-		m_pendingForces.y += addedForce.y;		
+		if (force != Vector2())
+		{
+			force.Normalize();
+			Vector2 addedForce = Vector2(force.x * multiplier, force.y * multiplier);
+			m_pendingForces.x += addedForce.x;
+			m_pendingForces.y += addedForce.y;
+		}
 	}
 
 	void RigidBody::AddTorque(float torque, float multiplier)

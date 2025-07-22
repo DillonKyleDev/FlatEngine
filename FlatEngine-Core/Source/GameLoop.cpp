@@ -6,7 +6,6 @@
 #include "Collider.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
-#include "CompositeCollider.h"
 #include "Transform.h"
 #include "Script.h"
 #include "Button.h"
@@ -400,26 +399,6 @@ namespace FlatEngine
 
 	void GameLoop::HandleCollisions(float gridstep, Vector2 viewportCenter)
 	{		
-		std::map<long, RayCast>& sceneRayCasts = GetLoadedScene()->GetRayCasts();
-		std::vector<long> rayCastsToDelete = std::vector<long>();
-		for (std::map<long, RayCast>::iterator iter = sceneRayCasts.begin(); iter != sceneRayCasts.end();)
-		{
-			if (!iter->second.IsCasting())
-			{
-				rayCastsToDelete.push_back(iter->first);
-			}
-			iter++;
-		}
-		for (long toDelete : rayCastsToDelete)
-		{
-			sceneRayCasts.erase(toDelete);
-		}
-		if (rayCastsToDelete.size())
-		{
-			UpdateColliderPairs();
-			rayCastsToDelete.clear();
-		}
-
 		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
 		for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
 		{
@@ -474,7 +453,7 @@ namespace FlatEngine
 
 			if (collider1 != nullptr && collider2 != nullptr)
 			{
-				if (collider1->GetParent() != nullptr && collider1->GetParent()->IsActive() && collider1->IsActive() && collider2->GetParent() != nullptr && collider2->GetParent()->IsActive() && collider2->IsActive() && (collider1->GetID() != collider2->GetID()) && (!collider1->IsStatic() || !collider2->IsStatic()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
+				if (collider1->GetParent() != nullptr && collider1->GetParent()->IsActive() && collider1->IsActive() && collider2->GetParent() != nullptr && collider2->GetParent()->IsActive() && collider2->IsActive() && (collider1->GetID() != collider2->GetID()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
 				{
 					if (collider1->GetActiveLayer() == collider2->GetActiveLayer())
 					{

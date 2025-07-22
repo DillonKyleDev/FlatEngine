@@ -275,6 +275,7 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
+    <ClInclude Include="Source\Line.h" />
     <ClInclude Include="Source\RayCast.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
@@ -291,7 +292,6 @@
     <ClInclude Include="Source\CircleCollider.h" />
     <ClInclude Include="Source\Collider.h" />
     <ClInclude Include="Source\Component.h" />
-    <ClInclude Include="Source\CompositeCollider.h" />
     <ClInclude Include="Source\ECSManager.h" />
     <ClInclude Include="Source\EntryPoint.h" />
     <ClInclude Include="Source\FlatEngine.h" />
@@ -333,6 +333,7 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
     <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
+    <ClCompile Include="Source\Line.cpp" />
     <ClCompile Include="Source\RayCast.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
@@ -349,7 +350,6 @@
     <ClCompile Include="Source\CircleCollider.cpp" />
     <ClCompile Include="Source\Collider.cpp" />
     <ClCompile Include="Source\Component.cpp" />
-    <ClCompile Include="Source\CompositeCollider.cpp" />
     <ClCompile Include="Source\ECSManager.cpp" />
     <ClCompile Include="Source\FlatEngine.cpp" />
     <ClCompile Include="Source\GameLoop.cpp" />

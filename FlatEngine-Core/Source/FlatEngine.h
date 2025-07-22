@@ -2,7 +2,6 @@
 #include "Application.h"
 #include "Animation.h"
 #include "CPPScript.h"
-#include "RayCast.h"
 
 #include <stdio.h>
 #include <string>
@@ -53,7 +52,9 @@ namespace FlatEngine
 	class Project;
 	class Scene;
 	class Process;
+	class RayCast;
 	class Logger;
+	class Line;
 	class SceneManager;
 	class PrefabManager;
 	class MappingContext;
@@ -142,7 +143,8 @@ namespace FlatEngine
 
 	// Managers
 	extern SceneManager F_SceneManager;
-	extern Logger F_Logger;
+	extern Logger F_Logger;	
+	extern std::vector<Line> F_SceneLines;
 	extern std::vector<Process> F_ProfilerProcesses;
 	extern Sound F_SoundController;
 	extern TTF_Font* F_fontCinzel;
@@ -319,6 +321,8 @@ namespace FlatEngine
 	extern void LogInt(int var, std::string line = "", std::string from = "[C++]");
 	extern void LogVector2(Vector2 vector, std::string line = "", std::string from = "[C++]");
 	extern void LogSeparator();
+	extern void AddLineToScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness);
+	extern void RenderSceneLines();
 	extern void DrawRectangle(Vector2 startingPoint, Vector2 endingPoint, Vector2 canvasP0, Vector2 canvasSize, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawLine(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness);

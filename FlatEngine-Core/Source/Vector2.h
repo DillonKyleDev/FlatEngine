@@ -14,6 +14,8 @@ namespace FlatEngine
 		Vector2(const Vector2& toCopy);
 		~Vector2();
 
+		static float GetAngleBetween(Vector2 vec1, Vector2 vec2);
+
 		float GetX();
 		float GetY();
 		void SetX(float newX);
@@ -34,6 +36,6 @@ namespace FlatEngine
 		Vector2 ProjectedOnto(Vector2 projectedTo);
 		float CrossKResult(Vector2 with);
 		float GetMagnitude();
-		Vector2 Rotate(float degrees);
+		Vector2 Rotate(float degrees);		
 	};
 }

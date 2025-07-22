@@ -20,7 +20,7 @@ namespace FlatEngine
 
 		void CalculatePhysics();
 		void ApplyPhysics(float deltaTime);
-		Vector2 AddVelocity(Vector2 vel);
+		void AddVelocity(Vector2 vel);
 		void ApplyGravity();
 		void AddForce(Vector2 force, float multiplier = 1);
 		void AddTorque(float torque, float multiplier = 1);

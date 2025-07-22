@@ -109,10 +109,6 @@ namespace FlatEngine
 			return "CircleCollider";
 			break;
 
-		case T_CompositeCollider:
-			return "CompositeCollider";
-			break;
-
 		case T_RigidBody:
 			return "RigidBody";
 			break;

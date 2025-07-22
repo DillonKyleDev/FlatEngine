@@ -192,4 +192,9 @@ namespace FlatEngine
 		float angle = atan(slope.y / slope.x) * 180.0f / (float)M_PI;
 		m_rotation = angle;
 	}
+
+	void Transform::Move(Vector2 moveBy)
+	{
+		SetPosition(GetPosition() + moveBy);
+	}
 }

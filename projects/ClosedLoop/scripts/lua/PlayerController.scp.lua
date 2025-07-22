@@ -102,7 +102,7 @@ function handleAttacks()
     if data.mappingContext:Fired("IA_Shoot") then
         local blasterRound
         blasterRound = Instantiate("Box", data.transform:GetPosition())
-        blasterRound:GetRigidBody():AddForce(Vector2:new(1, 1), 10)
+        -- blasterRound:GetRigidBody():AddForce(Vector2:new(1, 1), 10)
         -- blasterRound:GetRigidBody():AddTorque(0, 1)
     end
 end

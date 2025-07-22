@@ -40,6 +40,12 @@ namespace FlatEngine
 	{
 	}
 
+
+	float Vector2::GetAngleBetween(Vector2 vec1, Vector2 vec2)
+	{
+		return (float)fmod(((float)std::acos(vec1.Dot(vec2) / vec2.GetMagnitude()) * 57.29578), 360.0f);
+	}
+
 	float Vector2::GetX()
 	{
 		return x;

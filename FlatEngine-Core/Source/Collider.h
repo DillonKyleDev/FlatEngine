@@ -24,12 +24,11 @@ namespace FlatEngine
 		Collider(long myID = -1, long parentID = -1);
 		~Collider();
 
-		static bool CheckForCollisionBoxCircle(BoxCollider* boxCol, CircleCollider* circleCol);
-		static bool CheckForCollisionBoxBox(BoxCollider* boxCol1, BoxCollider* boxCol2);
-		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2);
+		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions);
 		static bool CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast);
+		static bool CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, std::vector<Vector2>& boxHitPositions, std::vector<Vector2>& circleHitPositions);
 		static bool CheckForCollision(Collider* collider1, Collider* collider2);
-		static bool IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point, bool& b_sameDirection, bool& b_oppositeDirection);
+		static bool IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point);
 
 		virtual void RecalculateBounds() {};
 		virtual void ResetCollisions();		
@@ -67,62 +66,16 @@ namespace FlatEngine
 		Vector2 GetNextCenterCoord();
 		void SetIsContinuous(bool b_continuous);
 		bool IsContinuous();
-		void SetIsStatic(bool b_isStatic);
-		bool IsStatic();
 		void SetIsSolid(bool b_isSolid);
 		bool IsSolid();
 		void SetRotation(float rotation);
 		void UpdateRotation();
 		float GetRotation();
-		void SetIsComposite(bool b_isComposite);
-		bool IsComposite();
 
-		Vector2 m_collidedPosition;
-		Vector2 m_leftCollidedPosition;
-		Vector2 m_rightCollidedPosition;
-		Vector2 m_bottomCollidedPosition;
-		Vector2 m_topCollidedPosition;
-		Vector2 m_topRightCollidedPosition;
-		Vector2 m_bottomRightCollidedPosition;
-		Vector2 m_topLeftCollidedPosition;
-		Vector2 m_bottomLeftCollidedPosition;
-
+		float m_collisionDepth;
 		bool m_b_cornerCollided;
 		Vector2 m_impactNormal;
 		bool m_b_sideCollided;
-
-		float m_rightCollision;
-		float m_leftCollision;
-		float m_bottomCollision;
-		float m_topCollision;
-
-		bool m_b_isCollidingRight;
-		bool m_b_isCollidingLeft;
-		bool m_b_isCollidingBottom;
-		bool m_b_isCollidingTop;
-
-		bool m_b_isCollidingTopRight;
-		bool m_b_isCollidingTopLeft;
-		bool m_b_isCollidingBottomRight;
-		bool m_b_isCollidingBottomLeft;
-
-		bool m_b_rightCollisionStatic;
-		bool m_b_leftCollisionStatic;
-		bool m_b_bottomCollisionStatic;
-		bool m_b_topCollisionStatic;
-		bool m_b_bottomLeftCollisionStatic;
-		bool m_b_bottomRightCollisionStatic;
-		//bool _topLeftCollisionStatic;
-		//bool _topRightCollisionStatic;
-
-		bool m_b_rightCollisionSolid;
-		bool m_b_leftCollisionSolid;
-		bool m_b_bottomCollisionSolid;
-		bool m_b_topCollisionSolid;
-		bool m_b_bottomLeftCollisionSolid;
-		bool m_b_bottomRightCollisionSolid;
-		bool m_b_topLeftCollisionSolid;
-		bool m_b_topRightCollisionSolid;
 
 	private:
 		std::vector<GameObject*> m_collidingObjects;
@@ -141,9 +94,7 @@ namespace FlatEngine
 		int m_activeLayer;
 		bool m_b_isColliding;
 		bool m_b_isContinuous;
-		bool m_b_isStatic;
 		bool m_b_isSolid;
 		bool m_b_showActiveRadius;
-		bool m_b_isComposite;
 	};
 }

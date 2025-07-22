@@ -48,10 +48,8 @@ namespace FlatEngine
 			{ "activeOffsetY", GetActiveOffset().y },
 			{ "_isContinuous", IsContinuous()},
 			{ "_isSolid", IsSolid() },
-			{ "_isStatic", IsStatic() },
 			{ "activeLayer", GetActiveLayer() },
-			{ "_showActiveRadius", GetShowActiveRadius()},
-			{ "_isComposite", IsComposite() },
+			{ "_showActiveRadius", GetShowActiveRadius()}
 		};
 
 		std::string data = jsonData.dump();

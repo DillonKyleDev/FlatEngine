@@ -18,7 +18,6 @@ namespace FlatEngine
 		T_RayCast,
 		T_BoxCollider,
 		T_CircleCollider,
-		T_CompositeCollider,
 		T_RigidBody,
 		T_CharacterController,
 		T_TileMap,

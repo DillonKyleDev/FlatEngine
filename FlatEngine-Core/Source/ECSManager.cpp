@@ -13,7 +13,6 @@
 #include "Text.h"
 #include "RayCast.h"
 #include "Collider.h"
-#include "CompositeCollider.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 #include "RigidBody.h"
@@ -39,7 +38,6 @@ namespace FlatEngine
 		m_Audios = std::map<long, Audio>();
 		m_Texts = std::map<long, Text>();
 		m_RayCasts = std::map<long, RayCast>();
-		m_CompositeColliders = std::map<long, CompositeCollider>();
 		m_BoxColliders = std::map<long, std::map<long, BoxCollider>>();
 		m_CircleColliders = std::map<long, std::map<long, CircleCollider>>();
 		m_RigidBodies = std::map<long, RigidBody>();
@@ -63,7 +61,6 @@ namespace FlatEngine
 		m_Audios.clear();
 		m_Texts.clear();
 		m_RayCasts.clear();
-		m_CompositeColliders.clear();
 		m_BoxColliders.clear();
 		m_CircleColliders.clear();
 		m_RigidBodies.clear();
@@ -129,12 +126,6 @@ namespace FlatEngine
 	{
 		m_RayCasts.emplace(ownerID, rayCast);
 		return &m_RayCasts.at(ownerID);
-	}
-
-	CompositeCollider* ECSManager::AddCompositeCollider(CompositeCollider collider, long ownerID)
-	{
-		m_CompositeColliders.emplace(ownerID, collider);
-		return &m_CompositeColliders.at(ownerID);
 	}
 
 	BoxCollider* ECSManager::AddBoxCollider(BoxCollider collider, long ownerID)
@@ -302,18 +293,6 @@ namespace FlatEngine
 		}
 	}
 
-	CompositeCollider* ECSManager::GetCompositeColliderByOwner(long ownerID)
-	{
-		if (m_CompositeColliders.count(ownerID))
-		{
-			return &m_CompositeColliders.at(ownerID);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
 	std::vector<BoxCollider*> ECSManager::GetBoxCollidersByOwner(long ownerID)
 	{
 		std::vector<BoxCollider*> colliders = std::vector<BoxCollider*>();
@@ -457,10 +436,6 @@ namespace FlatEngine
 		{
 			return RemoveRayCast(ownerID);
 		}
-		else if (component->GetTypeString() == "CompositeCollider")
-		{
-			return RemoveCompositeCollider(ownerID);
-		}
 		else if (component->GetTypeString() == "BoxCollider")
 		{
 			return RemoveBoxCollider(component->GetID(), ownerID);
@@ -589,18 +564,6 @@ namespace FlatEngine
 		if (m_RayCasts.count(ownerID))
 		{
 			m_RayCasts.erase(ownerID);
-			b_success = true;
-			UpdateColliderPairs();
-		}
-		return b_success;
-	}
-
-	bool ECSManager::RemoveCompositeCollider(long ownerID)
-	{
-		bool b_success = false;
-		if (m_CompositeColliders.count(ownerID))
-		{
-			m_CompositeColliders.erase(ownerID);
 			b_success = true;
 			UpdateColliderPairs();
 		}
@@ -739,10 +702,6 @@ namespace FlatEngine
 		{
 			colliders.push_back(&rayCast.second);
 		}
-		for (std::pair<long, CompositeCollider> collider : m_CompositeColliders)
-		{
-			colliders.push_back(&collider.second);
-		}
 		for (std::pair<long, std::map<long, BoxCollider>> colliderMap : m_BoxColliders)
 		{
 			for (std::pair<long, BoxCollider> collider : colliderMap.second)
@@ -762,10 +721,6 @@ namespace FlatEngine
 	std::map<long, RayCast>& ECSManager::GetRayCasts()
 	{
 		return m_RayCasts;
-	}
-	std::map<long, CompositeCollider> &ECSManager::GetCompositeColliders()
-	{
-		return m_CompositeColliders;
 	}
 	std::map<long, std::map<long, BoxCollider>> &ECSManager::GetBoxColliders()
 	{

@@ -1,5 +1,4 @@
 #pragma once
-#include "CompositeCollider.h"
 
 #include <vector>
 #include <map>
@@ -20,10 +19,10 @@ namespace FlatEngine
 	class Collider;
 	class BoxCollider;
 	class CircleCollider;
+	class RayCast;
 	class Animation;
 	class Button;
 	class RigidBody;
-	class CompositeCollider;
 	class CharacterController;
 	class TileMap;
 
@@ -42,7 +41,6 @@ namespace FlatEngine
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);
 		RayCast* AddRayCast(RayCast rayCast, long ownerID);
-		CompositeCollider* AddCompositeCollider(CompositeCollider collider, long ownerID);
 		BoxCollider* AddBoxCollider(BoxCollider collider, long ownerID);
 		CircleCollider* AddCircleCollider(CircleCollider collider, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
@@ -60,7 +58,6 @@ namespace FlatEngine
 		bool RemoveAudio(long ownerID);
 		bool RemoveText(long ownerID);
 		bool RemoveRayCast(long ownerID);
-		bool RemoveCompositeCollider(long ownerID);
 		bool RemoveBoxCollider(long componentID, long ownerID);
 		bool RemoveCircleCollider(long componentID, long ownerID);
 		bool RemoveAnimation(long ownerID);
@@ -76,7 +73,6 @@ namespace FlatEngine
 		Canvas* GetCanvasByOwner(long ownerID);
 		Audio* GetAudioByOwner(long ownerID);
 		Text* GetTextByOwner(long ownerID);
-		CompositeCollider* GetCompositeColliderByOwner(long ownerID);
 		std::vector<BoxCollider*> GetBoxCollidersByOwner(long ownerID);
 		std::vector<CircleCollider*> GetCircleCollidersByOwner(long ownerID);
 		Animation* GetAnimationByOwner(long ownerID);
@@ -97,7 +93,6 @@ namespace FlatEngine
 		std::map<long, Text>& GetTexts();
 		std::vector<Collider*> GetColliders();
 		std::map<long, RayCast>& GetRayCasts();
-		std::map<long, CompositeCollider>& GetCompositeColliders();
 		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
 		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
 		std::map<long, RigidBody>& GetRigidBodies();
@@ -115,7 +110,6 @@ namespace FlatEngine
 		std::map<long, Animation> m_Animations;
 		std::map<long, Audio> m_Audios;
 		std::map<long, Text> m_Texts;		
-		std::map<long, CompositeCollider> m_CompositeColliders;
 		std::map<long, RayCast> m_RayCasts;
 		std::map<long, std::map<long, BoxCollider>> m_BoxColliders;
 		std::map<long, std::map<long, CircleCollider>> m_CircleColliders;

@@ -528,9 +528,6 @@
     <ClInclude Include="Source\Component.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CompositeCollider.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\ECSManager.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -610,6 +607,7 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\RayCast.h" />
+    <ClInclude Include="Source\Line.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -694,9 +692,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Component.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CompositeCollider.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\ECSManager.cpp">
@@ -787,6 +782,7 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\RayCast.cpp" />
+    <ClCompile Include="Source\Line.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Lua\lua54.dll">

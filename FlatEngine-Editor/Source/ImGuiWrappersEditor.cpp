@@ -1522,7 +1522,6 @@ namespace FlatGui
 		bool b_isActive = boxCollider->IsActive();
 		bool b_isColliding = boxCollider->IsColliding();
 		bool b_isContinuous = boxCollider->IsContinuous();
-		bool b_isStatic = boxCollider->IsStatic();
 		bool b_isSolid = boxCollider->IsSolid();
 		bool b_showActiveRadius = boxCollider->GetShowActiveRadius();
 		//bool b_isComposite = boxCollider->IsComposite();
@@ -1596,10 +1595,6 @@ namespace FlatGui
 		{
 			boxCollider->SetIsContinuous(b_isContinuous);
 		}
-		if (FL::RenderCheckbox(" Is Static", b_isStatic))
-		{
-			boxCollider->SetIsStatic(b_isStatic);
-		}
 		if (FL::RenderCheckbox(" Is Solid", b_isSolid))
 		{
 			boxCollider->SetIsSolid(b_isSolid);
@@ -1608,10 +1603,6 @@ namespace FlatGui
 		{
 			boxCollider->SetShowActiveRadius(b_showActiveRadius);
 		}
-		//if (FL::RenderCheckbox(" Is Composite", b_isComposite))
-		//{
-		//	boxCollider->SetIsComposite(b_isComposite);
-		//}
 
 		// Enter Collision Area draw mode for this BoxCollider
 		if (tileMap != nullptr && collisionAreaName != "")
@@ -1634,9 +1625,7 @@ namespace FlatGui
 		bool b_isActive = circleCollider->IsActive();
 		bool b_isColliding = circleCollider->IsColliding();
 		bool b_isContinuous = circleCollider->IsContinuous();
-		bool b_isStatic = circleCollider->IsStatic();
 		//bool b_isSolid = circleCollider->IsSolid();	disabled because circle physics is not sorted out yet		
-		//bool b_isComposite = circleCollider->IsComposite();
 		float activeRadius = circleCollider->GetActiveRadiusGrid();
 		Vector2 activeOffset = circleCollider->GetActiveOffset();
 		int activeLayer = circleCollider->GetActiveLayer();
@@ -1679,10 +1668,6 @@ namespace FlatGui
 		{
 			circleCollider->SetIsContinuous(b_isContinuous);
 		}
-		if (FL::RenderCheckbox(" Is Static", b_isStatic))
-		{
-			circleCollider->SetIsStatic(b_isStatic);
-		}
 		//if (FL::RenderCheckbox(" Is Solid", b_isSolid))
 		//{
 		//	circleCollider->SetIsSolid(b_isSolid);
@@ -1690,11 +1675,7 @@ namespace FlatGui
 		//if (ImGui::IsItemHovered())
 		//{
 		//	FL::RenderTextToolTip("SOLID circle colliders temporarily disabled.");
-		//}
-		//if (FL::RenderCheckbox(" Is Composite", b_isComposite))
-		//{
-		//	circleCollider->SetIsComposite(b_isComposite);
-		//}
+		//
 	}
 
 	void RenderRigidBodyComponent(RigidBody* rigidBody)

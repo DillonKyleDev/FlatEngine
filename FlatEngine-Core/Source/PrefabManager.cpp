@@ -685,12 +685,10 @@ namespace FlatEngine
 						boxCol->SetTileMapCollider(colData->b_tileMapCollider);
 						boxCol->SetActiveDimensions(colData->activeDimensions.x, colData->activeDimensions.y);
 						boxCol->SetActiveOffset(colData->activeOffset);
-						boxCol->SetIsContinuous(colData->b_isContinuous);
-						boxCol->SetIsStatic(colData->b_isStatic);
+						boxCol->SetIsContinuous(colData->b_isContinuous);						
 						boxCol->SetIsSolid(colData->b_isSolid);
 						boxCol->SetActiveLayer(colData->activeLayer);
-						boxCol->SetRotation(colData->rotation);
-						boxCol->SetIsComposite(colData->b_isComposite);
+						boxCol->SetRotation(colData->rotation);						
 					}
 					else if (prefab.components.at(componentID)->type == "CircleCollider")
 					{
@@ -698,16 +696,9 @@ namespace FlatEngine
 						CircleCollider* cirCol = self->AddCircleCollider(-1, colData->b_isActive, colData->b_isCollapsed);
 						cirCol->SetActiveRadiusGrid(colData->activeRadius);
 						cirCol->SetActiveOffset(colData->activeOffset);
-						cirCol->SetIsContinuous(colData->b_isContinuous);
-						cirCol->SetIsStatic(colData->b_isStatic);
+						cirCol->SetIsContinuous(colData->b_isContinuous);						
 						cirCol->SetIsSolid(colData->b_isSolid);
-						cirCol->SetActiveLayer(colData->activeLayer);
-						cirCol->SetIsComposite(colData->b_isComposite);
-					}
-					else if (prefab.components.at(componentID)->type == "CompositeCollider")
-					{
-						/*std::shared_ptr<SpritePrefabData> spriteData = std::static_pointer_cast<SpritePrefabData>(prefab.components.at(componentID));
-						Sprite* sprite = self->AddSprite(-1, spriteData->b_isActive, spriteData->b_isCollapsed);*/
+						cirCol->SetActiveLayer(colData->activeLayer);						
 					}
 					else if (prefab.components.at(componentID)->type == "RigidBody")
 					{

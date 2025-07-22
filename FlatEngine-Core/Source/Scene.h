@@ -14,7 +14,6 @@
 #include "RayCast.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
-#include "CompositeCollider.h"
 #include "RigidBody.h"
 
 #include <vector>
@@ -67,7 +66,6 @@ namespace FlatEngine
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);
 		RayCast* AddRayCast(RayCast rayCast, long ownerID);
-		CompositeCollider* AddCompositeCollider(CompositeCollider collider, long ownerID);
 		BoxCollider* AddBoxCollider(BoxCollider collider, long ownerID);
 		CircleCollider* AddCircleCollider(CircleCollider collider, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
@@ -85,7 +83,6 @@ namespace FlatEngine
 		Canvas* GetCanvasByOwner(long ownerID);
 		Audio* GetAudioByOwner(long ownerID);
 		Text* GetTextByOwner(long ownerID);
-		CompositeCollider* GetCompositeColliderByOwner(long ownerID);
 		std::vector<BoxCollider*> GetBoxCollidersByOwner(long ownerID);
 		std::vector<CircleCollider*> GetCircleCollidersByOwner(long ownerID);
 		Animation* GetAnimationByOwner(long ownerID);
@@ -106,7 +103,6 @@ namespace FlatEngine
 		std::map<long, Text>& GetTexts();
 		std::vector<Collider*> GetColliders();
 		std::map<long, RayCast>& GetRayCasts();
-		std::map<long, CompositeCollider>& GetCompositeColliders();
 		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
 		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
 		std::map<long, RigidBody>& GetRigidBodies();

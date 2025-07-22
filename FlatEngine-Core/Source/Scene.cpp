@@ -12,14 +12,12 @@
 #include "Audio.h"
 #include "Text.h"
 #include "Collider.h"
-#include "CompositeCollider.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 #include "RigidBody.h"
 #include "GameLoop.h"
 #include "ECSManager.h"
 #include "TileMap.h"
-#include "FlatEngine.h"
 
 namespace FL = FlatEngine;
 
@@ -362,12 +360,6 @@ namespace FlatEngine
 		return m_ECSManager.AddRayCast(rayCast, ownerID);
 	}
 
-	CompositeCollider* Scene::AddCompositeCollider(CompositeCollider collider, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(collider.GetID());
-		return m_ECSManager.AddCompositeCollider(collider, ownerID);
-	}
-
 	BoxCollider* Scene::AddBoxCollider(BoxCollider collider, long ownerID)
 	{
 		KeepNextComponentIDUpToDate(collider.GetID());
@@ -457,11 +449,6 @@ namespace FlatEngine
 		return m_ECSManager.GetTextByOwner(ownerID);
 	}
 
-	CompositeCollider* Scene::GetCompositeColliderByOwner(long ownerID)
-	{
-		return m_ECSManager.GetCompositeColliderByOwner(ownerID);
-	}
-
 	std::vector<BoxCollider*> Scene::GetBoxCollidersByOwner(long ownerID)
 	{
 		return m_ECSManager.GetBoxCollidersByOwner(ownerID);
@@ -544,10 +531,6 @@ namespace FlatEngine
 	std::map<long, RayCast>& Scene::GetRayCasts()
 	{
 		return m_ECSManager.GetRayCasts();
-	}
-	std::map<long, CompositeCollider>& Scene::GetCompositeColliders()
-	{
-		return m_ECSManager.GetCompositeColliders();
 	}
 	std::map<long, std::map<long, BoxCollider>>& Scene::GetBoxColliders()
 	{

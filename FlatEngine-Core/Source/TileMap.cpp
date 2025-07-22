@@ -173,13 +173,11 @@ namespace FlatEngine
 		newCollisionArea.SetTileMapCollider(true);
 		newCollisionArea.SetActive(true);
 		newCollisionArea.SetCollapsed(false);
-		newCollisionArea.SetIsContinuous(false);
-		newCollisionArea.SetIsStatic(true);
+		newCollisionArea.SetIsContinuous(false);		
 		newCollisionArea.SetIsSolid(true);
 		newCollisionArea.SetActiveLayer(0);
 		newCollisionArea.SetRotation(0);
-		newCollisionArea.SetShowActiveRadius(false);
-		newCollisionArea.SetIsComposite(false);
+		newCollisionArea.SetShowActiveRadius(false);		
 
 		BoxCollider* colliderPtr = nullptr;
 		

@@ -5,7 +5,6 @@
 #include "Camera.h"
 #include "Text.h"
 #include "Script.h"
-#include "Text.h"
 #include "Animation.h"
 #include "Audio.h"
 #include "Button.h"
@@ -14,7 +13,6 @@
 #include "RigidBody.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
-#include "CompositeCollider.h"
 #include "TileMap.h"
 #include "Project.h"
 
@@ -603,42 +601,6 @@ namespace FlatEngine
 		return colliderPtr;
 	}
 
-	CompositeCollider* GameObject::AddCompositeCollider(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		CompositeCollider compositeCollider = CompositeCollider(nextID, m_ID);
-		compositeCollider.SetActive(b_active);
-		compositeCollider.SetCollapsed(b_collapsed);
-
-		CompositeCollider* colliderPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			colliderPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCompositeCollider(compositeCollider, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			colliderPtr = GetLoadedScene()->AddCompositeCollider(compositeCollider, m_ID);
-		}
-
-		if (colliderPtr != nullptr)
-		{
-			m_components.push_back(colliderPtr);
-		}
-		return colliderPtr;
-	}
-
 	RigidBody* GameObject::AddRigidBody(long ID, bool b_active, bool b_collapsed)
 	{
 		long nextID = ID;
@@ -967,18 +929,6 @@ namespace FlatEngine
 		if (colliders.size() > 0)
 		{
 			return colliders[0];
-		}
-		return nullptr;
-	}
-	CompositeCollider* GameObject::GetCompositeCollider()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCompositeColliderByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCompositeColliderByOwner(m_ID);
 		}
 		return nullptr;
 	}

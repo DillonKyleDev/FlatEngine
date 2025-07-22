@@ -28,6 +28,8 @@ namespace FlatGui
 
 	void Scene_RenderView()
 	{
+		FL::RenderSceneLines();
+
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
 

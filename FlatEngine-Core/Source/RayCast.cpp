@@ -23,6 +23,10 @@ namespace FlatEngine
 		SetParentID(parentID);
 		m_initialPos = initialPos;
 		m_currentPos = m_initialPos;
+		if (direction == Vector2(0, 0))
+		{
+			direction = Vector2(1, 1);
+		}
 		m_direction = direction.Normalize();
 		m_increment = increment;
 		m_length = length;
@@ -35,7 +39,6 @@ namespace FlatEngine
 
 	RayCast::~RayCast()
 	{
-		
 	}
 
 	void RayCast::Cast(bool b_visible)
@@ -44,22 +47,21 @@ namespace FlatEngine
 		m_b_visible = b_visible;
 
 		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
-		for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
+		while (m_b_casting)
 		{
-			for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
+			for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
 			{
-				if (innerIter->second.GetParentID() != this->GetParentID())
+				for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
 				{
-					while (m_b_casting)
+					if (innerIter->second.GetParentID() != this->GetParentID())
 					{
 						CheckForCollisionBoxRayCastSAT(&innerIter->second, this);
-						Update();
 					}
+					innerIter++;
 				}
-
-				innerIter++;
+				outerIter++;
 			}
-			outerIter++;
+			Update();
 		}
 	}
 
@@ -69,10 +71,10 @@ namespace FlatEngine
 		{
 			if (m_b_visible)
 			{
-				DrawLineInScene(m_initialPos, m_currentPos, GetColor("rayCast"), 1);
+				AddLineToScene(m_initialPos, m_currentPos, GetColor("rayCast"), 1);
 			}
 
-			Vector2 difference = Vector2(m_currentPos.x - m_initialPos.x, m_currentPos.y - m_initialPos.y);
+			Vector2 difference = m_currentPos - m_initialPos;
 
 			if (difference.GetMagnitude() < m_length)
 			{
@@ -94,12 +96,8 @@ namespace FlatEngine
 	void RayCast::OnHit(Collider* collidedWith)
 	{
 		m_b_casting = false;
-
-		if (AddCollidingObject(collidedWith))
-		{
-			m_callback(this, collidedWith);
-			m_collidedWith = collidedWith;
-		}
+		m_callback(this, collidedWith);
+		m_collidedWith = collidedWith;		
 	}
 
 	Vector2 RayCast::GetPoint()

@@ -2,6 +2,7 @@
 #include "WindowManager.h"
 #include "PrefabManager.h"
 #include "Logger.h"
+#include "Line.h"
 #include "SceneManager.h"
 #include "Vector2.h"
 #include "Vector4.h"
@@ -11,6 +12,7 @@
 #include "Scene.h"
 #include "Animation.h"
 #include "CPPScript.h"
+#include "RayCast.h"
 
 #include <fstream>
 #include <string>
@@ -67,6 +69,7 @@ namespace FlatEngine
 
 	// Managers
 	Logger F_Logger = Logger();
+	std::vector<Line> F_SceneLines = std::vector<Line>();
 	SceneManager F_SceneManager = SceneManager();	
 	Sound F_SoundController = Sound();
 	std::vector<MappingContext> F_MappingContexts = std::vector<MappingContext>();
@@ -2149,6 +2152,20 @@ namespace FlatEngine
 		F_Logger.LogSeparator();
 	}
 
+	void AddLineToScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness)
+	{
+		Line newLine(startingPoint, endingPoint, color, thickness);
+		F_SceneLines.push_back(newLine);
+	}
+
+	void RenderSceneLines()
+	{
+		for (Line line : F_SceneLines)
+		{
+			DrawLineInScene(line.m_start, line.m_end, line.m_color, line.m_thickness);
+		}
+	}
+
 	void DrawRectangle(Vector2 startingPoint, Vector2 endPoint, Vector2 canvas_p0, Vector2 canvas_sz, Vector4 color, float thickness, ImDrawList* drawList)
 	{
 		if (startingPoint.x < canvas_p0.x)
@@ -3239,24 +3256,20 @@ namespace FlatEngine
 								newBoxCollider->SetTileMapCollider(false);
 								newBoxCollider->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
 								newBoxCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-								newBoxCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));
-								newBoxCollider->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
+								newBoxCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));								
 								newBoxCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
 								newBoxCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
 								newBoxCollider->SetRotation(objectRotation);
-								newBoxCollider->SetShowActiveRadius(CheckJsonBool(componentJson, "_showActiveRadius", objectName));
-								newBoxCollider->SetIsComposite(CheckJsonBool(componentJson, "_isComposite", objectName));
+								newBoxCollider->SetShowActiveRadius(CheckJsonBool(componentJson, "_showActiveRadius", objectName));								
 							}
 							else if (type == "CircleCollider")
 							{								
 								CircleCollider* newCircleCollider = loadedObject->AddCircleCollider(id, b_isActive, b_isCollapsed);
 								newCircleCollider->SetActiveRadiusGrid(CheckJsonFloat(componentJson, "activeRadius", objectName));
 								newCircleCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-								newCircleCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));
-								newCircleCollider->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
+								newCircleCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));								
 								newCircleCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
-								newCircleCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
-								newCircleCollider->SetIsComposite(CheckJsonBool(componentJson, "_isComposite", objectName));
+								newCircleCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));								
 
 							}
 							else if (type == "RigidBody")

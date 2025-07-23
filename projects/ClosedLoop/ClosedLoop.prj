@@ -2,7 +2,7 @@
     "Project Properties": [
         {
             "_autoSave": true,
-            "_clearLogBuffer": true,
+            "_clearLogBuffer": false,
             "_fullscreen": false,
             "_showAnimationPreview": false,
             "_showAnimator": false,
@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\colors",
             "effectsVolume": 10,
-            "focusedGameObjectID": 5,
+            "focusedGameObjectID": 3,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 24.0,
-            "sceneViewGridStepY": 24.0,
-            "sceneViewScrollingX": 613.0,
-            "sceneViewScrollingY": 35.0
+            "sceneViewGridStepX": 5.0,
+            "sceneViewGridStepY": 5.0,
+            "sceneViewScrollingX": 445.0,
+            "sceneViewScrollingY": 385.0
         }
     ]
 }

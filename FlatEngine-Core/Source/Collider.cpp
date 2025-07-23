@@ -51,7 +51,7 @@ namespace FlatEngine
 		bool b_colliding = false;
 		Vector2 collider1Center = collider1->GetCenterGrid();
 		Vector2 collider2Center = collider2->GetCenterGrid();
-		float depth = 100000;
+		float depth = 100;
 		Vector2 collisionNormal = Vector2(0, 0);
 		std::vector<Vector2> box1HitPositions = std::vector<Vector2>();
 		std::vector<Vector2> box2HitPositions = std::vector<Vector2>();
@@ -68,7 +68,7 @@ namespace FlatEngine
 				BoxCollider* boxCol1 = static_cast<BoxCollider*>(collider1);
 				BoxCollider* boxCol2 = static_cast<BoxCollider*>(collider2);
 
-				b_colliding = CheckForCollisionBoxBoxSAT(boxCol1, boxCol2, box1HitPositions, box2HitPositions);
+				b_colliding = CheckForCollisionBoxBoxSAT(boxCol1, boxCol2, box1HitPositions, box2HitPositions, collisionNormal, depth);
 			}
 			else if (collider1->GetTypeString() == "CircleCollider" && collider2->GetTypeString() == "BoxCollider")
 			{
@@ -93,24 +93,14 @@ namespace FlatEngine
 
 		if (b_colliding)
 		{			
-			collider1->SetColliding(b_colliding);
-			collider2->SetColliding(b_colliding);
+			collider1->SetColliding(true);
+			collider2->SetColliding(true);
 			bool b_collider1Added2 = collider1->AddCollidingObject(collider2);
 			bool b_collider2Added1 = collider2->AddCollidingObject(collider1);
 			Transform* transform1 = collider1->GetParent()->GetTransform();
 			Transform* transform2 = collider2->GetParent()->GetTransform();
 			RigidBody* rb1 = collider1->GetParent()->GetRigidBody();
 			RigidBody* rb2 = collider2->GetParent()->GetRigidBody();
-			rb1->SetPendingForces(Vector2(0, 0));
-			rb2->SetPendingForces(Vector2(0, 0));
-			//Vector2 box1Direction = collider1->GetParent()->GetRigidBody()->GetVelocity();
-			//Vector2 box2Direction = collider2->GetParent()->GetRigidBody()->GetVelocity();
-			//Vector2 box1CastDir = box1Direction - box2Direction;
-			//Vector2 box2CastDir = box2Direction - box1Direction;
-			//float nearestVertexDistance = 100;
-			Vector2 normalToCollision = Vector2();
-			float distanceToEdge = 0;
-			float angleBetween = 0;
 			Vector2 v1Initial = rb1->GetVelocity();
 			Vector2 v2Initial = rb2->GetVelocity();
 			Vector2 v1Final = Vector2();
@@ -119,184 +109,6 @@ namespace FlatEngine
 			float m2 = rb2->GetMass();
 			v1Final = (v1Initial * ((m1 - m2) / (m1 + m2))) + (v2Initial * 2 * (m2 / (m1 + m2)));
 			v2Final = (v1Initial * 2 * (m1 / (m1 + m2))) - (v2Initial * ((m1 - m2) / (m1 + m2)));			
-
-			Vector2 sideColliderScale;
-			Collider* otherCol;
-			Vector2 difference;
-			float otherColRotation = 0;
-
-			if (collider1->m_b_cornerCollided)
-			{
-				otherCol = collider2;
-				sideColliderScale = transform2->GetScale();				
-				difference = transform1->GetTruePosition() - transform2->GetTruePosition();
-				otherColRotation = transform2->GetRotation();
-			}
-			else if (collider2->m_b_cornerCollided)
-			{
-				otherCol = collider1;
-				sideColliderScale = transform1->GetScale();				
-				difference = transform2->GetTruePosition() - transform1->GetTruePosition();
-				otherColRotation = transform1->GetRotation();
-			}
-			if (collider1->m_b_sideCollided && box1HitPositions.size() >= 2) // This object had two corners collide with another object
-			{
-				otherCol = collider1;
-				sideColliderScale = transform2->GetScale();
-				otherColRotation = transform1->GetRotation();
-				difference = transform1->GetTruePosition() - transform2->GetTruePosition();
-				Vector2 parallelToCollision = box1HitPositions[0] - box1HitPositions[1];
-				normalToCollision = Vector2(parallelToCollision.x * (-1), parallelToCollision.y).Normalize();					
-			}
-			else if (collider2->m_b_sideCollided && box2HitPositions.size() >= 2)
-			{
-				otherCol = collider2;
-				sideColliderScale = transform1->GetScale();
-				otherColRotation = transform2->GetRotation();
-				difference = transform2->GetTruePosition() - transform1->GetTruePosition();
-				Vector2 parallelToCollision = box2HitPositions[0] - box2HitPositions[1];
-				normalToCollision = Vector2(parallelToCollision.x * (-1), parallelToCollision.y).Normalize();
-			}
-
-			Vector2 level = Vector2(1, 0).Rotate(otherColRotation);
-			angleBetween = Vector2::GetAngleBetween(level, difference);
-			if (difference.Rotate(-otherColRotation).y < 0)
-			{
-				if (angleBetween < 0)
-				{
-					angleBetween = 360 + angleBetween;
-				}
-				else
-				{
-					angleBetween = 360 - angleBetween;
-				}
-			}
-
-			float angleToFirstCorner = Vector2::GetAngleBetween(Vector2(1, 0), sideColliderScale);
-
-			if ((angleBetween >= 0 && angleBetween < angleToFirstCorner) || (angleBetween <= 360 && angleBetween >= 360 - angleToFirstCorner))
-			{
-				normalToCollision = Vector2(1, 0).Rotate(otherColRotation);
-				distanceToEdge = static_cast<BoxCollider*>(otherCol)->GetActiveWidth() * sideColliderScale.x / 2;
-			}
-			else if (angleBetween >= angleToFirstCorner && angleBetween <= 180 - angleToFirstCorner)
-			{
-				normalToCollision = Vector2(0, 1).Rotate(otherColRotation);
-				distanceToEdge = static_cast<BoxCollider*>(otherCol)->GetActiveHeight() * sideColliderScale.y / 2;
-			}
-			else if (angleBetween > 180 - angleToFirstCorner && angleBetween < 180 + angleToFirstCorner)
-			{
-				normalToCollision = Vector2(-1, 0).Rotate(otherColRotation);
-				distanceToEdge = static_cast<BoxCollider*>(otherCol)->GetActiveWidth() * sideColliderScale.x / 2;
-			}
-			else if (angleBetween >= 180 + angleToFirstCorner && angleBetween < 360 - angleToFirstCorner)
-			{
-				normalToCollision = Vector2(0, -1).Rotate(otherColRotation);
-				distanceToEdge = static_cast<BoxCollider*>(otherCol)->GetActiveHeight() * sideColliderScale.y / 2;
-			}
-			
-
-
-			//if (b_collider1Added2 && collider1->GetType() == T_BoxCollider)
-			//{
-			//	for (int i = 0; i < 4; i++)
-			//	{
-			//		Vector2 cornerCastFrom = static_cast<BoxCollider*>(collider1)->GetCorners()[i];
-
-			//		RayCast rayCast = CastRay(cornerCastFrom, box1CastDir, 0.1f, 1, BoxBoxRayCastCallback, collider1->GetParentID());
-			//		Vector2 collisionPoint = rayCast.GetPoint();
-			//		Collider* collidedWith = rayCast.GetCollidedWith();
-
-			//		if (collidedWith != nullptr && collidedWith->GetID() == collider2->GetID())
-			//		{
-			//			float distance = (collisionPoint - cornerCastFrom).GetMagnitude();
-			//			if (distance < nearestVertexDistance && distance != nearestVertexDistance)
-			//			{
-			//				nearestVertexDistance = distance;
-			//				box1HitPositions.clear();
-			//				box1HitPositions.push_back(collisionPoint);
-			//				box2HitPositions.clear();
-			//				box2HitPositions.push_back(cornerCastFrom);
-			//			}
-			//			else if (distance == nearestVertexDistance)
-			//			{
-			//				nearestVertexDistance = distance;
-			//				box1HitPositions.push_back(collisionPoint);
-			//				box2HitPositions.push_back(cornerCastFrom);
-			//			}
-			//		}						
-			//	}
-			//}
-
-			// For Collider events - Fire OnActiveCollision while there is a collision happening
-			if (collider1->GetType() == ComponentTypes::T_BoxCollider)
-			{
-				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
-			}
-			else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
-			{
-				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
-			}
-
-
-			//if (b_collider2Added1 && collider2->GetType() == T_BoxCollider)
-			//{		
-			//	for (int i = 0; i < 4; i++)
-			//	{
-			//		Vector2 cornerCastFrom = static_cast<BoxCollider*>(collider2)->GetCorners()[i];
-
-			//		RayCast rayCast = CastRay(cornerCastFrom, box2CastDir, 0.01f, 5, BoxBoxRayCastCallback, collider2->GetParentID());
-			//		Vector2 collisionPoint = rayCast.GetPoint();
-			//		Collider* collidedWith = rayCast.GetCollidedWith();
-	
-			//		if (collidedWith != nullptr && collidedWith->GetID() == collider1->GetID())
-			//		{								
-			//			float distance = (collisionPoint - cornerCastFrom).GetMagnitude();
-			//			if (distance < nearestVertexDistance && distance != nearestVertexDistance)
-			//			{
-			//				nearestVertexDistance = distance;
-			//				box1HitPositions.clear();
-			//				box1HitPositions.push_back(collisionPoint);
-			//				box2HitPositions.clear();
-			//				box2HitPositions.push_back(cornerCastFrom);
-			//			}
-			//			else if (distance == nearestVertexDistance)
-			//			{
-			//				nearestVertexDistance = distance;
-			//				box1HitPositions.push_back(collisionPoint);
-			//				box2HitPositions.push_back(cornerCastFrom);
-			//			}
-			//		}
-			//	}
-			//}				
-
-			// For Collider events - Fire OnActiveCollision while there is a collision happening
-			if (collider2->GetType() == ComponentTypes::T_BoxCollider)
-			{
-				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
-			}
-			else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
-			{
-				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
-			}
-
-			if (box1HitPositions.size())
-			{
-				Vector2 edgeCoord = transform2->GetTruePosition() + (normalToCollision * distanceToEdge);
-				Vector2 edgeToCenter = edgeCoord - transform2->GetTruePosition();
-				Vector2 edgeToPoint = box1HitPositions.back() - edgeCoord;
-				Vector2 pointProjected = edgeToPoint.ProjectedOnto(edgeToCenter);
-				depth = pointProjected.GetMagnitude();	
-			}
-			else if (box2HitPositions.size())
-			{
-				Vector2 edgeCoord = transform1->GetTruePosition() + (normalToCollision * distanceToEdge);
-				Vector2 edgeToCenter = edgeCoord - transform1->GetTruePosition();
-				Vector2 edgeToPoint = box2HitPositions.back() - edgeCoord;
-				Vector2 pointProjected = edgeToPoint.ProjectedOnto(edgeToCenter);
-				depth = pointProjected.GetMagnitude();								
-			}
-
 
 			if (!rb1->IsStatic())
 			{
@@ -307,13 +119,13 @@ namespace FlatEngine
 				}
 
 				Vector2 difference = transform1->GetTruePosition() - transform2->GetTruePosition();
-				if (difference.Dot(normalToCollision) > 0)
+				if (difference.Dot(collisionNormal) > 0)
 				{
-					transform1->Move(normalToCollision * depth * distribution);
+					transform1->Move(collisionNormal * depth * distribution);
 				}
 				else
 				{
-					transform1->Move(normalToCollision * depth * -distribution);
+					transform1->Move(collisionNormal * depth * -distribution);
 				}
 			}
 
@@ -326,13 +138,13 @@ namespace FlatEngine
 				}
 
 				Vector2 difference = transform2->GetTruePosition() - transform1->GetTruePosition();
-				if (difference.Dot(normalToCollision) > 0)
+				if (difference.Dot(collisionNormal) > 0)
 				{
-					transform2->Move(normalToCollision * depth * distribution);
+					transform2->Move(collisionNormal * depth * distribution);
 				}
 				else
 				{
-					transform2->Move(normalToCollision * depth * -distribution);
+					transform2->Move(collisionNormal * depth * -distribution);
 				}
 			}
 		
@@ -357,7 +169,7 @@ namespace FlatEngine
 				}
 			}
 
-			if (b_collider2Added1)
+			if (b_collider2Added1 && box2HitPositions.size())
 			{			
 				for (Vector2 box2Hit : box2HitPositions)
 				{
@@ -379,7 +191,42 @@ namespace FlatEngine
 			}
 		}
 
+		// For Collider events - Fire OnActiveCollision while there is a collision happening
+		if (collider1->GetType() == ComponentTypes::T_BoxCollider)
+		{
+			CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
+		}
+		else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
+		{
+			CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
+		}
+		// For Collider events - Fire OnActiveCollision while there is a collision happening
+		if (collider2->GetType() == ComponentTypes::T_BoxCollider)
+		{
+			CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
+		}
+		else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
+		{
+			CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
+		}
+
 		return b_colliding;
+	}
+
+	double Collider::GetDistanceToLine(Vector2 starting, Vector2 ending, Vector2 point)
+	{
+		Vector2 insideVector = ending - starting;
+		Vector2 testVector = point - starting;
+		double dotOverDot = ((double)testVector.Dot(insideVector)) / ((double)insideVector.Dot(insideVector));
+		Vector2 projectedVector = insideVector * dotOverDot;
+
+		double distance = (double)(projectedVector - testVector).GetMagnitude();
+		if (distance < 0.001)
+		{
+			distance = 0.001;
+		}
+
+		return distance;
 	}
 
 	bool Collider::IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point)
@@ -387,39 +234,27 @@ namespace FlatEngine
 		Vector2 insideVector = ending - starting;
 		Vector2 testVector = point - starting;
 		float dotOverDot = (testVector.Dot(insideVector)) / (insideVector.Dot(insideVector));
-		Vector2 projectedVector = Vector2(dotOverDot * insideVector.x, dotOverDot * insideVector.y);
-
+		Vector2 projectedVector = insideVector * dotOverDot;
 		bool b_projectedInside = (projectedVector.GetMagnitude() <= insideVector.GetMagnitude() && (projectedVector.x * insideVector.x >= 0) && (projectedVector.y * insideVector.y >= 0));
-		
-		//if (b_projectedInside && (projectedVector - testVector).GetMagnitude() < depth)
-		//{			
-		//	collisionNormal = (projectedVector - testVector);
-		//	depth = collisionNormal.GetMagnitude();
-		//	collisionNormal.Normalize();
-		//}
 
 		return b_projectedInside;
 	}
 
-	bool Collider::CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions)
+	bool Collider::CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions, Vector2& collisionNormal, float& depth)
 	{
 		std::vector<int> box1CornersInsideBox2 = std::vector<int>();
 		std::vector<int> box2CornersInsideBox1 = std::vector<int>();
-		std::vector<int> box1CornersMatches = std::vector<int>();
-		std::vector<int> box2CornersMatches = std::vector<int>();
-		int box1CornerMatchesCount = 0;
-		int box2CornerMatchesCount = 0;
 		Vector2* box1Corners = boxCol1->GetNextCorners();
 		Vector2* box2Corners = boxCol2->GetNextCorners();
-		
+
+
 		for (int i = 0; i < 4; i++)
 		{
 			if (IsPointProjectedInside(box1Corners[0], box1Corners[1], box2Corners[i]))
-			{  
-				box2CornersInsideBox1.push_back(i);				
+			{
+				box2CornersInsideBox1.push_back(i);
 			}
 		}
-
 		if (box2CornersInsideBox1.size())
 		{
 			for (int i = 0; i < 4; i++)
@@ -430,44 +265,100 @@ namespace FlatEngine
 					{
 						if (i == savedIndex)
 						{
-							box2CornerMatchesCount++;
-							box2CornersMatches.push_back(i);
 							box2HitPositions.push_back(box2Corners[i]);
 						}
 					}
 				}
 			}
-		}
-		if (box2CornerMatchesCount == 0)
-		{
-			boxCol2->m_b_cornerCollided = false;
-		}
-		if (box2CornerMatchesCount == 1)
-		{
-			boxCol2->m_b_cornerCollided = true;
-		}
-		else if (box2CornerMatchesCount == 2)
-		{			
-			boxCol2->m_b_cornerCollided = false;
-
-			for (int i = 0; i < 4; i++)
+			if (box2HitPositions.size() == 0)
 			{
-				bool b_isAMatch = false;
-				for (int match : box2CornersMatches)
+				boxCol2->m_b_cornerCollided = false;
+			}
+			else if (box2HitPositions.size() == 1)
+			{
+				boxCol2->m_b_cornerCollided = true;
+				// Test each point that we know is inside the other collider to see what edge it is closest to, then find the normal using that vector.
+				int indexOfClosestEdge = 0;
+				int nextIndex = 0;
+				for (int i = 0; i < 4; i++)
 				{
-					if (match == i)
+					int nextCornerIndex = i + 1;
+					if (i == 3)
 					{
-						b_isAMatch = true;
+						nextCornerIndex = 0;
+					}
+
+					float distance = GetDistanceToLine(box1Corners[i], box1Corners[nextCornerIndex], box2HitPositions.back());
+
+					if (distance < depth)
+					{						
+						depth = distance;
+						indexOfClosestEdge = i;
+						nextIndex = nextCornerIndex;
 					}
 				}
-				if (!b_isAMatch)
-				{			
-					boxCol2->m_impactNormal = (box2Corners[i] - box2Corners[box2CornersMatches[0]]).Normalize();
-					boxCol2->m_b_sideCollided = true;
-					break;
+
+				if (depth > 1)
+				{
+					depth = 1;
 				}
+				Vector2 parallelToCollision = box1Corners[indexOfClosestEdge] - box1Corners[nextIndex];
+				collisionNormal = parallelToCollision.Rotate(90).Normalize();
+				return true;
+			}
+			else if (box2HitPositions.size() == 2)
+			{
+				boxCol2->m_b_cornerCollided = false;
+				boxCol2->m_b_sideCollided = true;
+				std::vector<double> point1Distances = std::vector<double>();
+				std::vector<double> point2Distances = std::vector<double>();
+				double closestDistance = 100;
+				double smallestDistanceDifference = 0.01;
+
+				for (int i = 0; i < 4; i++)
+				{
+					int nextCornerIndex = i + 1;
+					if (i == 3)
+					{
+						nextCornerIndex = 0;
+					}
+
+					point1Distances.push_back(GetDistanceToLine(box1Corners[i], box1Corners[nextCornerIndex], box2HitPositions[0]));
+					point2Distances.push_back(GetDistanceToLine(box1Corners[i], box1Corners[nextCornerIndex], box2HitPositions[1]));
+				}
+
+				// if 2 points are colliding, it's likely they are close to the same distance away from the line of collision
+				for (double distance1 : point1Distances)
+				{
+					for (double distance2 : point2Distances)
+					{
+						double difference = distance1 - distance2;
+
+						if (difference < 0)
+						{
+							difference *= -1;
+						}
+
+						if (difference <= smallestDistanceDifference && distance1 < closestDistance)
+						{
+							smallestDistanceDifference = difference;
+							closestDistance = distance1;
+						}
+					}
+				}
+
+				depth = closestDistance;
+				Vector2 parallelToCollision = box2HitPositions[0] - box2HitPositions[1];
+				collisionNormal = parallelToCollision.Rotate(90).Normalize();
+				if (depth > 1)
+				{
+					depth = 1;
+				}
+				return true;
 			}
 		}
+		
+	
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -476,7 +367,6 @@ namespace FlatEngine
 				box1CornersInsideBox2.push_back(i);
 			}
 		}
-
 		if (box1CornersInsideBox2.size())
 		{
 			for (int i = 0; i < 4; i++)
@@ -487,44 +377,96 @@ namespace FlatEngine
 					{
 						if (i == savedIndex)
 						{
-							box1CornerMatchesCount++;
-							box1CornersMatches.push_back(i);
 							box1HitPositions.push_back(box1Corners[i]);
 						}
 					}
 				}
 			}
-			if (box1CornerMatchesCount == 0)
+			if (box1HitPositions.size() == 0)
 			{
 				boxCol1->m_b_cornerCollided = false;
 			}
-			if (box1CornerMatchesCount == 1)
+			if (box1HitPositions.size() == 1)
 			{
 				boxCol1->m_b_cornerCollided = true;
+				// Test each point that we know is inside the other collider to see what edge it is closest to, then find the normal using that vector.
+				int indexOfClosestEdge = 0;
+				int nextIndex = 0;
+				for (int i = 0; i < 4; i++)
+				{
+					int nextCornerIndex = i + 1;
+					if (i == 3)
+					{
+						nextCornerIndex = 0;
+					}
+
+					float distance = GetDistanceToLine(box2Corners[i], box2Corners[nextCornerIndex], box1HitPositions.back());
+
+					if (distance <= depth)
+					{
+						depth = distance;
+						indexOfClosestEdge = i;
+						nextIndex = nextCornerIndex;
+					}
+				}
+
+				if (depth > 1)
+				{
+					depth = 1;
+				}
+				Vector2 parallelToCollision = box2Corners[indexOfClosestEdge] - box2Corners[nextIndex];
+				collisionNormal = parallelToCollision.Rotate(90).Normalize();
 			}
-			else if (box1CornerMatchesCount == 2)
+			else if (box1HitPositions.size() == 2)
 			{
-				boxCol1->m_b_cornerCollided = false;				
+				boxCol1->m_b_cornerCollided = false;
+				boxCol1->m_b_sideCollided = true;
+				std::vector<double> point1Distances = std::vector<double>();
+				std::vector<double> point2Distances = std::vector<double>();
+				double closestDistance = 100;
+				double smallestDistanceDifference = 0.01;
 
 				for (int i = 0; i < 4; i++)
 				{
-					bool b_isAMatch = false;
-					for (int match : box1CornersMatches)
+					int nextCornerIndex = i + 1;
+					if (i == 3)
 					{
-						if (match == i)
+						nextCornerIndex = 0;
+					}
+
+					point1Distances.push_back(GetDistanceToLine(box2Corners[i], box2Corners[nextCornerIndex], box1HitPositions[0]));
+					point2Distances.push_back(GetDistanceToLine(box2Corners[i], box2Corners[nextCornerIndex], box1HitPositions[1]));
+				}
+
+				// if 2 points are colliding, it's likely they are close to the same distance away from the line of collision
+				for (double distance1 : point1Distances)
+				{
+					for (double distance2 : point2Distances)
+					{
+						double difference = distance1 - distance2;
+
+						if (difference < 0)
 						{
-							b_isAMatch = true;
+							difference *= -1;
+						}
+
+						if (difference <= smallestDistanceDifference && distance1 < closestDistance)
+						{
+							smallestDistanceDifference = difference;
+							closestDistance = distance1;
 						}
 					}
-					if (!b_isAMatch)
-					{
-						boxCol1->m_impactNormal = (box1Corners[i] - box1Corners[box1CornersMatches[0]]).Normalize();
-						boxCol1->m_b_sideCollided = true;
-						break;
-					}
 				}
+
+				depth = closestDistance;
+				if (depth > 1)
+				{
+					depth = 1;
+				}
+				Vector2 parallelToCollision = box1HitPositions[0] - box1HitPositions[1];
+				collisionNormal = parallelToCollision.Rotate(90).Normalize();
 			}
-		}
+		}		
 
 		return (box1HitPositions.size() || box2HitPositions.size());
 	}

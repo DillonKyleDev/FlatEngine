@@ -24,11 +24,12 @@ namespace FlatEngine
 		Collider(long myID = -1, long parentID = -1);
 		~Collider();
 
-		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions);
+		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions, Vector2& collisionNormal, float& depth);
 		static bool CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast);
 		static bool CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, std::vector<Vector2>& boxHitPositions, std::vector<Vector2>& circleHitPositions);
 		static bool CheckForCollision(Collider* collider1, Collider* collider2);
 		static bool IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point);
+		static double GetDistanceToLine(Vector2 starting, Vector2 ending, Vector2 point);
 
 		virtual void RecalculateBounds() {};
 		virtual void ResetCollisions();		

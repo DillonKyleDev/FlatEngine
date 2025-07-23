@@ -27,7 +27,7 @@ namespace FlatEngine
 		{
 			direction = Vector2(1, 1);
 		}
-		m_direction = direction.Normalize();
+		m_direction = Vector2::Normalize(direction);
 		m_increment = increment;
 		m_length = length;
 		m_b_casting = false;

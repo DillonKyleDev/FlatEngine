@@ -26,7 +26,10 @@ namespace FlatEngine
 
 		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions, Vector2& collisionNormal, float& depth);
 		static bool CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast);
-		static bool CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, std::vector<Vector2>& boxHitPositions, std::vector<Vector2>& circleHitPositions);
+		static bool CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, Vector2& collisionNormal, float& depth);
+		static int FindClosestVertexToPoint(std::vector<Vector2> vertices, Vector2 point);
+		static void ProjectCircleOntoAxis(CircleCollider* circle, Vector2 axis, float& min, float& max);
+		static void ProjectVerticesOntoAxis(std::vector<Vector2> vertices, Vector2 axis, float& min, float& max);
 		static bool CheckForCollision(Collider* collider1, Collider* collider2);
 		static bool IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point);
 		static double GetDistanceToLine(Vector2 starting, Vector2 ending, Vector2 point);

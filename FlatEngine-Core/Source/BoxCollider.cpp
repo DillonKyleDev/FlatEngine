@@ -236,10 +236,10 @@ namespace FlatEngine
 		Transform* transform = GetParent()->GetTransform();
 		Vector2 scale = transform->GetScale();
 
-		Vector2 topLeft = Vector2(-m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y).Rotate(GetRotation());
-		Vector2 topRight = Vector2(+m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y).Rotate(GetRotation());
-		Vector2 bottomRight = Vector2(+m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y).Rotate(GetRotation());
-		Vector2 bottomLeft = Vector2(-m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y).Rotate(GetRotation());
+		Vector2 topLeft = Vector2::Rotate(Vector2(-m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y), GetRotation());
+		Vector2 topRight = Vector2::Rotate(Vector2(+m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y), GetRotation());
+		Vector2 bottomRight = Vector2::Rotate(Vector2(+m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y), GetRotation());
+		Vector2 bottomLeft = Vector2::Rotate(Vector2(-m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y), GetRotation());
 
 		Vector2 position = transform->GetTruePosition();
 		Vector2 newCorners[4] =

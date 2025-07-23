@@ -15,6 +15,8 @@ namespace FlatEngine
 		~Vector2();
 
 		static float GetAngleBetween(Vector2 vec1, Vector2 vec2);
+		static Vector2 Normalize(Vector2 vec);
+		static Vector2 Rotate(Vector2 vec, float degrees);
 
 		float GetX();
 		float GetY();
@@ -28,7 +30,7 @@ namespace FlatEngine
 		Vector2 operator+(const Vector2& right);
 		Vector2 operator-(const Vector2& right);
 		Vector2 NormalizeCardinal();
-		Vector2 Normalize();
+		void Normalize();
 		bool operator==(const Vector2& right);
 		bool operator!=(const Vector2& right);
 		float Dot(Vector2 with);
@@ -36,6 +38,7 @@ namespace FlatEngine
 		Vector2 ProjectedOnto(Vector2 projectedTo);
 		float CrossKResult(Vector2 with);
 		float GetMagnitude();
-		Vector2 Rotate(float degrees);		
+		void Rotate(float degrees);	
+		void NormalizeSelf();
 	};
 }

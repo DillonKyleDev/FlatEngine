@@ -20,9 +20,9 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\colors",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\sprites\\explosion2",
             "effectsVolume": 10,
-            "focusedGameObjectID": 3,
+            "focusedGameObjectID": 6,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 5.0,
-            "sceneViewGridStepY": 5.0,
-            "sceneViewScrollingX": 445.0,
-            "sceneViewScrollingY": 385.0
+            "sceneViewGridStepX": 22.0,
+            "sceneViewGridStepY": 22.0,
+            "sceneViewScrollingX": 404.93109130859375,
+            "sceneViewScrollingY": 319.32025146484375
         }
     ]
 }

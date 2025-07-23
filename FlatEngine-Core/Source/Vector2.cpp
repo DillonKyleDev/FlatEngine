@@ -40,10 +40,59 @@ namespace FlatEngine
 	{
 	}
 
+	Vector2 Vector2::Normalize(Vector2 vec)
+	{		
+		Vector2 temp = Vector2();
+
+		if (vec.x == 0 && vec.y == 0)
+		{
+			return Vector2(0, 0);
+		}
+
+		float hypotenuse = std::sqrt((vec.x * vec.x) + (vec.y * vec.y));
+
+		temp.x = vec.x / hypotenuse;
+		temp.y = vec.y / hypotenuse;
+
+		float newhypotenuse = std::sqrt((vec.x * vec.x) + (vec.y * vec.y));
+
+		return temp;
+	}
 
 	float Vector2::GetAngleBetween(Vector2 vec1, Vector2 vec2)
 	{
 		return (float)fmod(((float)std::acos(vec1.Dot(vec2) / vec2.GetMagnitude()) * 57.29578), 360.0f);
+	}
+
+	Vector2 Vector2::Rotate(Vector2 vec, float degrees)
+	{
+		if (degrees == 0)
+		{
+			return vec;
+		}
+
+		float cosA;
+		float sinA;
+
+		if (degrees == 90 || degrees == 270)
+		{
+			cosA = 0;
+			sinA = 1;
+		}
+		else if (degrees == 180 || degrees == 0 || degrees == 360)
+		{
+			cosA = 1;
+			sinA = 0;
+		}
+		else
+		{
+			cosA = cosf(degrees * 2.0f * (float)M_PI / 360.0f);
+			sinA = sinf(degrees * 2.0f * (float)M_PI / 360.0f);
+		}
+
+		Matrix2 rotationMatrix(cosA, -sinA, sinA, cosA);
+
+		return rotationMatrix.LMultiply(vec);
 	}
 
 	float Vector2::GetX()
@@ -105,21 +154,9 @@ namespace FlatEngine
 		return Vector2(x - right.x, y - right.y);
 	}
 
-	Vector2 Vector2::Normalize()
+	void Vector2::Normalize()
 	{
-		if (x == 0 && y == 0)
-		{
-			return Vector2(0, 0);
-		}
-
-		float hypotenuse = std::sqrt((x * x) + (y * y));
-
-		x = x / hypotenuse;
-		y = y / hypotenuse;
-
-		float newhypotenuse = std::sqrt((x * x) + (y * y));		
-
-		return *this;
+		*this = Normalize(*this);
 	}
 
 	Vector2 Vector2::NormalizeCardinal()
@@ -203,18 +240,13 @@ namespace FlatEngine
 		return std::sqrt((x * x) + (y * y));
 	}
 
-	Vector2 Vector2::Rotate(float degrees)
+	void Vector2::Rotate(float degrees)
 	{
-		if (degrees == 0)
-		{
-			return *this;
-		}
+		*this = Rotate(*this, degrees);
+	}
 
-		float cosA = cosf(degrees * 2.0f * (float)M_PI / 360.0f);
-		float sinA = sinf(degrees * 2.0f * (float)M_PI / 360.0f);
-
-		Matrix2 rotationMatrix(cosA, -sinA, sinA, cosA);
-
-		return rotationMatrix.LMultiply(*this);
+	void Vector2::NormalizeSelf()
+	{
+		Normalize();
 	}
 }

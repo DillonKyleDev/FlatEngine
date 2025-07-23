@@ -378,6 +378,12 @@ namespace FlatEngine
 	// Random
 	extern int GetRandInt(int low, int high);
 	extern float GetRandFloat(float low, float high);
+	extern float Min(float first, float second);
+	extern int Min(int first, int second);
+	extern double Min(double first, double second);
+	extern float Max(float first, float second);
+	extern int Max(int first, int second);
+	extern double Max(double first, double second);
 
 	// Json parsing
 	extern json CreateJsonFromObject(GameObject gameObject);

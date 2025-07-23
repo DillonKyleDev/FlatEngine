@@ -416,7 +416,7 @@ namespace FlatEngine
 			"SetY", &Vector2::SetY,
 			"y", &Vector2::GetY,
 			"SetXY", &Vector2::_xy,
-			"Normalize", &Vector2::Normalize
+			"Normalize", &Vector2::NormalizeSelf
 		);
 
 		F_Lua.new_usertype<Vector4>("Vector4",

@@ -189,10 +189,10 @@ namespace FlatEngine
 
 		if (rotation != 0)
 		{
-			Vector2 topLeft = Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
-			Vector2 topRight = Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
-			Vector2 bottomRight = Vector2(+(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
-			Vector2 bottomLeft = Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2).Rotate(-rotation);
+			Vector2 topLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
+			Vector2 topRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
+			Vector2 bottomRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
+			Vector2 bottomLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
 
 			Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
 			Vector2 pos[4] =
@@ -2694,6 +2694,78 @@ namespace FlatEngine
 		{
 			LogError("RandomFloat() - low must be lower than high.");
 			return 0;
+		}
+	}
+
+	float Min(float first, float second)
+	{
+		if (first < second)
+		{
+			return first;
+		}
+		else
+		{
+			return second;
+		}
+	}
+
+	int Min(int first, int second)
+	{
+		if (first < second)
+		{
+			return first;
+		}
+		else
+		{
+			return second;
+		}
+	}
+
+	double Min(double first, double second)
+	{
+		if (first < second)
+		{
+			return first;
+		}
+		else
+		{
+			return second;
+		}
+	}
+
+	float Max(float first, float second)
+	{
+		if (first > second)
+		{
+			return first;
+		}
+		else
+		{
+			return second;
+		}
+	}
+
+	int Max(int first, int second)
+	{
+		if (first > second)
+		{
+			return first;
+		}
+		else
+		{
+			return second;
+		}
+	}
+
+	double Max(double first, double second)
+	{
+		if (first > second)
+		{
+			return first;
+		}
+		else
+		{
+			return second;
 		}
 	}
 

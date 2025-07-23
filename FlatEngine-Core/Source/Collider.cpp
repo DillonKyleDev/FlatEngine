@@ -75,21 +75,20 @@ namespace FlatEngine
 				CircleCollider* circleCol = static_cast<CircleCollider*>(collider1);
 				BoxCollider* boxCol = static_cast<BoxCollider*>(collider2);
 
-				//b_colliding = Collider::CheckForCollisionBoxCircleSAT(boxCol, circleCol);
+				b_colliding = Collider::CheckForCollisionBoxCircleSAT(boxCol, circleCol, collisionNormal, depth);
 			}
 			else if (collider1->GetTypeString() == "BoxCollider" && collider2->GetTypeString() == "CircleCollider")
 			{
 				BoxCollider* boxCol = static_cast<BoxCollider*>(collider1);
 				CircleCollider* circleCol = static_cast<CircleCollider*>(collider2);
 
-				//b_colliding = Collider::CheckForCollisionBoxCircleSAT(boxCol, circleCol);
+				b_colliding = Collider::CheckForCollisionBoxCircleSAT(boxCol, circleCol, collisionNormal, depth);
 			}
 			else if (collider1->GetTypeString() == "CircleCollider" && collider2->GetTypeString() == "CircleCollider")
 			{
 				b_colliding = true;
 			}
 		}
-
 
 		if (b_colliding)
 		{			
@@ -217,8 +216,7 @@ namespace FlatEngine
 	{
 		Vector2 insideVector = ending - starting;
 		Vector2 testVector = point - starting;
-		double dotOverDot = ((double)testVector.Dot(insideVector)) / ((double)insideVector.Dot(insideVector));
-		Vector2 projectedVector = insideVector * dotOverDot;
+		Vector2 projectedVector = testVector.ProjectedOnto(insideVector);
 
 		double distance = (double)(projectedVector - testVector).GetMagnitude();
 		if (distance < 0.001)
@@ -303,7 +301,7 @@ namespace FlatEngine
 					depth = 1;
 				}
 				Vector2 parallelToCollision = box1Corners[indexOfClosestEdge] - box1Corners[nextIndex];
-				collisionNormal = parallelToCollision.Rotate(90).Normalize();
+				collisionNormal = Vector2::Normalize(Vector2::Rotate(parallelToCollision, 90));
 				return true;
 			}
 			else if (box2HitPositions.size() == 2)
@@ -349,7 +347,7 @@ namespace FlatEngine
 
 				depth = closestDistance;
 				Vector2 parallelToCollision = box2HitPositions[0] - box2HitPositions[1];
-				collisionNormal = parallelToCollision.Rotate(90).Normalize();
+				collisionNormal = Vector2::Normalize(Vector2::Rotate(parallelToCollision, 90));
 				if (depth > 1)
 				{
 					depth = 1;
@@ -415,7 +413,7 @@ namespace FlatEngine
 					depth = 1;
 				}
 				Vector2 parallelToCollision = box2Corners[indexOfClosestEdge] - box2Corners[nextIndex];
-				collisionNormal = parallelToCollision.Rotate(90).Normalize();
+				collisionNormal = Vector2::Normalize(Vector2::Rotate(parallelToCollision, 90));
 			}
 			else if (box1HitPositions.size() == 2)
 			{
@@ -464,7 +462,7 @@ namespace FlatEngine
 					depth = 1;
 				}
 				Vector2 parallelToCollision = box1HitPositions[0] - box1HitPositions[1];
-				collisionNormal = parallelToCollision.Rotate(90).Normalize();
+				collisionNormal = Vector2::Normalize(Vector2::Rotate(parallelToCollision, 90));
 			}
 		}		
 
@@ -494,27 +492,116 @@ namespace FlatEngine
 		return b_colliding;
 	}
 
-	bool Collider::CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, std::vector<Vector2>& boxHitPositions, std::vector<Vector2>& circleHitPositions)
+	bool Collider::CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, Vector2& collisionNormal, float& depth)
 	{
 		bool b_colliding = true;
-		Vector2* boxCorners = boxCol->GetCorners();		
+		Vector2* boxCorners = boxCol->GetNextCorners();	
+		Vector2 circlePos = circleCol->GetParent()->GetTransform()->GetTruePosition();
+		float minBox = 100000;
+		float maxBox = 0;
+		float minCircle = 100000;
+		float maxCircle = 0;
+		Vector2 axis = Vector2();
+		float overlapDepth = 0;
 
-		// Do this later
-		/*if (!IsPointProjectedInside(boxCorners[0], boxCorners[1], castPoint))
+		std::vector<Vector2> vertices = { boxCorners[0], boxCorners[1], boxCorners[2], boxCorners[3], };
+
+		for (int i = 0; i < vertices.size(); i++)
 		{
-			b_colliding = false;
+			minBox = 100000;
+			maxBox = 0;
+			Vector2 start = vertices[i];
+			Vector2 end = vertices[fmod((i + 1), vertices.size())];
+			axis = end - start;
+
+			ProjectVerticesOntoAxis(vertices, axis, minBox, maxBox);
+			ProjectCircleOntoAxis(circleCol, axis, minCircle, maxCircle);
+
+			if (minBox >= maxCircle || minCircle >= maxBox)
+			{
+				return false;
+			}
+
+			overlapDepth = Min(maxCircle - minBox, maxBox - minCircle);
+
+			if (overlapDepth < depth)
+			{
+				depth = overlapDepth;
+				collisionNormal = Vector2::Normalize(axis);
+			}
 		}
-		if (!IsPointProjectedInside(boxCorners[1], boxCorners[2], castPoint))
+
+		minBox = 100000;
+		maxBox = 0;
+		int closestPointIndex = FindClosestVertexToPoint(vertices, circlePos);
+		Vector2 closesPoint = vertices[closestPointIndex];
+		axis = closesPoint - circlePos;
+
+		ProjectVerticesOntoAxis(vertices, axis, minBox, maxBox);
+		ProjectCircleOntoAxis(circleCol, axis, minCircle, maxCircle);
+
+		if (minBox >= maxCircle || minCircle >= maxBox)
 		{
-			b_colliding = false;
+			return false;
 		}
 
-		if (b_colliding)
-		{
-			rayCast->OnHit(boxCol);
-		}*/
+		overlapDepth = Min(maxCircle - minBox, maxBox - minCircle);
 
-		return b_colliding;
+		if (overlapDepth < depth)
+		{
+			depth = overlapDepth;
+			collisionNormal = Vector2::Normalize(axis);
+		}
+
+		return true;
+	}
+
+	int Collider::FindClosestVertexToPoint(std::vector<Vector2> vertices, Vector2 point)
+	{
+		float min = 1000000;
+		int index = -1;
+		for (int i = 0; i < vertices.size(); i++)
+		{
+			float distance = (vertices[i] - point).GetMagnitude();
+			if (distance < min)
+			{
+				min = distance;
+				index = i;
+			}
+		}
+
+		return index;
+	}
+
+	void Collider::ProjectCircleOntoAxis(CircleCollider* circle, Vector2 axis, float& min, float& max)
+	{
+		Vector2 leftEdge = circle->GetParent()->GetTransform()->GetTruePosition() + (Vector2::Normalize(axis) * -circle->GetActiveRadiusGrid());
+		Vector2 rightEdge = circle->GetParent()->GetTransform()->GetTruePosition() + (Vector2::Normalize(axis) * circle->GetActiveRadiusGrid());
+		min = leftEdge.Dot(Vector2::Normalize(axis));
+		max = rightEdge.Dot(Vector2::Normalize(axis));
+
+		if (min > max)
+		{
+			float temp = min;
+			min = max;
+			max = temp;
+		}
+	}
+
+	void Collider::ProjectVerticesOntoAxis(std::vector<Vector2> vertices, Vector2 axis, float& min, float& max)
+	{		
+		for (Vector2 vertex : vertices)
+		{
+			float projection = vertex.Dot(Vector2::Normalize(axis));
+			if (projection < min)
+			{
+				min = projection;
+			}
+			else if (projection > max)
+			{
+				max = projection;
+			}
+		}
 	}
 
 	bool Collider::IsColliding()

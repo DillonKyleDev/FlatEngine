@@ -18,9 +18,9 @@ namespace FlatEngine
 		m_pendingForces = Vector2(0, 0);
 		m_velocity = Vector2(0, 0);	
 		m_acceleration = Vector2(0, 0);
-		m_friction = 0.86f;  // 1 = no m_friction. 0 = m_velocity = 0
+		m_friction = 0.01f;
 		// Rotational
-		m_I = 1; // Moment of inertia = 2mass / 5 * (r^2) (based on sprite dimensions)
+		m_I = 1;
 		m_1overI = 1;
 		m_pendingTorques = 0;
 		m_angularVelocity = 0;
@@ -28,6 +28,7 @@ namespace FlatEngine
 		m_angularDrag = 0.99f;
 		m_b_allowTorques = true;
 
+		m_restitution = 1;
 		m_equilibriumForce = 2;				
 		m_b_isGrounded = false;
 		m_b_isStatic = false;
@@ -68,72 +69,43 @@ namespace FlatEngine
 
 	void RigidBody::CalculatePhysics()
 	{
-		//ApplyCollisionForces();
 		ApplyGravity();
 		ApplyFriction();
 		ApplyEquilibriumForce();
-	
-		// Linear
-		if (m_mass == 0)
-		{
-			m_acceleration = Vector2(m_pendingForces.x, m_pendingForces.y);
-		}
-		else
-		{
-			m_acceleration = Vector2(m_pendingForces.x * m_1overMass * m_forceCorrection, m_pendingForces.y * m_1overMass * m_forceCorrection);
-		}
-
-		// Rotational - Torque = I * angularAcceleration
-		if (m_I == 0)
-		{
-			m_angularAcceleration = m_pendingTorques;
-		}
-		else
-		{
-			m_angularAcceleration = m_pendingTorques * m_1overI;
-		}
 	}
 
 	void RigidBody::ApplyPhysics(float deltaTime)
 	{
-		// In reality, we should be adding acceleration to velocity, but it is difficult to simulate opposing forces that would actually cause objects to slow down (ie. give them negative values in the opposing direction at all times)
-		m_velocity = Vector2(m_acceleration.x, m_acceleration.y);
 		Transform* transform = GetParent()->GetTransform();
 		Vector2 position = transform->GetPosition();
-
-		transform->SetPosition(Vector2(position.x + m_velocity.x, position.y + m_velocity.y));
+		m_velocity = m_velocity + m_acceleration;
+		m_acceleration = m_pendingForces * m_1overMass * m_forceCorrection;
+		m_pendingForces = Vector2(0, 0);
+		transform->SetPosition(position + m_velocity);
+		m_velocity = m_velocity * AdjustedFriction();		
 
 		if (m_b_allowTorques)
 		{
-			m_angularVelocity = m_angularAcceleration * m_1overI;
+			m_angularAcceleration = m_pendingTorques * m_1overI;
+			m_angularVelocity += m_angularAcceleration;			
+			transform->SetRotation((float)fmod(transform->GetRotation() + m_angularVelocity, 360));
+			m_angularAcceleration = 0;
 		}
-
-		float rotation = transform->GetRotation();
-		transform->SetRotation((float)fmod(rotation + m_angularVelocity, 360));
 	}
 
 	void RigidBody::AddVelocity(Vector2 vel)
 	{
 		if (!m_b_isStatic)
 		{
-			std::vector<BoxCollider*> boxColliders = GetParent()->GetBoxColliders();
-			for (BoxCollider* boxCollider : boxColliders)
-			{
-				if (boxCollider != nullptr)
-				{
-					m_pendingForces.x += vel.x;
-				}
-			}
-
-			m_pendingForces.y += vel.y;
+			m_pendingForces = m_pendingForces + vel;
 		}
 	}
 
 	void RigidBody::ApplyGravity()
 	{
-		if (m_gravity > 0 && m_mass != 0)
+		if (m_gravity > 0)
 		{
-			if (!m_b_isGrounded && m_velocity.y > -m_terminalVelocity)
+			if (m_velocity.y > -m_terminalVelocity)
 			{
 				if (m_velocity.y < 0)
 				{
@@ -145,9 +117,9 @@ namespace FlatEngine
 				}
 			}
 		}
-		else if (m_gravity < 0 && m_mass != 0)
+		else if (m_gravity < 0)
 		{
-			if (!m_b_isGrounded && m_velocity.y < m_terminalVelocity)
+			if (m_velocity.y < m_terminalVelocity)
 			{
 				if (m_velocity.y > 0)
 				{
@@ -274,63 +246,39 @@ namespace FlatEngine
 		
 	}
 
-	void RigidBody::AddForce(Vector2 force, float multiplier)
+	void RigidBody::AddForce(Vector2 direction, float magnitude)
 	{
-		// Normalize the force first, then apply the power factor to the force
-		if (!m_b_isStatic && force != Vector2())
+		if (!m_b_isStatic && direction != Vector2())
 		{
-			force.Normalize();
-			Vector2 addedForce = Vector2(force.x * multiplier, force.y * multiplier);
-			m_pendingForces.x += addedForce.x;
-			m_pendingForces.y += addedForce.y;
+			direction.Normalize();
+			Vector2 addedForce = Vector2(direction.x * magnitude, direction.y * magnitude);
+			m_pendingForces = m_pendingForces + addedForce;
 		}
 	}
 
-	void RigidBody::AddTorque(float torque, float multiplier)
+	void RigidBody::AddTorque(float torque, float direction)
 	{
 		if (m_b_allowTorques)
 		{
-			float addedTorque = torque * multiplier;
+			float addedTorque = torque * direction;
 			m_pendingTorques += addedTorque;
 		}
 	}
 
 	Vector2 RigidBody::GetNextPosition()
 	{
-		Vector2 nextVelocity = Vector2(m_acceleration.x, m_acceleration.y);
+		Vector2 nextVelocity = m_velocity + m_acceleration;
 		Transform* transform = GetParent()->GetTransform();
-		Vector2 position = transform->GetTruePosition();
-		return Vector2(position.x + nextVelocity.x * 2, position.y + nextVelocity.y * 2);
+		Vector2 position = transform->GetPosition();
+		return position + nextVelocity;
 	}
 
 	void RigidBody::SetMass(float mass)
 	{
-		m_mass = mass;
-		m_I = m_mass;
-
-		if (GetParent() != nullptr)
+		if (mass != 0)
 		{
-			BoxCollider* collider = GetParent()->GetBoxCollider();
-			if (collider != nullptr)
-			{
-				float width = (float)collider->GetActiveWidth() / 10;
-				float height = (float)collider->GetActiveHeight() / 10;
-				if (width != 0 && height != 0)
-				{				
-					m_I = (1 / 12) * m_mass * ((height * height) + (width * width));
-				}
-			}
-		}
-
-		if (!m_b_isStatic)
-		{
-			m_1overI = 1 / m_I;
-			m_1overMass = 1 / m_mass;
-		}
-		else
-		{
-			m_1overI = 0;
-			m_1overMass = 0;
+			m_mass = mass;
+			UpdateI();
 		}
 	}
 
@@ -339,29 +287,65 @@ namespace FlatEngine
 		return m_mass;
 	}
 
+	float RigidBody::GetMassInv()
+	{
+		return m_1overMass;
+	}
+
 	float RigidBody::GetI()
 	{
 		return m_I;
+	}
+
+	float RigidBody::GetIInv()
+	{
+		return m_1overI;
 	}
 
 	void RigidBody::UpdateI()
 	{		
 		if (GetParent() != nullptr)
 		{
-			Sprite* sprite = GetParent()->GetSprite();
-			if (sprite != nullptr)
+			BoxCollider* boxCollider = GetParent()->GetBoxCollider();
+			CircleCollider* circleCollider = GetParent()->GetCircleCollider();
+
+			if (boxCollider != nullptr)
 			{
-				float width = (float)sprite->GetTextureWidth() / 10;
-				float height = (float)sprite->GetTextureHeight() / 10;
-				float radius = (width + height) / 2; // rough estimate
+				float width = (float)boxCollider->GetActiveWidth() / 10;
+				float height = (float)boxCollider->GetActiveHeight() / 10;
 				if (width != 0 && height != 0)
 				{
-					m_I = 2 * m_mass / 5 * radius * radius;
+					m_I = (1 / 12) * m_mass * ((height * height) + (width * width));
+				}
+			}
+			else if (circleCollider != nullptr)
+			{
+				float radius = (float)circleCollider->GetActiveRadiusGrid();
+				if (radius != 0)
+				{
+					m_I = m_mass * 0.5f * radius * radius;
 				}
 			}
 		}
 
-		m_1overI = 1 / m_I;
+		if (!m_b_isStatic)
+		{
+			m_1overMass = 1 / m_mass;
+
+			if (m_I != 0)
+			{
+				m_1overI = 1 / m_I;
+			}
+			else
+			{
+				m_1overI = m_1overMass;
+			}
+		}
+		else
+		{
+			m_1overI = 0;
+			m_1overMass = 0;
+		}
 	}
 
 	void RigidBody::SetTorquesAllowed(bool b_allowed)
@@ -473,6 +457,16 @@ namespace FlatEngine
 	{
 		return m_b_isGrounded;
 	}
+
+	float RigidBody::GetRestitution()
+	{
+		return m_restitution;
+	}
+
+	void RigidBody::SetRestitution(float restitution)
+	{
+		m_restitution = restitution;
+	}
 	
 	void RigidBody::SetPendingForces(Vector2 pendingForces)
 	{
@@ -502,6 +496,11 @@ namespace FlatEngine
 	void RigidBody::SetFriction(float friction)
 	{
 		m_friction = friction;
+	}
+	
+	float RigidBody::AdjustedFriction()
+	{		
+		return 1 - m_friction;
 	}
 
 	float RigidBody::GetEquilibriumForce()

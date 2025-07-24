@@ -20,21 +20,21 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\sprites\\explosion2",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\prefabs",
             "effectsVolume": 10,
-            "focusedGameObjectID": 6,
+            "focusedGameObjectID": 0,
             "loadedAnimationPath": "",
-            "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
+            "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Collisions.scn",
             "musicVolume": 10,
             "path": "..\\projects\\ClosedLoop\\ClosedLoop.prj",
             "persistantGameObjectsScenePath": "..\\projects\\ClosedLoop\\persistant_objects_ClosedLoop.scn",
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 22.0,
-            "sceneViewGridStepY": 22.0,
-            "sceneViewScrollingX": 404.93109130859375,
-            "sceneViewScrollingY": 319.32025146484375
+            "sceneViewGridStepX": 7.0,
+            "sceneViewGridStepY": 7.0,
+            "sceneViewScrollingX": 285.93109130859375,
+            "sceneViewScrollingY": 306.32025146484375
         }
     ]
 }

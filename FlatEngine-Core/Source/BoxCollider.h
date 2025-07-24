@@ -39,7 +39,7 @@ namespace FlatEngine
 		void SetCorners(Vector2 corners[4]);
 		void SetNextCorners(Vector2 corners[4]);
 		Vector2* GetCorners();
-		Vector2* GetNextCorners();
+		std::vector<Vector2> GetNextCorners();
 		void SetNormals(Vector2 normals[4]);
 		Vector2* GetNormals();
 		void RecalculateBounds(float gridstep = 0, Vector2 viewportCenter = Vector2());

@@ -1713,7 +1713,7 @@ namespace FlatGui
 
 		if (FL::PushTable("##RigidBodyProps" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##Mass" + std::to_string(ID), "Mass", mass, 0.01f, 0.0f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##Mass" + std::to_string(ID), "Mass", mass, 0.001f, 0.001f, -FLT_MAX))
 			{
 				rigidBody->SetMass(mass);
 			}

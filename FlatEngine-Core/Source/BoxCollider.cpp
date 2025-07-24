@@ -310,9 +310,10 @@ namespace FlatEngine
 		return m_corners;
 	}
 
-	Vector2* BoxCollider::GetNextCorners()
+	std::vector<Vector2> BoxCollider::GetNextCorners()
 	{
-		return m_nextCorners;
+		std::vector<Vector2> nextCorners = { m_nextCorners[0], m_nextCorners[1], m_nextCorners[2], m_nextCorners[3], };
+		return nextCorners;
 	}
 
 	void BoxCollider::SetNormals(Vector2 newNormals[4])

@@ -10,7 +10,7 @@ function Awake()
         -- characterController = this_object:GetCharacterController(),
         transform = this_object:GetTransform(),
         -- sprite = this_object:GetSprite(),
-        -- rigidBody = this_object:GetRigidBody(),
+        rigidBody = this_object:GetRigidBody(),
         -- animation = this_object:GetAnimation(),
         -- boxCollider = this_object:GetBoxCollider(),
         -- healthBar = GetObjectByName("CurrentHealth"),
@@ -31,8 +31,8 @@ end
 
 function Update()     
     local data = GetInstanceData("PlayerController", my_id)
-    -- handleMovement();
-    handleAttacks();    
+    handleMovement();
+    -- handleAttacks();    
 
     -- if GetTime() >= (data.powerUpStart + data.powerUpMaxTime) then          
     --     PowerDownPlayer(my_id)
@@ -120,42 +120,46 @@ function handleMovement()
 
     if data.mappingContext:ActionPressed("IA_MoveForward") then
         b_movingForward = true 
+        data.rigidBody:AddForce(Vector2:new(0,1), 30)
         moveDirection:SetY(1)
     end
 
     if data.mappingContext:ActionPressed("IA_MoveBackward") then
         b_movingBackward = true
+        data.rigidBody:AddForce(Vector2:new(0,-1), 30)
         moveDirection:SetY(-1)
     end
 
     if data.mappingContext:ActionPressed("IA_MoveRight") then        
         b_movingRight = true
+        data.rigidBody:AddForce(Vector2:new(1,0), 30)
         moveDirection:SetX(1)    
     end
 
     if data.mappingContext:ActionPressed("IA_MoveLeft") then
         b_movingLeft = true
+        data.rigidBody:AddForce(Vector2:new(-1,0), 30)
         moveDirection:SetX(-1)
     end
 
-    if b_movingLeft and b_movingRight then
-        moveDirection = Vector2:new(0, moveDirection:y())
-    end
-    if b_movingBackward and b_movingForward then
-        moveDirection = Vector2:new(moveDirection:x(), 0)
-    end 
+    -- if b_movingLeft and b_movingRight then
+    --     moveDirection = Vector2:new(0, moveDirection:y())
+    -- end
+    -- if b_movingBackward and b_movingForward then
+    --     moveDirection = Vector2:new(moveDirection:x(), 0)
+    -- end 
 
-    if b_movingLeft or b_movingRight or b_movingBackward or b_movingForward then
-        data.characterController:MoveToward(moveDirection)
+    -- if b_movingLeft or b_movingRight or b_movingBackward or b_movingForward then
+    --     data.characterController:MoveToward(moveDirection)
 
-    end
+    -- end
     
-    local xVel = data.rigidBody:GetVelocity():x()
-    if xVel < 0 then
-        xVel = xVel * -1
-    end
+    -- local xVel = data.rigidBody:GetVelocity():x()
+    -- if xVel < 0 then
+    --     xVel = xVel * -1
+    -- end
 
-    data.sprite:SetScale(Vector2:new(1 - (xVel * 4), 1))
+    -- data.sprite:SetScale(Vector2:new(1 - (xVel * 4), 1))
 end
 
 function OnBoxCollision(collidedWith)    

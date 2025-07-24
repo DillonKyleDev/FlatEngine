@@ -24,7 +24,7 @@ namespace FlatEngine
 		Collider(long myID = -1, long parentID = -1);
 		~Collider();
 
-		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, std::vector<Vector2>& box1HitPositions, std::vector<Vector2>& box2HitPositions, Vector2& collisionNormal, float& depth);
+		static bool CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, Vector2& collisionNormal, float& depth);
 		static bool CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast);
 		static bool CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, Vector2& collisionNormal, float& depth);
 		static int FindClosestVertexToPoint(std::vector<Vector2> vertices, Vector2 point);
@@ -32,8 +32,8 @@ namespace FlatEngine
 		static void ProjectVerticesOntoAxis(std::vector<Vector2> vertices, Vector2 axis, float& min, float& max);
 		static bool CheckForCollision(Collider* collider1, Collider* collider2);
 		static bool IsPointProjectedInside(Vector2 starting, Vector2 ending, Vector2 point);
-		static double GetDistanceToLine(Vector2 starting, Vector2 ending, Vector2 point);
-
+		static float GetDistanceToLine(Vector2 starting, Vector2 ending, Vector2 point);
+		static void FindContactPointsPolygonPolygon(std::vector<Vector2> vertices1, std::vector<Vector2> vertices2, Vector2& contact1, Vector2& contact2, int& contactCount);		
 		virtual void RecalculateBounds() {};
 		virtual void ResetCollisions();		
 
@@ -75,11 +75,6 @@ namespace FlatEngine
 		void SetRotation(float rotation);
 		void UpdateRotation();
 		float GetRotation();
-
-		float m_collisionDepth;
-		bool m_b_cornerCollided;
-		Vector2 m_impactNormal;
-		bool m_b_sideCollided;
 
 	private:
 		std::vector<GameObject*> m_collidingObjects;

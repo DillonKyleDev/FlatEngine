@@ -22,8 +22,8 @@ namespace FlatEngine
 		void ApplyPhysics(float deltaTime);
 		void AddVelocity(Vector2 vel);
 		void ApplyGravity();
-		void AddForce(Vector2 force, float multiplier = 1);
-		void AddTorque(float torque, float multiplier = 1);
+		void AddForce(Vector2 direction, float magnitude = 1);
+		void AddTorque(float torque, float direction = 1);
 		void ApplyEquilibriumForce();
 		void ApplyCollisionForces();
 		void ApplyCollisionForce(Collider* collider, float halfWidth, float halfHeight);
@@ -32,7 +32,9 @@ namespace FlatEngine
 
 		void SetMass(float newMass);
 		float GetMass();
+		float GetMassInv();
 		float GetI();
+		float GetIInv();
 		void UpdateI();
 		void SetTorquesAllowed(bool b_allowed);
 		bool TorquesAllowed();
@@ -55,6 +57,7 @@ namespace FlatEngine
 		float GetWindResistance();
 		float GetFriction();
 		void SetFriction(float newFriction);
+		float AdjustedFriction();
 		void SetTerminalVelocity(float newTerminalVelocity);
 		float GetTerminalVelocity();
 		void SetEquilibriumForce(float newEquilibriumForce);
@@ -64,6 +67,8 @@ namespace FlatEngine
 		void SetIsStatic(bool b_static);
 		void SetIsGrounded(bool b_grounded);
 		bool IsGrounded();
+		float GetRestitution();
+		void SetRestitution(float restitution);
 
 	private:
 		// Linear
@@ -82,6 +87,7 @@ namespace FlatEngine
 		float m_angularDrag;
 		bool m_b_allowTorques;
 
+		float m_restitution;
 		float m_forceCorrection;
 		bool m_b_isGrounded;
 		bool m_b_isStatic;

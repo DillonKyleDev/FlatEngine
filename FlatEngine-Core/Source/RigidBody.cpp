@@ -13,7 +13,7 @@ namespace FlatEngine
 		SetType(T_RigidBody);
 		SetID(myID);
 		SetParentID(parentID);
-		m_mass = 1;
+		m_mass = 10;
 		m_1overMass = 1 / m_mass;		
 		m_pendingForces = Vector2(0, 0);
 		m_velocity = Vector2(0, 0);	
@@ -25,7 +25,7 @@ namespace FlatEngine
 		m_pendingTorques = 0;
 		m_angularVelocity = 0;
 		m_angularAcceleration = 0;
-		m_angularDrag = 0.99f;
+		m_angularDrag = 0.95f;
 		m_b_allowTorques = true;
 
 		m_restitution = 1;
@@ -80,14 +80,15 @@ namespace FlatEngine
 		Vector2 position = transform->GetPosition();
 		m_velocity = m_velocity + m_acceleration;
 		m_acceleration = m_pendingForces * m_1overMass * m_forceCorrection;
+		m_velocity = m_velocity * AdjustedFriction();
+		transform->SetPosition(position + m_velocity);	
 		m_pendingForces = Vector2(0, 0);
-		transform->SetPosition(position + m_velocity);
-		m_velocity = m_velocity * AdjustedFriction();		
 
 		if (m_b_allowTorques)
 		{
 			m_angularAcceleration = m_pendingTorques * m_1overI;
-			m_angularVelocity += m_angularAcceleration;			
+			m_angularVelocity += m_angularAcceleration;	
+			m_angularVelocity *= m_angularDrag;
 			transform->SetRotation((float)fmod(transform->GetRotation() + m_angularVelocity, 360));
 			m_angularAcceleration = 0;
 		}
@@ -103,7 +104,7 @@ namespace FlatEngine
 
 	void RigidBody::ApplyGravity()
 	{
-		if (m_gravity > 0)
+		if (m_gravity > 0 && !m_b_isStatic)
 		{
 			if (m_velocity.y > -m_terminalVelocity)
 			{
@@ -117,7 +118,7 @@ namespace FlatEngine
 				}
 			}
 		}
-		else if (m_gravity < 0)
+		else if (m_gravity < 0 && !m_b_isStatic)
 		{
 			if (m_velocity.y < m_terminalVelocity)
 			{
@@ -249,9 +250,8 @@ namespace FlatEngine
 	void RigidBody::AddForce(Vector2 direction, float magnitude)
 	{
 		if (!m_b_isStatic && direction != Vector2())
-		{
-			direction.Normalize();
-			Vector2 addedForce = Vector2(direction.x * magnitude, direction.y * magnitude);
+		{			
+			Vector2 addedForce = Vector2::Normalize(direction) * magnitude;
 			m_pendingForces = m_pendingForces + addedForce;
 		}
 	}
@@ -306,13 +306,14 @@ namespace FlatEngine
 	{		
 		if (GetParent() != nullptr)
 		{
+			Vector2 scale = GetParent()->GetTransform()->GetScale();
 			BoxCollider* boxCollider = GetParent()->GetBoxCollider();
 			CircleCollider* circleCollider = GetParent()->GetCircleCollider();
 
 			if (boxCollider != nullptr)
 			{
-				float width = (float)boxCollider->GetActiveWidth() / 10;
-				float height = (float)boxCollider->GetActiveHeight() / 10;
+				float width = (float)boxCollider->GetActiveWidth() * scale.x / 10 ;
+				float height = (float)boxCollider->GetActiveHeight() * scale.y / 10;
 				if (width != 0 && height != 0)
 				{
 					m_I = (1 / 12) * m_mass * ((height * height) + (width * width));
@@ -426,6 +427,11 @@ namespace FlatEngine
 	float RigidBody::GetAngularVelocity()
 	{
 		return m_angularVelocity;
+	}
+
+	float RigidBody::GetAngularVelocityRadians()
+	{
+		return m_angularVelocity / 57.29578;
 	}
 
 	float RigidBody::GetAngularAcceleration()

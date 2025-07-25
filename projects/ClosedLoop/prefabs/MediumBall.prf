@@ -10,20 +10,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 29,
+                    "id": 31,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 0.0130462646484375,
+                    "xPos": 2.323887348175049,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 12.039682388305664,
+                    "yPos": 11.047151565551758,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 31,
+                    "id": 32,
                     "path": "..\\projects\\ClosedLoop\\images\\sprites\\explosion2\\explosion_3.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -42,13 +42,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.9900000095367432,
+                    "angularDrag": 0.949999988079071,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 1.0,
+                    "fallingGravity": 0.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 32,
-                    "mass": 5.0,
+                    "gravity": 0.0,
+                    "id": 33,
+                    "mass": 3.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -56,8 +56,8 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "attachedScript": "PlayerController (Lua)",
-                    "id": 35,
+                    "attachedScript": "",
+                    "id": 34,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -71,11 +71,11 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeRadius": 0.6399999856948853,
-                    "id": 30,
+                    "id": 35,
                     "type": "CircleCollider"
                 }
             ],
-            "id": 6,
+            "id": 8,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -123,8 +123,8 @@
             "name": "MediumBall",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 0.0130462646484375,
-            "spawnLocationY": 12.039682388305664,
+            "spawnLocationX": 2.323887348175049,
+            "spawnLocationY": 11.047151565551758,
             "tags": [
                 {
                     "Collectable": false

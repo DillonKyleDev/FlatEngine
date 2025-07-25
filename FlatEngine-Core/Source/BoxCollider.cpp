@@ -73,6 +73,8 @@ namespace FlatEngine
 		{
 			m_activeWidth = width;
 			m_activeHeight = height;
+			bool b_forceUpdate = true;
+			UpdateActiveEdges(F_sceneViewGridStep.x, F_sceneViewCenter, b_forceUpdate);
 		}
 		else
 		{
@@ -103,7 +105,7 @@ namespace FlatEngine
 
 	// Just based on actual pixel locations (0,0) being the top left of the window
 	// You can use it for either game view or scene view, you just need the correct center location of whichever you choose
-	void BoxCollider::UpdateActiveEdges(float gridStep, Vector2 viewportCenter)
+	void BoxCollider::UpdateActiveEdges(float gridStep, Vector2 viewportCenter, bool b_forceUpdate)
 	{
 		bool b_shouldUpdate = false;
 
@@ -157,7 +159,7 @@ namespace FlatEngine
 		}
 		m_previousRotation = GetParent()->GetTransform()->GetRotation();
 
-		if (b_shouldUpdate)
+		if (b_shouldUpdate || b_forceUpdate)
 		{
 			m_b_activeEdgesSet = true;
 			RigidBody* rigidBody = parent->GetRigidBody();

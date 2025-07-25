@@ -167,15 +167,6 @@ function handleMovement()
     -- data.sprite:SetScale(Vector2:new(1 - (xVel * 4), 1))
 end
 
-function OnBoxCollisionLeave(collidedWith)
-end
-
-function OnCircleCollision(collidedWith)
-end
-
-function OnCircleCollisionEnter(collidedWith)
-end
-
 function OnBoxCollision(collidedWith)    
 end
 

@@ -10,14 +10,14 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 26,
+                    "id": 18,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -9.297822952270508,
+                    "xPos": 8.573887825012207,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 11.455638885498047,
+                    "yPos": 6.904294490814209,
                     "yScale": 1.0
                 },
                 {
@@ -30,13 +30,13 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeRadius": 0.5,
-                    "id": 27,
+                    "id": 19,
                     "type": "CircleCollider"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 28,
+                    "id": 20,
                     "path": "..\\projects\\ClosedLoop\\images\\sprites\\healthPack.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -55,12 +55,12 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.9900000095367432,
+                    "angularDrag": 0.949999988079071,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 1.0,
+                    "fallingGravity": 0.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 33,
+                    "gravity": 0.0,
+                    "id": 21,
                     "mass": 2.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
@@ -115,8 +115,8 @@
             "name": "SmallBall",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -9.297822952270508,
-            "spawnLocationY": 11.455638885498047,
+            "spawnLocationX": 8.573887825012207,
+            "spawnLocationY": 6.904294490814209,
             "tags": [
                 {
                     "Collectable": false

@@ -1135,8 +1135,6 @@ namespace FlatEngine
 				{
 				case SDLK_1:
 					F_CursorMode = F_CURSOR_MODE::TRANSLATE;
-					LoadScene(GetLoadedScenePath());
-					LogString("Scene Reloaded");
 					break;
 
 				case SDLK_2:
@@ -1166,6 +1164,15 @@ namespace FlatEngine
 				case SDLK_8:
 					F_CursorMode = F_CURSOR_MODE::TILE_MOVE;
 					break;
+
+				case SDLK_DELETE:
+					DeleteGameObject(F_FocusedGameObjectID);
+					break;
+
+				case SDLK_r:
+					LoadScene(GetLoadedScenePath());
+					LogString("Scene Reloaded");
+					break;				
 				}
 			}
 		}
@@ -2767,6 +2774,46 @@ namespace FlatEngine
 		{
 			return second;
 		}
+	}
+
+	float RadiansToDegrees(float radians)
+	{
+		return radians * 57.29578;
+	}
+
+	float DegreesToRadians(float degrees)
+	{
+		return degrees / 57.29578;
+	}
+
+	float Abs(float value)
+	{
+		if (value < 0)
+		{
+			value *= -1;
+		}
+
+		return value;
+	}
+
+	double Abs(double value)
+	{
+		if (value < 0)
+		{
+			value *= -1;
+		}
+
+		return value;
+	}
+
+	int Abs(int value)
+	{
+		if (value < 0)
+		{
+			value *= -1;
+		}
+
+		return value;
 	}
 
 	// Json Parsing

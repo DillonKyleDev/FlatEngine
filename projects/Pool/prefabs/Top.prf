@@ -1,5 +1,5 @@
 {
-    "Name": "Box",
+    "Name": "Top",
     "Prefab": [
         {
             "_isActive": true,
@@ -10,31 +10,14 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 48,
-                    "rotation": 343.8299865722656,
+                    "id": 8,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 10.879302978515625,
+                    "xPos": 0.0,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 12.270015716552734,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "id": 49,
-                    "path": "..\\projects\\ClosedLoop\\images\\colors\\cave.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 8.0,
-                    "xScale": 1.0,
-                    "yOffset": 8.0,
+                    "yPos": 5.5,
                     "yScale": 1.0
                 },
                 {
@@ -44,32 +27,16 @@
                     "_isSolid": true,
                     "_isTileMapCollider": false,
                     "_showActiveRadius": false,
-                    "activeHeight": 2.0,
+                    "activeHeight": 1.0,
                     "activeLayer": 0,
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 50,
+                    "activeWidth": 18.75,
+                    "id": 9,
                     "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 51,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 0.8999999761581421
                 }
             ],
-            "id": 12,
+            "id": 4,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -114,11 +81,11 @@
                     "Terrain": false
                 }
             ],
-            "name": "Box",
+            "name": "Top",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 10.879302978515625,
-            "spawnLocationY": 12.270015716552734,
+            "spawnLocationX": 0.0,
+            "spawnLocationY": 5.5,
             "tags": [
                 {
                     "Collectable": false

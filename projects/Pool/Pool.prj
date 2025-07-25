@@ -20,21 +20,21 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\scenes",
+            "currentFileDirectory": "..\\projects\\Pool\\scenes",
             "effectsVolume": 10,
-            "focusedGameObjectID": 10,
+            "focusedGameObjectID": -1,
             "loadedAnimationPath": "",
-            "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
+            "loadedScenePath": "..\\projects\\Pool\\scenes\\Table.scn",
             "musicVolume": 10,
-            "path": "..\\projects\\ClosedLoop\\ClosedLoop.prj",
-            "persistantGameObjectsScenePath": "..\\projects\\ClosedLoop\\persistant_objects_ClosedLoop.scn",
+            "path": "..\\projects\\Pool\\Pool.prj",
+            "persistantGameObjectsScenePath": "..\\projects\\Pool\\persistant_objects_Pool.scn",
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 21.0,
-            "sceneViewGridStepY": 21.0,
-            "sceneViewScrollingX": 330.93115234375,
-            "sceneViewScrollingY": 482.32025146484375
+            "sceneViewGridStepX": 25.0,
+            "sceneViewGridStepY": 25.0,
+            "sceneViewScrollingX": 611.93115234375,
+            "sceneViewScrollingY": 331.3203125
         }
     ]
 }

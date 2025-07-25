@@ -32,7 +32,7 @@ namespace FlatEngine
 		//Vector4(activeTop, activeRight, activeBottom, activeLeft)
 		void SetActiveEdges(Vector4 edges);
 		Vector4 GetActiveEdges();
-		void UpdateActiveEdges(float gridstep, Vector2 viewportCenter);
+		void UpdateActiveEdges(float gridstep, Vector2 viewportCenter, bool b_forceUpdate = false);
 		void UpdateNormals(float gridstep, Vector2 viewportCenter);
 		void UpdateCorners(float gridstep, Vector2 viewportCenter);
 		void UpdateCenter(float gridstep, Vector2 viewportCenter);

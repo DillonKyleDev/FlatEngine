@@ -131,133 +131,194 @@ namespace FlatEngine
 			contactCount = 1;
 		}
 
+		// Rotation not working exactly right on edges when boxes are both 0 degrees. Also going in reverse depending on the angle...
 		if (b_colliding)
 		{			
 			collider1->SetColliding(true);
 			collider2->SetColliding(true);
-			collider1->AddCollidingObject(collider2);
-			collider2->AddCollidingObject(collider1);
-			Transform* transform1 = collider1->GetParent()->GetTransform();
-			Transform* transform2 = collider2->GetParent()->GetTransform();
-			RigidBody* rb1 = collider1->GetParent()->GetRigidBody();
-			RigidBody* rb2 = collider2->GetParent()->GetRigidBody();
-			Vector2 v1Initial = rb1->GetVelocity();
-			Vector2 v2Initial = rb2->GetVelocity();
-			Vector2 v1Final = Vector2();
-			Vector2 v2Final = Vector2();
-			float angularV1Initial = rb1->GetAngularVelocity();
-			float angularV2Initial = rb2->GetAngularVelocity();
-			float angularV1Final = 0;
-			float angularV2Final = 0;
-			float I1Inv = rb1->GetIInv();
-			float I2Inv = rb2->GetIInv();
-			Vector2 r1Perp = Vector2();
-			Vector2 r2Perp = Vector2();
-			Vector2 angularToLinear1 = Vector2();
-			Vector2 angularToLinear2 = Vector2();
+
+			// For Collider events - Fire OnActiveCollision while there is a collision happening
+			if (collider1->GetType() == ComponentTypes::T_BoxCollider)
+			{
+				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
+			}
+			else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
+			{
+				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
+			}
+			// For Collider events - Fire OnActiveCollision while there is a collision happening
+			if (collider2->GetType() == ComponentTypes::T_BoxCollider)
+			{
+				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
+			}
+			else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
+			{
+				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
+			}
+
+			if (!collider1->IsSolid() || !collider2->IsSolid())
+			{
+				return true;
+			}
+
+			bool b_col1Added2 = collider1->AddCollidingObject(collider2);
+			bool b_col2Added1 = collider2->AddCollidingObject(collider1);
+			Transform* transformA = collider1->GetParent()->GetTransform();
+			Transform* transformB = collider2->GetParent()->GetTransform();
+			RigidBody* rbA = collider1->GetParent()->GetRigidBody();
+			RigidBody* rbB = collider2->GetParent()->GetRigidBody();
+			Vector2 vAInitial = rbA->GetVelocity();
+			Vector2 vBInitial = rbB->GetVelocity();
+			Vector2 vAFinal = Vector2();
+			Vector2 vBFinal = Vector2();
+			float angularVAInitial = rbA->GetAngularVelocityRadians();
+			float angularVBInitial = rbB->GetAngularVelocityRadians();
+			float angularVAFinal = 0;
+			float angularVBFinal = 0;
+			float IAInv = rbA->GetIInv();
+			float IBInv = rbB->GetIInv();
+			Vector2 rAPPerp = Vector2();
+			Vector2 rBPPerp = Vector2();
+			Vector2 angularToLinearA = Vector2();
+			Vector2 angularToLinearB = Vector2();
 
 			if (contactCount == 2)
 			{
-				r1Perp = Vector2::Rotate(collisionNormal, 90);
-				r2Perp = Vector2::Rotate(collisionNormal, 90);
+				rAPPerp = Vector2::Rotate(collisionNormal, 90);
+				rBPPerp = Vector2::Rotate(collisionNormal, 90);	
+				//rbA->SetAngularVelocity(0);
+				//rbB->SetAngularVelocity(0);
+				//angularVAInitial = 0;
+				//angularVBInitial = 0;
 			}
 			else
 			{
-				r1Perp = Vector2::Rotate(contactPoint1 - rb1->GetNextPosition(), 90);
-				r2Perp = Vector2::Rotate(contactPoint1 - rb2->GetNextPosition(), 90);
-			}
-			angularToLinear1 = r1Perp * angularV1Initial;
-			angularToLinear2 = r2Perp * angularV2Initial;
-			float m1 = rb1->GetMass();
-			float m2 = rb2->GetMass();
-			float m1Inv = rb1->GetMassInv();
-			float m2Inv = rb2->GetMassInv();
-			float e1 = rb1->GetRestitution();
-			float e2 = rb2->GetRestitution();
-			Vector2 relativeVelocity = (v1Initial + angularToLinear1) - (v2Initial + angularToLinear2);
-			float contactVelocityMagnitude = relativeVelocity.Dot(collisionNormal);
-
-			float numerator = -(1 + (e1 * e2)) * contactVelocityMagnitude;
-			float denominator = m1Inv + m2Inv + (r1Perp.Dot(collisionNormal) * r1Perp.Dot(collisionNormal) * I1Inv) + (r2Perp.Dot(collisionNormal) * r2Perp.Dot(collisionNormal) * I2Inv);
-
-			float impulseMagnitude = numerator / denominator;
-			if (impulseMagnitude < 0)
-			{
-				impulseMagnitude *= -1;
+				rAPPerp = Vector2::Rotate(contactPoint1 - rbA->GetNextPosition(), 90);
+				rBPPerp = Vector2::Rotate(contactPoint1 - rbB->GetNextPosition(), 90);
 			}
 
-			Vector2 impulse = collisionNormal * impulseMagnitude;
+			angularToLinearA = rAPPerp * angularVAInitial;
+			angularToLinearB = rBPPerp * angularVBInitial;
+			float mA = rbA->GetMass();
+			float mB = rbB->GetMass();
+			float mAInv = rbA->GetMassInv();
+			float mBInv = rbB->GetMassInv();
+			float eA = rbA->GetRestitution();
+			float eB = rbB->GetRestitution();
+			//eA = .1f;
+			Vector2 relativeVelocityAB = (vAInitial + angularToLinearA) - (vBInitial + angularToLinearB);
+			float contactVelocity = relativeVelocityAB.Dot(collisionNormal);
 
-			if (!rb1->IsStatic())
+			//float numerator = (relativeVelocityAB * -(1 + (eA * eB))).Dot(collisionNormal);
+			float numerator = -(1 + (eA * eB)) * contactVelocity;
+			float denominator = mAInv + mBInv + 
+				(rAPPerp.Dot(collisionNormal) * rAPPerp.Dot(collisionNormal) * IAInv) + 
+				(rBPPerp.Dot(collisionNormal) * rBPPerp.Dot(collisionNormal) * IBInv);
+
+			float j = Abs(numerator / denominator);
+			Vector2 jn = collisionNormal * j;
+
+
+			//float crossAJN = (contactPoint1 - rbA->GetNextPosition()).CrossKResult(jn);
+			//float perpADotJNN = rAPPerp.Dot(jn) / jn.GetMagnitude(); // eq 8b
+			//float perpADotJN = rAPPerp.Dot(jn); // eq 8b
+			//float perpBDotJN = rBPPerp.Dot(jn) / jn.GetMagnitude(); // eq 8b
+			//float radiansA = RadiansToDegrees(perpADotJN);
+			//float radiansB = RadiansToDegrees(perpBDotJN);
+
+
+			if (!rbA->IsStatic())
 			{
-				float distribution = m2 / (m1 + m2);
-				if (rb2->IsStatic())
+				float distribution = mB / (mA + mB);
+				if (rbB->IsStatic())
 				{
 					distribution = 1;
 				}
 
-				Vector2 difference = transform1->GetTruePosition() - transform2->GetTruePosition();
+				Vector2 difference = transformA->GetTruePosition() - transformB->GetTruePosition();
 				if (difference.Dot(collisionNormal) > 0)
 				{
-					transform1->Move(collisionNormal * depth * distribution);
-					v1Final = v1Initial + (impulse * m1Inv);
-					angularV1Final = angularV1Initial + (r1Perp.CrossKResult(impulse) * I1Inv);
+					transformA->Move(collisionNormal * depth * distribution);					
+					vAFinal = vAInitial + (collisionNormal * (j * mAInv)); // eq 8a
+					angularVAFinal = angularVAInitial + (rAPPerp.Dot(jn) * IAInv); // eq 8b
 				}
 				else
 				{
-					transform1->Move(collisionNormal * depth * -distribution);
-					v1Final = v1Initial - (impulse * m1Inv);
-					angularV1Final = angularV1Initial + (r1Perp.CrossKResult(impulse) * I1Inv);
+					transformA->Move(collisionNormal * depth * -distribution);
+					vAFinal = vAInitial - (collisionNormal * (j * mAInv)); // eq 8a
+					angularVAFinal = angularVAInitial + (rAPPerp.Dot(jn * (-1)) * IAInv);
 				}
 
-				rb1->SetVelocity(v1Final);
-				rb1->SetAngularVelocity(angularV1Final);
+				//if (b_col1Added2 || b_col2Added1)
+				{
+					//if (vAFinal.GetMagnitude() > 0.005f)
+					{
+						rbA->SetVelocity(vAFinal);
+					}
+					//else
+					{
+						//rbA->SetVelocity(vAFinal * 0.5f);
+					}
+					if (Abs(RadiansToDegrees(angularVAFinal)) > 0.001f)
+					{
+						rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal));
+					}
+					//else
+					{
+						rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal * 0.5f));
+					}
+				}
 			}
 
-			if (!rb2->IsStatic())
+			if (!rbB->IsStatic())
 			{
-				float distribution = m1 / (m1 + m2);
-				if (rb1->IsStatic())
+				float distribution = mA / (mA + mB);
+				if (rbA->IsStatic())
 				{
 					distribution = 1;
 				}
 
-				Vector2 difference = transform2->GetTruePosition() - transform1->GetTruePosition();
+				Vector2 difference = transformB->GetTruePosition() - transformA->GetTruePosition();
 				if (difference.Dot(collisionNormal) > 0)
 				{
-					transform2->Move(collisionNormal * depth * distribution);
-					v2Final = v2Initial + (impulse * m2Inv);
-					angularV2Final = angularV2Initial + (r2Perp.CrossKResult(impulse) * I2Inv);
+					transformB->Move(collisionNormal * depth * distribution);
+					vBFinal = vBInitial + (collisionNormal * (j * mBInv));
+					angularVBFinal = angularVBInitial + (rBPPerp.Dot(jn) * IBInv);
 				}
 				else
 				{
-					transform2->Move(collisionNormal * depth * -distribution);
-					v2Final = v2Initial - (impulse * m2Inv);
-					angularV2Final = angularV2Initial + (r2Perp.CrossKResult(impulse) * I2Inv);
+					transformB->Move(collisionNormal * depth * -distribution);
+					vBFinal = vBInitial - (collisionNormal * (j * mBInv));
+					angularVBFinal = angularVBInitial + (rBPPerp.Dot(jn * (-1)) * IBInv);
 				}
 
-				rb2->SetVelocity(v2Final);
-				rb2->SetAngularVelocity(angularV2Final);
+				//if (b_col1Added2 || b_col2Added1)
+				{
+					//if (vBFinal.GetMagnitude() > 0.005f)
+					{
+						rbB->SetVelocity(vBFinal);
+					}
+					//else
+					{
+						//rbB->SetVelocity(vBFinal * 0.5f);
+					}
+					if (Abs(RadiansToDegrees(angularVBFinal)) > 0.001f)
+					{
+						rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal));
+					}
+					else
+					{
+						rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal * 0.5f));
+					}
+				}
 			}
-		}
 
-		// For Collider events - Fire OnActiveCollision while there is a collision happening
-		if (collider1->GetType() == ComponentTypes::T_BoxCollider)
-		{
-			CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
-		}
-		else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
-		{
-			CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
-		}
-		// For Collider events - Fire OnActiveCollision while there is a collision happening
-		if (collider2->GetType() == ComponentTypes::T_BoxCollider)
-		{
-			CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
-		}
-		else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
-		{
-			CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
+
+			//if (contactCount == 2)
+			//{
+			//	rbA->SetAngularVelocity(0);
+			//	rbB->SetAngularVelocity(0);
+			//}
 		}
 
 		return b_colliding;
@@ -289,7 +350,7 @@ namespace FlatEngine
 					contact1 = vertices2[j];
 					contactCount = 1;
 				}
-				else if (distance == shortestDistanceFrom1)
+				else if (distance <= shortestDistanceFrom1 + 0.01f && distance >= shortestDistanceFrom1 - 0.01f)
 				{
 					contact2 = vertices2[j];
 					contactCount = 2;
@@ -302,13 +363,13 @@ namespace FlatEngine
 			{
 				float distance = GetDistanceToLine(vertices2[i], vertices2[fmod(i + 1, vertices2.size())], vertices1[j]);
 
-				if (distance < shortestDistanceFrom2)
+				if (distance < shortestDistanceFrom2 && distance < shortestDistanceFrom1)
 				{
 					shortestDistanceFrom2 = distance;
 					contact1 = vertices1[j];
 					contactCount = 1;
 				}
-				else if (distance == shortestDistanceFrom2)
+				else if (distance <= shortestDistanceFrom2 + 0.001f && distance >= shortestDistanceFrom2 - 0.001f && distance < shortestDistanceFrom1)
 				{
 					contact2 = vertices1[j];
 					contactCount = 2;

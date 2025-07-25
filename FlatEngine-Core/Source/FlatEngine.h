@@ -385,6 +385,13 @@ namespace FlatEngine
 	extern int Max(int first, int second);
 	extern double Max(double first, double second);
 
+	extern float RadiansToDegrees(float radians);
+	extern float DegreesToRadians(float degrees);
+
+	extern float Abs(float value);
+	extern double Abs(double value);
+	extern int Abs(int value);
+
 	// Json parsing
 	extern json CreateJsonFromObject(GameObject gameObject);
 	extern GameObject* CreateObjectFromJson(json objectJson, Scene* scene);

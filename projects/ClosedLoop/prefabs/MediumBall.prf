@@ -10,20 +10,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 31,
-                    "rotation": 0.0,
+                    "id": 26,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 2.323887348175049,
+                    "xPos": 13.502458572387695,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 11.047151565551758,
+                    "yPos": 6.832866191864014,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 32,
+                    "id": 27,
                     "path": "..\\projects\\ClosedLoop\\images\\sprites\\explosion2\\explosion_3.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -42,13 +42,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 33,
-                    "mass": 3.0,
+                    "gravity": 1.0,
+                    "id": 28,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -57,7 +57,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "",
-                    "id": 34,
+                    "id": 29,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -71,11 +71,11 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeRadius": 0.6399999856948853,
-                    "id": 35,
+                    "id": 30,
                     "type": "CircleCollider"
                 }
             ],
-            "id": 8,
+            "id": 7,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -123,8 +123,8 @@
             "name": "MediumBall",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 2.323887348175049,
-            "spawnLocationY": 11.047151565551758,
+            "spawnLocationX": 13.502458572387695,
+            "spawnLocationY": 6.832866191864014,
             "tags": [
                 {
                     "Collectable": false

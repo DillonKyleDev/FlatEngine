@@ -37,7 +37,7 @@ namespace FlatEngine
 		m_currentTime = 0;
 		m_pausedTime = 0;
 		m_framesCounted = 0;
-		m_deltaTime = 0.005f;
+		m_deltaTime = 0.001f; // Minimum "time" to pass for each frame 0.12f = 120fps
 		m_accumulator = m_deltaTime;		
 		m_hoveredButtons = std::vector<Button>();
 		m_objectsQueuedForDelete = std::vector<long>();
@@ -480,14 +480,14 @@ namespace FlatEngine
 		{
 			if (rigidBody.second.IsActive())
 			{
-				rigidBody.second.ApplyPhysics((float)m_deltaTime);
+				rigidBody.second.ApplyPhysics(m_deltaTime);
 			}
 		}
 		for (std::pair<const long, RigidBody>& rigidBody : GetLoadedProject().GetPersistantGameObjectScene()->GetRigidBodies())
 		{
 			if (rigidBody.second.IsActive())
 			{
-				rigidBody.second.ApplyPhysics((float)m_deltaTime);
+				rigidBody.second.ApplyPhysics(m_deltaTime);
 			}
 		}
 		

@@ -36,8 +36,8 @@ function OnCircleCollision(collidedWith)
 end
 
 function OnCircleCollisionEnter(collidedWith)
-     LogString(collidedWith:GetParent():GetName())
-     Destroy(collidedWith:GetParent():GetID())
+     -- LogString(collidedWith:GetParent():GetName())
+     -- Destroy(collidedWith:GetParent():GetID())
 end
 
 function OnCircleCollisionLeave(collidedWith)

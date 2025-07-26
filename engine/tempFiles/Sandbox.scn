@@ -10,13 +10,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 4,
-                    "rotation": 356.5,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 2.0,
+                    "xPos": 2.1000003814697266,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 7.290356159210205,
+                    "yPos": 3.433213233947754,
                     "yScale": 1.0
                 },
                 {
@@ -116,8 +116,8 @@
             "name": "Box",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 2.0,
-            "spawnLocationY": 7.290356159210205,
+            "spawnLocationX": 2.1000003814697266,
+            "spawnLocationY": 3.433213233947754,
             "tags": [
                 {
                     "Collectable": false
@@ -505,7 +505,7 @@
                     "xPos": 1.7000000476837158,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 6.699999809265137,
+                    "yPos": 2.200000047683716,
                     "yScale": 1.0
                 },
                 {
@@ -523,7 +523,7 @@
                     "id": 17,
                     "type": "Camera",
                     "width": 50.0,
-                    "zoom": 43.099998474121094
+                    "zoom": 24.700000762939453
                 }
             ],
             "id": 4,
@@ -575,7 +575,7 @@
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 1.7000000476837158,
-            "spawnLocationY": 6.699999809265137,
+            "spawnLocationY": 2.200000047683716,
             "tags": [
                 {
                     "Collectable": false
@@ -631,7 +631,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 18,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 8.573887825012207,
@@ -675,13 +675,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 21,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -955,7 +955,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 26,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 13.502458572387695,
@@ -986,13 +986,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 28,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -1124,13 +1124,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 31,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 2.323887348175049,
+                    "xPos": -4.588438034057617,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 11.047151565551758,
+                    "yPos": 8.658472061157227,
                     "yScale": 1.0
                 },
                 {
@@ -1155,13 +1155,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 33,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -1236,8 +1236,8 @@
             "name": "MediumBall",
             "parent": -1,
             "prefabName": "MediumBall",
-            "spawnLocationX": 2.323887348175049,
-            "spawnLocationY": 11.047151565551758,
+            "spawnLocationX": -4.588438034057617,
+            "spawnLocationY": 8.658472061157227,
             "tags": [
                 {
                     "Collectable": false
@@ -1293,7 +1293,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 36,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 12.566802978515625,
@@ -1339,14 +1339,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 39,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -1456,13 +1456,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 40,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 16.129302978515625,
+                    "xPos": 2.0293025970458984,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 11.082515716552734,
+                    "yPos": 15.189659118652344,
                     "yScale": 1.0
                 },
                 {
@@ -1502,14 +1502,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 43,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -1562,8 +1562,8 @@
             "name": "Box",
             "parent": -1,
             "prefabName": "Box",
-            "spawnLocationX": 16.129302978515625,
-            "spawnLocationY": 11.082515716552734,
+            "spawnLocationX": 2.0293025970458984,
+            "spawnLocationY": 15.189659118652344,
             "tags": [
                 {
                     "Collectable": false
@@ -1619,7 +1619,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 44,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 15.879302978515625,
@@ -1665,14 +1665,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 47,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -1782,13 +1782,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 48,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 10.879302978515625,
+                    "xPos": 2.212635040283203,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 12.270015716552734,
+                    "yPos": 12.59144401550293,
                     "yScale": 1.0
                 },
                 {
@@ -1828,14 +1828,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 51,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -1888,8 +1888,8 @@
             "name": "Box",
             "parent": -1,
             "prefabName": "Box",
-            "spawnLocationX": 10.879302978515625,
-            "spawnLocationY": 12.270015716552734,
+            "spawnLocationX": 2.212635040283203,
+            "spawnLocationY": 12.59144401550293,
             "tags": [
                 {
                     "Collectable": false
@@ -1945,7 +1945,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 52,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 19.121501922607422,
@@ -1991,14 +1991,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 55,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -2108,13 +2108,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 56,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 7.379302978515625,
+                    "xPos": 2.1126365661621094,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 13.457515716552734,
+                    "yPos": 9.386085510253906,
                     "yScale": 1.0
                 },
                 {
@@ -2154,14 +2154,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 59,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -2214,8 +2214,8 @@
             "name": "Box",
             "parent": -1,
             "prefabName": "Box",
-            "spawnLocationX": 7.379302978515625,
-            "spawnLocationY": 13.457515716552734,
+            "spawnLocationX": 2.1126365661621094,
+            "spawnLocationY": 9.386085510253906,
             "tags": [
                 {
                     "Collectable": false
@@ -2271,7 +2271,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 60,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": -16.058197021484375,
@@ -2317,14 +2317,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 63,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -2434,7 +2434,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 64,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": -22.558197021484375,
@@ -2480,14 +2480,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 67,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -2597,7 +2597,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 68,
-                    "rotation": 343.8299865722656,
+                    "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": -23.808197021484375,
@@ -2643,14 +2643,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.8999999761581421,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 71,
-                    "mass": 5.0,
-                    "terminalVelocity": 1.0,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
@@ -2760,7 +2760,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 72,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 7.816802978515625,
@@ -2791,13 +2791,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 74,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -2929,7 +2929,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 77,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 13.816802978515625,
@@ -2960,13 +2960,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 79,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -3098,7 +3098,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 82,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 16.004302978515625,
@@ -3129,13 +3129,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 84,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -3267,7 +3267,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 87,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 16.97098159790039,
@@ -3298,13 +3298,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 89,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -3436,7 +3436,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 92,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 11.691802978515625,
@@ -3467,13 +3467,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 94,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -3605,7 +3605,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 97,
-                    "rotation": 0.0,
+                    "rotation": 356.4306335449219,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 10.754302978515625,
@@ -3636,13 +3636,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.7599999904632568,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 99,
-                    "mass": 3.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -3774,7 +3774,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 102,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 7.504302978515625,
@@ -3818,13 +3818,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 105,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -3935,7 +3935,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 106,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 15.066802978515625,
@@ -3979,13 +3979,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 109,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -4096,7 +4096,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 110,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 14.316802978515625,
@@ -4140,13 +4140,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 113,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -4257,7 +4257,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 114,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 10.379302978515625,
@@ -4301,13 +4301,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 117,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -4418,7 +4418,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 118,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 8.816802978515625,
@@ -4462,13 +4462,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 121,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -4579,10 +4579,10 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 122,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 6.754302978515625,
+                    "xPos": 8.104732513427734,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
                     "yPos": 23.582515716552734,
@@ -4623,13 +4623,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 125,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -4683,7 +4683,7 @@
             "name": "SmallBall",
             "parent": -1,
             "prefabName": "SmallBall",
-            "spawnLocationX": 6.754302978515625,
+            "spawnLocationX": 8.104732513427734,
             "spawnLocationY": 23.582515716552734,
             "tags": [
                 {
@@ -4740,7 +4740,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 126,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 13.004302978515625,
@@ -4784,13 +4784,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 129,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -4901,7 +4901,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 130,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 17.191802978515625,
@@ -4945,13 +4945,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 133,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5062,7 +5062,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 134,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 20.504302978515625,
@@ -5106,13 +5106,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 137,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5223,7 +5223,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 138,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 13.254302978515625,
@@ -5267,13 +5267,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 141,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5384,7 +5384,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 142,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 15.941802978515625,
@@ -5428,13 +5428,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 145,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5545,7 +5545,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 146,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 18.879302978515625,
@@ -5589,13 +5589,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 149,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5706,13 +5706,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 150,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 4.941802978515625,
+                    "xPos": 11.34146499633789,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 20.457515716552734,
+                    "yPos": 19.91905403137207,
                     "yScale": 1.0
                 },
                 {
@@ -5750,13 +5750,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 153,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5810,8 +5810,8 @@
             "name": "SmallBall",
             "parent": -1,
             "prefabName": "SmallBall",
-            "spawnLocationX": 4.941802978515625,
-            "spawnLocationY": 20.457515716552734,
+            "spawnLocationX": 11.34146499633789,
+            "spawnLocationY": 19.91905403137207,
             "tags": [
                 {
                     "Collectable": false
@@ -5867,7 +5867,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 154,
-                    "rotation": 0.0,
+                    "rotation": 50.42159652709961,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 21.316802978515625,
@@ -5911,13 +5911,13 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
+                    "angularDrag": 0.800000011920929,
                     "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
+                    "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
-                    "gravity": 0.0,
+                    "gravity": 1.0,
                     "id": 157,
-                    "mass": 2.0,
+                    "mass": 10.0,
                     "terminalVelocity": 1.0,
                     "type": "RigidBody",
                     "windResistance": 1.0
@@ -5973,6 +5973,332 @@
             "prefabName": "SmallBall",
             "spawnLocationX": 21.316802978515625,
             "spawnLocationY": 24.395015716552734,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 158,
+                    "rotation": 90.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -1.991455078125,
+                    "xScale": 22.100000381469727,
+                    "yOrigin": 0.0,
+                    "yPos": 12.826923370361328,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isContinuous": true,
+                    "_isSolid": true,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 2.0,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 2.0,
+                    "id": 159,
+                    "type": "BoxCollider"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 160,
+                    "path": "..\\projects\\ClosedLoop\\images\\colors\\steel.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 8.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_allowTorques": true,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isStatic": true,
+                    "angularDrag": 0.9900000095367432,
+                    "equilibriumForce": 2.0,
+                    "fallingGravity": 0.0,
+                    "friction": 0.009999999776482582,
+                    "gravity": 0.0,
+                    "id": 161,
+                    "mass": 1.0,
+                    "terminalVelocity": 1.0,
+                    "type": "RigidBody",
+                    "windResistance": 1.0
+                }
+            ],
+            "id": 38,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "name": "Ramp",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -1.991455078125,
+            "spawnLocationY": 12.826923370361328,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 162,
+                    "rotation": 90.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 5.5037841796875,
+                    "xScale": 22.100000381469727,
+                    "yOrigin": 0.0,
+                    "yPos": 9.749580383300781,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isContinuous": true,
+                    "_isSolid": true,
+                    "_isTileMapCollider": false,
+                    "_showActiveRadius": false,
+                    "activeHeight": 2.0,
+                    "activeLayer": 0,
+                    "activeOffsetX": 0.0,
+                    "activeOffsetY": 0.0,
+                    "activeWidth": 2.0,
+                    "id": 163,
+                    "type": "BoxCollider"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 164,
+                    "path": "..\\projects\\ClosedLoop\\images\\colors\\steel.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 8.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_allowTorques": true,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isStatic": true,
+                    "angularDrag": 0.9900000095367432,
+                    "equilibriumForce": 2.0,
+                    "fallingGravity": 0.0,
+                    "friction": 0.009999999776482582,
+                    "gravity": 0.0,
+                    "id": 165,
+                    "mass": 1.0,
+                    "terminalVelocity": 1.0,
+                    "type": "RigidBody",
+                    "windResistance": 1.0
+                }
+            ],
+            "id": 39,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "name": "Ramp",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 5.5037841796875,
+            "spawnLocationY": 9.749580383300781,
             "tags": [
                 {
                     "Collectable": false

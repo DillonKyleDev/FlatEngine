@@ -19,24 +19,25 @@ namespace FlatEngine
 		m_velocity = Vector2(0, 0);	
 		m_acceleration = Vector2(0, 0);
 		m_friction = 0.01f;
+		m_linearDrag = 0.98f; // 0.999f for pool
+
 		// Rotational
 		m_I = 1;
 		m_1overI = 1;
 		m_pendingTorques = 0;
 		m_angularVelocity = 0;
 		m_angularAcceleration = 0;
-		m_angularDrag = 0.95f;
+		m_angularDrag = 0.82f;
 		m_b_allowTorques = true;
 
 		m_restitution = 1;
 		m_equilibriumForce = 2;				
 		m_b_isGrounded = false;
 		m_b_isStatic = false;
-		m_forceCorrection = 0.01f;
 		m_gravity = 1;
-		m_fallingGravity = m_gravity * 1.2f;
-		m_terminalVelocity = m_gravity * 1;
-		m_windResistance = 1.0f;  // Lower value = more resistance
+		m_fallingGravity = m_gravity;
+		m_terminalVelocity = 3.0f;
+		m_windResistance = 0.9f;  // Lower value = more resistance
 	}
 
 	RigidBody::~RigidBody()
@@ -70,24 +71,23 @@ namespace FlatEngine
 	void RigidBody::CalculatePhysics()
 	{
 		ApplyGravity();
-		ApplyFriction();
-		ApplyEquilibriumForce();
+		//ApplyFriction();
+		//ApplyEquilibriumForce();
 	}
 
 	void RigidBody::ApplyPhysics(float deltaTime)
 	{
 		Transform* transform = GetParent()->GetTransform();
-		Vector2 position = transform->GetPosition();
-		m_velocity = m_velocity + m_acceleration;
-		m_acceleration = m_pendingForces * m_1overMass * m_forceCorrection;
-		m_velocity = m_velocity * AdjustedFriction();
+		Vector2 position = transform->GetPosition();		
+		m_acceleration = m_pendingForces * m_1overMass * deltaTime; // *.04f; // Makes the calculations more accurate
+		m_velocity = (m_velocity + m_acceleration) * m_linearDrag;	// linear drag dampens velocity so it becomes 0 eventually	
 		transform->SetPosition(position + m_velocity);	
 		m_pendingForces = Vector2(0, 0);
 
 		if (m_b_allowTorques)
 		{
 			m_angularAcceleration = m_pendingTorques * m_1overI;
-			m_angularVelocity += m_angularAcceleration;	
+			m_angularVelocity += (m_angularAcceleration * deltaTime);
 			m_angularVelocity *= m_angularDrag;
 			transform->SetRotation((float)fmod(transform->GetRotation() + m_angularVelocity, 360));
 			m_angularAcceleration = 0;
@@ -98,7 +98,7 @@ namespace FlatEngine
 	{
 		if (!m_b_isStatic)
 		{
-			m_pendingForces = m_pendingForces + vel;
+			m_velocity = m_velocity + vel;
 		}
 	}
 
@@ -110,11 +110,11 @@ namespace FlatEngine
 			{
 				if (m_velocity.y < 0)
 				{
-					m_pendingForces.y -= m_fallingGravity;
+					m_velocity.y -= m_fallingGravity * GetDeltaTime();
 				}
 				else
 				{
-					m_pendingForces.y -= m_gravity;
+					m_velocity.y -= m_gravity * GetDeltaTime();
 				}
 			}
 		}
@@ -124,11 +124,11 @@ namespace FlatEngine
 			{
 				if (m_velocity.y > 0)
 				{
-					m_pendingForces.y -= m_fallingGravity;
+					m_velocity.y -= m_fallingGravity * GetDeltaTime();
 				}
 				else
 				{
-					m_pendingForces.y -= m_gravity;
+					m_velocity.y -= m_gravity * GetDeltaTime();
 				}
 			}
 		}

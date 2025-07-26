@@ -916,12 +916,13 @@ namespace FlatGui
 				Vector2 center = boxCollider->GetCenterCoord();
 
 				boxCollider->UpdateActiveEdges(FG_sceneViewGridStep.x, FG_sceneViewCenter);
+				std::vector<Vector2> colliderCorners = boxCollider->GetCorners();
 
 				Vector2 corners[4] = {
-					ConvertWorldToScreen(boxCollider->GetCorners()[0], FG_sceneViewCenter, FG_sceneViewGridStep.x),
-					ConvertWorldToScreen(boxCollider->GetCorners()[1], FG_sceneViewCenter, FG_sceneViewGridStep.x),
-					ConvertWorldToScreen(boxCollider->GetCorners()[2], FG_sceneViewCenter, FG_sceneViewGridStep.x),
-					ConvertWorldToScreen(boxCollider->GetCorners()[3], FG_sceneViewCenter, FG_sceneViewGridStep.x),
+					ConvertWorldToScreen(colliderCorners[0], FG_sceneViewCenter, FG_sceneViewGridStep.x),
+					ConvertWorldToScreen(colliderCorners[1], FG_sceneViewCenter, FG_sceneViewGridStep.x),
+					ConvertWorldToScreen(colliderCorners[2], FG_sceneViewCenter, FG_sceneViewGridStep.x),
+					ConvertWorldToScreen(colliderCorners[3], FG_sceneViewCenter, FG_sceneViewGridStep.x),
 				};
 
 				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);

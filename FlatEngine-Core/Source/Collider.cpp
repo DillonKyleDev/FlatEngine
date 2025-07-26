@@ -71,7 +71,7 @@ namespace FlatEngine
 				b_colliding = CheckForCollisionBoxBoxSAT(boxCol1, boxCol2, collisionNormal, depth);
 				if (b_colliding)
 				{
-					FindContactPointsPolygonPolygon(boxCol1->GetNextCorners(), boxCol2->GetNextCorners(), contactPoint1, contactPoint2, contactCount);
+					FindContactPointsPolygonPolygon(boxCol1->GetCorners(), boxCol2->GetCorners(), contactPoint1, contactPoint2, contactCount);
 				}
 			}
 			else if (collider1->GetTypeString() == "CircleCollider" && collider2->GetTypeString() == "BoxCollider")
@@ -136,6 +136,8 @@ namespace FlatEngine
 		{			
 			collider1->SetColliding(true);
 			collider2->SetColliding(true);
+			bool b_col1Added2 = collider1->AddCollidingObject(collider2);
+			bool b_col2Added1 = collider2->AddCollidingObject(collider1);
 
 			// For Collider events - Fire OnActiveCollision while there is a collision happening
 			if (collider1->GetType() == ComponentTypes::T_BoxCollider)
@@ -161,12 +163,22 @@ namespace FlatEngine
 				return true;
 			}
 
-			bool b_col1Added2 = collider1->AddCollidingObject(collider2);
-			bool b_col2Added1 = collider2->AddCollidingObject(collider1);
 			Transform* transformA = collider1->GetParent()->GetTransform();
 			Transform* transformB = collider2->GetParent()->GetTransform();
 			RigidBody* rbA = collider1->GetParent()->GetRigidBody();
 			RigidBody* rbB = collider2->GetParent()->GetRigidBody();
+			RigidBody empty = RigidBody();
+
+			if (rbA == nullptr)
+			{
+				rbA = &empty;
+				rbA->SetIsStatic(true);
+			}
+			if (rbB == nullptr)
+			{
+				rbB = &empty;
+				rbB->SetIsStatic(true);
+			}
 			Vector2 vAInitial = rbA->GetVelocity();
 			Vector2 vBInitial = rbB->GetVelocity();
 			Vector2 vAFinal = Vector2();
@@ -205,7 +217,8 @@ namespace FlatEngine
 			float mBInv = rbB->GetMassInv();
 			float eA = rbA->GetRestitution();
 			float eB = rbB->GetRestitution();
-			//eA = .1f;
+			//eA = 0.6f;
+			eA = 1;
 			Vector2 relativeVelocityAB = (vAInitial + angularToLinearA) - (vBInitial + angularToLinearB);
 			float contactVelocity = relativeVelocityAB.Dot(collisionNormal);
 
@@ -218,6 +231,10 @@ namespace FlatEngine
 			float j = Abs(numerator / denominator);
 			Vector2 jn = collisionNormal * j;
 
+			float windDrag = 1.0f;
+			float angularDrag = 1.0f;
+			float linearImpulseDamp = 1.0f;
+			float angularImpulseDamp = 1;
 
 			//float crossAJN = (contactPoint1 - rbA->GetNextPosition()).CrossKResult(jn);
 			//float perpADotJNN = rAPPerp.Dot(jn) / jn.GetMagnitude(); // eq 8b
@@ -229,7 +246,7 @@ namespace FlatEngine
 
 			if (!rbA->IsStatic())
 			{
-				float distribution = mB / (mA + mB);
+				float distribution = mA / (mA + mB);
 				if (rbB->IsStatic())
 				{
 					distribution = 1;
@@ -239,40 +256,40 @@ namespace FlatEngine
 				if (difference.Dot(collisionNormal) > 0)
 				{
 					transformA->Move(collisionNormal * depth * distribution);					
-					vAFinal = vAInitial + (collisionNormal * (j * mAInv)); // eq 8a
-					angularVAFinal = angularVAInitial + (rAPPerp.Dot(jn) * IAInv); // eq 8b
+					vAFinal = vAInitial + ((collisionNormal * (j * mAInv)) * linearImpulseDamp); // eq 8a
+					angularVAFinal = angularVAInitial + ((rAPPerp.Dot(jn) * IAInv) * angularImpulseDamp); // eq 8b
 				}
 				else
 				{
 					transformA->Move(collisionNormal * depth * -distribution);
-					vAFinal = vAInitial - (collisionNormal * (j * mAInv)); // eq 8a
-					angularVAFinal = angularVAInitial + (rAPPerp.Dot(jn * (-1)) * IAInv);
+					vAFinal = vAInitial - ((collisionNormal * (j * mAInv)) * linearImpulseDamp); // eq 8a
+					angularVAFinal = angularVAInitial + ((rAPPerp.Dot(jn * (-1)) * IAInv) * angularImpulseDamp);
 				}
 
 				//if (b_col1Added2 || b_col2Added1)
 				{
-					//if (vAFinal.GetMagnitude() > 0.005f)
+					//if (vAFinal.GetMagnitude() > 0.01f)
 					{
-						rbA->SetVelocity(vAFinal);
+						rbA->SetVelocity(vAFinal * windDrag);
 					}
 					//else
 					{
 						//rbA->SetVelocity(vAFinal * 0.5f);
 					}
-					if (Abs(RadiansToDegrees(angularVAFinal)) > 0.001f)
+					//if (Abs(RadiansToDegrees(angularVAFinal)) > 0.001f)
 					{
-						rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal));
+						rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal * angularDrag));
 					}
 					//else
 					{
-						rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal * 0.5f));
+						//rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal * 0.5f));
 					}
 				}
 			}
 
 			if (!rbB->IsStatic())
 			{
-				float distribution = mA / (mA + mB);
+				float distribution = mB / (mA + mB);				
 				if (rbA->IsStatic())
 				{
 					distribution = 1;
@@ -282,33 +299,33 @@ namespace FlatEngine
 				if (difference.Dot(collisionNormal) > 0)
 				{
 					transformB->Move(collisionNormal * depth * distribution);
-					vBFinal = vBInitial + (collisionNormal * (j * mBInv));
-					angularVBFinal = angularVBInitial + (rBPPerp.Dot(jn) * IBInv);
+					vBFinal = vBInitial + ((collisionNormal * (j * mBInv)) * linearImpulseDamp);
+					angularVBFinal = angularVBInitial + ((rBPPerp.Dot(jn) * IBInv) * angularImpulseDamp);
 				}
 				else
 				{
 					transformB->Move(collisionNormal * depth * -distribution);
-					vBFinal = vBInitial - (collisionNormal * (j * mBInv));
-					angularVBFinal = angularVBInitial + (rBPPerp.Dot(jn * (-1)) * IBInv);
+					vBFinal = vBInitial - ((collisionNormal * (j * mBInv)) * linearImpulseDamp);
+					angularVBFinal = angularVBInitial + ((rBPPerp.Dot(jn * (-1)) * IBInv) * angularImpulseDamp);
 				}
 
 				//if (b_col1Added2 || b_col2Added1)
 				{
-					//if (vBFinal.GetMagnitude() > 0.005f)
+					//if (vBFinal.GetMagnitude() > 0.01f)
 					{
-						rbB->SetVelocity(vBFinal);
+						rbB->SetVelocity(vBFinal * windDrag);
 					}
 					//else
 					{
 						//rbB->SetVelocity(vBFinal * 0.5f);
 					}
-					if (Abs(RadiansToDegrees(angularVBFinal)) > 0.001f)
+					//if (Abs(RadiansToDegrees(angularVBFinal)) > 0.001f)
 					{
-						rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal));
+						rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal * angularDrag));
 					}
-					else
+					//else
 					{
-						rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal * 0.5f));
+						//rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal * 0.5f));
 					}
 				}
 			}
@@ -391,8 +408,8 @@ namespace FlatEngine
 
 	bool Collider::CheckForCollisionBoxBoxSAT(BoxCollider* boxCol1, BoxCollider* boxCol2, Vector2& collisionNormal, float& depth)
 	{
-		std::vector<Vector2> box1Vertices = boxCol1->GetNextCorners();
-		std::vector<Vector2> box2Vertices = boxCol2->GetNextCorners();
+		std::vector<Vector2> box1Vertices = boxCol1->GetCorners();
+		std::vector<Vector2> box2Vertices = boxCol2->GetCorners();
 		float minBox1 = FLT_MAX;
 		float maxBox1 = -FLT_MAX;
 		float minBox2 = FLT_MAX;
@@ -408,7 +425,7 @@ namespace FlatEngine
 			maxBox2 = -FLT_MAX;
 			Vector2 start = box1Vertices[i];
 			Vector2 end = box1Vertices[fmod((i + 1), box1Vertices.size())];
-			axis = end - start;
+			axis = Vector2::Normalize(end - start);
 
 			ProjectVerticesOntoAxis(box1Vertices, axis, minBox1, maxBox1);
 			ProjectVerticesOntoAxis(box2Vertices, axis, minBox2, maxBox2);
@@ -423,7 +440,7 @@ namespace FlatEngine
 			if (overlapDepth < depth)
 			{
 				depth = overlapDepth;
-				collisionNormal = Vector2::Normalize(axis);
+				collisionNormal = axis;
 			}
 		}
 
@@ -435,7 +452,7 @@ namespace FlatEngine
 			maxBox2 = -FLT_MAX;
 			Vector2 start = box2Vertices[i];
 			Vector2 end = box2Vertices[fmod((i + 1), box2Vertices.size())];
-			axis = end - start;
+			axis = Vector2::Normalize(end - start);
 
 			ProjectVerticesOntoAxis(box1Vertices, axis, minBox1, maxBox1);
 			ProjectVerticesOntoAxis(box2Vertices, axis, minBox2, maxBox2);
@@ -450,7 +467,7 @@ namespace FlatEngine
 			if (overlapDepth < depth)
 			{
 				depth = overlapDepth;
-				collisionNormal = Vector2::Normalize(axis);
+				collisionNormal = axis;
 			}
 		}
 
@@ -460,7 +477,7 @@ namespace FlatEngine
 	bool Collider::CheckForCollisionBoxRayCastSAT(BoxCollider* boxCol, RayCast* rayCast)
 	{
 		bool b_colliding = true;
-		Vector2* boxCorners = boxCol->GetCorners();
+		std::vector<Vector2> boxCorners = boxCol->GetCorners();
 		Vector2 castPoint = rayCast->GetPoint();
 
 		if (!IsPointProjectedInside(boxCorners[0], boxCorners[1], castPoint))
@@ -482,7 +499,7 @@ namespace FlatEngine
 
 	bool Collider::CheckForCollisionBoxCircleSAT(BoxCollider* boxCol, CircleCollider* circleCol, Vector2& collisionNormal, float& depth)
 	{		
-		std::vector<Vector2> vertices = boxCol->GetNextCorners();		
+		std::vector<Vector2> vertices = boxCol->GetCorners();		
 		Vector2 circlePos = circleCol->GetParent()->GetTransform()->GetTruePosition();
 		float minBox = FLT_MAX;
 		float maxBox = -FLT_MAX;
@@ -497,7 +514,7 @@ namespace FlatEngine
 			maxBox = -FLT_MAX;
 			Vector2 start = vertices[i];
 			Vector2 end = vertices[fmod((i + 1), vertices.size())];
-			axis = end - start;
+			axis = Vector2::Normalize(end - start);
 
 			ProjectVerticesOntoAxis(vertices, axis, minBox, maxBox);
 			ProjectCircleOntoAxis(circleCol, axis, minCircle, maxCircle);
@@ -512,7 +529,7 @@ namespace FlatEngine
 			if (overlapDepth < depth)
 			{
 				depth = overlapDepth;
-				collisionNormal = Vector2::Normalize(axis);
+				collisionNormal = axis;
 			}
 		}
 
@@ -520,7 +537,7 @@ namespace FlatEngine
 		maxBox = -FLT_MAX;
 		int closestPointIndex = FindClosestVertexToPoint(vertices, circlePos);
 		Vector2 closesPoint = vertices[closestPointIndex];
-		axis = closesPoint - circlePos;
+		axis = Vector2::Normalize(closesPoint - circlePos);
 
 		ProjectVerticesOntoAxis(vertices, axis, minBox, maxBox);
 		ProjectCircleOntoAxis(circleCol, axis, minCircle, maxCircle);
@@ -535,7 +552,7 @@ namespace FlatEngine
 		if (overlapDepth < depth)
 		{
 			depth = overlapDepth;
-			collisionNormal = Vector2::Normalize(axis);
+			collisionNormal = axis;
 		}
 
 		return true;

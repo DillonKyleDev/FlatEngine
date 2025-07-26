@@ -79,6 +79,8 @@ namespace FlatEngine
 		Vector2 m_velocity;
 		Vector2 m_acceleration;
 		float m_friction;
+		float m_linearDrag;
+
 		// Rotational
 		float m_I;
 		float m_1overI;

@@ -121,9 +121,12 @@ public:
 
 			if ((GameLoopStarted() && !GameLoopPaused()) || (GameLoopPaused() && A_GameLoop->IsFrameSkipped()))
 			{
+				int iterations = 0;
+				int minIter = 1;
+
 				// Profiler
 				Uint32 updateLoopStart = 0;
-				static Uint32 updateLoopEnd = 0;				
+				static Uint32 updateLoopEnd = 0;
 				updateLoopStart = FL::GetEngineTime();
 				Uint32 everythingElseHangTime = updateLoopStart - updateLoopEnd;
 				FL::AddProcessData("Not GameLoop", (float)everythingElseHangTime);
@@ -144,17 +147,22 @@ public:
 				if (!GameLoopPaused() || A_GameLoop->IsFrameSkipped())
 				{
 					A_GameLoop->SetFrameSkipped(false);
-					
-					while (A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
-					{						
+
+					while (iterations < minIter || A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
+					{
 						FL::HandleEvents(b_hasQuit);
 						A_GameLoop->Update();
 
 						A_GameLoop->m_time += A_GameLoop->m_deltaTime;
-						A_GameLoop->m_accumulator -= A_GameLoop->m_deltaTime;
+						if (A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
+						{
+							A_GameLoop->m_accumulator -= A_GameLoop->m_deltaTime;
+						}
+
+						iterations++;
 					}
 				}
-
+				
 				// Get time it took to get back to GameLoopUpdate()
 				frameStart = FL::GetEngineTime();
 
@@ -166,7 +174,7 @@ public:
 
 				Uint32 hangTime = FL::GetEngineTime() - updateLoopStart;
 				FL::AddProcessData("GameLoop (variable executions)", (float)hangTime);				
-				updateLoopEnd = FL::GetEngineTime();
+				updateLoopEnd = FL::GetEngineTime();				
 			}
 			else
 			{

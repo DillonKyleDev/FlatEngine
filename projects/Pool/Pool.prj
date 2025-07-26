@@ -2,7 +2,7 @@
     "Project Properties": [
         {
             "_autoSave": true,
-            "_clearLogBuffer": false,
+            "_clearLogBuffer": true,
             "_fullscreen": false,
             "_showAnimationPreview": false,
             "_showAnimator": false,
@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\Pool\\scenes",
             "effectsVolume": 10,
-            "focusedGameObjectID": -1,
+            "focusedGameObjectID": 6,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\Pool\\scenes\\Table.scn",
             "musicVolume": 10,
@@ -33,8 +33,8 @@
             "sceneToLoadAtRuntime": "",
             "sceneViewGridStepX": 25.0,
             "sceneViewGridStepY": 25.0,
-            "sceneViewScrollingX": 611.93115234375,
-            "sceneViewScrollingY": 331.3203125
+            "sceneViewScrollingX": 416.93115234375,
+            "sceneViewScrollingY": 291.3203125
         }
     ]
 }

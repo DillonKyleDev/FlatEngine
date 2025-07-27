@@ -69,6 +69,7 @@ namespace FlatEngine
 				BoxCollider* boxCol2 = static_cast<BoxCollider*>(collider2);
 
 				b_colliding = CheckForCollisionBoxBoxSAT(boxCol1, boxCol2, collisionNormal, depth);
+
 				if (b_colliding)
 				{
 					FindContactPointsPolygonPolygon(boxCol1->GetCorners(), boxCol2->GetCorners(), contactPoint1, contactPoint2, contactCount);
@@ -193,20 +194,36 @@ namespace FlatEngine
 			Vector2 rBPPerp = Vector2();
 			Vector2 angularToLinearA = Vector2();
 			Vector2 angularToLinearB = Vector2();
+			float impulseScalar;
 
 			if (contactCount == 2)
 			{
 				rAPPerp = Vector2::Rotate(collisionNormal, 90);
 				rBPPerp = Vector2::Rotate(collisionNormal, 90);	
-				//rbA->SetAngularVelocity(0);
-				//rbB->SetAngularVelocity(0);
-				//angularVAInitial = 0;
-				//angularVBInitial = 0;
+				impulseScalar = 0.5f;
+				AddLineToScene(Vector2(), contactPoint1, GetColor("white"), 2);
+				AddLineToScene(Vector2(), contactPoint2, GetColor("white"), 2);
 			}
 			else
 			{
-				rAPPerp = Vector2::Rotate(contactPoint1 - rbA->GetNextPosition(), 90);
-				rBPPerp = Vector2::Rotate(contactPoint1 - rbB->GetNextPosition(), 90);
+				impulseScalar = 1;
+
+				if (rbA->GetParent() != nullptr)
+				{
+					rAPPerp = Vector2::Rotate(contactPoint1 - rbA->GetNextPosition(), 90);
+				}
+				else
+				{
+					rAPPerp = transformA->GetTruePosition();
+				}
+				if (rbB->GetParent() != nullptr)
+				{
+					rBPPerp = Vector2::Rotate(contactPoint1 - rbB->GetNextPosition(), 90);
+				}
+				else
+				{
+					rBPPerp = transformB->GetTruePosition();
+				}	
 			}
 
 			angularToLinearA = rAPPerp * angularVAInitial;
@@ -217,17 +234,12 @@ namespace FlatEngine
 			float mBInv = rbB->GetMassInv();
 			float eA = rbA->GetRestitution();
 			float eB = rbB->GetRestitution();
-			//eA = 0.6f;
-			eA = 1;
+			eA = 0.6f;
 			Vector2 relativeVelocityAB = (vAInitial + angularToLinearA) - (vBInitial + angularToLinearB);
 			float contactVelocity = relativeVelocityAB.Dot(collisionNormal);
-
 			//float numerator = (relativeVelocityAB * -(1 + (eA * eB))).Dot(collisionNormal);
 			float numerator = -(1 + (eA * eB)) * contactVelocity;
-			float denominator = mAInv + mBInv + 
-				(rAPPerp.Dot(collisionNormal) * rAPPerp.Dot(collisionNormal) * IAInv) + 
-				(rBPPerp.Dot(collisionNormal) * rBPPerp.Dot(collisionNormal) * IBInv);
-
+			float denominator = mAInv + mBInv + (rAPPerp.Dot(collisionNormal) * rAPPerp.Dot(collisionNormal) * IAInv) + (rBPPerp.Dot(collisionNormal) * rBPPerp.Dot(collisionNormal) * IBInv);
 			float j = Abs(numerator / denominator);
 			Vector2 jn = collisionNormal * j;
 
@@ -235,14 +247,6 @@ namespace FlatEngine
 			float angularDrag = 1.0f;
 			float linearImpulseDamp = 1.0f;
 			float angularImpulseDamp = 1;
-
-			//float crossAJN = (contactPoint1 - rbA->GetNextPosition()).CrossKResult(jn);
-			//float perpADotJNN = rAPPerp.Dot(jn) / jn.GetMagnitude(); // eq 8b
-			//float perpADotJN = rAPPerp.Dot(jn); // eq 8b
-			//float perpBDotJN = rBPPerp.Dot(jn) / jn.GetMagnitude(); // eq 8b
-			//float radiansA = RadiansToDegrees(perpADotJN);
-			//float radiansB = RadiansToDegrees(perpBDotJN);
-
 
 			if (!rbA->IsStatic())
 			{
@@ -345,15 +349,30 @@ namespace FlatEngine
 	{
 		Vector2 insideVector = ending - starting;
 		Vector2 testVector = point - starting;
-		Vector2 projectedVector = testVector.ProjectedOnto(insideVector);		
+		Vector2 projectedVector = testVector.ProjectedOnto(insideVector);	
+		Vector2 connectingVector = Vector2();
 
-		return (projectedVector - testVector).GetMagnitude();
+		if (projectedVector.Dot(Vector2::Normalize(insideVector)) < 0)
+		{
+			connectingVector = point - starting;
+		}
+		else if (projectedVector.GetMagnitude() > insideVector.GetMagnitude())
+		{
+			connectingVector = point - ending;
+		}
+		else
+		{
+			connectingVector = projectedVector - testVector;
+		}
+
+		return connectingVector.GetMagnitude();
 	}
 
 	void Collider::FindContactPointsPolygonPolygon(std::vector<Vector2> vertices1, std::vector<Vector2> vertices2, Vector2& contact1, Vector2& contact2, int& contactCount)
 	{		
 		float shortestDistanceFrom1 = FLT_MAX;
 		float shortestDistanceFrom2 = FLT_MAX;
+		int firstLoopCount = 0;
 
 		for (int i = 0; i < vertices1.size(); i++)
 		{
@@ -361,16 +380,18 @@ namespace FlatEngine
 			{
 				float distance = GetDistanceToLine(vertices1[i], vertices1[fmod(i + 1, vertices1.size())], vertices2[j]);
 
-				if (distance < shortestDistanceFrom1)
+				if (distance < shortestDistanceFrom1 - 0.01f)
 				{
 					shortestDistanceFrom1 = distance;
 					contact1 = vertices2[j];
 					contactCount = 1;
+					firstLoopCount = 1;
 				}
 				else if (distance <= shortestDistanceFrom1 + 0.01f && distance >= shortestDistanceFrom1 - 0.01f)
 				{
 					contact2 = vertices2[j];
 					contactCount = 2;
+					firstLoopCount = 2;
 				}
 			}
 		}
@@ -380,13 +401,29 @@ namespace FlatEngine
 			{
 				float distance = GetDistanceToLine(vertices2[i], vertices2[fmod(i + 1, vertices2.size())], vertices1[j]);
 
-				if (distance < shortestDistanceFrom2 && distance < shortestDistanceFrom1)
+				if (firstLoopCount == 1) // It may be that they are edge on edge but only one corner per collider
+				{
+					if (distance <= shortestDistanceFrom1 + 0.01f && distance >= shortestDistanceFrom1 - 0.01f)
+					{
+						shortestDistanceFrom2 = distance;
+						contact2 = vertices1[j];
+						contactCount = 2;
+					}
+					if (distance < shortestDistanceFrom1 - 0.01f && distance < shortestDistanceFrom2 - 0.01f)
+					{
+						shortestDistanceFrom2 = distance;
+						contact1 = vertices1[j];
+						contactCount = 1;
+						firstLoopCount = 0;
+					}
+				}	
+				else if (distance < shortestDistanceFrom2 - 0.01f && distance < shortestDistanceFrom1 - 0.01f)
 				{
 					shortestDistanceFrom2 = distance;
 					contact1 = vertices1[j];
 					contactCount = 1;
 				}
-				else if (distance <= shortestDistanceFrom2 + 0.001f && distance >= shortestDistanceFrom2 - 0.001f && distance < shortestDistanceFrom1)
+				else if (distance <= shortestDistanceFrom2 + 0.01f && distance >= shortestDistanceFrom2 - 0.01f && distance < shortestDistanceFrom1 - 0.01f)
 				{
 					contact2 = vertices1[j];
 					contactCount = 2;

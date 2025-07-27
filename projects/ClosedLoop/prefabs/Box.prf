@@ -10,20 +10,20 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 64,
+                    "id": 40,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -22.558197021484375,
+                    "xPos": 2.0293025970458984,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 11.645015716552734,
+                    "yPos": 15.189659118652344,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": true,
-                    "id": 65,
+                    "id": 41,
                     "path": "..\\projects\\ClosedLoop\\images\\colors\\cave.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
@@ -49,7 +49,7 @@
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
                     "activeWidth": 2.0,
-                    "id": 66,
+                    "id": 42,
                     "type": "BoxCollider"
                 },
                 {
@@ -57,19 +57,19 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_isStatic": false,
-                    "angularDrag": 0.8999999761581421,
+                    "angularDrag": 0.9990000128746033,
                     "equilibriumForce": 2.0,
                     "fallingGravity": 1.0,
                     "friction": 0.009999999776482582,
                     "gravity": 1.0,
-                    "id": 67,
+                    "id": 43,
                     "mass": 10.0,
                     "terminalVelocity": 3.0,
                     "type": "RigidBody",
                     "windResistance": 0.8999999761581421
                 }
             ],
-            "id": 16,
+            "id": 10,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -117,8 +117,8 @@
             "name": "Box",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -22.558197021484375,
-            "spawnLocationY": 11.645015716552734,
+            "spawnLocationX": 2.0293025970458984,
+            "spawnLocationY": 15.189659118652344,
             "tags": [
                 {
                     "Collectable": false

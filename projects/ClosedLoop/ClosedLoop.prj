@@ -22,19 +22,19 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\ClosedLoop\\scenes",
             "effectsVolume": 10,
-            "focusedGameObjectID": -1,
+            "focusedGameObjectID": 0,
             "loadedAnimationPath": "",
-            "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Sandbox.scn",
+            "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Test.scn",
             "musicVolume": 10,
             "path": "..\\projects\\ClosedLoop\\ClosedLoop.prj",
             "persistantGameObjectsScenePath": "..\\projects\\ClosedLoop\\persistant_objects_ClosedLoop.scn",
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 10.0,
-            "sceneViewGridStepY": 10.0,
-            "sceneViewScrollingX": 338.3470458984375,
-            "sceneViewScrollingY": 296.5
+            "sceneViewGridStepX": 20.0,
+            "sceneViewGridStepY": 20.0,
+            "sceneViewScrollingX": 432.3470458984375,
+            "sceneViewScrollingY": 224.5
         }
     ]
 }

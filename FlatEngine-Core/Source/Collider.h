@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Vector2.h"
+#include "Physics.h"
 
 #include <string>
 #include <vector>
@@ -20,6 +21,8 @@ namespace FlatEngine
 	class Collider : public Component
 	{
 		friend class RigidBody;
+		friend class BoxCollider;
+		friend class CircleCollider;
 	public:
 		Collider(long myID = -1, long parentID = -1);
 		~Collider();
@@ -75,8 +78,14 @@ namespace FlatEngine
 		void SetRotation(float rotation);
 		void UpdateRotation();
 		float GetRotation();
+		Vector2 GetB2Position();
+		float GetB2Rotation();
+		b2BodyId GetBodyID();		
 
 	private:
+		b2BodyId m_bodyID;
+		Physics::BodyProps m_bodyProps;
+
 		std::vector<GameObject*> m_collidingObjects;
 		std::vector<GameObject*> m_collidingLastFrame;
 		Vector2 m_activeOffset;

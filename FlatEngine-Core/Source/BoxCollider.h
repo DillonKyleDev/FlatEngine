@@ -43,8 +43,10 @@ namespace FlatEngine
 		void SetNormals(Vector2 normals[4]);
 		Vector2* GetNormals();
 		void RecalculateBounds(float gridstep = 0, Vector2 viewportCenter = Vector2());
+		b2BodyId GetBodyID();
 
 	private:		
+
 		bool m_b_isTileMapCollider;
 		float m_activeWidth;
 		float m_activeHeight;

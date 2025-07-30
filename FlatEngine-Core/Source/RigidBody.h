@@ -50,6 +50,7 @@ namespace FlatEngine
 		void SetVelocity(Vector2 newVelocity);
 		void SetPendingForces(Vector2 newPendingForces);
 		void SetAngularVelocity(float angularVelocity);
+		void AddAngularVelocity(float angularVelocity);
 		float GetAngularVelocity();
 		float GetAngularVelocityRadians();
 		float GetAngularAcceleration();

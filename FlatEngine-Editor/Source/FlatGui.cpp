@@ -5,6 +5,7 @@
 #include "Vector2.h"
 #include "Vector4.h"
 #include "Matrix.h"
+#include "box2d.h"
 
 #include <string>
 #include "imgui_internal.h"
@@ -913,9 +914,10 @@ namespace FlatGui
 				bool b_isColliding = boxCollider->IsColliding();
 				float activeRadius = boxCollider->GetActiveRadiusScreen();
 				bool b_showActiveRadius = boxCollider->GetShowActiveRadius();
-				Vector2 center = boxCollider->GetCenterCoord();
+				Vector2 center = boxCollider->GetCenterCoord();															
 
-				boxCollider->UpdateActiveEdges(FG_sceneViewGridStep.x, FG_sceneViewCenter);
+
+				boxCollider->UpdateActiveEdges(FG_sceneViewGridStep.x, FG_sceneViewCenter, true);
 				std::vector<Vector2> colliderCorners = boxCollider->GetCorners();
 
 				Vector2 corners[4] = {

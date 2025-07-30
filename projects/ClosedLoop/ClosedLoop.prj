@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 20.0,
-            "sceneViewGridStepY": 20.0,
-            "sceneViewScrollingX": 432.3470458984375,
-            "sceneViewScrollingY": 224.5
+            "sceneViewGridStepX": 16.0,
+            "sceneViewGridStepY": 16.0,
+            "sceneViewScrollingX": 405.3470458984375,
+            "sceneViewScrollingY": 362.5
         }
     ]
 }

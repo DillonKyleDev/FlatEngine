@@ -15,6 +15,7 @@
 #include "Project.h"
 #include "CharacterController.h"
 #include "MappingContext.h"
+#include "Physics.h"
 
 #include <vector>
 #include <process.h>
@@ -32,6 +33,7 @@ namespace FlatEngine
 		m_b_gamePaused = false;
 		m_b_paused = false;
 		m_b_frameSkipped = false;
+		m_framesToSkip = 0;
 		m_time = 0.0f;
 		m_activeTime = 0.0f;
 		m_currentTime = 0;
@@ -70,9 +72,10 @@ namespace FlatEngine
 		ResetCharacterControllers();
 		HandleButtons();
 		RunUpdateOnScripts();
-		CalculatePhysics();
-		HandleCollisions(gridstep, viewportCenter);
-		ApplyPhysics();
+		F_Physics->Update(GetDeltaTime());
+		//CalculatePhysics();
+		//HandleCollisions(gridstep, viewportCenter);
+		//ApplyPhysics();
 	}
 
 	void GameLoop::Stop()
@@ -579,14 +582,27 @@ namespace FlatEngine
 
 	void GameLoop::SetFrameSkipped(bool b_skipped)
 	{
-		if (b_skipped)
-			ResetCurrentTime();
-
 		m_b_frameSkipped = b_skipped;
+		if (!m_b_frameSkipped)
+		{
+			m_framesToSkip = 0;
+		}
+	}
+
+	void GameLoop::SkipFrames(int framesToSkip)
+	{
+		ResetCurrentTime();
+		m_framesToSkip = framesToSkip;
+		m_b_frameSkipped = true;
 	}
 
 	bool GameLoop::IsFrameSkipped()
 	{
 		return m_b_frameSkipped;
+	}
+
+	int GameLoop::GetFramesToSkip()
+	{
+		return m_framesToSkip;
 	}
 }

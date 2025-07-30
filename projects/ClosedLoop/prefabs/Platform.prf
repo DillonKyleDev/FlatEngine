@@ -1,5 +1,6 @@
 {
-    "Scene GameObjects": [
+    "Name": "Platform",
+    "Prefab": [
         {
             "_isActive": true,
             "_isPersistant": false,
@@ -9,14 +10,14 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 2,
+                    "id": 8,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 11.076927185058594,
+                    "xPos": -4.0,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 0.9015159606933594,
+                    "yPos": -1.0,
                     "yScale": 1.0
                 },
                 {
@@ -30,12 +31,28 @@
                     "activeLayer": 0,
                     "activeOffsetX": 0.0,
                     "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 3,
+                    "activeWidth": 10.0,
+                    "id": 9,
                     "type": "BoxCollider"
+                },
+                {
+                    "_allowTorques": true,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isStatic": true,
+                    "angularDrag": 0.8199999928474426,
+                    "equilibriumForce": 2.0,
+                    "fallingGravity": 0.0,
+                    "friction": 0.009999999776482582,
+                    "gravity": 0.0,
+                    "id": 10,
+                    "mass": 10.0,
+                    "terminalVelocity": 3.0,
+                    "type": "RigidBody",
+                    "windResistance": 0.8999999761581421
                 }
             ],
-            "id": 1,
+            "id": 2,
             "ignoreTags": [
                 {
                     "Collectable": false
@@ -80,11 +97,11 @@
                     "Terrain": false
                 }
             ],
-            "name": "BoxCollider(1)",
+            "name": "Platform",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 11.076927185058594,
-            "spawnLocationY": 0.9015159606933594,
+            "spawnLocationX": -4.0,
+            "spawnLocationY": -1.0,
             "tags": [
                 {
                     "Collectable": false

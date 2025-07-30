@@ -7,7 +7,8 @@ project "FlatEngine-Runtime"
 
    files 
     { 
-        "Source/**.h", "Source/**.cpp" 
+        "Source/**.h", 
+        "Source/**.cpp" 
     }
 
    includedirs
@@ -35,6 +36,7 @@ project "FlatEngine-Runtime"
       "../Vendor/includes/Lua",
       "../Vendor/includes/Sol2/include",
       "../Vendor/includes/Sol2/include/sol",
+      "../Vendor/includes/Box2D/include",
    }
 
    libdirs 
@@ -44,6 +46,7 @@ project "FlatEngine-Runtime"
         "../Vendor/includes/SDL2_Text/lib/x64",
         "../Vendor/includes/SDL2_Mixer/lib/x64",
         "../Vendor/includes/Lua",
+        "../Vendor/includes/Box2D/lib",
    }
 
    links
@@ -58,6 +61,8 @@ project "FlatEngine-Runtime"
       "dxgi.lib",
       "SDL2_mixer.lib",
       "lua54.lib",   
+      "box2d.lib",
+      "box2dd.lib",
    }
 
    defines

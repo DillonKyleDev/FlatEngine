@@ -13,6 +13,7 @@
 #include "Animation.h"
 #include "CPPScript.h"
 #include "RayCast.h"
+#include "Physics.h"
 
 #include <fstream>
 #include <string>
@@ -307,6 +308,9 @@ namespace FlatEngine
 						InitLua();
 						printf("Lua initialized...\n");
 
+						F_Physics->Init();
+						printf("Physics initialized...\n");
+
 						F_AssetManager.CollectDirectories();
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
 						F_AssetManager.CollectTextures();	                   // Collect and create Texture icons from Textures.lua
@@ -452,6 +456,8 @@ namespace FlatEngine
 
 	void CloseProgram()
 	{
+		F_Physics->Shutdown();
+
 		QuitImGui();
 
 		// Clean up old gamepads
@@ -1169,9 +1175,13 @@ namespace FlatEngine
 					DeleteGameObject(F_FocusedGameObjectID);
 					break;
 
-				case SDLK_r:
+				case SDLK_HOME:
 					LoadScene(GetLoadedScenePath());
 					LogString("Scene Reloaded");
+					break;				
+
+				case SDLK_SPACE:
+					PauseGameLoop();
 					break;				
 				}
 			}

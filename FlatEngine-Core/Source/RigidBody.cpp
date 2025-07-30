@@ -19,7 +19,7 @@ namespace FlatEngine
 		m_velocity = Vector2(0, 0);	
 		m_acceleration = Vector2(0, 0);
 		m_friction = 0.01f;
-		m_linearDrag = 0.98f; // 0.999f for pool
+		m_linearDrag = 0.99f; // 0.999f for pool
 
 		// Rotational
 		m_I = 1;
@@ -27,7 +27,7 @@ namespace FlatEngine
 		m_pendingTorques = 0;
 		m_angularVelocity = 0;
 		m_angularAcceleration = 0;
-		m_angularDrag = 0.82f;
+		m_angularDrag = 0.85f; // 0.82f;
 		m_b_allowTorques = true;
 
 		m_restitution = 1;
@@ -79,15 +79,15 @@ namespace FlatEngine
 	{
 		Transform* transform = GetParent()->GetTransform();
 		Vector2 position = transform->GetPosition();		
-		m_acceleration = m_pendingForces * m_1overMass * deltaTime; // *.04f; // Makes the calculations more accurate
+		m_acceleration = m_pendingForces * m_1overMass * deltaTime; // Makes the calculations more accurate
 		m_velocity = (m_velocity + m_acceleration) * m_linearDrag;	// linear drag dampens velocity so it becomes 0 eventually	
 		transform->SetPosition(position + m_velocity);	
 		m_pendingForces = Vector2(0, 0);
 
 		if (m_b_allowTorques)
 		{
-			m_angularAcceleration = m_pendingTorques * m_1overI;
-			m_angularVelocity += (m_angularAcceleration * deltaTime);
+			m_angularAcceleration = m_pendingTorques * m_1overI * deltaTime;
+			m_angularVelocity += m_angularAcceleration;
 			m_angularVelocity *= m_angularDrag;
 			transform->SetRotation((float)fmod(transform->GetRotation() + m_angularVelocity, 360));
 			m_angularAcceleration = 0;
@@ -110,11 +110,11 @@ namespace FlatEngine
 			{
 				if (m_velocity.y < 0)
 				{
-					m_velocity.y -= m_fallingGravity * GetDeltaTime();
+					m_velocity.y -= m_fallingGravity * 0.5f * GetDeltaTime();
 				}
 				else
 				{
-					m_velocity.y -= m_gravity * GetDeltaTime();
+					m_velocity.y -= m_gravity * 0.5f * GetDeltaTime();
 				}
 			}
 		}
@@ -124,11 +124,11 @@ namespace FlatEngine
 			{
 				if (m_velocity.y > 0)
 				{
-					m_velocity.y -= m_fallingGravity * GetDeltaTime();
+					m_velocity.y -= m_fallingGravity * 0.5f * GetDeltaTime();
 				}
 				else
 				{
-					m_velocity.y -= m_gravity * GetDeltaTime();
+					m_velocity.y -= m_gravity * 0.5f * GetDeltaTime();
 				}
 			}
 		}
@@ -482,6 +482,11 @@ namespace FlatEngine
 	void RigidBody::SetAngularVelocity(float angularVelocity)
 	{
 		m_angularVelocity = angularVelocity;
+	}
+
+	void RigidBody::AddAngularVelocity(float angularVelocity)
+	{
+		m_angularVelocity += angularVelocity;
 	}
 
 	void RigidBody::SetWindResistance(float windResistance)

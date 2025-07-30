@@ -70,6 +70,7 @@ namespace FlatEngine
 	class CharacterController;	
 	class ECSManager;
 	class TileSet;
+	class Physics;
 
 	enum F_CURSOR_MODE {
 		TRANSLATE,
@@ -85,6 +86,7 @@ namespace FlatEngine
 	extern std::shared_ptr<WindowManager> F_Window;
 	extern std::shared_ptr<Application> F_Application;
 	extern sol::state F_Lua;
+	extern std::unique_ptr<Physics> F_Physics;
 	extern std::map<std::string, sol::protected_function> F_LoadedSceneScriptFiles;
 	extern std::map<std::string, sol::protected_function> F_LoadedPersistantScriptFiles;
 

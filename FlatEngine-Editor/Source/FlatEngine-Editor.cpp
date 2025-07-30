@@ -123,6 +123,20 @@ public:
 			{
 				int iterations = 0;
 				int minIter = 1;
+				static int framesSkipped = 0;		
+
+				if (GameLoopPaused() && A_GameLoop->IsFrameSkipped())
+				{
+					if (framesSkipped < A_GameLoop->GetFramesToSkip())
+					{
+						framesSkipped++;
+					}
+					else
+					{
+						framesSkipped = 0;
+						A_GameLoop->SetFrameSkipped(false);
+					}
+				}
 
 				// Profiler
 				Uint32 updateLoopStart = 0;
@@ -146,8 +160,6 @@ public:
 
 				if (!GameLoopPaused() || A_GameLoop->IsFrameSkipped())
 				{
-					A_GameLoop->SetFrameSkipped(false);
-
 					while (iterations < minIter || A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
 					{
 						FL::HandleEvents(b_hasQuit);

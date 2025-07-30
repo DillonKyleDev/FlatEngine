@@ -58,28 +58,28 @@
     <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Debug\FlatEngine-Core\</IntDir>
     <TargetName>FlatEngine-Core</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExternalIncludePath>..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;..\Vendor\includes\Box2D\include;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Release\FlatEngine-Core\</OutDir>
     <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Release\FlatEngine-Core\</IntDir>
     <TargetName>FlatEngine-Core</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExternalIncludePath>..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;..\Vendor\includes\Box2D\include;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Dist\FlatEngine-Core\</OutDir>
     <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Dist\FlatEngine-Core\</IntDir>
     <TargetName>FlatEngine-Core</TargetName>
     <TargetExt>.lib</TargetExt>
-    <ExternalIncludePath>..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;$(ExternalIncludePath)</ExternalIncludePath>
+    <ExternalIncludePath>..\Vendor\includes\ImGui\Backends;..\Vendor\includes\ImGui\ImGui_Docking;..\Vendor\includes\ImGui\ImGui_Docking\misc\debuggers;..\Vendor\includes\SDL2\include;..\Vendor\includes\SDL2\lib\x64;..\Vendor\includes\SDL2_Image\include;..\Vendor\includes\SDL2_Image\lib\x64;..\Vendor\includes\SDL2_Text\include;..\Vendor\includes\SDL2_Text\lib\x64;..\Vendor\includes\SDL2_Mixer\include;..\Vendor\includes\SDL2_Mixer\lib\x64;..\Vendor\includes\Json_Formatter;..\Vendor\includes\ImPlot;..\Vendor\includes\ImSequencer;..\Vendor\includes\Lua;..\Vendor\includes\Sol2;..\Vendor\includes\Sol2\include;..\Vendor\includes\Sol2\include\sol;..\Vendor\includes\Box2D\include;$(ExternalIncludePath)</ExternalIncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -141,6 +141,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\base.h" />
+    <ClInclude Include="..\Vendor\includes\Box2D\include\box2d.h" />
+    <ClInclude Include="..\Vendor\includes\Box2D\include\collision.h" />
+    <ClInclude Include="..\Vendor\includes\Box2D\include\id.h" />
+    <ClInclude Include="..\Vendor\includes\Box2D\include\math_functions.h" />
+    <ClInclude Include="..\Vendor\includes\Box2D\include\types.h" />
     <ClInclude Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.h" />
     <ClInclude Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdlrenderer2.h" />
     <ClInclude Include="..\Vendor\includes\ImGui\ImGui_Docking\imconfig.h" />
@@ -275,8 +281,6 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
-    <ClInclude Include="Source\Line.h" />
-    <ClInclude Include="Source\RayCast.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetManager.h" />
@@ -297,12 +301,15 @@
     <ClInclude Include="Source\FlatEngine.h" />
     <ClInclude Include="Source\GameLoop.h" />
     <ClInclude Include="Source\GameObject.h" />
+    <ClInclude Include="Source\Line.h" />
     <ClInclude Include="Source\Logger.h" />
     <ClInclude Include="Source\MappingContext.h" />
     <ClInclude Include="Source\Matrix.h" />
+    <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\PrefabManager.h" />
     <ClInclude Include="Source\ProfilerProcess.h" />
     <ClInclude Include="Source\Project.h" />
+    <ClInclude Include="Source\RayCast.h" />
     <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
@@ -333,8 +340,6 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
     <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
-    <ClCompile Include="Source\Line.cpp" />
-    <ClCompile Include="Source\RayCast.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AssetManager.cpp" />
@@ -356,14 +361,17 @@
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\GameView.cpp" />
     <ClCompile Include="Source\ImGuiWrappersCore.cpp" />
+    <ClCompile Include="Source\Line.cpp" />
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\LuaFunctions.cpp" />
     <ClCompile Include="Source\MappingContext.cpp" />
     <ClCompile Include="Source\Matrix.cpp" />
+    <ClCompile Include="Source\Physics.cpp" />
     <ClCompile Include="Source\PrefabManager.cpp" />
     <ClCompile Include="Source\Profiler.cpp" />
     <ClCompile Include="Source\ProfilerProcess.cpp" />
     <ClCompile Include="Source\Project.cpp" />
+    <ClCompile Include="Source\RayCast.cpp" />
     <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
@@ -381,6 +389,10 @@
     <ClCompile Include="Source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Vendor\includes\Box2D\lib\box2d.lib" />
+    <None Include="..\Vendor\includes\Box2D\lib\box2dd.idb" />
+    <None Include="..\Vendor\includes\Box2D\lib\box2dd.lib" />
+    <None Include="..\Vendor\includes\Box2D\lib\box2dd.pdb" />
     <None Include="..\Vendor\includes\Lua\lua54.dll" />
     <None Include="..\Vendor\includes\Lua\lua54.lib" />
     <None Include="..\Vendor\includes\Sol2\.clang-format" />

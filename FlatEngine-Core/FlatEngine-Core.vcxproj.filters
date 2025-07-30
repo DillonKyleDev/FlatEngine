@@ -10,6 +10,15 @@
     <Filter Include="..\Vendor\includes">
       <UniqueIdentifier>{847FDF27-7063-A07D-D9C3-9AD0C5C68AFF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="..\Vendor\includes\Box2D">
+      <UniqueIdentifier>{92BCD59A-7EE1-241B-A72C-0AAB93B02339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Vendor\includes\Box2D\include">
+      <UniqueIdentifier>{0556576C-F1A6-42AE-1A0B-317006BBD517}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="..\Vendor\includes\Box2D\lib">
+      <UniqueIdentifier>{B854C151-A40F-B1FD-4DC7-29483961FB8D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="..\Vendor\includes\ImGui">
       <UniqueIdentifier>{AE87529B-9AAC-A11B-C3F7-86ABAF7BA039}</UniqueIdentifier>
     </Filter>
@@ -81,6 +90,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\base.h">
+      <Filter>..\Vendor\includes\Box2D\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\box2d.h">
+      <Filter>..\Vendor\includes\Box2D\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\collision.h">
+      <Filter>..\Vendor\includes\Box2D\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\id.h">
+      <Filter>..\Vendor\includes\Box2D\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\math_functions.h">
+      <Filter>..\Vendor\includes\Box2D\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Vendor\includes\Box2D\include\types.h">
+      <Filter>..\Vendor\includes\Box2D\include</Filter>
+    </ClInclude>
     <ClInclude Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.h">
       <Filter>..\Vendor\includes\ImGui\Backends</Filter>
     </ClInclude>
@@ -543,6 +570,9 @@
     <ClInclude Include="Source\GameObject.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Line.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Logger.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -552,6 +582,9 @@
     <ClInclude Include="Source\Matrix.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Physics.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\PrefabManager.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -559,6 +592,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Project.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RayCast.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\RigidBody.h">
@@ -606,8 +642,6 @@
     <ClInclude Include="Source\WindowManager.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\RayCast.h" />
-    <ClInclude Include="Source\Line.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -712,6 +746,9 @@
     <ClCompile Include="Source\ImGuiWrappersCore.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Line.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Logger.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -724,6 +761,9 @@
     <ClCompile Include="Source\Matrix.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Physics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\PrefabManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -734,6 +774,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Project.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RayCast.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\RigidBody.cpp">
@@ -781,10 +824,20 @@
     <ClCompile Include="Source\WindowManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RayCast.cpp" />
-    <ClCompile Include="Source\Line.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">
+      <Filter>..\Vendor\includes\Box2D\lib</Filter>
+    </None>
+    <None Include="..\Vendor\includes\Box2D\lib\box2dd.idb">
+      <Filter>..\Vendor\includes\Box2D\lib</Filter>
+    </None>
+    <None Include="..\Vendor\includes\Box2D\lib\box2dd.lib">
+      <Filter>..\Vendor\includes\Box2D\lib</Filter>
+    </None>
+    <None Include="..\Vendor\includes\Box2D\lib\box2dd.pdb">
+      <Filter>..\Vendor\includes\Box2D\lib</Filter>
+    </None>
     <None Include="..\Vendor\includes\Lua\lua54.dll">
       <Filter>..\Vendor\includes\Lua</Filter>
     </None>

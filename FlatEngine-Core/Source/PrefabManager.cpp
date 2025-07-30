@@ -303,11 +303,9 @@ namespace FlatEngine
 				boxCollider->activeDimensions = Vector2(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
 				boxCollider->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
 				boxCollider->b_isContinuous = CheckJsonBool(componentJson, "_isContinuous", objectName);
-				boxCollider->b_isStatic = CheckJsonBool(componentJson, "_isStatic", objectName);
 				boxCollider->b_isSolid = CheckJsonBool(componentJson, "_isSolid", objectName);
 				boxCollider->activeLayer = CheckJsonInt(componentJson, "activeLayer", objectName);
 				boxCollider->b_showActiveRadius = CheckJsonBool(componentJson, "_showActiveRadius", objectName);
-				boxCollider->b_isComposite = CheckJsonBool(componentJson, "_isComposite", objectName);
 				boxCollider->rotation = objectRotation;
 
 				prefab.components.emplace(componentID, boxCollider);
@@ -319,10 +317,8 @@ namespace FlatEngine
 				circleCollider->activeRadius = CheckJsonFloat(componentJson, "activeRadius", objectName);
 				circleCollider->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
 				circleCollider->b_isContinuous = CheckJsonBool(componentJson, "_isContinuous", objectName);
-				circleCollider->b_isStatic = CheckJsonBool(componentJson, "_isStatic", objectName);
 				circleCollider->b_isSolid = CheckJsonBool(componentJson, "_isSolid", objectName);
 				circleCollider->activeLayer = CheckJsonInt(componentJson, "activeLayer", objectName);
-				circleCollider->b_isComposite = CheckJsonBool(componentJson, "_isComposite", objectName);
 
 				prefab.components.emplace(componentID, circleCollider);
 			}

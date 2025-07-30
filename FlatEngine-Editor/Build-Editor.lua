@@ -30,6 +30,7 @@ project "FlatEngine-Editor"
       "../Vendor/includes/Lua",
       "../Vendor/includes/Sol2/include",
       "../Vendor/includes/Sol2/include/sol",
+      "../Vendor/includes/Box2D/include",
    }
 
    libdirs 
@@ -41,6 +42,7 @@ project "FlatEngine-Editor"
         "../Vendor/includes/ImPlot",
         "../Vendor/includes/ImSequencer",
         "../Vendor/includes/Lua",
+        "../Vendor/includes/Box2D/lib",
    }
 
    links
@@ -55,6 +57,8 @@ project "FlatEngine-Editor"
         "dxgi.lib",
         "SDL2_mixer.lib",
         "lua54.lib",        
+        "box2d.lib",
+        "box2dd.lib",
    }
 
    defines

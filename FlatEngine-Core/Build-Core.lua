@@ -16,12 +16,14 @@ project "FlatEngine-Core"
         "../Vendor/includes/ImPlot/**",
         "../Vendor/includes/Lua/**",
         "../Vendor/includes/Sol2/**",
+        "../Vendor/includes/Box2D/**",
     }
 
    includedirs
     {
       "Source",
-      "../projects/*/scripts/cpp"
+      "../projects/*/scripts/cpp",
+      "../Vendor/includes/Box2D/include",
     }
 
     externalincludedirs 
@@ -44,6 +46,7 @@ project "FlatEngine-Core"
         "../Vendor/includes/Sol2",
         "../Vendor/includes/Sol2/include",
         "../Vendor/includes/Sol2/include/sol",
+        "../Vendor/includes/Box2D/include",
     }
 
 

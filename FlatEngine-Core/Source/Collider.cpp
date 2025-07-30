@@ -6,6 +6,7 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "RayCast.h"
+#include "box2d.h"
 
 #include <cmath>
 
@@ -163,183 +164,132 @@ namespace FlatEngine
 			{
 				return true;
 			}
+			else
+			{
+				if (!collider1->GetParent()->HasComponent("RigidBody") || !collider2->GetParent()->HasComponent("RigidBody"))
+				{
+					if (b_col1Added2 || b_col2Added1)
+					{
+						LogError("If a BoxCollider is set as Solid, it must have a RigidBody component for physics responses.");
+					}
+
+					return true;
+				}
+			}
 
 			Transform* transformA = collider1->GetParent()->GetTransform();
 			Transform* transformB = collider2->GetParent()->GetTransform();
+			Vector2 posA = transformA->GetTruePosition();
+			Vector2 posB = transformB->GetTruePosition();
 			RigidBody* rbA = collider1->GetParent()->GetRigidBody();
 			RigidBody* rbB = collider2->GetParent()->GetRigidBody();
-			RigidBody empty = RigidBody();
-
-			if (rbA == nullptr)
-			{
-				rbA = &empty;
-				rbA->SetIsStatic(true);
-			}
-			if (rbB == nullptr)
-			{
-				rbB = &empty;
-				rbB->SetIsStatic(true);
-			}
 			Vector2 vAInitial = rbA->GetVelocity();
 			Vector2 vBInitial = rbB->GetVelocity();
 			Vector2 vAFinal = Vector2();
 			Vector2 vBFinal = Vector2();
 			float angularVAInitial = rbA->GetAngularVelocityRadians();
 			float angularVBInitial = rbB->GetAngularVelocityRadians();
-			float angularVAFinal = 0;
-			float angularVBFinal = 0;
 			float IAInv = rbA->GetIInv();
 			float IBInv = rbB->GetIInv();
-			Vector2 rAPPerp = Vector2();
-			Vector2 rBPPerp = Vector2();
-			Vector2 angularToLinearA = Vector2();
-			Vector2 angularToLinearB = Vector2();
-			float impulseScalar;
-
-			if (contactCount == 2)
-			{
-				rAPPerp = Vector2::Rotate(collisionNormal, 90);
-				rBPPerp = Vector2::Rotate(collisionNormal, 90);	
-				impulseScalar = 0.5f;
-				AddLineToScene(Vector2(), contactPoint1, GetColor("white"), 2);
-				AddLineToScene(Vector2(), contactPoint2, GetColor("white"), 2);
-			}
-			else
-			{
-				impulseScalar = 1;
-
-				if (rbA->GetParent() != nullptr)
-				{
-					rAPPerp = Vector2::Rotate(contactPoint1 - rbA->GetNextPosition(), 90);
-				}
-				else
-				{
-					rAPPerp = transformA->GetTruePosition();
-				}
-				if (rbB->GetParent() != nullptr)
-				{
-					rBPPerp = Vector2::Rotate(contactPoint1 - rbB->GetNextPosition(), 90);
-				}
-				else
-				{
-					rBPPerp = transformB->GetTruePosition();
-				}	
-			}
-
-			angularToLinearA = rAPPerp * angularVAInitial;
-			angularToLinearB = rBPPerp * angularVBInitial;
 			float mA = rbA->GetMass();
 			float mB = rbB->GetMass();
 			float mAInv = rbA->GetMassInv();
 			float mBInv = rbB->GetMassInv();
 			float eA = rbA->GetRestitution();
 			float eB = rbB->GetRestitution();
-			eA = 0.6f;
-			Vector2 relativeVelocityAB = (vAInitial + angularToLinearA) - (vBInitial + angularToLinearB);
-			float contactVelocity = relativeVelocityAB.Dot(collisionNormal);
-			//float numerator = (relativeVelocityAB * -(1 + (eA * eB))).Dot(collisionNormal);
-			float numerator = -(1 + (eA * eB)) * contactVelocity;
-			float denominator = mAInv + mBInv + (rAPPerp.Dot(collisionNormal) * rAPPerp.Dot(collisionNormal) * IAInv) + (rBPPerp.Dot(collisionNormal) * rBPPerp.Dot(collisionNormal) * IBInv);
-			float j = Abs(numerator / denominator);
-			Vector2 jn = collisionNormal * j;
+			eA = 0.1f;			
 
-			float windDrag = 1.0f;
-			float angularDrag = 1.0f;
-			float linearImpulseDamp = 1.0f;
-			float angularImpulseDamp = 1;
+			Vector2 contactPoints[2] = { contactPoint1, contactPoint2 };
+			Vector2 impulseList[2] = { Vector2(), Vector2() };
+			Vector2 rAPerpList[2] = { Vector2(), Vector2() };
+			Vector2 rBPerpList[2] = { Vector2(), Vector2() };
 
-			if (!rbA->IsStatic())
+			for (int i = 0; i < contactCount; i++)
 			{
-				float distribution = mA / (mA + mB);
-				if (rbB->IsStatic())
+				Vector2 rA = contactPoints[i] - posA;
+				Vector2 rB = contactPoints[i] - posB;
+				Vector2 rAPPerp = Vector2(-rA.y, rA.x);
+				Vector2 rBPPerp = Vector2(-rB.y, rB.x);
+				rAPerpList[i] = rAPPerp;
+				rBPerpList[i] = rBPPerp;
+				Vector2 angularToLinearA = rAPPerp * angularVAInitial;
+				Vector2 angularToLinearB = rBPPerp * angularVBInitial;
+
+				Vector2 relativeVelocityAB = (vAInitial + angularToLinearA) - (vBInitial + angularToLinearB);
+				Vector2 aMinusB = posA - posB;
+				float contactVelocityMagnitude = relativeVelocityAB.Dot(aMinusB);
+
+				// If relative velocity at this contact point is moving the two bodies apart already, ignore this iteration
+				if (contactVelocityMagnitude > 0)
+				{
+					continue;
+				}
+
+				float rAPerpDotN = rAPPerp.Dot(collisionNormal);
+				float rBPerpDotN = rBPPerp.Dot(collisionNormal);				
+
+				float numerator = -(1 + eA) * contactVelocityMagnitude;
+				float denominator = mAInv + mBInv + (rAPerpDotN * rAPerpDotN * IAInv) + (rBPerpDotN * rBPerpDotN * IBInv);
+				float j = Abs(numerator / denominator);
+				Vector2 jn = collisionNormal * j * (1.0f / (float)contactCount);
+				impulseList[i] = jn;
+			}
+
+			for (int i = 0; i < contactCount; i++)
+			{
+				Vector2 jn = impulseList[i];
+				Vector2 vAToAdd = Vector2();
+				Vector2 vBToAdd = Vector2();
+				float angularVAAdd = 0;
+				float angularVBAdd = 0;
+				float moveAdjustment = 0.01f;
+				float distribution = 0.5f;
+
+				if (rbA->IsStatic() || rbB->IsStatic())
 				{
 					distribution = 1;
 				}
 
-				Vector2 difference = transformA->GetTruePosition() - transformB->GetTruePosition();
-				if (difference.Dot(collisionNormal) > 0)
+				if (!rbA->IsStatic())
 				{
-					transformA->Move(collisionNormal * depth * distribution);					
-					vAFinal = vAInitial + ((collisionNormal * (j * mAInv)) * linearImpulseDamp); // eq 8a
-					angularVAFinal = angularVAInitial + ((rAPPerp.Dot(jn) * IAInv) * angularImpulseDamp); // eq 8b
-				}
-				else
-				{
-					transformA->Move(collisionNormal * depth * -distribution);
-					vAFinal = vAInitial - ((collisionNormal * (j * mAInv)) * linearImpulseDamp); // eq 8a
-					angularVAFinal = angularVAInitial + ((rAPPerp.Dot(jn * (-1)) * IAInv) * angularImpulseDamp);
+					Vector2 difference = posB - posA;
+					float direction = 1;									
+					if (difference.Dot(collisionNormal) > 0)
+					{
+						direction = -1;
+					}
+
+					Vector2 forceAmount = (jn * direction).ProjectedOnto(posA - contactPoints[i]);
+					transformA->Move(collisionNormal* (depth - moveAdjustment) * distribution* direction);
+					vAToAdd = jn * mAInv * direction;	
+					//vAToAdd = forceAmount * mAInv;
+					angularVAAdd = rAPerpList[i].Dot(jn * direction) * IAInv;
+					rbA->AddVelocity(vAToAdd);
+					rbA->AddAngularVelocity(RadiansToDegrees(angularVAAdd));	
+					//AddLineToScene(contactPoints[i], contactPoints[i] + vAFinal, GetColor("red"), 1);
+					//AddLineToScene(contactPoints[i], contactPoints[i] + Vector2(0, angularVAAdd * 20), GetColor("white"), 1);
 				}
 
-				//if (b_col1Added2 || b_col2Added1)
+				if (!rbB->IsStatic())
 				{
-					//if (vAFinal.GetMagnitude() > 0.01f)
+					Vector2 difference = posA - posB;
+					float direction = 1;	
+					if (difference.Dot(collisionNormal) > 0)
 					{
-						rbA->SetVelocity(vAFinal * windDrag);
+						direction = -1;
 					}
-					//else
-					{
-						//rbA->SetVelocity(vAFinal * 0.5f);
-					}
-					//if (Abs(RadiansToDegrees(angularVAFinal)) > 0.001f)
-					{
-						rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal * angularDrag));
-					}
-					//else
-					{
-						//rbA->SetAngularVelocity(RadiansToDegrees(angularVAFinal * 0.5f));
-					}
+
+					Vector2 forceAmount = (jn * direction).ProjectedOnto(posB - contactPoints[i]);
+					transformB->Move(collisionNormal * (depth - moveAdjustment) * distribution * direction);
+					vBToAdd = jn * mBInv * direction;
+					//vBToAdd = forceAmount * mBInv;
+					angularVBAdd = rBPerpList[i].Dot(jn * direction) * IBInv;				
+					rbB->AddVelocity(vBToAdd);
+					rbB->AddAngularVelocity(RadiansToDegrees(angularVBAdd));	
+					//AddLineToScene(contactPoints[i], contactPoints[i] + vBFinal, GetColor("red"), 1);
+					//AddLineToScene(contactPoints[i], contactPoints[i] + Vector2(0, angularVBAdd * 20), GetColor("white"), 1);
 				}
 			}
-
-			if (!rbB->IsStatic())
-			{
-				float distribution = mB / (mA + mB);				
-				if (rbA->IsStatic())
-				{
-					distribution = 1;
-				}
-
-				Vector2 difference = transformB->GetTruePosition() - transformA->GetTruePosition();
-				if (difference.Dot(collisionNormal) > 0)
-				{
-					transformB->Move(collisionNormal * depth * distribution);
-					vBFinal = vBInitial + ((collisionNormal * (j * mBInv)) * linearImpulseDamp);
-					angularVBFinal = angularVBInitial + ((rBPPerp.Dot(jn) * IBInv) * angularImpulseDamp);
-				}
-				else
-				{
-					transformB->Move(collisionNormal * depth * -distribution);
-					vBFinal = vBInitial - ((collisionNormal * (j * mBInv)) * linearImpulseDamp);
-					angularVBFinal = angularVBInitial + ((rBPPerp.Dot(jn * (-1)) * IBInv) * angularImpulseDamp);
-				}
-
-				//if (b_col1Added2 || b_col2Added1)
-				{
-					//if (vBFinal.GetMagnitude() > 0.01f)
-					{
-						rbB->SetVelocity(vBFinal * windDrag);
-					}
-					//else
-					{
-						//rbB->SetVelocity(vBFinal * 0.5f);
-					}
-					//if (Abs(RadiansToDegrees(angularVBFinal)) > 0.001f)
-					{
-						rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal * angularDrag));
-					}
-					//else
-					{
-						//rbB->SetAngularVelocity(RadiansToDegrees(angularVBFinal * 0.5f));
-					}
-				}
-			}
-
-
-			//if (contactCount == 2)
-			//{
-			//	rbA->SetAngularVelocity(0);
-			//	rbB->SetAngularVelocity(0);
-			//}
 		}
 
 		return b_colliding;
@@ -373,21 +323,23 @@ namespace FlatEngine
 		float shortestDistanceFrom1 = FLT_MAX;
 		float shortestDistanceFrom2 = FLT_MAX;
 		int firstLoopCount = 0;
+		float threshold = 0.02f;
 
 		for (int i = 0; i < vertices1.size(); i++)
 		{
 			for (int j = 0; j < vertices2.size(); j++)
 			{
 				float distance = GetDistanceToLine(vertices1[i], vertices1[fmod(i + 1, vertices1.size())], vertices2[j]);
+				float distanceBetweenPoints = (vertices2[j] - contact1).GetMagnitude();
 
-				if (distance < shortestDistanceFrom1 - 0.01f)
+				if (distance < shortestDistanceFrom1 - threshold)
 				{
 					shortestDistanceFrom1 = distance;
 					contact1 = vertices2[j];
 					contactCount = 1;
 					firstLoopCount = 1;
 				}
-				else if (distance <= shortestDistanceFrom1 + 0.01f && distance >= shortestDistanceFrom1 - 0.01f)
+				else if ((distance <= shortestDistanceFrom1 + threshold) && (distance >= shortestDistanceFrom1 - threshold) && (distanceBetweenPoints > threshold))
 				{
 					contact2 = vertices2[j];
 					contactCount = 2;
@@ -400,16 +352,18 @@ namespace FlatEngine
 			for (int j = 0; j < vertices1.size(); j++)
 			{
 				float distance = GetDistanceToLine(vertices2[i], vertices2[fmod(i + 1, vertices2.size())], vertices1[j]);
+				float distanceBetweenPoints = (vertices1[j] - contact1).GetMagnitude();				
 
 				if (firstLoopCount == 1) // It may be that they are edge on edge but only one corner per collider
 				{
-					if (distance <= shortestDistanceFrom1 + 0.01f && distance >= shortestDistanceFrom1 - 0.01f)
+					if ((distance <= shortestDistanceFrom1 + threshold) && (distance >= shortestDistanceFrom1 - threshold) && (distanceBetweenPoints > threshold))
 					{
 						shortestDistanceFrom2 = distance;
 						contact2 = vertices1[j];
 						contactCount = 2;
 					}
-					if (distance < shortestDistanceFrom1 - 0.01f && distance < shortestDistanceFrom2 - 0.01f)
+					// Replace contact1 with this contact point
+					else if ((distance < shortestDistanceFrom1 - threshold) && (distance < shortestDistanceFrom2 - threshold))
 					{
 						shortestDistanceFrom2 = distance;
 						contact1 = vertices1[j];
@@ -417,13 +371,13 @@ namespace FlatEngine
 						firstLoopCount = 0;
 					}
 				}	
-				else if (distance < shortestDistanceFrom2 - 0.01f && distance < shortestDistanceFrom1 - 0.01f)
+				else if ((distance < shortestDistanceFrom2 - threshold) && (distance < shortestDistanceFrom1 - threshold))
 				{
 					shortestDistanceFrom2 = distance;
 					contact1 = vertices1[j];
 					contactCount = 1;
 				}
-				else if (distance <= shortestDistanceFrom2 + 0.01f && distance >= shortestDistanceFrom2 - 0.01f && distance < shortestDistanceFrom1 - 0.01f)
+				else if ((distance <= shortestDistanceFrom2 + threshold) && (distance >= shortestDistanceFrom2 - threshold) && (distance < shortestDistanceFrom1 - threshold) && (distanceBetweenPoints > threshold))
 				{
 					contact2 = vertices1[j];
 					contactCount = 2;
@@ -907,4 +861,26 @@ namespace FlatEngine
 	{
 		return GetParent()->GetTransform()->GetRotation();;
 	}
+
+	Vector2 Collider::GetB2Position()
+	{
+		b2Vec2 b2Position = b2Body_GetPosition(m_bodyID);
+		Vector2 position = Vector2(b2Position.x, b2Position.y);
+
+		return position;
+	}
+
+	float Collider::GetB2Rotation()
+	{
+		b2Rot bodyRotation = b2Body_GetRotation(m_bodyID);
+		float rotation = b2Rot_GetAngle(bodyRotation);
+
+		return rotation;
+	}
+
+	b2BodyId Collider::GetBodyID()
+	{
+		return m_bodyID;
+	}
+
 }

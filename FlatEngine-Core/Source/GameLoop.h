@@ -29,8 +29,10 @@ namespace FlatEngine
 		bool IsPaused();
 		void AddFrame();
 		float GetDeltaTime();
-		void SetFrameSkipped(bool _skipped);
+		void SetFrameSkipped(bool b_skipped);
+		void SkipFrames(int framesToSkip);
 		bool IsFrameSkipped();
+		int GetFramesToSkip();
 		long GetFramesCounted();
 		void ResetCurrentTime();
 
@@ -64,5 +66,6 @@ namespace FlatEngine
 		long m_framesCounted;		
 		std::vector<Button> m_hoveredButtons;
 		std::vector<long> m_objectsQueuedForDelete;
+		int m_framesToSkip;
 	};
 }

@@ -2,6 +2,7 @@
 #include "RigidBody.h"
 #include "GameObject.h"
 #include "Transform.h"
+#include "Physics.h"
 
 #include "imgui_internal.h"
 #include <cmath>
@@ -28,6 +29,11 @@ namespace FlatEngine
 		m_previousRotation = 0;
 		m_lastGridStep = 0;
 		m_lastViewportCenter = Vector2();
+
+		m_bodyProps.position = GetParent()->GetTransform()->GetTruePosition();
+		m_bodyProps.dimensions = Vector2(m_activeWidth, m_activeHeight);
+
+		F_Physics->CreateBox(m_bodyProps, m_bodyID);
 	}
 
 	BoxCollider::~BoxCollider()
@@ -71,6 +77,10 @@ namespace FlatEngine
 	{
 		if (width >= 0 && height >= 0)
 		{
+			m_bodyProps.dimensions = Vector2(width, height);
+			F_Physics->DestroyBody(m_bodyID);
+			F_Physics->CreateBox(m_bodyProps, m_bodyID);
+
 			m_activeWidth = width;
 			m_activeHeight = height;
 			bool b_forceUpdate = true;
@@ -165,10 +175,11 @@ namespace FlatEngine
 			RigidBody* rigidBody = parent->GetRigidBody();
 			Transform* transform = GetParent()->GetTransform();
 			Vector2 scale = transform->GetScale();
-			Vector2 activeOffset = GetActiveOffset();
+			Vector2 activeOffset = GetActiveOffset();			
+			Vector2 position = GetB2Position();
 
 			// For visual representation ( screen space values )
-			SetCenterGrid(Vector2(transform->GetTruePosition().x + activeOffset.x, transform->GetTruePosition().y + activeOffset.y));
+			SetCenterGrid(position + activeOffset);
 
 			m_activeLeft = viewportCenter.x + (GetCenterGrid().x - (m_activeWidth * scale.x / 2)) * gridStep;
 			m_activeTop = viewportCenter.y + (-GetCenterGrid().y - (m_activeHeight * scale.y / 2)) * gridStep;
@@ -237,13 +248,14 @@ namespace FlatEngine
 	{
 		Transform* transform = GetParent()->GetTransform();
 		Vector2 scale = transform->GetScale();
+		float rotation = GetB2Rotation();
 
-		Vector2 topLeft = Vector2::Rotate(Vector2(-m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y), GetRotation());
-		Vector2 topRight = Vector2::Rotate(Vector2(+m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y), GetRotation());
-		Vector2 bottomRight = Vector2::Rotate(Vector2(+m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y), GetRotation());
-		Vector2 bottomLeft = Vector2::Rotate(Vector2(-m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y), GetRotation());
+		Vector2 topLeft = Vector2::Rotate(Vector2(-m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y), rotation);
+		Vector2 topRight = Vector2::Rotate(Vector2(+m_activeWidth / 2 * scale.x, m_activeHeight / 2 * scale.y), rotation);
+		Vector2 bottomRight = Vector2::Rotate(Vector2(+m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y), rotation);
+		Vector2 bottomLeft = Vector2::Rotate(Vector2(-m_activeWidth / 2 * scale.x, -m_activeHeight / 2 * scale.y), rotation);
 
-		Vector2 position = transform->GetTruePosition();
+		Vector2 position = GetB2Position();
 		Vector2 newCorners[4] =
 		{
 			position + topLeft,
@@ -349,5 +361,10 @@ namespace FlatEngine
 		}
 
 		UpdateActiveEdges(m_lastGridStep, m_lastViewportCenter);
+	}
+
+	b2BodyId BoxCollider::GetBodyID()
+	{
+		return m_bodyID;
 	}
 }

@@ -11,8 +11,6 @@
 #include "Animation.h"
 #include "Text.h"
 #include "CharacterController.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
 #include "RigidBody.h"
 #include "Script.h"
 #include "MappingContext.h"
@@ -452,11 +450,8 @@ namespace FlatEngine
 			"GetButton", &GameObject::GetButton,
 			"GetCanvas", &GameObject::GetCanvas,
 			"GetText", &GameObject::GetText,
-			"GetCharacterController", &GameObject::GetCharacterController,
-			"GetRigidBody", &GameObject::GetRigidBody,			
-			"GetBoxCollider", &GameObject::GetBoxCollider,			
-			"GetCircleCollider", &GameObject::GetCircleCollider,
-			"GetTileMap", &GameObject::GetTileMap,
+			"GetCharacterController", &GameObject::GetCharacterController,		
+			//"GetTileMap", &GameObject::GetTileMap,
 			
 			"AddSprite", &GameObject::AddSpriteLua,
 			"AddScript", &GameObject::AddScriptLua,
@@ -467,8 +462,6 @@ namespace FlatEngine
 			"AddCanvas", &GameObject::AddCanvasLua,
 			"AddText", &GameObject::AddTextLua,
 			"AddCharacterController", &GameObject::AddCharacterControllerLua,
-			"AddRigidBody", &GameObject::AddRigidBodyLua,
-			"AddBoxCollider", &GameObject::AddBoxColliderLua,
 			"AddTileMap", &GameObject::AddTileMapLua,
 
 			"AddChild", &GameObject::AddChild,
@@ -635,30 +628,6 @@ namespace FlatEngine
 			"SetTerminalVelocity", &RigidBody::SetTerminalVelocity,
 			"GetTerminalVelocity", &RigidBody::GetTerminalVelocity,
 			"IsGrounded", &RigidBody::IsGrounded
-		);
-
-		F_Lua.new_usertype<Collider>("Collider",
-			"GetParent", &Collider::GetParent,
-			"GetParentID", &Collider::GetParentID,
-			"SetActive", &Collider::SetActive,
-			"IsActive", &Collider::IsActive,
-			"GetID", &Collider::GetID
-		);
-
-		F_Lua.new_usertype<BoxCollider>("BoxCollider",
-			"GetParent", &BoxCollider::GetParent,
-			"GetParentID", &BoxCollider::GetParentID,
-			"SetActive", &BoxCollider::SetActive,
-			"IsActive", &BoxCollider::IsActive,
-			"GetID", &BoxCollider::GetID
-		);
-
-		F_Lua.new_usertype<CircleCollider>("CircleCollider",
-			"GetParent", &CircleCollider::GetParent,
-			"GetParentID", &CircleCollider::GetParentID,
-			"SetActive", &CircleCollider::SetActive,
-			"IsActive", &CircleCollider::IsActive,
-			"GetID", &CircleCollider::GetID
 		);
 
 		F_Lua.new_usertype<CharacterController>("CharacterController",

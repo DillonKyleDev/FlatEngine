@@ -20,9 +20,9 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\scenes",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\colors",
             "effectsVolume": 10,
-            "focusedGameObjectID": 0,
+            "focusedGameObjectID": 1,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Test.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 16.0,
-            "sceneViewGridStepY": 16.0,
-            "sceneViewScrollingX": 405.3470458984375,
-            "sceneViewScrollingY": 362.5
+            "sceneViewGridStepX": 20.0,
+            "sceneViewGridStepY": 20.0,
+            "sceneViewScrollingX": 396.3470458984375,
+            "sceneViewScrollingY": 82.5
         }
     ]
 }

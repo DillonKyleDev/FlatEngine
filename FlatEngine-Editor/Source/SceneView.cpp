@@ -351,8 +351,7 @@ namespace FlatGui
 
 			ellapsedTimeString =          "time:   " + std::to_string((int)FL::GetEllapsedGameTimeInSec());
 			framesCountedString =         "frames: " + std::to_string(FL::GetFramesCounted());
-			//averageFpsString =          "fps:    " + std::to_string((int)fps);
-			numberOfColliderPairsString = "collider pairs: " + std::to_string(FL::F_ColliderPairs.size());
+			//averageFpsString =          "fps:    " + std::to_string((int)fps);			
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor32("logText"));

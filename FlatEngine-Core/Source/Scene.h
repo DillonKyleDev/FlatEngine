@@ -12,9 +12,7 @@
 #include "Text.h"
 #include "CharacterController.h"
 #include "RayCast.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
-#include "RigidBody.h"
+#include "BoxBody.h"
 
 #include <vector>
 #include <map>
@@ -66,11 +64,9 @@ namespace FlatEngine
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);
 		RayCast* AddRayCast(RayCast rayCast, long ownerID);
-		BoxCollider* AddBoxCollider(BoxCollider collider, long ownerID);
-		CircleCollider* AddCircleCollider(CircleCollider collider, long ownerID);
+		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);
-		RigidBody* AddRigidBody(RigidBody rigidBody, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
 
@@ -83,13 +79,11 @@ namespace FlatEngine
 		Canvas* GetCanvasByOwner(long ownerID);
 		Audio* GetAudioByOwner(long ownerID);
 		Text* GetTextByOwner(long ownerID);
-		std::vector<BoxCollider*> GetBoxCollidersByOwner(long ownerID);
-		std::vector<CircleCollider*> GetCircleCollidersByOwner(long ownerID);
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
-		RigidBody* GetRigidBodyByOwner(long ownerID);
+		BoxBody* GetBoxBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
-		TileMap* GetTileMapByOwner(long ownerID);
+		//TileMap* GetTileMapByOwner(long ownerID);
 
 		std::map<long, Transform> &GetTransforms();
 		std::map<long, Sprite>& GetSprites();
@@ -101,13 +95,10 @@ namespace FlatEngine
 		std::map<long, Animation>& GetAnimations();
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
-		std::vector<Collider*> GetColliders();
+		std::map<long, BoxBody>& GetBoxBodies();
 		std::map<long, RayCast>& GetRayCasts();
-		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
-		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
-		std::map<long, RigidBody>& GetRigidBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
-		std::map<long, TileMap>& GetTileMaps();		
+		//std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);
 		bool IsPersistantScene();
 

@@ -10,11 +10,9 @@
 #include "Button.h"
 #include "Canvas.h"
 #include "CharacterController.h"
-#include "RigidBody.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
 #include "TileMap.h"
 #include "Project.h"
+#include "BoxBody.h"
 
 
 namespace FlatEngine
@@ -516,125 +514,54 @@ namespace FlatEngine
 		return textPtr;
 	}
 
-	BoxCollider* GameObject::AddBoxCollider(long ID, bool b_active, bool b_collapsed)
+	BoxBody* GameObject::AddBoxBody(long ID, bool b_active, bool b_collapsed)
 	{
-		Vector2 dimensions = Vector2(0,0);
-		if (HasComponent("Sprite"))
+		Vector2 position = GetTransform()->GetPosition();
+		float rotation = GetTransform()->GetRotation();
+
+		long nextID = ID;
+		if (nextID == -1)
 		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		BoxBody boxBody = BoxBody(nextID, m_ID);
+		boxBody.SetActive(b_active);
+		boxBody.SetCollapsed(b_collapsed);
+		boxBody.SetPosition(position);
+		boxBody.SetRotation(rotation);
+
+		BoxBody* boxBodyPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			boxBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBoxBody(boxBody, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			boxBodyPtr = GetLoadedScene()->AddBoxBody(boxBody, m_ID);
+		}
+		
+		if (HasComponent("Sprite"))
+		{			 
 			Sprite* sprite = GetSprite();
 			// Get sprite dimensions in terms of grid squares because that is the unit used by the engine
-			dimensions = Vector2(sprite->GetTextureWidth() / F_pixelsPerGridSpace, sprite->GetTextureHeight() / F_pixelsPerGridSpace);
+			Vector2 dimensions = Vector2(sprite->GetTextureWidth() / F_pixelsPerGridSpace, sprite->GetTextureHeight() / F_pixelsPerGridSpace);
+			boxBodyPtr->SetDimensions(dimensions);
+		}
+		
+		if (boxBodyPtr != nullptr)
+		{
+			m_components.push_back(boxBodyPtr);
 		}
 
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		BoxCollider boxCollider = BoxCollider(nextID, m_ID);
-		boxCollider.SetActive(b_active);
-		boxCollider.SetCollapsed(b_collapsed);
-
-		BoxCollider* colliderPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			colliderPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBoxCollider(boxCollider, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			colliderPtr = GetLoadedScene()->AddBoxCollider(boxCollider, m_ID);
-		}
-
-		if (dimensions.x != 0 && dimensions.y != 0)
-		{
-			colliderPtr->SetActiveDimensions(dimensions.x, dimensions.y);
-		}
-
-		if (colliderPtr != nullptr)
-		{
-			m_components.push_back(colliderPtr);
-		}
-		return colliderPtr;
-	}
-
-	CircleCollider* GameObject::AddCircleCollider(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		CircleCollider circleCollider = CircleCollider(nextID, m_ID);
-		circleCollider.SetActive(b_active);
-		circleCollider.SetCollapsed(b_collapsed);
-
-		CircleCollider* colliderPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			colliderPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCircleCollider(circleCollider, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			colliderPtr = GetLoadedScene()->AddCircleCollider(circleCollider, m_ID);
-		}
-
-		if (colliderPtr != nullptr)
-		{
-			m_components.push_back(colliderPtr);
-		}
-		return colliderPtr;
-	}
-
-	RigidBody* GameObject::AddRigidBody(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		RigidBody rigidBody = RigidBody(nextID, m_ID);
-		rigidBody.SetActive(b_active);
-		rigidBody.SetCollapsed(b_collapsed);
-
-		RigidBody* rigidBodyPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			rigidBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddRigidBody(rigidBody, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			rigidBodyPtr = GetLoadedScene()->AddRigidBody(rigidBody, m_ID);
-		}
-
-		if (rigidBodyPtr != nullptr)
-		{
-			m_components.push_back(rigidBodyPtr);
-		}
-		return rigidBodyPtr;
+		return boxBodyPtr;
 	}
 
 	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
@@ -858,92 +785,30 @@ namespace FlatEngine
 		}
 		return nullptr;
 	}
-	RigidBody* GameObject::GetRigidBody()
+	BoxBody* GameObject::GetBoxBody()
 	{
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetRigidBodyByOwner(m_ID);
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetBoxBodyByOwner(m_ID);
 		}
 		else if (GetLoadedScene() != nullptr)
 		{
-			return GetLoadedScene()->GetRigidBodyByOwner(m_ID);
+			return GetLoadedScene()->GetBoxBodyByOwner(m_ID);
 		}
 		return nullptr;
 	}
-	std::vector<BoxCollider*> GameObject::GetBoxColliders()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetBoxCollidersByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetBoxCollidersByOwner(m_ID);
-		}
-		return std::vector<BoxCollider*>();
-	}
-	BoxCollider* GameObject::GetBoxCollider()
-	{
-		std::vector<BoxCollider*> colliders;
-
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			colliders = GetLoadedProject().GetPersistantGameObjectScene()->GetBoxCollidersByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			colliders = GetBoxColliders();
-		}
-		
-		if (colliders.size() > 0)
-		{
-			return colliders[0];
-		}
-		return nullptr;
-	}
-	std::vector<CircleCollider*> GameObject::GetCircleColliders()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCircleCollidersByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCircleCollidersByOwner(m_ID);
-		}
-		return std::vector<CircleCollider*>();
-	}
-	CircleCollider* GameObject::GetCircleCollider()
-	{
-		std::vector<CircleCollider*> colliders;
-
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			colliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleCollidersByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			colliders = GetLoadedScene()->GetCircleCollidersByOwner(m_ID);
-		}
-
-		if (colliders.size() > 0)
-		{
-			return colliders[0];
-		}
-		return nullptr;
-	}
-	TileMap* GameObject::GetTileMap()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetTileMapByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetTileMapByOwner(m_ID);
-		}
-		return nullptr;
-	}
+	//TileMap* GameObject::GetTileMap()
+	//{
+	//	if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+	//	{
+	//		return GetLoadedProject().GetPersistantGameObjectScene()->GetTileMapByOwner(m_ID);
+	//	}
+	//	else if (GetLoadedScene() != nullptr)
+	//	{
+	//		return GetLoadedScene()->GetTileMapByOwner(m_ID);
+	//	}
+	//	return nullptr;
+	//}
 
 	std::vector<Component*> GameObject::GetComponents()
 	{

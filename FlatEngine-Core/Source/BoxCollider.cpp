@@ -144,25 +144,6 @@ namespace FlatEngine
 			SetPreviousGridStep(gridStep);
 		}
 
-		RigidBody* rigidBody;
-		if (GetParent() != nullptr && GetParent()->HasComponent("RigidBody"))
-		{
-			rigidBody = GetParent()->GetRigidBody();
-			Vector2 velocity = rigidBody->GetVelocity();
-
-			if (velocity.x != 0 || velocity.y != 0 || !m_b_activeEdgesSet || HasMoved())
-			{
-				b_shouldUpdate = true;
-			}
-		}
-		else
-		{
-			if (!m_b_activeEdgesSet || HasMoved())
-			{
-				b_shouldUpdate = true;
-			}
-		}
-
 		if (GetParent()->GetTransform()->GetRotation() != m_previousRotation)
 		{
 			b_shouldUpdate = true;
@@ -172,7 +153,6 @@ namespace FlatEngine
 		if (b_shouldUpdate || b_forceUpdate)
 		{
 			m_b_activeEdgesSet = true;
-			RigidBody* rigidBody = parent->GetRigidBody();
 			Transform* transform = GetParent()->GetTransform();
 			Vector2 scale = transform->GetScale();
 			Vector2 activeOffset = GetActiveOffset();			
@@ -187,16 +167,6 @@ namespace FlatEngine
 			m_activeBottom = viewportCenter.y + (-GetCenterGrid().y + (m_activeHeight * scale.y / 2)) * gridStep;
 
 			SetCenterCoord(Vector2(m_activeLeft + (m_activeRight - m_activeLeft) / 2, m_activeTop + (m_activeBottom - m_activeTop) / 2));
-
-			// For collision detection ( grid space values )
-			if (rigidBody != nullptr)
-			{
-				SetNextCenterGrid(Vector2(rigidBody->GetNextPosition().x + activeOffset.x, rigidBody->GetNextPosition().y + activeOffset.y));
-			}
-			else
-			{
-				SetNextCenterGrid(GetCenterGrid());
-			}
 
 			m_nextActiveLeft = GetNextCenterGrid().x - (m_activeWidth * scale.x / 2);
 			m_nextActiveTop = GetNextCenterGrid().y + (m_activeHeight * scale.y / 2);
@@ -266,10 +236,6 @@ namespace FlatEngine
 		SetCorners(newCorners);
 
 		Vector2 nextPosition = position; 
-		if (GetParent()->GetRigidBody() != nullptr)
-		{
-			nextPosition = GetParent()->GetRigidBody()->GetNextPosition();
-		}
 		Vector2 nextCorners[4] =
 		{
 			nextPosition + topLeft,

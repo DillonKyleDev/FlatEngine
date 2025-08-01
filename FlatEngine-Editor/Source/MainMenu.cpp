@@ -301,34 +301,20 @@ namespace FlatGui
 						newObject->SetName("CharacterController(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
-					if (ImGui::MenuItem("RigidBody"))
+					if (ImGui::MenuItem("BoxBody"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);						
-						newObject->AddRigidBody();
-						newObject->SetName("RigidBody(" + std::to_string(newObject->GetID()) + ")");
+						newObject->AddBoxBody();
+						newObject->SetName("BoxBody(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
-					if (ImGui::MenuItem("BoxCollider"))
-					{
-						GameObject *newObject = FL::CreateGameObject(-1);						
-						newObject->AddBoxCollider();
-						newObject->SetName("BoxCollider(" + std::to_string(newObject->GetID()) + ")");
-						SetFocusedGameObjectID(newObject->GetID());
-					}
-					if (ImGui::MenuItem("CircleCollider"))
-					{
-						GameObject* newObject = FL::CreateGameObject(-1);
-						newObject->AddCircleCollider();
-						newObject->SetName("CircleCollider(" + std::to_string(newObject->GetID()) + ")");
-						SetFocusedGameObjectID(newObject->GetID());
-					}
-					if (ImGui::MenuItem("TileMap"))
-					{
-						GameObject* newObject = FL::CreateGameObject(-1);
-						newObject->AddTileMap();
-						newObject->SetName("TileMap(" + std::to_string(newObject->GetID()) + ")");
-						SetFocusedGameObjectID(newObject->GetID());
-					}
+					//if (ImGui::MenuItem("TileMap"))
+					//{
+					//	GameObject* newObject = FL::CreateGameObject(-1);
+					//	newObject->AddTileMap();
+					//	newObject->SetName("TileMap(" + std::to_string(newObject->GetID()) + ")");
+					//	SetFocusedGameObjectID(newObject->GetID());
+					//}
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Prefabs"))

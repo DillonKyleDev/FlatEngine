@@ -1606,28 +1606,6 @@ namespace FlatEngine
 			textProps.push_back(json::parse(data));
 		}
 		
-		json boxColliderProps = json::array();
-		for (std::shared_ptr<Animation::S_BoxCollider> boxColliderProp : propertiesObject->boxColliderProps)
-		{
-			json jsonData = {
-				{ "time", boxColliderProp->time },
-				{ "_isActive", boxColliderProp->b_isActive }
-			};
-			std::string data = jsonData.dump();
-			boxColliderProps.push_back(json::parse(data));
-		}
-		
-		json circleColliderProps = json::array();
-		for (std::shared_ptr<Animation::S_CircleCollider> circleColliderProp : propertiesObject->circleColliderProps)
-		{
-			json jsonData = {
-				{ "time", circleColliderProp->time },
-				{ "_isActive", circleColliderProp->b_isActive }
-			};
-			std::string data = jsonData.dump();
-			circleColliderProps.push_back(json::parse(data));
-		}
-		
 		json rigidBodyProps = json::array();
 		for (std::shared_ptr<Animation::S_RigidBody> rigidBodyProp : propertiesObject->rigidBodyProps)
 		{
@@ -1663,8 +1641,6 @@ namespace FlatEngine
 			{ "canvas", canvasProps },
 			{ "audio", audioProps },
 			{ "text", textProps },
-			{ "boxCollider", boxColliderProps },
-			{ "circleCollider", circleColliderProps },
 			{ "rigidBody", rigidBodyProps },
 			{ "characterController", characterControllerProps }
 		});
@@ -1924,40 +1900,6 @@ namespace FlatEngine
 					}
 				}
 				
-				json boxColliderProps = animationJson["animationProperties"]["boxCollider"];
-				for (int i = 0; i < boxColliderProps.size(); i++)
-				{
-					try
-					{
-						std::shared_ptr<Animation::S_BoxCollider> frame = std::make_shared<Animation::S_BoxCollider>();
-						frame->name = "BoxCollider";
-						frame->time = CheckJsonFloat(boxColliderProps.at(i), "time", animName);
-						frame->b_isActive = CheckJsonBool(boxColliderProps.at(i), "_isActive", animName);
-						animProps->boxColliderProps.push_back(frame);
-					}
-					catch (const json::out_of_range& e)
-					{
-						LogError(e.what());
-					}
-				}
-				
-				json circleColliderProps = animationJson["animationProperties"]["circleCollider"];
-				for (int i = 0; i < circleColliderProps.size(); i++)
-				{
-					try
-					{
-						std::shared_ptr<Animation::S_CircleCollider> frame = std::make_shared<Animation::S_CircleCollider>();
-						frame->name = "CircleCollider";
-						frame->time = CheckJsonFloat(circleColliderProps.at(i), "time", animName);
-						frame->b_isActive = CheckJsonBool(circleColliderProps.at(i), "_isActive", animName);
-						animProps->circleColliderProps.push_back(frame);
-					}
-					catch (const json::out_of_range& e)
-					{
-						LogError(e.what());
-					}
-				}
-				
 				json rigidBodyProps = animationJson["animationProperties"]["rigidBody"];
 				for (int i = 0; i < rigidBodyProps.size(); i++)
 				{
@@ -2015,115 +1957,6 @@ namespace FlatEngine
 	GameObject *Instantiate(std::string prefabName, Vector2 position, Scene* scene, long parentID, long ID)
 	{
 		return F_PrefabManager->Instantiate(prefabName, position, scene, parentID, ID);
-	}
-
-	
-	// Collision Detection
-	void UpdateColliderPairs()
-	{
-		std::map<long, RayCast>& sceneRayCasts = GetLoadedScene()->GetRayCasts();
-		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
-		std::map<long, std::map<long, BoxCollider>> &persistantBoxColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetBoxColliders();
-		std::map<long, std::map<long, CircleCollider>>& sceneCircleColliders = GetLoadedScene()->GetCircleColliders();
-		std::map<long, std::map<long, CircleCollider>>& persistantCircleColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleColliders();
-
-		// Remake colliderPairs
-		F_ColliderPairs.clear();
-		std::vector<Collider*> colliders;
-
-		// Collect Colliders into a simple to navigate vector
-		for (std::map<long, RayCast>::iterator colliderMap = sceneRayCasts.begin(); colliderMap != sceneRayCasts.end();)
-		{
-			colliders.push_back(&colliderMap->second);
-			colliderMap++;
-		}
-		for (std::map<long, std::map<long, BoxCollider>>::iterator colliderMap = sceneBoxColliders.begin(); colliderMap != sceneBoxColliders.end();)
-		{
-			for (std::map<long, BoxCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
-			{
-				colliders.push_back(&innerMap->second);
-				innerMap++;
-			}
-			colliderMap++;
-		}
-		for (std::map<long, std::map<long, BoxCollider>>::iterator colliderMap = persistantBoxColliders.begin(); colliderMap != persistantBoxColliders.end();)
-		{
-			for (std::map<long, BoxCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
-			{
-				colliders.push_back(&innerMap->second);
-				innerMap++;
-			}
-			colliderMap++;
-		}
-		for (std::map<long, std::map<long, CircleCollider>>::iterator colliderMap = sceneCircleColliders.begin(); colliderMap != sceneCircleColliders.end();)
-		{
-			for (std::map<long, CircleCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
-			{
-				colliders.push_back(&innerMap->second);
-				innerMap++;
-			}
-			colliderMap++;
-		}
-		for (std::map<long, std::map<long, CircleCollider>>::iterator colliderMap = persistantCircleColliders.begin(); colliderMap != persistantCircleColliders.end();)
-		{
-			for (std::map<long, CircleCollider>::iterator innerMap = colliderMap->second.begin(); innerMap != colliderMap->second.end();)
-			{
-				colliders.push_back(&innerMap->second);
-				innerMap++;
-			}
-			colliderMap++;
-		}
-
-		int colliderCounter = 1;
-		for (std::vector<Collider*>::iterator collider1 = colliders.begin(); collider1 != colliders.end(); collider1++)
-		{
-			for (std::vector<Collider*>::iterator collider2 = collider1 + colliderCounter; collider2 != colliders.end(); collider2++)
-			{
-				if ((*collider1)->GetParentID() != (*collider2)->GetParentID() && !((*collider1)->GetType() == T_RayCast && (*collider2)->GetType() == T_RayCast))
-				{
-					if ((*collider1)->GetType() != T_RayCast && (*collider2)->GetType() != T_RayCast)
-					{
-						TagList coll1TagList = (*collider1)->GetParent()->GetTagList();
-						TagList coll2TagList = (*collider2)->GetParent()->GetTagList();
-
-						std::vector<std::string> coll1Ignored = coll1TagList.GetIgnoredTags();
-						std::vector<std::string> coll2Ignored = coll2TagList.GetIgnoredTags();
-
-						bool b_ignorePair = false;
-
-						for (std::string ignoredTag : coll1Ignored)
-						{
-							if (coll2TagList.HasTag(ignoredTag))
-							{
-								b_ignorePair = true;
-								break;
-							}
-						}
-						if (!b_ignorePair)
-						{
-							for (std::string ignoredTag : coll2Ignored)
-							{
-								if (coll1TagList.HasTag(ignoredTag))
-								{
-									b_ignorePair = true;
-									break;
-								}
-							}
-						}
-						if (!b_ignorePair)
-						{
-							std::pair<Collider*, Collider*> newPair = { (*collider1), (*collider2) };
-							F_ColliderPairs.push_back(newPair);
-						}
-					}
-					else
-					{
-						std::pair<Collider*, Collider*> newPair = { (*collider1), (*collider2) };
-						F_ColliderPairs.push_back(newPair);
-					}
-				}
-			}
-		}
 	}
 
 
@@ -2786,14 +2619,29 @@ namespace FlatEngine
 		}
 	}
 
+	float Fmod(float number, float modWith)
+	{
+		return (float)fmod(number, modWith);
+	}
+
+	int Fmod(int number, int modWith)
+	{
+		return (int)fmod(number, modWith);
+	}
+
+	double Fmod(double number, double modWith)
+	{
+		return fmod(number, modWith);
+	}
+
 	float RadiansToDegrees(float radians)
 	{
-		return radians * 57.29578;
+		return radians * 57.29578f;
 	}
 
 	float DegreesToRadians(float degrees)
 	{
-		return degrees / 57.29578;
+		return degrees / 57.29578f;
 	}
 
 	float Abs(float value)
@@ -3372,49 +3220,26 @@ namespace FlatEngine
 
 							}
 							else if (type == "CharacterController")
-							{								
+							{
 								CharacterController* newCharacterController = loadedObject->AddCharacterController(id, b_isActive, b_isCollapsed);
 								newCharacterController->SetMaxAcceleration(CheckJsonFloat(componentJson, "maxAcceleration", objectName));
 								newCharacterController->SetMaxSpeed(CheckJsonFloat(componentJson, "maxSpeed", objectName));
 								newCharacterController->SetAirControl(CheckJsonFloat(componentJson, "airControl", objectName));
 
 							}
-							else if (type == "BoxCollider")
-							{								
-								BoxCollider* newBoxCollider = loadedObject->AddBoxCollider(id, b_isActive, b_isCollapsed);
-								newBoxCollider->SetTileMapCollider(false);
-								newBoxCollider->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
-								newBoxCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-								newBoxCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));								
-								newBoxCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
-								newBoxCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
-								newBoxCollider->SetRotation(objectRotation);
-								newBoxCollider->SetShowActiveRadius(CheckJsonBool(componentJson, "_showActiveRadius", objectName));								
-							}
-							else if (type == "CircleCollider")
-							{								
-								CircleCollider* newCircleCollider = loadedObject->AddCircleCollider(id, b_isActive, b_isCollapsed);
-								newCircleCollider->SetActiveRadiusGrid(CheckJsonFloat(componentJson, "activeRadius", objectName));
-								newCircleCollider->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-								newCircleCollider->SetIsContinuous(CheckJsonBool(componentJson, "_isContinuous", objectName));								
-								newCircleCollider->SetIsSolid(CheckJsonBool(componentJson, "_isSolid", objectName));
-								newCircleCollider->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));								
-
-							}
-							else if (type == "RigidBody")
+							else if (type == "BoxBody")
 							{
-								RigidBody* newRigidBody = loadedObject->AddRigidBody(id, b_isActive, b_isCollapsed);
-								newRigidBody->SetMass(CheckJsonFloat(componentJson, "mass", objectName));
-								newRigidBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
-								newRigidBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
-								newRigidBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
-								newRigidBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-								newRigidBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));
-								newRigidBody->SetEquilibriumForce(CheckJsonFloat(componentJson, "equilibriumForce", objectName));
-								newRigidBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));
-								newRigidBody->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
-								newRigidBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
-
+								//RigidBody* newRigidBody = loadedObject->AddRigidBody(id, b_isActive, b_isCollapsed);
+								//newRigidBody->SetMass(CheckJsonFloat(componentJson, "mass", objectName));
+								//newRigidBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
+								//newRigidBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
+								//newRigidBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
+								//newRigidBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
+								//newRigidBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));
+								//newRigidBody->SetEquilibriumForce(CheckJsonFloat(componentJson, "equilibriumForce", objectName));
+								//newRigidBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));
+								//newRigidBody->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
+								//newRigidBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
 							}
 							else if (type == "TileMap")
 							{
@@ -3500,11 +3325,6 @@ namespace FlatEngine
 		// Update the moment of inertia if applicable
 		if (loadedObject != nullptr)
 		{
-			if (loadedObject->GetRigidBody() != nullptr)
-			{
-				loadedObject->GetRigidBody()->UpdateI();
-			}
-
 			if (loadedObject->GetButton() != nullptr)
 			{
 				loadedObject->GetButton()->CalculateActiveEdges();

@@ -39,7 +39,7 @@ namespace FlatEngine
 		m_currentTime = 0;
 		m_pausedTime = 0;
 		m_framesCounted = 0;
-		m_deltaTime = 0.001f; // Minimum "time" to pass for each frame 0.12f = 120fps
+		m_deltaTime = 0.01f; // Minimum "time" to pass for each frame 0.12f = 120fps
 		m_accumulator = m_deltaTime;		
 		m_hoveredButtons = std::vector<Button>();
 		m_objectsQueuedForDelete = std::vector<long>();
@@ -73,9 +73,15 @@ namespace FlatEngine
 		HandleButtons();
 		RunUpdateOnScripts();
 		F_Physics->Update(GetDeltaTime());
-		//CalculatePhysics();
-		//HandleCollisions(gridstep, viewportCenter);
-		//ApplyPhysics();
+
+		std::map<long, BoxBody> boxBodies = GetLoadedScene()->GetBoxBodies();
+
+		for (std::map<long, BoxBody>::iterator iterator = boxBodies.begin(); iterator != boxBodies.end(); iterator++)
+		{
+			LogVector2(iterator->second.GetBodyProps().position, iterator->second.GetParent()->GetName() + " Props Pos: ");	
+			LogVector2(iterator->second.GetPosition(), iterator->second.GetParent()->GetName() + "BoxBody Pos: ");
+			LogVector2(iterator->second.GetBodyProps().dimensions);
+		}
 	}
 
 	void GameLoop::Stop()
@@ -377,125 +383,6 @@ namespace FlatEngine
 		{
 			owner.second.SetMoving(false);
 		}
-	}
-
-	void GameLoop::CalculatePhysics()
-	{
-		float processTime = (float)GetEngineTime();
-		for (std::pair<const long, RigidBody>& rigidBody : GetLoadedScene()->GetRigidBodies())
-		{
-			if (rigidBody.second.IsActive())
-			{
-				rigidBody.second.CalculatePhysics();
-			}
-		}
-		for (std::pair<const long, RigidBody>& rigidBody : GetLoadedProject().GetPersistantGameObjectScene()->GetRigidBodies())
-		{
-			if (rigidBody.second.IsActive())
-			{
-				rigidBody.second.CalculatePhysics();
-			}
-		}
-		processTime = (float)GetEngineTime() - processTime;
-		//LogFloat(processTime, "CalculatePhysics: ");
-	}
-
-	void GameLoop::HandleCollisions(float gridstep, Vector2 viewportCenter)
-	{		
-		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
-		for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
-		{
-			for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
-			{
-				innerIter->second.ResetCollisions();
-				innerIter->second.RecalculateBounds(gridstep, viewportCenter);
-				innerIter++;
-			}
-			outerIter++;
-		}
-		std::map<long, std::map<long, BoxCollider>>& persistantBoxColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetBoxColliders();
-		for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = persistantBoxColliders.begin(); outerIter != persistantBoxColliders.end();)
-		{
-			for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
-			{
-				innerIter->second.ResetCollisions();
-				innerIter->second.RecalculateBounds(gridstep, viewportCenter);
-				innerIter++;
-			}
-			outerIter++;
-		}
-		std::map<long, std::map<long, CircleCollider>>& sceneCircleColliders = GetLoadedScene()->GetCircleColliders();
-		for (std::map<long, std::map<long, CircleCollider>>::iterator outerIter = sceneCircleColliders.begin(); outerIter != sceneCircleColliders.end();)
-		{
-			for (std::map<long, CircleCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
-			{
-				innerIter->second.ResetCollisions();
-				innerIter->second.RecalculateBounds(gridstep, viewportCenter);
-				innerIter++;
-			}
-			outerIter++;
-		}
-		std::map<long, std::map<long, CircleCollider>>& persistantCircleColliders = GetLoadedProject().GetPersistantGameObjectScene()->GetCircleColliders();
-		for (std::map<long, std::map<long, CircleCollider>>::iterator outerIter = persistantCircleColliders.begin(); outerIter != persistantCircleColliders.end();)
-		{
-			for (std::map<long, CircleCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
-			{
-				innerIter->second.ResetCollisions();
-				innerIter->second.RecalculateBounds(gridstep, viewportCenter);
-				innerIter++;
-			}
-			outerIter++;
-		}
-
-		float processTime = (float)GetEngineTime();		
-		static int continuousCounter = 0;
-		for (std::pair<Collider*, Collider*>& colliderPair : F_ColliderPairs)
-		{
-			Collider* collider1 = colliderPair.first;
-			Collider* collider2 = colliderPair.second;
-
-			if (collider1 != nullptr && collider2 != nullptr)
-			{
-				if (collider1->GetParent() != nullptr && collider1->GetParent()->IsActive() && collider1->IsActive() && collider2->GetParent() != nullptr && collider2->GetParent()->IsActive() && collider2->IsActive() && (collider1->GetID() != collider2->GetID()) && ((collider1->IsContinuous() || (!collider1->IsContinuous() && continuousCounter == 10)) || (collider2->IsContinuous() || (!collider2->IsContinuous() && continuousCounter == 10))))
-				{
-					if (collider1->GetActiveLayer() == collider2->GetActiveLayer())
-					{
-						Collider::CheckForCollision(collider1, collider2);
-					}
-				}
-			}
-		}
-		if (continuousCounter >= 10)
-		{
-			continuousCounter = 0;
-		}
-		continuousCounter++;
-
-		processTime = (float)GetEngineTime() - processTime;
-		AddProcessData("Collision Testing", processTime);
-		//LogFloat(processTime, "Collision Detection");
-	}
-
-	void GameLoop::ApplyPhysics()
-	{
-		float processTime = (float)GetEngineTime();
-		for (std::pair<const long, RigidBody>& rigidBody : GetLoadedScene()->GetRigidBodies())
-		{
-			if (rigidBody.second.IsActive())
-			{
-				rigidBody.second.ApplyPhysics(m_deltaTime);
-			}
-		}
-		for (std::pair<const long, RigidBody>& rigidBody : GetLoadedProject().GetPersistantGameObjectScene()->GetRigidBodies())
-		{
-			if (rigidBody.second.IsActive())
-			{
-				rigidBody.second.ApplyPhysics(m_deltaTime);
-			}
-		}
-		
-		processTime = (float)GetEngineTime() - processTime;
-		//LogFloat(processTime, "Apply Physics: ");
 	}
 
 	void GameLoop::RunUpdateOnScripts()

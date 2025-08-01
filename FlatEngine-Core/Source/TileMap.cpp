@@ -183,7 +183,7 @@ namespace FlatEngine
 		
 		if (GetLoadedScene() != nullptr)
 		{
-			colliderPtr = GetLoadedScene()->AddBoxCollider(newCollisionArea, GetParentID());
+			//colliderPtr = GetLoadedScene()->AddBoxCollider(newCollisionArea, GetParentID());
 
 			CollisionAreaData colData;
 			colData.collider = colliderPtr;

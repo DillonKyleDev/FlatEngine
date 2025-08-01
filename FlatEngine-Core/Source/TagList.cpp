@@ -58,7 +58,7 @@ namespace FlatEngine
 
 		if (b_updateColliderPairs)
 		{
-			UpdateColliderPairs();
+			//UpdateColliderPairs();
 		}
 	}
 
@@ -68,7 +68,7 @@ namespace FlatEngine
 		{
 			m_tags.at(tag) = !m_tags.at(tag);
 		}
-		UpdateColliderPairs();
+		//UpdateColliderPairs();
 	}
 
 	bool TagList::HasTag(std::string tag)
@@ -92,7 +92,7 @@ namespace FlatEngine
 
 		if (b_updateColliderPairs)
 		{
-			UpdateColliderPairs();
+			//UpdateColliderPairs();
 		}
 	}
 
@@ -102,7 +102,7 @@ namespace FlatEngine
 		{
 			m_ignoreTags.at(tag) = !m_ignoreTags.at(tag);
 		}
-		UpdateColliderPairs();
+		//UpdateColliderPairs();
 	}
 
 	bool TagList::IgnoresTag(std::string tag)

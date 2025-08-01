@@ -94,28 +94,28 @@ namespace FlatEngine {
 			SetPreviousGridStep(gridStep);
 		}
 
-		RigidBody* rigidBody;
-		if (parent != nullptr && parent->HasComponent("RigidBody"))
-		{
-			rigidBody = GetParent()->GetRigidBody();
-			Vector2 velocity = rigidBody->GetVelocity();
+		//RigidBody* rigidBody;
+		//if (parent != nullptr && parent->HasComponent("RigidBody"))
+		//{
+		//	rigidBody = GetParent()->GetRigidBody();
+		//	Vector2 velocity = rigidBody->GetVelocity();
 
-			if (velocity.x != 0 || velocity.y != 0 || !m_b_activeEdgesSet || HasMoved())
-			{
-				b_shouldUpdate = true;
-			}
-		}
-		else
-		{
-			if (!m_b_activeEdgesSet || HasMoved())
-			{
-				b_shouldUpdate = true;
-			}
-		}
+		//	if (velocity.x != 0 || velocity.y != 0 || !m_b_activeEdgesSet || HasMoved())
+		//	{
+		//		b_shouldUpdate = true;
+		//	}
+		//}
+		//else
+		//{
+		//	if (!m_b_activeEdgesSet || HasMoved())
+		//	{
+		//		b_shouldUpdate = true;
+		//	}
+		//}
 
 		if (b_shouldUpdate)
 		{
-			RigidBody* rigidBody = parent->GetRigidBody();
+			//RigidBody* rigidBody = parent->GetRigidBody();
 			Transform* transform = GetParent()->GetTransform();
 			Vector2 scale = transform->GetScale();
 			Vector2 activeOffset = GetActiveOffset();
@@ -131,14 +131,14 @@ namespace FlatEngine {
 			SetCenterCoord(Vector2(m_activeLeft + (m_activeRight - m_activeLeft) / 2, m_activeTop + (m_activeBottom - m_activeTop) / 2));
 
 			// For collision detection ( grid space values )
-			if (rigidBody != nullptr)
-			{
-				SetNextCenterGrid(Vector2(rigidBody->GetNextPosition().x + activeOffset.x, rigidBody->GetNextPosition().y + activeOffset.y));
-			}
-			else
-			{
-				SetNextCenterGrid(GetCenterGrid());
-			}
+			//if (rigidBody != nullptr)
+			//{
+			//	SetNextCenterGrid(Vector2(rigidBody->GetNextPosition().x + activeOffset.x, rigidBody->GetNextPosition().y + activeOffset.y));
+			//}
+			//else
+			//{
+			//	SetNextCenterGrid(GetCenterGrid());
+			//}
 
 			m_nextActiveLeft = GetNextCenterGrid().x - (activeRadius * scale.x);
 			m_nextActiveTop = GetNextCenterGrid().y + (activeRadius * scale.y);

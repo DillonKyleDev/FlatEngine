@@ -12,12 +12,8 @@
 #include "Audio.h"
 #include "Text.h"
 #include "RayCast.h"
-#include "Collider.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
-#include "RigidBody.h"
+#include "BoxBody.h"
 #include "CharacterController.h"
-#include "TileMap.h"
 #include "FlatEngine.h"
 
 namespace FL = FlatEngine;
@@ -38,14 +34,13 @@ namespace FlatEngine
 		m_Audios = std::map<long, Audio>();
 		m_Texts = std::map<long, Text>();
 		m_RayCasts = std::map<long, RayCast>();
-		m_BoxColliders = std::map<long, std::map<long, BoxCollider>>();
-		m_CircleColliders = std::map<long, std::map<long, CircleCollider>>();
-		m_RigidBodies = std::map<long, RigidBody>();
+		m_BoxBodies = std::map<long, BoxBody>();
 		m_CharacterControllers = std::map<long, CharacterController>();		
+		//m_TileMaps = std::map<long, TileMap>();
 	}
 
 	ECSManager::~ECSManager()
-	{
+	{		
 	}
 
 	void ECSManager::Cleanup()
@@ -61,11 +56,13 @@ namespace FlatEngine
 		m_Audios.clear();
 		m_Texts.clear();
 		m_RayCasts.clear();
-		m_BoxColliders.clear();
-		m_CircleColliders.clear();
-		m_RigidBodies.clear();
+		for (std::map<long, BoxBody>::iterator iterator = m_BoxBodies.begin(); iterator != m_BoxBodies.end(); iterator++)
+		{
+			F_Physics->DestroyBody(iterator->second.GetBodyID());
+		}
+		m_BoxBodies.clear();
 		m_CharacterControllers.clear();
-		m_TileMaps.clear();		
+		//m_TileMaps.clear();		
 	}
 
 	Transform* ECSManager::AddTransform(Transform transform, long ownerID)
@@ -128,52 +125,10 @@ namespace FlatEngine
 		return &m_RayCasts.at(ownerID);
 	}
 
-	BoxCollider* ECSManager::AddBoxCollider(BoxCollider collider, long ownerID)
+	BoxBody* ECSManager::AddBoxBody(BoxBody boxBody, long ownerID)
 	{
-		std::pair<long, BoxCollider> newPair = { collider.GetID(), collider };
-
-		if (m_BoxColliders.count(ownerID))
-		{
-			m_BoxColliders.at(ownerID).emplace(newPair);
-		}
-		else
-		{
-			std::map<long, BoxCollider> newMap;
-			newMap.emplace(newPair);
-			m_BoxColliders.emplace(ownerID, newMap);
-		}
-
-		// Update m_ColliderPairs
-		if (GetObjectByID(ownerID) != nullptr) // If BoxCollider added to object, but object not yet added to Scene, (will be caught in Scene::AddSceneObject())
-		{	
-			UpdateColliderPairs();
-		}
-
-		return &m_BoxColliders.at(ownerID).at(collider.GetID());
-	}
-
-	CircleCollider* ECSManager::AddCircleCollider(CircleCollider collider, long ownerID)
-	{
-		std::pair<long, CircleCollider> newPair = { collider.GetID(), collider };
-
-		if (m_CircleColliders.count(ownerID))
-		{
-			m_CircleColliders.at(ownerID).emplace(newPair);
-		}
-		else
-		{
-			std::map<long, CircleCollider> newMap;
-			newMap.emplace(newPair);
-			m_CircleColliders.emplace(ownerID, newMap);
-		}
-
-		// Update m_ColliderPairs
-		if (GetObjectByID(ownerID) != nullptr) // If CircleCollider added to object, but object not yet added to Scene, (will be caught in Scene::AddSceneObject())
-		{			
-			UpdateColliderPairs();
-		}
-
-		return &m_CircleColliders.at(ownerID).at(collider.GetID());
+		m_BoxBodies.emplace(ownerID, boxBody);
+		return &m_BoxBodies.at(ownerID);
 	}
 
 	Animation* ECSManager::AddAnimation(Animation animation, long ownerID)
@@ -188,12 +143,6 @@ namespace FlatEngine
 		return &m_Buttons.at(ownerID);
 	}
 
-	RigidBody* ECSManager::AddRigidBody(RigidBody rigidBody, long ownerID)
-	{
-		m_RigidBodies.emplace(ownerID, rigidBody);
-		return &m_RigidBodies.at(ownerID);
-	}
-
 	CharacterController* ECSManager::AddCharacterController(CharacterController characterController, long ownerID)
 	{
 		m_CharacterControllers.emplace(ownerID, characterController);
@@ -202,8 +151,9 @@ namespace FlatEngine
 
 	TileMap* ECSManager::AddTileMap(TileMap tileMap, long ownerID)
 	{
-		m_TileMaps.emplace(ownerID, tileMap);
-		return &m_TileMaps.at(ownerID);
+		//m_TileMaps.emplace(ownerID, tileMap);
+		//return &m_TileMaps.at(ownerID);
+		return nullptr;
 	}
 
 	// Get Components
@@ -293,34 +243,6 @@ namespace FlatEngine
 		}
 	}
 
-	std::vector<BoxCollider*> ECSManager::GetBoxCollidersByOwner(long ownerID)
-	{
-		std::vector<BoxCollider*> colliders = std::vector<BoxCollider*>();
-		if (m_BoxColliders.count(ownerID))
-		{
-			for (std::map<long, BoxCollider>::iterator iter = m_BoxColliders.at(ownerID).begin(); iter != m_BoxColliders.at(ownerID).end();)
-			{
-				colliders.push_back(&(*iter).second);
-				iter++;
-			}
-		}
-		return colliders;
-	}
-
-	std::vector<CircleCollider*> ECSManager::GetCircleCollidersByOwner(long ownerID)
-	{
-		std::vector<CircleCollider*> colliders = std::vector<CircleCollider*>();
-		if (m_CircleColliders.count(ownerID))
-		{
-			for (std::map<long, CircleCollider>::iterator iter = m_CircleColliders.at(ownerID).begin(); iter != m_CircleColliders.at(ownerID).end();)
-			{
-				colliders.push_back(&(*iter).second);
-				iter++;
-			}
-		}
-		return colliders;
-	}
-
 	Animation* ECSManager::GetAnimationByOwner(long ownerID)
 	{
 		if (m_Animations.count(ownerID))
@@ -345,11 +267,11 @@ namespace FlatEngine
 		}
 	}
 
-	RigidBody* ECSManager::GetRigidBodyByOwner(long ownerID)
+	BoxBody* ECSManager::GetBoxBodyByOwner(long ownerID)
 	{
-		if (m_RigidBodies.count(ownerID))
+		if (m_BoxBodies.count(ownerID))
 		{
-			return &m_RigidBodies.at(ownerID);
+			return &m_BoxBodies.at(ownerID);
 		}
 		else
 		{
@@ -371,11 +293,11 @@ namespace FlatEngine
 
 	TileMap* ECSManager::GetTileMapByOwner(long ownerID)
 	{
-		if (m_TileMaps.count(ownerID))
+		//if (m_TileMaps.count(ownerID))
 		{
-			return &m_TileMaps.at(ownerID);
+			//return &m_TileMaps.at(ownerID);
 		}
-		else
+		//else
 		{
 			return nullptr;
 		}
@@ -436,17 +358,9 @@ namespace FlatEngine
 		{
 			return RemoveRayCast(ownerID);
 		}
-		else if (component->GetTypeString() == "BoxCollider")
+		else if (component->GetTypeString() == "BoxBody")
 		{
-			return RemoveBoxCollider(component->GetID(), ownerID);
-		}
-		else if (component->GetTypeString() == "CircleCollider")
-		{
-			return RemoveCircleCollider(component->GetID(), ownerID);
-		}
-		else if (component->GetTypeString() == "RigidBody")
-		{
-			return RemoveRigidBody(ownerID);
+			return RemoveBoxBody(ownerID);
 		}
 		else if (component->GetTypeString() == "CharacterController")
 		{
@@ -461,7 +375,7 @@ namespace FlatEngine
 				{
 					for (CollisionAreaData collData : collisionArea.second)
 					{
-						RemoveBoxCollider(collData.collider->GetID(), ownerID);
+						//RemoveBoxCollider(collData.collider->GetID(), ownerID);
 					}
 				}
 			}
@@ -565,40 +479,52 @@ namespace FlatEngine
 		{
 			m_RayCasts.erase(ownerID);
 			b_success = true;
-			UpdateColliderPairs();
+			//UpdateColliderPairs();
 		}
 		return b_success;
 	}
 
-	bool ECSManager::RemoveBoxCollider(long componentID, long ownerID)
+	bool ECSManager::RemoveBoxBody(long ownerID)
 	{
 		bool b_success = false;
-		if (m_BoxColliders.count(ownerID))
+		if (m_BoxBodies.count(ownerID))
 		{
-			if (m_BoxColliders.at(ownerID).count(componentID))
-			{
-				m_BoxColliders.at(ownerID).erase(componentID);
-				b_success = true;
-				UpdateColliderPairs();
-			}
+			F_Physics->DestroyBody(m_BoxBodies.at(ownerID).GetBodyID());
+			m_BoxBodies.erase(ownerID);
+			b_success = true;							
 		}
 		return b_success;
 	}
 
-	bool ECSManager::RemoveCircleCollider(long componentID, long ownerID)
-	{
-		bool b_success = false;
-		if (m_CircleColliders.count(ownerID))
-		{
-			if (m_CircleColliders.at(ownerID).count(componentID))
-			{
-				m_CircleColliders.at(ownerID).erase(componentID);
-				b_success = true;
-				UpdateColliderPairs();
-			}
-		}
-		return b_success;
-	}
+	//bool ECSManager::RemoveBoxCollider(long componentID, long ownerID)
+	//{
+	//	bool b_success = false;
+	//	if (m_BoxColliders.count(ownerID))
+	//	{
+	//		if (m_BoxColliders.at(ownerID).count(componentID))
+	//		{
+	//			m_BoxColliders.at(ownerID).erase(componentID);
+	//			b_success = true;
+	//			UpdateColliderPairs();
+	//		}
+	//	}
+	//	return b_success;
+	//}
+
+	//bool ECSManager::RemoveCircleCollider(long componentID, long ownerID)
+	//{
+	//	bool b_success = false;
+	//	if (m_CircleColliders.count(ownerID))
+	//	{
+	//		if (m_CircleColliders.at(ownerID).count(componentID))
+	//		{
+	//			m_CircleColliders.at(ownerID).erase(componentID);
+	//			b_success = true;
+	//			UpdateColliderPairs();
+	//		}
+	//	}
+	//	return b_success;
+	//}
 
 	bool ECSManager::RemoveAnimation(long ownerID)
 	{
@@ -622,17 +548,6 @@ namespace FlatEngine
 		return b_success;
 	}
 
-	bool ECSManager::RemoveRigidBody(long ownerID)
-	{
-		bool b_success = false;
-		if (m_RigidBodies.count(ownerID))
-		{
-			m_RigidBodies.erase(ownerID);
-			b_success = true;
-		}
-		return b_success;
-	}
-
 	bool ECSManager::RemoveCharacterController(long ownerID)
 	{
 		bool b_success = false;
@@ -647,10 +562,10 @@ namespace FlatEngine
 	bool ECSManager::RemoveTileMap(long ownerID)
 	{
 		bool b_success = false;
-		if (m_TileMaps.count(ownerID))
+		//if (m_TileMaps.count(ownerID))
 		{
-			m_TileMaps.erase(ownerID);
-			b_success = true;
+			//m_TileMaps.erase(ownerID);
+			//b_success = true;
 		}
 		return b_success;
 	}
@@ -695,51 +610,20 @@ namespace FlatEngine
 	{
 		return m_Texts;
 	}
-	std::vector<Collider*> ECSManager::GetColliders()
-	{		
-		std::vector<Collider*> colliders;
-		for (std::pair<long, RayCast> rayCast : m_RayCasts)
-		{
-			colliders.push_back(&rayCast.second);
-		}
-		for (std::pair<long, std::map<long, BoxCollider>> colliderMap : m_BoxColliders)
-		{
-			for (std::pair<long, BoxCollider> collider : colliderMap.second)
-			{
-				colliders.push_back(&collider.second);
-			}
-		}
-		for (std::pair<long, std::map<long, CircleCollider>> colliderMap : m_CircleColliders)
-		{
-			for (std::pair<long, CircleCollider> collider : colliderMap.second)
-			{
-				colliders.push_back(&collider.second);
-			}
-		}
-		return colliders;
-	}
 	std::map<long, RayCast>& ECSManager::GetRayCasts()
 	{
 		return m_RayCasts;
 	}
-	std::map<long, std::map<long, BoxCollider>> &ECSManager::GetBoxColliders()
+	std::map<long, BoxBody>& ECSManager::GetBoxBodies()
 	{
-		return m_BoxColliders;
-	}
-	std::map<long, std::map<long, CircleCollider>> &ECSManager::GetCircleColliders()
-	{
-		return m_CircleColliders;
-	}
-	std::map<long, RigidBody> &ECSManager::GetRigidBodies()
-	{
-		return m_RigidBodies;
+		return m_BoxBodies;
 	}
 	std::map<long, CharacterController> &ECSManager::GetCharacterControllers()
 	{
 		return m_CharacterControllers;
 	}
-	std::map<long, TileMap>& ECSManager::GetTileMaps()
-	{
-		return m_TileMaps;
-	}
+	//std::map<long, TileMap>& ECSManager::GetTileMaps()
+	//{
+		//return m_TileMaps;
+	//}
 }

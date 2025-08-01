@@ -44,9 +44,6 @@ namespace FlatEngine
 		void ResetHoveredButtons();
 		int GetFirstUnblockedLayer();
 		Canvas GetFirstUnblockedCanvas();
-		void CalculatePhysics();
-		void HandleCollisions(float gridstep, Vector2 viewportCenter);
-		void ApplyPhysics();
 		void RunUpdateOnScripts();
 		void AddObjectToDeleteQueue(long objectID);
 		void DeleteObjectsInDeleteQueue();

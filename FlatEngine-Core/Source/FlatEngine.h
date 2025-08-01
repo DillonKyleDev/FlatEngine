@@ -65,7 +65,6 @@ namespace FlatEngine
 	class Collider;
 	class ScriptComponent;
 	class Sound;
-	class RigidBody;
 	class Script;
 	class CharacterController;	
 	class ECSManager;
@@ -171,8 +170,6 @@ namespace FlatEngine
 
 
 	// Collision Detection
-	extern std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs;
-	extern void UpdateColliderPairs();
 	extern RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, Collider*), long parentID, bool b_visible = false);
 
 	extern bool LoadFonts();
@@ -386,6 +383,9 @@ namespace FlatEngine
 	extern float Max(float first, float second);
 	extern int Max(int first, int second);
 	extern double Max(double first, double second);
+	extern float Fmod(float number, float modWith);
+	extern int Fmod(int number, int modWith);
+	extern double Fmod(double number, double modWith);
 
 	extern float RadiansToDegrees(float radians);
 	extern float DegreesToRadians(float degrees);

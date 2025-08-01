@@ -20,6 +20,7 @@ namespace FlatEngine
 	class BoxCollider;
 	class CircleCollider;
 	class RayCast;
+	class BoxBody;
 	class Animation;
 	class Button;
 	class RigidBody;
@@ -41,11 +42,9 @@ namespace FlatEngine
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);
 		RayCast* AddRayCast(RayCast rayCast, long ownerID);
-		BoxCollider* AddBoxCollider(BoxCollider collider, long ownerID);
-		CircleCollider* AddCircleCollider(CircleCollider collider, long ownerID);
+		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);		
-		RigidBody* AddRigidBody(RigidBody rigidBody, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);	
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
 
@@ -58,11 +57,9 @@ namespace FlatEngine
 		bool RemoveAudio(long ownerID);
 		bool RemoveText(long ownerID);
 		bool RemoveRayCast(long ownerID);
-		bool RemoveBoxCollider(long componentID, long ownerID);
-		bool RemoveCircleCollider(long componentID, long ownerID);
+		bool RemoveBoxBody(long ownerID);
 		bool RemoveAnimation(long ownerID);
 		bool RemoveButton(long ownerID);
-		bool RemoveRigidBody(long ownerID);
 		bool RemoveCharacterController(long ownerID);
 		bool RemoveTileMap(long ownerID);
 
@@ -73,11 +70,9 @@ namespace FlatEngine
 		Canvas* GetCanvasByOwner(long ownerID);
 		Audio* GetAudioByOwner(long ownerID);
 		Text* GetTextByOwner(long ownerID);
-		std::vector<BoxCollider*> GetBoxCollidersByOwner(long ownerID);
-		std::vector<CircleCollider*> GetCircleCollidersByOwner(long ownerID);
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
-		RigidBody* GetRigidBodyByOwner(long ownerID);
+		BoxBody* GetBoxBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
@@ -91,13 +86,10 @@ namespace FlatEngine
 		std::map<long, Animation>& GetAnimations();
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
-		std::vector<Collider*> GetColliders();
 		std::map<long, RayCast>& GetRayCasts();
-		std::map<long, std::map<long, BoxCollider>>& GetBoxColliders();
-		std::map<long, std::map<long, CircleCollider>>& GetCircleColliders();
-		std::map<long, RigidBody>& GetRigidBodies();
+		std::map<long, BoxBody>& GetBoxBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
-		std::map<long, TileMap>& GetTileMaps();		
+		//std::map<long, TileMap>& GetTileMaps();		
 
 	private:
 		std::map<long, Transform> m_Transforms;
@@ -111,10 +103,8 @@ namespace FlatEngine
 		std::map<long, Audio> m_Audios;
 		std::map<long, Text> m_Texts;		
 		std::map<long, RayCast> m_RayCasts;
-		std::map<long, std::map<long, BoxCollider>> m_BoxColliders;
-		std::map<long, std::map<long, CircleCollider>> m_CircleColliders;
-		std::map<long, RigidBody> m_RigidBodies;
+		std::map<long, BoxBody> m_BoxBodies;
 		std::map<long, CharacterController> m_CharacterControllers;
-		std::map<long, TileMap> m_TileMaps;		
+		//std::map<long, TileMap> m_TileMaps;		
 	};
 }

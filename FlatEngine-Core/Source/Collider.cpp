@@ -177,119 +177,6 @@ namespace FlatEngine
 				}
 			}
 
-			Transform* transformA = collider1->GetParent()->GetTransform();
-			Transform* transformB = collider2->GetParent()->GetTransform();
-			Vector2 posA = transformA->GetTruePosition();
-			Vector2 posB = transformB->GetTruePosition();
-			RigidBody* rbA = collider1->GetParent()->GetRigidBody();
-			RigidBody* rbB = collider2->GetParent()->GetRigidBody();
-			Vector2 vAInitial = rbA->GetVelocity();
-			Vector2 vBInitial = rbB->GetVelocity();
-			Vector2 vAFinal = Vector2();
-			Vector2 vBFinal = Vector2();
-			float angularVAInitial = rbA->GetAngularVelocityRadians();
-			float angularVBInitial = rbB->GetAngularVelocityRadians();
-			float IAInv = rbA->GetIInv();
-			float IBInv = rbB->GetIInv();
-			float mA = rbA->GetMass();
-			float mB = rbB->GetMass();
-			float mAInv = rbA->GetMassInv();
-			float mBInv = rbB->GetMassInv();
-			float eA = rbA->GetRestitution();
-			float eB = rbB->GetRestitution();
-			eA = 0.1f;			
-
-			Vector2 contactPoints[2] = { contactPoint1, contactPoint2 };
-			Vector2 impulseList[2] = { Vector2(), Vector2() };
-			Vector2 rAPerpList[2] = { Vector2(), Vector2() };
-			Vector2 rBPerpList[2] = { Vector2(), Vector2() };
-
-			for (int i = 0; i < contactCount; i++)
-			{
-				Vector2 rA = contactPoints[i] - posA;
-				Vector2 rB = contactPoints[i] - posB;
-				Vector2 rAPPerp = Vector2(-rA.y, rA.x);
-				Vector2 rBPPerp = Vector2(-rB.y, rB.x);
-				rAPerpList[i] = rAPPerp;
-				rBPerpList[i] = rBPPerp;
-				Vector2 angularToLinearA = rAPPerp * angularVAInitial;
-				Vector2 angularToLinearB = rBPPerp * angularVBInitial;
-
-				Vector2 relativeVelocityAB = (vAInitial + angularToLinearA) - (vBInitial + angularToLinearB);
-				Vector2 aMinusB = posA - posB;
-				float contactVelocityMagnitude = relativeVelocityAB.Dot(aMinusB);
-
-				// If relative velocity at this contact point is moving the two bodies apart already, ignore this iteration
-				if (contactVelocityMagnitude > 0)
-				{
-					continue;
-				}
-
-				float rAPerpDotN = rAPPerp.Dot(collisionNormal);
-				float rBPerpDotN = rBPPerp.Dot(collisionNormal);				
-
-				float numerator = -(1 + eA) * contactVelocityMagnitude;
-				float denominator = mAInv + mBInv + (rAPerpDotN * rAPerpDotN * IAInv) + (rBPerpDotN * rBPerpDotN * IBInv);
-				float j = Abs(numerator / denominator);
-				Vector2 jn = collisionNormal * j * (1.0f / (float)contactCount);
-				impulseList[i] = jn;
-			}
-
-			for (int i = 0; i < contactCount; i++)
-			{
-				Vector2 jn = impulseList[i];
-				Vector2 vAToAdd = Vector2();
-				Vector2 vBToAdd = Vector2();
-				float angularVAAdd = 0;
-				float angularVBAdd = 0;
-				float moveAdjustment = 0.01f;
-				float distribution = 0.5f;
-
-				if (rbA->IsStatic() || rbB->IsStatic())
-				{
-					distribution = 1;
-				}
-
-				if (!rbA->IsStatic())
-				{
-					Vector2 difference = posB - posA;
-					float direction = 1;									
-					if (difference.Dot(collisionNormal) > 0)
-					{
-						direction = -1;
-					}
-
-					Vector2 forceAmount = (jn * direction).ProjectedOnto(posA - contactPoints[i]);
-					transformA->Move(collisionNormal* (depth - moveAdjustment) * distribution* direction);
-					vAToAdd = jn * mAInv * direction;	
-					//vAToAdd = forceAmount * mAInv;
-					angularVAAdd = rAPerpList[i].Dot(jn * direction) * IAInv;
-					rbA->AddVelocity(vAToAdd);
-					rbA->AddAngularVelocity(RadiansToDegrees(angularVAAdd));	
-					//AddLineToScene(contactPoints[i], contactPoints[i] + vAFinal, GetColor("red"), 1);
-					//AddLineToScene(contactPoints[i], contactPoints[i] + Vector2(0, angularVAAdd * 20), GetColor("white"), 1);
-				}
-
-				if (!rbB->IsStatic())
-				{
-					Vector2 difference = posA - posB;
-					float direction = 1;	
-					if (difference.Dot(collisionNormal) > 0)
-					{
-						direction = -1;
-					}
-
-					Vector2 forceAmount = (jn * direction).ProjectedOnto(posB - contactPoints[i]);
-					transformB->Move(collisionNormal * (depth - moveAdjustment) * distribution * direction);
-					vBToAdd = jn * mBInv * direction;
-					//vBToAdd = forceAmount * mBInv;
-					angularVBAdd = rBPerpList[i].Dot(jn * direction) * IBInv;				
-					rbB->AddVelocity(vBToAdd);
-					rbB->AddAngularVelocity(RadiansToDegrees(angularVBAdd));	
-					//AddLineToScene(contactPoints[i], contactPoints[i] + vBFinal, GetColor("red"), 1);
-					//AddLineToScene(contactPoints[i], contactPoints[i] + Vector2(0, angularVBAdd * 20), GetColor("white"), 1);
-				}
-			}
 		}
 
 		return b_colliding;
@@ -329,7 +216,7 @@ namespace FlatEngine
 		{
 			for (int j = 0; j < vertices2.size(); j++)
 			{
-				float distance = GetDistanceToLine(vertices1[i], vertices1[fmod(i + 1, vertices1.size())], vertices2[j]);
+				float distance = GetDistanceToLine(vertices1[i], vertices1[Fmod(i + 1, (int)vertices1.size())], vertices2[j]);
 				float distanceBetweenPoints = (vertices2[j] - contact1).GetMagnitude();
 
 				if (distance < shortestDistanceFrom1 - threshold)
@@ -351,7 +238,7 @@ namespace FlatEngine
 		{
 			for (int j = 0; j < vertices1.size(); j++)
 			{
-				float distance = GetDistanceToLine(vertices2[i], vertices2[fmod(i + 1, vertices2.size())], vertices1[j]);
+				float distance = GetDistanceToLine(vertices2[i], vertices2[Fmod(i + 1, (int)vertices2.size())], vertices1[j]);
 				float distanceBetweenPoints = (vertices1[j] - contact1).GetMagnitude();				
 
 				if (firstLoopCount == 1) // It may be that they are edge on edge but only one corner per collider
@@ -415,7 +302,7 @@ namespace FlatEngine
 			minBox2 = FLT_MAX;
 			maxBox2 = -FLT_MAX;
 			Vector2 start = box1Vertices[i];
-			Vector2 end = box1Vertices[fmod((i + 1), box1Vertices.size())];
+			Vector2 end = box1Vertices[Fmod((i + 1), (int)box1Vertices.size())];
 			axis = Vector2::Normalize(end - start);
 
 			ProjectVerticesOntoAxis(box1Vertices, axis, minBox1, maxBox1);
@@ -442,7 +329,7 @@ namespace FlatEngine
 			minBox2 = FLT_MAX;
 			maxBox2 = -FLT_MAX;
 			Vector2 start = box2Vertices[i];
-			Vector2 end = box2Vertices[fmod((i + 1), box2Vertices.size())];
+			Vector2 end = box2Vertices[Fmod((i + 1), (int)box2Vertices.size())];
 			axis = Vector2::Normalize(end - start);
 
 			ProjectVerticesOntoAxis(box1Vertices, axis, minBox1, maxBox1);
@@ -504,7 +391,7 @@ namespace FlatEngine
 			minBox = FLT_MAX;
 			maxBox = -FLT_MAX;
 			Vector2 start = vertices[i];
-			Vector2 end = vertices[fmod((i + 1), vertices.size())];
+			Vector2 end = vertices[Fmod((i + 1), (int)vertices.size())];
 			axis = Vector2::Normalize(end - start);
 
 			ProjectVerticesOntoAxis(vertices, axis, minBox, maxBox);
@@ -692,36 +579,36 @@ namespace FlatEngine
 
 	void Collider::ClearCollidingObjects()
 	{
-		// Check which objects have left collision state since last frame
-		for (GameObject *collidedLastFrame : m_collidingLastFrame)
-		{		
-			bool b_objectStillColliding = false;
+		//// Check which objects have left collision state since last frame
+		//for (GameObject *collidedLastFrame : m_collidingLastFrame)
+		//{		
+		//	bool b_objectStillColliding = false;
 
-			for (GameObject *collidedThisFrame : m_collidingObjects)
-			{
-				if (collidedLastFrame->GetID() == collidedThisFrame->GetID())
-				{
-					b_objectStillColliding = true;
-				}
-			}
+		//	for (GameObject *collidedThisFrame : m_collidingObjects)
+		//	{
+		//		if (collidedLastFrame->GetID() == collidedThisFrame->GetID())
+		//		{
+		//			b_objectStillColliding = true;
+		//		}
+		//	}
 
-			// Fire OnLeave if not colliding
-			if (!b_objectStillColliding)
-			{
-				for (BoxCollider* boxCollider : collidedLastFrame->GetBoxColliders())
-				{
-					CallLuaCollisionFunction(GetParent(), boxCollider, LuaEventFunction::OnBoxCollisionLeave);
-				}
-				for (CircleCollider* circleCollider : collidedLastFrame->GetCircleColliders())
-				{
-					CallLuaCollisionFunction(GetParent(), circleCollider, LuaEventFunction::OnCircleCollisionLeave);
-				}
-			}
-		}
+		//	// Fire OnLeave if not colliding
+		//	if (!b_objectStillColliding)
+		//	{
+		//		for (BoxCollider* boxCollider : collidedLastFrame->GetBoxColliders())
+		//		{
+		//			CallLuaCollisionFunction(GetParent(), boxCollider, LuaEventFunction::OnBoxCollisionLeave);
+		//		}
+		//		for (CircleCollider* circleCollider : collidedLastFrame->GetCircleColliders())
+		//		{
+		//			CallLuaCollisionFunction(GetParent(), circleCollider, LuaEventFunction::OnCircleCollisionLeave);
+		//		}
+		//	}
+		//}
 
-		// Save colliding objects for next frame
-		m_collidingLastFrame = m_collidingObjects;
-		m_collidingObjects.clear();
+		//// Save colliding objects for next frame
+		//m_collidingLastFrame = m_collidingObjects;
+		//m_collidingObjects.clear();
 	}
 
 	void Collider::SetActiveOffset(Vector2 offset)
@@ -862,12 +749,22 @@ namespace FlatEngine
 		return GetParent()->GetTransform()->GetRotation();;
 	}
 
+	void Collider::SetB2Position(Vector2 position)
+	{
+		b2Body_SetTransform(m_bodyID, b2Vec2(position.x, position.y), b2Body_GetRotation(m_bodyID));		
+	}
+
 	Vector2 Collider::GetB2Position()
 	{
 		b2Vec2 b2Position = b2Body_GetPosition(m_bodyID);
 		Vector2 position = Vector2(b2Position.x, b2Position.y);
 
 		return position;
+	}
+
+	void Collider::SetB2Rotation(float rotation)
+	{
+		b2Body_SetTransform(m_bodyID, b2Body_GetPosition(m_bodyID), b2Rot(rotation));
 	}
 
 	float Collider::GetB2Rotation()

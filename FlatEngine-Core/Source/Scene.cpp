@@ -78,10 +78,10 @@ namespace FlatEngine
 		m_sceneObjects.emplace(id, sceneObject);
 		KeepNextGameObjectIDUpToDate(id);
 
-		if (sceneObject.HasComponent("BoxCollider") || (sceneObject.HasComponent("TileMap") && sceneObject.GetTileMap()->GetCollisionAreas().size() > 0))
-		{
-			UpdateColliderPairs();
-		}
+		//if (sceneObject.HasComponent("BoxCollider") || (sceneObject.HasComponent("TileMap") && sceneObject.GetTileMap()->GetCollisionAreas().size() > 0))
+		//{
+		//	UpdateColliderPairs();
+		//}
 
 		return &m_sceneObjects.at(id);
 	}
@@ -301,7 +301,7 @@ namespace FlatEngine
 
 	void Scene::OnPrefabInstantiated()
 	{		
-		UpdateColliderPairs();
+		//UpdateColliderPairs();
 	}
 
 	void Scene::KeepNextComponentIDUpToDate(long ID)
@@ -360,17 +360,23 @@ namespace FlatEngine
 		return m_ECSManager.AddRayCast(rayCast, ownerID);
 	}
 
-	BoxCollider* Scene::AddBoxCollider(BoxCollider collider, long ownerID)
+	BoxBody* Scene::AddBoxBody(BoxBody boxBody, long ownerID)
 	{
-		KeepNextComponentIDUpToDate(collider.GetID());
-		return m_ECSManager.AddBoxCollider(collider, ownerID);
+		KeepNextComponentIDUpToDate(boxBody.GetID());
+		return m_ECSManager.AddBoxBody(boxBody, ownerID);
 	}
 
-	CircleCollider* Scene::AddCircleCollider(CircleCollider collider, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(collider.GetID());
-		return m_ECSManager.AddCircleCollider(collider, ownerID);
-	}
+	//BoxCollider* Scene::AddBoxCollider(BoxCollider collider, long ownerID)
+	//{
+	//	KeepNextComponentIDUpToDate(collider.GetID());
+	//	return m_ECSManager.AddBoxCollider(collider, ownerID);
+	//}
+
+	//CircleCollider* Scene::AddCircleCollider(CircleCollider collider, long ownerID)
+	//{
+	//	KeepNextComponentIDUpToDate(collider.GetID());
+	//	return m_ECSManager.AddCircleCollider(collider, ownerID);
+	//}
 
 	Animation* Scene::AddAnimation(Animation animation, long ownerID)
 	{
@@ -382,12 +388,6 @@ namespace FlatEngine
 	{
 		KeepNextComponentIDUpToDate(button.GetID());
 		return m_ECSManager.AddButton(button, ownerID);
-	}
-
-	RigidBody* Scene::AddRigidBody(RigidBody rigidBody, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(rigidBody.GetID());
-		return m_ECSManager.AddRigidBody(rigidBody, ownerID);
 	}
 
 	CharacterController* Scene::AddCharacterController(CharacterController characterController, long ownerID)
@@ -449,15 +449,15 @@ namespace FlatEngine
 		return m_ECSManager.GetTextByOwner(ownerID);
 	}
 
-	std::vector<BoxCollider*> Scene::GetBoxCollidersByOwner(long ownerID)
-	{
-		return m_ECSManager.GetBoxCollidersByOwner(ownerID);
-	}
+	//std::vector<BoxCollider*> Scene::GetBoxCollidersByOwner(long ownerID)
+	//{
+	//	return m_ECSManager.GetBoxCollidersByOwner(ownerID);
+	//}
 
-	std::vector<CircleCollider*> Scene::GetCircleCollidersByOwner(long ownerID)
-	{
-		return m_ECSManager.GetCircleCollidersByOwner(ownerID);
-	}
+	//std::vector<CircleCollider*> Scene::GetCircleCollidersByOwner(long ownerID)
+	//{
+	//	return m_ECSManager.GetCircleCollidersByOwner(ownerID);
+	//}
 
 	Animation* Scene::GetAnimationByOwner(long ownerID)
 	{
@@ -469,9 +469,9 @@ namespace FlatEngine
 		return m_ECSManager.GetButtonByOwner(ownerID);
 	}
 
-	RigidBody* Scene::GetRigidBodyByOwner(long ownerID)
+	BoxBody* Scene::GetBoxBodyByOwner(long ownerID)
 	{
-		return m_ECSManager.GetRigidBodyByOwner(ownerID);
+		return m_ECSManager.GetBoxBodyByOwner(ownerID);
 	}
 
 	CharacterController* Scene::GetCharacterControllerByOwner(long ownerID)
@@ -479,10 +479,10 @@ namespace FlatEngine
 		return m_ECSManager.GetCharacterControllerByOwner(ownerID);
 	}
 
-	TileMap* Scene::GetTileMapByOwner(long ownerID)
-	{
-		return m_ECSManager.GetTileMapByOwner(ownerID);
-	}
+	//TileMap* Scene::GetTileMapByOwner(long ownerID)
+	//{
+		//return m_ECSManager.GetTileMapByOwner(ownerID);
+	//}
 
 	std::map<long, Transform> &Scene::GetTransforms()
 	{
@@ -524,32 +524,20 @@ namespace FlatEngine
 	{
 		return m_ECSManager.GetTexts();
 	}
-	std::vector<Collider*> Scene::GetColliders()
-	{
-		return m_ECSManager.GetColliders();
-	}
 	std::map<long, RayCast>& Scene::GetRayCasts()
 	{
 		return m_ECSManager.GetRayCasts();
 	}
-	std::map<long, std::map<long, BoxCollider>>& Scene::GetBoxColliders()
+	std::map<long, BoxBody>& Scene::GetBoxBodies()
 	{
-		return m_ECSManager.GetBoxColliders();
-	}
-	std::map<long, std::map<long, CircleCollider>>& Scene::GetCircleColliders()
-	{
-		return m_ECSManager.GetCircleColliders();
-	}
-	std::map<long, RigidBody>& Scene::GetRigidBodies()
-	{
-		return m_ECSManager.GetRigidBodies();
+		return m_ECSManager.GetBoxBodies();
 	}
 	std::map<long, CharacterController>& Scene::GetCharacterControllers()
 	{
 		return m_ECSManager.GetCharacterControllers();
 	}
-	std::map<long, TileMap>& Scene::GetTileMaps()
-	{
-		return m_ECSManager.GetTileMaps();
-	}
+	//std::map<long, TileMap>& Scene::GetTileMaps()
+	//{
+		//return m_ECSManager.GetTileMaps();
+	//}
 }

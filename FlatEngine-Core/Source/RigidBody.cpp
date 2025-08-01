@@ -212,34 +212,34 @@ namespace FlatEngine
 
 	void RigidBody::ApplyCollisionForces()
 	{
-		std::vector<BoxCollider*> boxColliders = GetParent()->GetBoxColliders();
-		std::vector<CircleCollider*> circleColliders = GetParent()->GetCircleColliders();
-		
-		for (BoxCollider* boxCollider : boxColliders)
-		{
-			if (boxCollider != nullptr)
-			{
-				Vector2 scale = Vector2(1, 1);
-				Transform* transform = boxCollider->GetParent()->GetTransform();
-				if (transform != nullptr)
-				{
-					scale = transform->GetScale();
-				}
+		//std::vector<BoxCollider*> boxColliders = GetParent()->GetBoxColliders();
+		//std::vector<CircleCollider*> circleColliders = GetParent()->GetCircleColliders();
+		//
+		//for (BoxCollider* boxCollider : boxColliders)
+		//{
+		//	if (boxCollider != nullptr)
+		//	{
+		//		Vector2 scale = Vector2(1, 1);
+		//		Transform* transform = boxCollider->GetParent()->GetTransform();
+		//		if (transform != nullptr)
+		//		{
+		//			scale = transform->GetScale();
+		//		}
 
-				float halfWidth = boxCollider->GetActiveWidth() / 2 * scale.x;
-				float halfHeight = boxCollider->GetActiveHeight() / 2 * scale.y;
+		//		float halfWidth = boxCollider->GetActiveWidth() / 2 * scale.x;
+		//		float halfHeight = boxCollider->GetActiveHeight() / 2 * scale.y;
 
-				ApplyCollisionForce(boxCollider, halfWidth, halfHeight);
-			}
-		}		
-		for (CircleCollider* circleCollider : circleColliders)
-		{
-			if (circleCollider != nullptr)
-			{
-				float activeRadius = circleCollider->GetActiveRadiusGrid();
-				ApplyCollisionForce(circleCollider, activeRadius, activeRadius);
-			}
-		}
+		//		ApplyCollisionForce(boxCollider, halfWidth, halfHeight);
+		//	}
+		//}		
+		//for (CircleCollider* circleCollider : circleColliders)
+		//{
+		//	if (circleCollider != nullptr)
+		//	{
+		//		float activeRadius = circleCollider->GetActiveRadiusGrid();
+		//		ApplyCollisionForce(circleCollider, activeRadius, activeRadius);
+		//	}
+		//}
 	}
 
 	void RigidBody::ApplyCollisionForce(Collider* collider, float halfWidth, float halfHeight)
@@ -304,49 +304,49 @@ namespace FlatEngine
 
 	void RigidBody::UpdateI()
 	{		
-		if (GetParent() != nullptr)
-		{
-			Vector2 scale = GetParent()->GetTransform()->GetScale();
-			BoxCollider* boxCollider = GetParent()->GetBoxCollider();
-			CircleCollider* circleCollider = GetParent()->GetCircleCollider();
+		//if (GetParent() != nullptr)
+		//{
+		//	Vector2 scale = GetParent()->GetTransform()->GetScale();
+		//	BoxCollider* boxCollider = GetParent()->GetBoxCollider();
+		//	CircleCollider* circleCollider = GetParent()->GetCircleCollider();
 
-			if (boxCollider != nullptr)
-			{
-				float width = (float)boxCollider->GetActiveWidth() * scale.x / 10 ;
-				float height = (float)boxCollider->GetActiveHeight() * scale.y / 10;
-				if (width != 0 && height != 0)
-				{
-					m_I = (1 / 12) * m_mass * ((height * height) + (width * width));
-				}
-			}
-			else if (circleCollider != nullptr)
-			{
-				float radius = (float)circleCollider->GetActiveRadiusGrid();
-				if (radius != 0)
-				{
-					m_I = m_mass * 0.5f * radius * radius;
-				}
-			}
-		}
+		//	if (boxCollider != nullptr)
+		//	{
+		//		float width = (float)boxCollider->GetActiveWidth() * scale.x / 10 ;
+		//		float height = (float)boxCollider->GetActiveHeight() * scale.y / 10;
+		//		if (width != 0 && height != 0)
+		//		{
+		//			m_I = (1 / 12) * m_mass * ((height * height) + (width * width));
+		//		}
+		//	}
+		//	else if (circleCollider != nullptr)
+		//	{
+		//		float radius = (float)circleCollider->GetActiveRadiusGrid();
+		//		if (radius != 0)
+		//		{
+		//			m_I = m_mass * 0.5f * radius * radius;
+		//		}
+		//	}
+		//}
 
-		if (!m_b_isStatic)
-		{
-			m_1overMass = 1 / m_mass;
+		//if (!m_b_isStatic)
+		//{
+		//	m_1overMass = 1 / m_mass;
 
-			if (m_I != 0)
-			{
-				m_1overI = 1 / m_I;
-			}
-			else
-			{
-				m_1overI = m_1overMass;
-			}
-		}
-		else
-		{
-			m_1overI = 0;
-			m_1overMass = 0;
-		}
+		//	if (m_I != 0)
+		//	{
+		//		m_1overI = 1 / m_I;
+		//	}
+		//	else
+		//	{
+		//		m_1overI = m_1overMass;
+		//	}
+		//}
+		//else
+		//{
+		//	m_1overI = 0;
+		//	m_1overMass = 0;
+		//}
 	}
 
 	void RigidBody::SetTorquesAllowed(bool b_allowed)
@@ -431,7 +431,7 @@ namespace FlatEngine
 
 	float RigidBody::GetAngularVelocityRadians()
 	{
-		return m_angularVelocity / 57.29578;
+		return m_angularVelocity / 57.29578f;
 	}
 
 	float RigidBody::GetAngularAcceleration()

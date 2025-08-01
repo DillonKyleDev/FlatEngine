@@ -10,12 +10,12 @@ namespace FlatEngine
 	public:
 
 		struct BodyProps {
-			b2BodyDef bodyDef;
-			b2BodyType type;
-			Vector2 position;	
-			Vector2 dimensions;
+			b2BodyType type = b2_staticBody;
+			Vector2 position = Vector2(0,0);	
+			float rotation = 0;
+			Vector2 dimensions = Vector2(1.0f, 1.0f);
 			float density = 1;
-			float friction = 0.3f;
+			float friction = 0.3f;		
 		};
 
 		Physics();
@@ -28,8 +28,7 @@ namespace FlatEngine
 		void CreateBody(BodyProps bodyProps, b2BodyId& bodyID);
 		void CreateBox(BodyProps bodyProps, b2BodyId& bodyID);
 		void DestroyBody(b2BodyId bodyID);
-
-		b2BodyId m_dynamicID;
+		void RecreateBody(BodyProps bodyProps, b2BodyId& bodyID);
 
 	private:
 		b2WorldId m_worldID;

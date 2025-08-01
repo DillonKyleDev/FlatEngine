@@ -81,16 +81,6 @@ namespace FlatEngine
 
 				LogError("Sprite::SetTexture() - Texture could not be loaded.");
 			}
-
-			// Recalculate the moment of inertia of the RigidBody based on sprite dimensions
-			if (GetParent() != nullptr)
-			{
-				RigidBody* rigidBody = GetParent()->GetRigidBody();
-				if (rigidBody != nullptr)
-				{
-					rigidBody->SetMass(rigidBody->GetMass());
-				}
-			}
 		}
 	}
 

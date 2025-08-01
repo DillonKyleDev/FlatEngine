@@ -46,23 +46,23 @@ namespace FlatEngine
 		m_b_casting = true;
 		m_b_visible = b_visible;
 
-		std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
-		while (m_b_casting)
-		{
-			for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
-			{
-				for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
-				{
-					if (innerIter->second.GetParentID() != this->GetParentID())
-					{
-						CheckForCollisionBoxRayCastSAT(&innerIter->second, this);
-					}
-					innerIter++;
-				}
-				outerIter++;
-			}
-			Update();
-		}
+		//std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
+		//while (m_b_casting)
+		//{
+		//	for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
+		//	{
+		//		for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
+		//		{
+		//			if (innerIter->second.GetParentID() != this->GetParentID())
+		//			{
+		//				CheckForCollisionBoxRayCastSAT(&innerIter->second, this);
+		//			}
+		//			innerIter++;
+		//		}
+		//		outerIter++;
+		//	}
+		//	Update();
+		//}
 	}
 
 	void RayCast::Update()

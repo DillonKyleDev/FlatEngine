@@ -170,7 +170,7 @@ namespace FlatEngine
 	{
 		FL::Transform* transform = self.GetTransform();
 		Sprite* sprite = self.GetSprite();
-		TileMap* tileMap = self.GetTileMap();
+		//TileMap* tileMap = self.GetTileMap();
 		Animation* animation = self.GetAnimation();
 		Text* text = self.GetText();
 		Button* button = self.GetButton();
@@ -286,62 +286,62 @@ namespace FlatEngine
 				}
 			}
 
-			if (tileMap != nullptr && tileMap->IsActive())
-			{
-				long id = tileMap->GetID();
-				bool b_isActive = tileMap->IsActive();
-				float width = (float)tileMap->GetWidth();							// in tiles
-				float height = (float)tileMap->GetHeight();							// in tiles
-				float tileWidth = (float)tileMap->GetTileWidth();
-				float tileHeight = (float)tileMap->GetTileHeight();
-				float gridWidth = width * tileWidth / FL::F_pixelsPerGridSpace;		// in grid tiles
-				float gridHeight = height * tileHeight / FL::F_pixelsPerGridSpace;	// in grid tiles
-				int renderOrder = tileMap->GetRenderOrder();
+			//if (tileMap != nullptr && tileMap->IsActive())
+			//{
+			//	long id = tileMap->GetID();
+			//	bool b_isActive = tileMap->IsActive();
+			//	float width = (float)tileMap->GetWidth();							// in tiles
+			//	float height = (float)tileMap->GetHeight();							// in tiles
+			//	float tileWidth = (float)tileMap->GetTileWidth();
+			//	float tileHeight = (float)tileMap->GetTileHeight();
+			//	float gridWidth = width * tileWidth / FL::F_pixelsPerGridSpace;		// in grid tiles
+			//	float gridHeight = height * tileHeight / FL::F_pixelsPerGridSpace;	// in grid tiles
+			//	int renderOrder = tileMap->GetRenderOrder();
 
-				std::map<int, std::map<int, Tile>> tiles = tileMap->GetTiles();
-				for (int w = 0; w < width; w++)
-				{
-					if (tiles.count((int)w) > 0)
-					{
-						for (int h = 0; h < height; h++)
-						{
-							if (tiles.at((int)w).count((int)h) > 0)
-							{
-								Tile tile = tiles.at(w).at(h);
+			//	std::map<int, std::map<int, Tile>> tiles = tileMap->GetTiles();
+			//	for (int w = 0; w < width; w++)
+			//	{
+			//		if (tiles.count((int)w) > 0)
+			//		{
+			//			for (int h = 0; h < height; h++)
+			//			{
+			//				if (tiles.at((int)w).count((int)h) > 0)
+			//				{
+			//					Tile tile = tiles.at(w).at(h);
 
-								// Get TileSet for this tiles texture data
-								TileSet* usedTileSet = nullptr;
-								std::string tileSetName = tile.tileSetName;
+			//					// Get TileSet for this tiles texture data
+			//					TileSet* usedTileSet = nullptr;
+			//					std::string tileSetName = tile.tileSetName;
 
-								if (tileSetName != "")
-								{
-									usedTileSet = FL::GetTileSet(tileSetName);
-								}
+			//					if (tileSetName != "")
+			//					{
+			//						usedTileSet = FL::GetTileSet(tileSetName);
+			//					}
 
-								SDL_Texture* texture = tile.tileSetTexture;
-								int textureWidth = usedTileSet->GetTexture()->GetWidth();
-								int textureHeight = usedTileSet->GetTexture()->GetHeight();
-								Vector2 uvStart = Vector2(tile.uvStart.x / textureWidth, tile.uvStart.y / textureHeight);
-								Vector2 uvEnd = Vector2(tile.uvEnd.x / textureWidth, tile.uvEnd.y / textureHeight);
-								float gridXPosition = (position.x - (gridWidth / 2)) + 2 * (float)w;
-								float gridYPosition = (position.y + (gridHeight / 2)) - 2 * (float)h;
-								Vector2 tilePosition = Vector2(gridXPosition, gridYPosition);
+			//					SDL_Texture* texture = tile.tileSetTexture;
+			//					int textureWidth = usedTileSet->GetTexture()->GetWidth();
+			//					int textureHeight = usedTileSet->GetTexture()->GetHeight();
+			//					Vector2 uvStart = Vector2(tile.uvStart.x / textureWidth, tile.uvStart.y / textureHeight);
+			//					Vector2 uvEnd = Vector2(tile.uvEnd.x / textureWidth, tile.uvEnd.y / textureHeight);
+			//					float gridXPosition = (position.x - (gridWidth / 2)) + 2 * (float)w;
+			//					float gridYPosition = (position.y + (gridHeight / 2)) - 2 * (float)h;
+			//					Vector2 tilePosition = Vector2(gridXPosition, gridYPosition);
 
-								if (renderOrder <= F_maxSpriteLayers && renderOrder >= 0)
-								{
-									drawSplitter->SetCurrentChannel(drawList, renderOrder);
-								}
-								else
-								{
-									drawSplitter->SetCurrentChannel(drawList, 0);
-								}
+			//					if (renderOrder <= F_maxSpriteLayers && renderOrder >= 0)
+			//					{
+			//						drawSplitter->SetCurrentChannel(drawList, renderOrder);
+			//					}
+			//					else
+			//					{
+			//						drawSplitter->SetCurrentChannel(drawList, 0);
+			//					}
 
-								FL::AddImageToDrawList(texture, tilePosition, F_gameViewCenter, tileWidth, tileHeight, Vector2(0, 0), scale, true, F_gameViewGridStep.x, drawList, 0, FL::GetColor32("white"), uvStart, uvEnd);
-							}
-						}
-					}
-				}
-			}
+			//					FL::AddImageToDrawList(texture, tilePosition, F_gameViewCenter, tileWidth, tileHeight, Vector2(0, 0), scale, true, F_gameViewGridStep.x, drawList, 0, FL::GetColor32("white"), uvStart, uvEnd);
+			//				}
+			//			}
+			//		}
+			//	}
+			//}
 
 			if (button != nullptr && button->IsActive())
 			{

@@ -78,13 +78,18 @@ namespace FlatEngine
 		void SetRotation(float rotation);
 		void UpdateRotation();
 		float GetRotation();
+
+		// Box2D
+		void SetB2Position(Vector2 position);
 		Vector2 GetB2Position();
+		void SetB2Rotation(float rotation);
 		float GetB2Rotation();
 		b2BodyId GetBodyID();		
 
 	private:
 		b2BodyId m_bodyID;
 		Physics::BodyProps m_bodyProps;
+		 
 
 		std::vector<GameObject*> m_collidingObjects;
 		std::vector<GameObject*> m_collidingLastFrame;

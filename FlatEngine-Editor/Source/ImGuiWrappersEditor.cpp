@@ -1,8 +1,6 @@
 #include "FlatEngine.h"
 #include "FlatGui.h"
 #include "GameObject.h"
-#include "imgui.h"
-#include "imgui_internal.h"
 #include "TagList.h"
 #include "Component.h"
 #include "Transform.h"
@@ -16,6 +14,8 @@
 #include "Audio.h"
 #include "Text.h"
 #include "CharacterController.h"
+#include "BoxBody.h"
+#include "Physics.h"
 #include "BoxCollider.h"
 #include "CircleCollider.h"
 #include "RigidBody.h"
@@ -24,6 +24,7 @@
 #include "TileSet.h"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 
 namespace FL = FlatEngine;
 
@@ -165,12 +166,18 @@ namespace FlatGui
 	void RenderTransformComponent(Transform* transform)
 	{
 		Vector2 position = transform->GetPosition();
+		float rotation = transform->GetRotation();
+		if (transform->GetParent()->GetBoxBody() != nullptr)
+		{
+			position = transform->GetParent()->GetBoxBody()->GetPosition();
+			rotation = FL::RadiansToDegrees(transform->GetParent()->GetBoxBody()->GetRotation());
+		}
 		float xPos = position.x;
 		float yPos = position.y;
 		Vector2 scale = transform->GetScale();
 		float xScale = scale.x;
 		float yScale = scale.y;
-		float rotation = transform->GetRotation();
+		
 		bool b_isActive = transform->IsActive();
 		long ID = transform->GetID();
 
@@ -1516,161 +1523,91 @@ namespace FlatGui
 		}
 	}
 
-	void RenderBoxColliderComponent(BoxCollider* boxCollider, TileMap* tileMap, std::string collisionAreaName)
+	void RenderBoxBodyComponent(BoxBody* boxBody)
 	{
-		long ID = boxCollider->GetID();
-		bool b_isActive = boxCollider->IsActive();
-		bool b_isColliding = boxCollider->IsColliding();
-		bool b_isContinuous = boxCollider->IsContinuous();
-		bool b_isSolid = boxCollider->IsSolid();
-		bool b_showActiveRadius = boxCollider->GetShowActiveRadius();
-		float activeWidth = boxCollider->GetActiveWidth();
-		float activeHeight = boxCollider->GetActiveHeight();
-		ImVec4 activeEdges = boxCollider->GetActiveEdges();
-		Vector2 activeOffset = boxCollider->GetActiveOffset();
-		int activeLayer = boxCollider->GetActiveLayer();	
-		std::string isCollidingString = "false";
+		long ID = boxBody->GetID();
+		bool b_isActive = boxBody->IsActive();
+		FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
+		Vector2 dimensions = bodyProps.dimensions;
+		float density = bodyProps.density;
+		float friction = bodyProps.friction;
 
-		if (b_isColliding)
+		int currentType = bodyProps.type;
+		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
+		std::string comboID = "##BoxBodyTypeCombo";
+		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
 		{
-			isCollidingString = "true";
+			boxBody->SetBodyType((b2BodyType)currentType);
 		}
+
+		//// Read only		
+		//Vector2 velocity = boxBody->GetVelocity();
+		//Vector2 pendingForces = boxBody->GetPendingForces();
+		//float angularVelocity = boxBody->GetAngularVelocity();
+		//float pendingTorques = boxBody->GetPendingTorques();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
-			boxCollider->SetActive(b_isActive);
+			boxBody->SetActive(b_isActive);
 		}
 
-		float widthIncrement = 0.01f;
-		float heightIncrement = 0.01f;
-		float offsetIncrementX = 0.01f;
-		float offsetIncrementY = 0.01f;
-		float maxWidth = 1000.0f;
-		float maxHeight = 1000.0f;
-
-		if (tileMap != nullptr && collisionAreaName != "")
+		if (FL::PushTable("##BoxBodyProps" + std::to_string(ID), 2))
 		{
-			float tileWidth = (float)tileMap->GetTileWidth();
-			float tileHeight = (float)tileMap->GetTileHeight();
-			float tileMapWidth = (float)tileMap->GetWidth();
-			float tileMapHeight = (float)tileMap->GetHeight();
-
-			widthIncrement = tileWidth / FL::F_pixelsPerGridSpace;
-			heightIncrement = tileHeight / FL::F_pixelsPerGridSpace;
-			offsetIncrementX = tileWidth / FL::F_pixelsPerGridSpace;
-			offsetIncrementY = tileHeight / FL::F_pixelsPerGridSpace;
-			maxWidth = tileMapWidth * tileWidth / FL::F_pixelsPerGridSpace;
-			maxHeight = tileMapWidth * tileWidth / FL::F_pixelsPerGridSpace;
-		}
-
-		if (FL::PushTable("##BoxColliderProps" + std::to_string(ID), 2))
-		{
-			if (FL::RenderFloatDragTableRow("##BoxColliderWidth" + std::to_string(ID), "Width", activeWidth, widthIncrement, 0.0f, maxWidth))
+			if (FL::RenderFloatDragTableRow("##BoxBodyWidth" + std::to_string(ID), "Width", dimensions.x, 0.01f, 0.01f, -FLT_MAX))
 			{
-				boxCollider->SetActiveDimensions(activeWidth, activeHeight);
+				boxBody->SetDimensions(dimensions);
 			}
-			if (FL::RenderFloatDragTableRow("##BoxColliderHeight" + std::to_string(ID), "Height", activeHeight, heightIncrement, 0.0f, maxHeight))
+			if (FL::RenderFloatDragTableRow("##BoxBodyHeight" + std::to_string(ID), "Height", dimensions.y, 0.01f, 0.01f, -FLT_MAX))
 			{
-				boxCollider->SetActiveDimensions(activeWidth, activeHeight);
+				boxBody->SetDimensions(dimensions);
 			}
-			if (FL::RenderFloatDragTableRow("##ActiveOffsetBoxColliderX" + std::to_string(ID), "X Offset", activeOffset.x, offsetIncrementX, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##BoxBodyDensity" + std::to_string(ID), "Mass", density, 0.001f, 0.001f, -FLT_MAX))
 			{
-				boxCollider->SetActiveOffset(activeOffset);
+				boxBody->SetDensity(density);
 			}
-			if (FL::RenderFloatDragTableRow("##ActiveOffsetBoxColliderY" + std::to_string(ID), "Y Offset", activeOffset.y, offsetIncrementY, -FLT_MAX, -FLT_MAX))
+			//if (FL::RenderFloatDragTableRow("##GravityScale" + std::to_string(ID), "Gravity Scale", gravity, 0.01f, -FLT_MAX, -FLT_MAX))
+			//{
+			//	rigidBody->SetGravity(gravity);
+			//}
+			//if (FL::RenderFloatDragTableRow("##FallingGravityScale" + std::to_string(ID), "Falling Gravity", fallingGravity, 0.01f, -FLT_MAX, -FLT_MAX))
+			//{
+			//	rigidBody->SetFallingGravity(fallingGravity);
+			//}
+			//if (FL::RenderFloatDragTableRow("##TerminalVelocity" + std::to_string(ID), "Terminal Velocity", terminalVelocity, 0.01f, 0.001f, 1000))
+			//{
+			//	rigidBody->SetTerminalVelocity(terminalVelocity);
+			//}
+			//if (FL::RenderFloatDragTableRow("##WindResistance" + std::to_string(ID), "Wind Resistance", windResistance, 0.01f, 0, 1))
+			//{
+			//	rigidBody->SetWindResistance(windResistance);
+			//}
+			if (FL::RenderFloatDragTableRow("##BoxBodyFriction" + std::to_string(ID), "Friction", friction, 0.01f, 0, 1))
 			{
-				boxCollider->SetActiveOffset(activeOffset);
+				boxBody->SetFriction(friction);
 			}
-			if (FL::RenderIntDragTableRow("##BoxColliderActiveLayer" + std::to_string(ID), "Active layer", activeLayer, 1, 0, 100))
-			{
-				boxCollider->SetActiveLayer(activeLayer);
-			}
-			FL::RenderTextTableRow("##BoxColliderIsColliding" + std::to_string(ID), "Is Colliding", isCollidingString);
+			//if (FL::RenderFloatDragTableRow("##AngularDrag" + std::to_string(ID), "Angular Drag", angularDrag, 0.01f, 0, 1))
+			//{
+			//	rigidBody->SetAngularDrag(angularDrag);
+			//}
+			//if (FL::RenderFloatDragTableRow("##EquilibriumForce" + std::to_string(ID), "Equilibrium Force", equilibriumForce, 0.01f, 0, 1000))
+			//{
+			//	rigidBody->SetEquilibriumForce(equilibriumForce);
+			//}
+			//FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(velocity.x));
+			//FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(velocity.y));
+			//FL::RenderTextTableRow("##PendingForcesX" + std::to_string(ID), "X Pending Forces", std::to_string(pendingForces.x));
+			//FL::RenderTextTableRow("##PendingForcesY" + std::to_string(ID), "Y Pending Forces", std::to_string(pendingForces.y));
+			//FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
+			//FL::RenderTextTableRow("##PendingTorques" + std::to_string(ID), "Pending Torques", std::to_string(pendingTorques));
+			//FL::RenderTextTableRow("##RigidBodyGrounded" + std::to_string(ID), "Is Grounded", isGroundedString);
 			FL::PopTable();
 		}
 
 		FL::MoveScreenCursor(0, 5);
-		if (FL::RenderCheckbox(" Is Continuous", b_isContinuous))
-		{
-			boxCollider->SetIsContinuous(b_isContinuous);
-		}
-		if (FL::RenderCheckbox(" Is Solid", b_isSolid))
-		{
-			boxCollider->SetIsSolid(b_isSolid);
-		}
-		if (FL::RenderCheckbox(" Show Active Radius", b_showActiveRadius))
-		{
-			boxCollider->SetShowActiveRadius(b_showActiveRadius);
-		}
-
-		// Enter Collision Area draw mode for this BoxCollider
-		if (tileMap != nullptr && collisionAreaName != "")
-		{
-			if (FL::RenderImageButton("##DrawCollisionArea" + std::to_string(ID), FL::GetTexture("tileColliderDraw")))
-			{
-				FG_currentSelectedColliderArea = collisionAreaName;
-				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
-			}
-			if (ImGui::IsItemHovered())
-			{
-				FL::RenderTextToolTip("Draw this collision area directly in the Scene View");
-			}
-		}
-	}
-
-	void RenderCircleColliderComponent(CircleCollider* circleCollider)
-	{
-		long ID = circleCollider->GetID();
-		bool b_isActive = circleCollider->IsActive();
-		bool b_isColliding = circleCollider->IsColliding();
-		bool b_isContinuous = circleCollider->IsContinuous();
-		bool b_isSolid = circleCollider->IsSolid();	
-		float activeRadius = circleCollider->GetActiveRadiusGrid();
-		Vector2 activeOffset = circleCollider->GetActiveOffset();
-		int activeLayer = circleCollider->GetActiveLayer();
-		std::string isCollidingString = "false";
-
-		if (b_isColliding)
-		{
-			isCollidingString = "true";
-		}
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			circleCollider->SetActive(b_isActive);
-		}
-
-		if (FL::PushTable("##CircleColliderProps" + std::to_string(ID), 2))
-		{
-			if (FL::RenderFloatDragTableRow("##CircleColliderActiveRadius" + std::to_string(ID), "Radius", activeRadius, 0.01f, 0.0f, 20.0f))
-			{
-				circleCollider->SetActiveRadiusGrid(activeRadius);
-			}
-			if (FL::RenderFloatDragTableRow("##ActiveOffsetCircleColliderX" + std::to_string(ID), "X Offset", activeOffset.x, 0.01f, -FLT_MAX, -FLT_MAX))
-			{
-				circleCollider->SetActiveOffset(activeOffset);
-			}
-			if (FL::RenderFloatDragTableRow("##ActiveOffsetCircleColliderY" + std::to_string(ID), "Y Offset", activeOffset.y, 0.01f, -FLT_MAX, -FLT_MAX))
-			{
-				circleCollider->SetActiveOffset(activeOffset);
-			}
-			if (FL::RenderIntDragTableRow("##CircleColliderActiveLayer" + std::to_string(ID), "Active layer", activeLayer, 1, 0, 100))
-			{
-				circleCollider->SetActiveLayer(activeLayer);
-			}
-			FL::RenderTextTableRow("##CircleColliderIsColliding" + std::to_string(ID), "Is Colliding", isCollidingString);
-			FL::PopTable();
-		}
-		
-		FL::MoveScreenCursor(0, 5);
-		if (FL::RenderCheckbox(" Is Continuous", b_isContinuous))
-		{
-			circleCollider->SetIsContinuous(b_isContinuous);
-		}
-		if (FL::RenderCheckbox(" Is Solid", b_isSolid))
-		{
-			circleCollider->SetIsSolid(b_isSolid);
-		}
+		//if (FL::RenderCheckbox(" Allow Torques", b_allowTorques))
+		//{
+			//boxBody->SetTorquesAllowed(b_allowTorques);
+		//}
 	}
 
 	void RenderRigidBodyComponent(RigidBody* rigidBody)

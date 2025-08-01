@@ -85,9 +85,9 @@ namespace FlatEngine
 			pointToPath = loadFrom;
 		}
 		bool b_success = true;
-				
+			
+		m_loadedScene.UnloadECSManager();
 		//m_loadedScene.UnloadSceneObjects();
-		//m_loadedScene.UnloadECSManager();
 
 		std::ofstream file_obj;
 		std::ifstream ifstream(loadFrom);

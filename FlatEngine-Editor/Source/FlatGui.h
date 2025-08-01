@@ -43,9 +43,8 @@ namespace FlatEngine
 	class Audio;
 	class Text;
 	class CharacterController;
-	class BoxCollider;
-	class CircleCollider;
 	class RigidBody;
+	class BoxBody;
 	class TileMap;
 	class TileSet;
 }
@@ -71,9 +70,8 @@ using Animation = FL::Animation;
 using Audio = FL::Audio;
 using Text = FL::Text;
 using CharacterController = FL::CharacterController;
-using BoxCollider = FL::BoxCollider;
-using CircleCollider = FL::CircleCollider;
 using RigidBody = FL::RigidBody;
+using BoxBody = FL::BoxBody;
 using TileMap = FL::TileMap;
 using TileSet = FL::TileSet;
 
@@ -212,8 +210,7 @@ namespace FlatGui
 	extern void RenderAudioComponent(Audio* audio);
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
-	extern void RenderBoxColliderComponent(BoxCollider* boxCollider, TileMap* tileMap = nullptr, std::string collisionAreaName = "");
-	extern void RenderCircleColliderComponent(CircleCollider* circleCollider);
+	extern void RenderBoxBodyComponent(BoxBody* boxBody);
 	extern void RenderRigidBodyComponent(RigidBody* rigidBody);
 	extern void RenderTileMapComponent(TileMap* tileMap);
 

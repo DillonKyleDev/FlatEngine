@@ -674,42 +674,20 @@ namespace FlatEngine
 						text->SetRenderOrder(textData->renderOrder);
 						text->LoadText();
 					}
-					else if (prefab.components.at(componentID)->type == "BoxCollider")
+					else if (prefab.components.at(componentID)->type == "BoxBody")
 					{
-						std::shared_ptr<BoxColliderPrefabData> colData = std::static_pointer_cast<BoxColliderPrefabData>(prefab.components.at(componentID));
-						BoxCollider* boxCol = self->AddBoxCollider(-1, colData->b_isActive, colData->b_isCollapsed);
-						boxCol->SetTileMapCollider(colData->b_tileMapCollider);
-						boxCol->SetActiveDimensions(colData->activeDimensions.x, colData->activeDimensions.y);
-						boxCol->SetActiveOffset(colData->activeOffset);
-						boxCol->SetIsContinuous(colData->b_isContinuous);						
-						boxCol->SetIsSolid(colData->b_isSolid);
-						boxCol->SetActiveLayer(colData->activeLayer);
-						boxCol->SetRotation(colData->rotation);						
-					}
-					else if (prefab.components.at(componentID)->type == "CircleCollider")
-					{
-						std::shared_ptr<CircleColliderPrefabData> colData = std::static_pointer_cast<CircleColliderPrefabData>(prefab.components.at(componentID));
-						CircleCollider* cirCol = self->AddCircleCollider(-1, colData->b_isActive, colData->b_isCollapsed);
-						cirCol->SetActiveRadiusGrid(colData->activeRadius);
-						cirCol->SetActiveOffset(colData->activeOffset);
-						cirCol->SetIsContinuous(colData->b_isContinuous);						
-						cirCol->SetIsSolid(colData->b_isSolid);
-						cirCol->SetActiveLayer(colData->activeLayer);						
-					}
-					else if (prefab.components.at(componentID)->type == "RigidBody")
-					{
-						std::shared_ptr<RigidBodyPrefabData> rigidBodyData = std::static_pointer_cast<RigidBodyPrefabData>(prefab.components.at(componentID));
-						RigidBody* rigidBody = self->AddRigidBody(-1, rigidBodyData->b_isActive, rigidBodyData->b_isCollapsed);
-						rigidBody->SetMass(rigidBodyData->mass);
-						rigidBody->SetAngularDrag(rigidBodyData->angularDrag);
-						rigidBody->SetGravity(rigidBodyData->gravity);
-						rigidBody->SetFallingGravity(rigidBodyData->fallingGravity);
-						rigidBody->SetFriction(rigidBodyData->friction);
-						rigidBody->SetWindResistance(rigidBodyData->windResistance);
-						rigidBody->SetEquilibriumForce(rigidBodyData->equilibriumForce);
-						rigidBody->SetTerminalVelocity(rigidBodyData->terminalVelocity);
-						rigidBody->SetIsStatic(rigidBodyData->b_isStatic);
-						rigidBody->SetTorquesAllowed(rigidBodyData->b_allowTorques);
+						//std::shared_ptr<RigidBodyPrefabData> rigidBodyData = std::static_pointer_cast<RigidBodyPrefabData>(prefab.components.at(componentID));
+						//RigidBody* rigidBody = self->AddRigidBody(-1, rigidBodyData->b_isActive, rigidBodyData->b_isCollapsed);
+						//rigidBody->SetMass(rigidBodyData->mass);
+						//rigidBody->SetAngularDrag(rigidBodyData->angularDrag);
+						//rigidBody->SetGravity(rigidBodyData->gravity);
+						//rigidBody->SetFallingGravity(rigidBodyData->fallingGravity);
+						//rigidBody->SetFriction(rigidBodyData->friction);
+						//rigidBody->SetWindResistance(rigidBodyData->windResistance);
+						//rigidBody->SetEquilibriumForce(rigidBodyData->equilibriumForce);
+						//rigidBody->SetTerminalVelocity(rigidBodyData->terminalVelocity);
+						//rigidBody->SetIsStatic(rigidBodyData->b_isStatic);
+						//rigidBody->SetTorquesAllowed(rigidBodyData->b_allowTorques);
 					}
 					else if (prefab.components.at(componentID)->type == "CharacterController")
 					{

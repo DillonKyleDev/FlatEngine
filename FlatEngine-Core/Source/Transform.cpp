@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Button.h"
 #include "BoxCollider.h"
+#include "BoxBody.h"
 
 
 namespace FlatEngine
@@ -74,12 +75,20 @@ namespace FlatEngine
 	{
 		m_position = newPosition;
 
-		if (GetParent() != nullptr && GetParent()->HasChildren())
+		if (GetParent() != nullptr)
 		{
-			for (long id : GetParent()->GetChildren())
+			if (GetParent()->HasChildren())
 			{
-				GameObject *child = GetObjectByID(id);
-				child->GetTransform()->UpdateOrigin(GetTruePosition());
+				for (long id : GetParent()->GetChildren())
+				{
+					GameObject* child = GetObjectByID(id);
+					child->GetTransform()->UpdateOrigin(GetTruePosition());
+				}
+			}
+
+			if (GetParent()->GetBoxBody() != nullptr)
+			{
+				GetParent()->GetBoxBody()->SetPosition(newPosition);
 			}
 		}
 	}
@@ -143,6 +152,12 @@ namespace FlatEngine
 	void Transform::SetScale(Vector2 newScale)
 	{
 		m_scale = newScale;
+
+		if (GetParent()->GetBoxBody() != nullptr)
+		{
+			GetParent()->GetBoxBody()->UpdateDimensions();
+		}
+
 		//UpdateChildBaseScale(m_scale);
 	}
 
@@ -161,13 +176,10 @@ namespace FlatEngine
 			m_rotation = newRotation;
 		}
 
-		// Just for debugging, not for release, since it would update at least once per frame otherwise
-		if (GetParent()->GetBoxColliders().size())
+		// Just for debugging, not for release, since it would update at least once per frame otherwise <- OLD
+		if (GetParent()->GetBoxBody() != nullptr)
 		{
-			for (BoxCollider* collider : GetParent()->GetBoxColliders())
-			{
-				collider->RecalculateBounds();
-			}
+			GetParent()->GetBoxBody()->SetRotation(m_rotation);
 		}
 	}
 

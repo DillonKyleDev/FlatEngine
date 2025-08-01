@@ -21,6 +21,9 @@ namespace FlatEngine
 		T_RigidBody,
 		T_CharacterController,
 		T_TileMap,
+		T_BoxBody,
+		T_CircleBody,
+		T_CapsuleBody,
 	};
 
 	class GameObject;

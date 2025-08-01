@@ -46,7 +46,6 @@ namespace FlatEngine
 		if (GetParent()->HasComponent("RigidBody"))
 		{
 			Vector2 pendingForces = Vector2(0, 0);
-			RigidBody* rigidBody = GetParent()->GetRigidBody();
 			Transform* transform = GetParent()->GetTransform();
 			float gravity = 1;
 			Vector2 velocity = 0;
@@ -54,14 +53,14 @@ namespace FlatEngine
 			float mass = 1;
 			float forceCorrection = 1;
 
-			if (rigidBody != nullptr)
+			if (true /*rigidBody != nullptr*/)
 			{
-				pendingForces = rigidBody->m_pendingForces;
-				velocity = rigidBody->m_velocity;
-				gravity = rigidBody->m_gravity;				
-				mass = rigidBody->m_mass;
-				oneOverMass = 1 / mass;
-				forceCorrection = rigidBody->m_forceCorrection;
+				//pendingForces = rigidBody->m_pendingForces;
+				//velocity = rigidBody->m_velocity;
+				//gravity = rigidBody->m_gravity;				
+				//mass = rigidBody->m_mass;
+				//oneOverMass = 1 / mass;
+				//forceCorrection = rigidBody->m_forceCorrection;
 			}
 			else
 			{
@@ -76,69 +75,69 @@ namespace FlatEngine
 				// If velocity exceeds negative max speed but x direction is positive
 				(velocity.x <= -m_maxSpeed && direction.x * m_maxAcceleration > 0)))
 			{
-				if (rigidBody != nullptr)
-				{
-					// Handles changes in direction
-					float skidForce = 0.5f;
-					if (rigidBody->IsGrounded() && ((velocity.x < 0 && direction.x > 0) || (velocity.x > 0 && direction.x < 0)))
-					{
-						rigidBody->SetPendingForces(Vector2(pendingForces.x * skidForce, pendingForces.y));
-					}
+				//if (rigidBody != nullptr)
+				//{
+				//	// Handles changes in direction
+				//	float skidForce = 0.5f;
+				//	if (rigidBody->IsGrounded() && ((velocity.x < 0 && direction.x > 0) || (velocity.x > 0 && direction.x < 0)))
+				//	{
+				//		rigidBody->SetPendingForces(Vector2(pendingForces.x * skidForce, pendingForces.y));
+				//	}
 
-					Vector2 finalForce = direction;
-				
-					// In air
-					if ((gravity != 0 && !rigidBody->IsGrounded()))
-					{
-						Vector2 inAirForce = Vector2(pendingForces.x + (direction.x * m_maxAcceleration * m_airControl), (pendingForces.y + (direction.y * m_maxAcceleration * m_airControl)));
-						float modifiers = 1 / (m_maxAcceleration * m_airControl);
+				//	Vector2 finalForce = direction;
+				//
+				//	// In air
+				//	if ((gravity != 0 && !rigidBody->IsGrounded()))
+				//	{
+				//		Vector2 inAirForce = Vector2(pendingForces.x + (direction.x * m_maxAcceleration * m_airControl), (pendingForces.y + (direction.y * m_maxAcceleration * m_airControl)));
+				//		float modifiers = 1 / (m_maxAcceleration * m_airControl);
 
-						if (velocity.x + inAirForce.x > m_maxSpeed)
-						{
-							finalForce.x = (m_maxSpeed - pendingForces.x) * modifiers;
-						}
-						else if (velocity.x + inAirForce.x < -m_maxSpeed)
-						{
-							finalForce.x = (-m_maxSpeed - pendingForces.x) * modifiers;
-						}
+				//		if (velocity.x + inAirForce.x > m_maxSpeed)
+				//		{
+				//			finalForce.x = (m_maxSpeed - pendingForces.x) * modifiers;
+				//		}
+				//		else if (velocity.x + inAirForce.x < -m_maxSpeed)
+				//		{
+				//			finalForce.x = (-m_maxSpeed - pendingForces.x) * modifiers;
+				//		}
 
-						finalForce.x *= m_maxAcceleration * m_airControl;
-					}
-					// On the ground
-					else
-					{
-						Vector2 groundedForce = Vector2(pendingForces.x + (direction.x * m_maxAcceleration), pendingForces.y + (direction.y * m_maxAcceleration));
-						float modifiers = 1 / m_maxAcceleration;
+				//		finalForce.x *= m_maxAcceleration * m_airControl;
+				//	}
+				//	// On the ground
+				//	else
+				//	{
+				//		Vector2 groundedForce = Vector2(pendingForces.x + (direction.x * m_maxAcceleration), pendingForces.y + (direction.y * m_maxAcceleration));
+				//		float modifiers = 1 / m_maxAcceleration;
 
-						if (velocity.x + groundedForce.x > m_maxSpeed) // maxSpeed = pendingForces.x + (groundedForce.x * m_maxAcceleration)
-						{
-							finalForce.x = (m_maxSpeed - pendingForces.x) * modifiers;
-						}
-						else if (velocity.x + groundedForce.x < -m_maxSpeed)
-						{
-							finalForce.x = (-m_maxSpeed - pendingForces.x) * modifiers;
-						}
+				//		if (velocity.x + groundedForce.x > m_maxSpeed) // maxSpeed = pendingForces.x + (groundedForce.x * m_maxAcceleration)
+				//		{
+				//			finalForce.x = (m_maxSpeed - pendingForces.x) * modifiers;
+				//		}
+				//		else if (velocity.x + groundedForce.x < -m_maxSpeed)
+				//		{
+				//			finalForce.x = (-m_maxSpeed - pendingForces.x) * modifiers;
+				//		}
 
-						if (gravity == 0)
-						{
-							if (velocity.y + groundedForce.y > m_maxSpeed) // maxSpeed = pendingForces.x + (groundedForce.x * m_maxAcceleration)
-							{
-								finalForce.y = (m_maxSpeed - pendingForces.y) * modifiers;
-							}
-							else if (velocity.y + groundedForce.y < -m_maxSpeed)
-							{
-								finalForce.y = (-m_maxSpeed - pendingForces.y) * modifiers;
-							}
+				//		if (gravity == 0)
+				//		{
+				//			if (velocity.y + groundedForce.y > m_maxSpeed) // maxSpeed = pendingForces.x + (groundedForce.x * m_maxAcceleration)
+				//			{
+				//				finalForce.y = (m_maxSpeed - pendingForces.y) * modifiers;
+				//			}
+				//			else if (velocity.y + groundedForce.y < -m_maxSpeed)
+				//			{
+				//				finalForce.y = (-m_maxSpeed - pendingForces.y) * modifiers;
+				//			}
 
-							finalForce.y *= m_maxAcceleration;
-						}
+				//			finalForce.y *= m_maxAcceleration;
+				//		}
 
-						finalForce.x *= m_maxAcceleration;
-					}
+				//		finalForce.x *= m_maxAcceleration;
+				//	}
 
-					rigidBody->AddVelocity(finalForce);
-					m_b_isMoving = true;
-				}
+				//	rigidBody->AddVelocity(finalForce);
+				//	m_b_isMoving = true;
+				//}
 			}
 
 			if (direction.x == 0 && ((gravity == 0 && direction.y == 0) || gravity != 0))

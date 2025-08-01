@@ -19,11 +19,11 @@ namespace FlatEngine
 	class Transform;
 	class Text;	
 	class CharacterController;
-	class RigidBody;
 	class BoxCollider;
 	class CircleCollider;
 	class CompositeCollider;
 	class TileMap;
+	class BoxBody;
 
 	class GameObject
 	{
@@ -63,10 +63,7 @@ namespace FlatEngine
 		Animation* AddAnimation(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		BoxCollider* AddBoxCollider(long ID = -1, bool _active = true, bool b_collapsed = false);
-		CircleCollider* AddCircleCollider(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		CompositeCollider* AddCompositeCollider(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		RigidBody* AddRigidBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		BoxBody* AddBoxBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
@@ -78,10 +75,6 @@ namespace FlatEngine
 		Animation* AddAnimationLua() { return AddAnimation(-1, true, false); };
 		Audio* AddAudioLua() { return AddAudio(-1, true, false); };
 		Text* AddTextLua() { return AddText(-1, true, false); };
-		BoxCollider* AddBoxColliderLua() { return AddBoxCollider(-1, true, false); };
-		CircleCollider* AddCircleColliderLua() { return AddCircleCollider(-1, true, false); };
-		CompositeCollider* AddCompositeColliderLua() { return AddCompositeCollider(-1, true, false); };
-		RigidBody* AddRigidBodyLua() { return AddRigidBody(-1, true, false); };
 		CharacterController* AddCharacterControllerLua() { return AddCharacterController(-1, true, false); };
 		TileMap* AddTileMapLua() { return AddTileMap(-1, true, false); };
 
@@ -98,13 +91,9 @@ namespace FlatEngine
 		std::vector<Script*> GetScripts();
 		Text* GetText();
 		CharacterController* GetCharacterController();
-		RigidBody* GetRigidBody();
-		std::vector<BoxCollider*> GetBoxColliders();	
-		BoxCollider* GetBoxCollider();
-		std::vector<CircleCollider*> GetCircleColliders();
-		CircleCollider* GetCircleCollider();
-		CompositeCollider* GetCompositeCollider();	
-		TileMap* GetTileMap();
+		BoxBody* GetBoxBody();	
+		//CompositeCollider* GetCompositeCollider();	
+		//TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		
 
 		void SetParentID(long parentID);

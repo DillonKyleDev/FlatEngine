@@ -18,6 +18,7 @@
 #include "RigidBody.h"
 #include "Component.h"
 #include "TileMap.h"
+#include "BoxBody.h"	
 
 #include "imgui.h"
 
@@ -123,41 +124,23 @@ namespace FlatGui
 						}
 					}
 
-					if (!focusedObject->HasComponent("RigidBody"))
+					if (!focusedObject->HasComponent("BoxBody"))
 					{
-						if (ImGui::MenuItem("RigidBody"))
+						if (ImGui::MenuItem("BoxBody"))
 						{
-							focusedObject->AddRigidBody();
+							focusedObject->AddBoxBody();
 							ImGui::CloseCurrentPopup();
 						}
 					}
 
-					if (!focusedObject->HasComponent("BoxCollider"))
-					{
-						if (ImGui::MenuItem("BoxCollider"))
-						{
-							focusedObject->AddBoxCollider();
-							ImGui::CloseCurrentPopup();
-						}
-					}		
-
-					if (!focusedObject->HasComponent("BoxCollider"))
-					{
-						if (ImGui::MenuItem("CircleCollider"))
-						{
-							focusedObject->AddCircleCollider();
-							ImGui::CloseCurrentPopup();
-						}
-					}
-
-					if (!focusedObject->HasComponent("TileMap"))
-					{
-						if (ImGui::MenuItem("TileMap"))
-						{
-							focusedObject->AddTileMap();
-							ImGui::CloseCurrentPopup();
-						}
-					}
+					//if (!focusedObject->HasComponent("TileMap"))
+					//{
+					//	if (ImGui::MenuItem("TileMap"))
+					//	{
+					//		focusedObject->AddTileMap();
+					//		ImGui::CloseCurrentPopup();
+					//	}
+					//}
 
 					FL::PopMenuStyles();
 				};
@@ -395,52 +378,27 @@ namespace FlatGui
 							EndComponent(characterController);
 						}
 						
-						std::vector<BoxCollider*> boxColliders = focusedObject->GetBoxColliders();
-						for (BoxCollider* boxCollider : boxColliders)
+						BoxBody* boxBody = focusedObject->GetBoxBody();
+						if (boxBody != nullptr)
 						{
-							if (!boxCollider->IsTileMapCollider())
+							BeginComponent(boxBody, queuedForDelete);
+							if (!boxBody->IsCollapsed())
 							{
-								BeginComponent(boxCollider, queuedForDelete);
-								if (!boxCollider->IsCollapsed())
-								{
-									RenderBoxColliderComponent(boxCollider);
-								}
-								EndComponent(boxCollider);
+								RenderBoxBodyComponent(boxBody);
 							}
-						}
+							EndComponent(boxBody);
+						}					
 						
-						std::vector<CircleCollider*> circleColliders = focusedObject->GetCircleColliders();
-						for (CircleCollider* circleCollider : circleColliders)
-						{
-							BeginComponent(circleCollider, queuedForDelete);
-							if (!circleCollider->IsCollapsed())
-							{
-								RenderCircleColliderComponent(circleCollider);
-							}
-							EndComponent(circleCollider);
-						}
-						
-						RigidBody* rigidBody = focusedObject->GetRigidBody();
-						if (rigidBody != nullptr)
-						{
-							BeginComponent(rigidBody, queuedForDelete);
-							if (!rigidBody->IsCollapsed())
-							{
-								RenderRigidBodyComponent(rigidBody);
-							}
-							EndComponent(rigidBody);
-						}
-						
-						TileMap* tileMap = focusedObject->GetTileMap();
-						if (tileMap != nullptr)
-						{
-							BeginComponent(tileMap, queuedForDelete);
-							if (!tileMap->IsCollapsed())
-							{
-								RenderTileMapComponent(tileMap);
-							}
-							EndComponent(tileMap);
-						}
+						//TileMap* tileMap = focusedObject->GetTileMap();
+						//if (tileMap != nullptr)
+						//{
+						//	BeginComponent(tileMap, queuedForDelete);
+						//	if (!tileMap->IsCollapsed())
+						//	{
+						//		RenderTileMapComponent(tileMap);
+						//	}
+						//	EndComponent(tileMap);
+						//}
 
 						if (queuedForDelete != nullptr)
 						{

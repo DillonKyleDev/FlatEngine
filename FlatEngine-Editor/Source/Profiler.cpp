@@ -29,29 +29,6 @@ namespace FlatGui
 			static int offset = 0;
 			static bool b_showColliderPairs = true;
 
-			FL::RenderCheckbox("Show Collider Pairs", b_showColliderPairs);
-			if (b_showColliderPairs)
-			{
-				if (FL::PushTable("##RunTimeData", 2))
-				{
-					FL::RenderTextTableRow("##ColliderPairs", "FIRST", "SECOND");
-
-					for (std::pair<Collider*, Collider*> pair : FL::F_ColliderPairs)
-					{
-						GameObject* col1Object = pair.first->GetParent();
-						GameObject* col2Object = pair.second->GetParent();
-						std::string col1IdString = std::to_string(col1Object->GetID());
-						std::string col2IdString = std::to_string(col2Object->GetID());
-						std::string col1String = "ID: " + col1IdString + " - " + col1Object->GetName();
-						std::string col2String = "ID: " + col2IdString + " - " + col2Object->GetName();
-						std::string TableRowID = "##ColliderPairID-" + col1IdString + col2IdString;
-
-						FL::RenderTextTableRow(TableRowID.c_str(), col1String.c_str(), col2String.c_str());
-					}
-					FL::PopTable();
-				}
-			}
-
 			FL::RenderCheckbox("Animate", b_animate);
 			if (b_animate)
 			{

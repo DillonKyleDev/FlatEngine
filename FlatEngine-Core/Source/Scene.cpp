@@ -366,6 +366,24 @@ namespace FlatEngine
 		return m_ECSManager.AddBoxBody(boxBody, ownerID);
 	}
 
+	CircleBody* Scene::AddCircleBody(CircleBody circleBody, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(circleBody.GetID());
+		return m_ECSManager.AddCircleBody(circleBody, ownerID);
+	}
+
+	CapsuleBody* Scene::AddCapsuleBody(CapsuleBody capsuleBody, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(capsuleBody.GetID());
+		return m_ECSManager.AddCapsuleBody(capsuleBody, ownerID);
+	}
+
+	PolygonBody* Scene::AddPolygonBody(PolygonBody polygonBody, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(polygonBody.GetID());
+		return m_ECSManager.AddPolygonBody(polygonBody, ownerID);
+	}
+
 	//BoxCollider* Scene::AddBoxCollider(BoxCollider collider, long ownerID)
 	//{
 	//	KeepNextComponentIDUpToDate(collider.GetID());
@@ -472,6 +490,21 @@ namespace FlatEngine
 	BoxBody* Scene::GetBoxBodyByOwner(long ownerID)
 	{
 		return m_ECSManager.GetBoxBodyByOwner(ownerID);
+	}
+
+	CircleBody* Scene::GetCircleBodyByOwner(long ownerID)
+	{
+		return m_ECSManager.GetCircleBodyByOwner(ownerID);
+	}
+
+	CapsuleBody* Scene::GetCapsuleBodyByOwner(long ownerID)
+	{
+		return m_ECSManager.GetCapsuleBodyByOwner(ownerID);
+	}
+
+	PolygonBody* Scene::GetPolygonBodyByOwner(long ownerID)
+	{
+		return m_ECSManager.GetPolygonBodyByOwner(ownerID);
 	}
 
 	CharacterController* Scene::GetCharacterControllerByOwner(long ownerID)

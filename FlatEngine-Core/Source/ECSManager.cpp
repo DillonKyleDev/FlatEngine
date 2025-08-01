@@ -13,6 +13,9 @@
 #include "Text.h"
 #include "RayCast.h"
 #include "BoxBody.h"
+#include "CircleBody.h"
+#include "CapsuleBody.h"
+#include "PolygonBody.h"
 #include "CharacterController.h"
 #include "FlatEngine.h"
 
@@ -35,6 +38,9 @@ namespace FlatEngine
 		m_Texts = std::map<long, Text>();
 		m_RayCasts = std::map<long, RayCast>();
 		m_BoxBodies = std::map<long, BoxBody>();
+		m_CircleBodies = std::map<long, CircleBody>();
+		m_CapsuleBodies = std::map<long, CapsuleBody>();
+		m_PolygonBodies = std::map<long, PolygonBody>();
 		m_CharacterControllers = std::map<long, CharacterController>();		
 		//m_TileMaps = std::map<long, TileMap>();
 	}
@@ -129,6 +135,24 @@ namespace FlatEngine
 	{
 		m_BoxBodies.emplace(ownerID, boxBody);
 		return &m_BoxBodies.at(ownerID);
+	}
+
+	CircleBody* ECSManager::AddCircleBody(CircleBody circleBody, long ownerID)
+	{
+		m_CircleBodies.emplace(ownerID, circleBody);
+		return &m_CircleBodies.at(ownerID);
+	}
+
+	CapsuleBody* ECSManager::AddCapsuleBody(CapsuleBody capsuleBody, long ownerID)
+	{
+		m_CapsuleBodies.emplace(ownerID, capsuleBody);
+		return &m_CapsuleBodies.at(ownerID);
+	}
+
+	PolygonBody* ECSManager::AddPolygonBody(PolygonBody polygonBody, long ownerID)
+	{
+		m_PolygonBodies.emplace(ownerID, polygonBody);
+		return &m_PolygonBodies.at(ownerID);
 	}
 
 	Animation* ECSManager::AddAnimation(Animation animation, long ownerID)
@@ -272,6 +296,42 @@ namespace FlatEngine
 		if (m_BoxBodies.count(ownerID))
 		{
 			return &m_BoxBodies.at(ownerID);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	CircleBody* ECSManager::GetCircleBodyByOwner(long ownerID)
+	{
+		if (m_CircleBodies.count(ownerID))
+		{
+			return &m_CircleBodies.at(ownerID);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	CapsuleBody* ECSManager::GetCapsuleBodyByOwner(long ownerID)
+	{
+		if (m_CapsuleBodies.count(ownerID))
+		{
+			return &m_CapsuleBodies.at(ownerID);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	PolygonBody* ECSManager::GetPolygonBodyByOwner(long ownerID)
+	{
+		if (m_PolygonBodies.count(ownerID))
+		{
+			return &m_PolygonBodies.at(ownerID);
 		}
 		else
 		{

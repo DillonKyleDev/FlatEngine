@@ -36,7 +36,17 @@
                     "yOffset": 10.5,
                     "yScale": 1.0
                 },
-                {}
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "bodyType": 2,
+                    "density": 1.0,
+                    "friction": 0.30000001192092896,
+                    "height": 2.625,
+                    "id": 6,
+                    "type": "BoxBody",
+                    "width": 2.75
+                }
             ],
             "id": 0,
             "ignoreTags": [
@@ -143,14 +153,14 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 1,
-                    "rotation": 0.0,
+                    "rotation": -31.770000457763672,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
+                    "xPos": 0.8095321655273438,
+                    "xScale": 6.60099983215332,
                     "yOrigin": 0.0,
-                    "yPos": -8.999702453613281,
-                    "yScale": 1.0
+                    "yPos": -5.894732475280762,
+                    "yScale": 3.5
                 },
                 {
                     "_isActive": true,
@@ -169,7 +179,17 @@
                     "yOffset": 8.0,
                     "yScale": 1.0
                 },
-                {}
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "bodyType": 0,
+                    "density": 1.0,
+                    "friction": 0.30000001192092896,
+                    "height": 2.0,
+                    "id": 5,
+                    "type": "BoxBody",
+                    "width": 3.690000057220459
+                }
             ],
             "id": 1,
             "ignoreTags": [
@@ -219,8 +239,134 @@
             "name": "BoxBody2",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 0.0,
-            "spawnLocationY": -8.999702453613281,
+            "spawnLocationX": 0.8095321655273438,
+            "spawnLocationY": -5.894732475280762,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 8,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.4217796325683594,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -18.60401725769043,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "bodyType": 0,
+                    "density": 1.0,
+                    "friction": 0.30000001192092896,
+                    "height": 2.0,
+                    "id": 9,
+                    "type": "BoxBody",
+                    "width": 20.0
+                }
+            ],
+            "id": 2,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "name": "BoxBody(2)",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 0.4217796325683594,
+            "spawnLocationY": -18.60401725769043,
             "tags": [
                 {
                     "Collectable": false

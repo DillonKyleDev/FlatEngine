@@ -10,7 +10,7 @@ namespace FlatEngine
 {
 	RigidBody::RigidBody(long myID, long parentID)
 	{
-		SetType(T_RigidBody);
+		//SetType(T_RigidBody);
 		SetID(myID);
 		SetParentID(parentID);
 		m_mass = 10;

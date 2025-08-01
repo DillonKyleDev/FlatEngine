@@ -11,7 +11,7 @@ namespace FlatEngine
 {
 	class RigidBody : public Component
 	{
-		friend CharacterController;
+		friend class CharacterController;
 
 	public:
 		RigidBody(long myID = -1, long parentID = -1);

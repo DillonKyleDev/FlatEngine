@@ -24,6 +24,9 @@ namespace FlatEngine
 	class CompositeCollider;
 	class TileMap;
 	class BoxBody;
+	class CircleBody;
+	class CapsuleBody;
+	class PolygonBody;
 
 	class GameObject
 	{
@@ -64,6 +67,9 @@ namespace FlatEngine
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		BoxBody* AddBoxBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		CircleBody* AddCircleBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		CapsuleBody* AddCapsuleBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		PolygonBody* AddPolygonBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
@@ -92,6 +98,9 @@ namespace FlatEngine
 		Text* GetText();
 		CharacterController* GetCharacterController();
 		BoxBody* GetBoxBody();	
+		CircleBody* GetCircleBody();
+		CapsuleBody* GetCapsuleBody();
+		PolygonBody* GetPolygonBody();
 		//CompositeCollider* GetCompositeCollider();	
 		//TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		

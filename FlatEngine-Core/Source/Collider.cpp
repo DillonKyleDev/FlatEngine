@@ -141,24 +141,24 @@ namespace FlatEngine
 			bool b_col1Added2 = collider1->AddCollidingObject(collider2);
 			bool b_col2Added1 = collider2->AddCollidingObject(collider1);
 
-			// For Collider events - Fire OnActiveCollision while there is a collision happening
-			if (collider1->GetType() == ComponentTypes::T_BoxCollider)
-			{
-				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
-			}
-			else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
-			{
-				CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
-			}
-			// For Collider events - Fire OnActiveCollision while there is a collision happening
-			if (collider2->GetType() == ComponentTypes::T_BoxCollider)
-			{
-				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
-			}
-			else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
-			{
-				CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
-			}
+			//// For Collider events - Fire OnActiveCollision while there is a collision happening
+			//if (collider1->GetType() == ComponentTypes::T_BoxCollider)
+			//{
+			//	CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnBoxCollision);
+			//}
+			//else if (collider1->GetType() == ComponentTypes::T_CircleCollider)
+			//{
+			//	CallLuaCollisionFunction(collider1->GetParent(), collider2, LuaEventFunction::OnCircleCollision);
+			//}
+			//// For Collider events - Fire OnActiveCollision while there is a collision happening
+			//if (collider2->GetType() == ComponentTypes::T_BoxCollider)
+			//{
+			//	CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnBoxCollision);
+			//}
+			//else if (collider2->GetType() == ComponentTypes::T_CircleCollider)
+			//{
+			//	CallLuaCollisionFunction(collider2->GetParent(), collider1, LuaEventFunction::OnCircleCollision);
+			//}
 
 			if (!collider1->IsSolid() || !collider2->IsSolid())
 			{
@@ -560,14 +560,14 @@ namespace FlatEngine
 		}
 
 		// else fire it now. (upon initially adding the object to m_collidingObjects for the first time)
-		if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_BoxCollider)
-		{			
-			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnBoxCollisionEnter);
-		}
-		if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_CircleCollider)
-		{			
-			CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnCircleCollisionEnter);
-		}
+		//if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_BoxCollider)
+		//{			
+		//	CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnBoxCollisionEnter);
+		//}
+		//if (static_cast<Component*>(this)->GetType() == ComponentTypes::T_CircleCollider)
+		//{			
+		//	CallLuaCollisionFunction(GetParent(), collidedWith, LuaEventFunction::OnCircleCollisionEnter);
+		//}
 
 		return true;
 	}

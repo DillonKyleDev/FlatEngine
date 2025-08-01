@@ -2,6 +2,8 @@
 #include "Body.h"
 #include "Vector2.h"
 
+#include <string>
+
 
 namespace FlatEngine
 {
@@ -10,8 +12,8 @@ namespace FlatEngine
 	public:
 		BoxBody(long myID = -1, long parentID = -1);
 		~BoxBody();
-
-		void UpdateDimensions();
+		std::string GetData();
+		
 		void SetDimensions(Vector2 dimensions);
 		void UpdateCorners();
 		Vector2* GetCornersWorld();

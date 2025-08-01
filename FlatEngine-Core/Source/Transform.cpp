@@ -153,23 +153,18 @@ namespace FlatEngine
 	{
 		m_scale = newScale;
 
-		if (GetParent()->GetBoxBody() != nullptr)
-		{
-			GetParent()->GetBoxBody()->UpdateDimensions();
-		}
-
 		//UpdateChildBaseScale(m_scale);
 	}
 
 	void Transform::SetRotation(float newRotation)
 	{
-		if (newRotation < 0)
+		if (newRotation < -179.99f)
 		{
-			m_rotation = 359.99f;
+			m_rotation = 179.99f;
 		}
-		else if (newRotation > 359.99f)
+		else if (newRotation > 179.99f)
 		{
-			m_rotation = 0;
+			m_rotation = -179.99f;
 		}
 		else
 		{

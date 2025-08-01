@@ -35,6 +35,9 @@ using Camera = FL::Camera;
 using Canvas = FL::Canvas;
 using Text = FL::Text;
 using BoxBody = FL::BoxBody;
+using CircleBody = FL::CircleBody;
+using CapsuleBody = FL::CapsuleBody;
+using PolygonBody = FL::PolygonBody;
 using BoxCollider = FL::BoxCollider;
 using CircleCollider = FL::CircleCollider;
 using Sound = FL::Sound;
@@ -698,6 +701,9 @@ namespace FlatGui
 		Canvas* canvas = self.GetCanvas();
 		Text* text = self.GetText();
 		BoxBody* boxBody = self.GetBoxBody();
+		CircleBody* circleBody = self.GetCircleBody();
+		CapsuleBody* capsuleBody = self.GetCapsuleBody();
+		PolygonBody* polygonBody = self.GetPolygonBody();
 		//TileMap* tileMap = self.GetTileMap();
 
 
@@ -710,7 +716,7 @@ namespace FlatGui
 			if (boxBody != nullptr)
 			{
 				position = boxBody->GetPosition();
-				rotation = FL::RadiansToDegrees(boxBody->GetRotation());
+				rotation = boxBody->GetRotation();
 			}
 			Vector2 relativePosition = transform->GetPosition();
 			Vector2 origin = transform->GetOrigin();
@@ -943,33 +949,58 @@ namespace FlatGui
 				}
 			}
 
-			//for (CircleCollider* circleCollider : circleColliders)
-			//{				
-			//	Vector2 activeOffset = circleCollider->GetActiveOffset();
-			//	int activeLayer = circleCollider->GetActiveLayer();
-			//	bool b_isActive = circleCollider->IsActive();
-			//	bool b_isColliding = circleCollider->IsColliding();
-			//	float activeRadius = circleCollider->GetActiveRadiusGrid() * FG_sceneViewGridStep.x;
-			//	circleCollider->SetActiveRadiusScreen(activeRadius);
-			//	bool b_showActiveRadius = circleCollider->GetShowActiveRadius();
-			//	Vector2 center = circleCollider->GetCenterCoord();
+			if (circleBody != nullptr)
+			{								
+				b2BodyId circleBodyID = circleBody->GetBodyID();
+				bool b_isActive = circleBody->IsActive();
+				FL::Physics::BodyProps bodyProps = circleBody->GetBodyProps();				
+				float radius = bodyProps.radius * FG_sceneViewGridStep.x;
+				Vector2 center = ConvertWorldToScreen(position, FG_sceneViewCenter, FG_sceneViewGridStep.x);
 
-			//	drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
-			//	circleCollider->UpdateActiveEdges(FG_sceneViewGridStep.x, FG_sceneViewCenter);
+				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
-			//	if (b_isActive && !b_isColliding)
-			//	{
-			//		FL::DrawCircle(center, activeRadius, FL::GetColor("colliderActive"), drawList);
-			//	}
-			//	else if (!b_isActive)
-			//	{
-			//		FL::DrawCircle(center, activeRadius, FL::GetColor("colliderInactive"), drawList);
-			//	}
-			//	else if (b_isColliding)
-			//	{
-			//		FL::DrawCircle(center, activeRadius, FL::GetColor("colliderColliding"), drawList);
-			//	}
-			//}
+				if (b_isActive)
+				{
+					FL::DrawCircle(center, radius, FL::GetColor("colliderActive"), drawList);
+				}
+				else if (!b_isActive)
+				{
+					FL::DrawCircle(center, radius, FL::GetColor("colliderInactive"), drawList);
+				}
+				//else if (b_isColliding)
+				//{
+				//	FL::DrawCircle(center, activeRadius, FL::GetColor("colliderColliding"), drawList);
+				//}
+			}
+
+			if (capsuleBody != nullptr)
+			{
+				b2BodyId capsuleBodyID = capsuleBody->GetBodyID();
+				bool b_isActive = capsuleBody->IsActive();
+				FL::Physics::BodyProps bodyProps = capsuleBody->GetBodyProps();
+				b2Capsule capsule = b2Shape_GetCapsule(capsuleBody->GetShapeIDs()[0]);
+				float length = bodyProps.capsuleLength;
+				float radius = bodyProps.radius * FG_sceneViewGridStep.x;
+				Vector2 center1 = ConvertWorldToScreen(Vector2(capsule.center1.x, capsule.center1.y), FG_sceneViewCenter, FG_sceneViewGridStep.x);
+				Vector2 center2 = ConvertWorldToScreen(Vector2(capsule.center2.x, capsule.center2.y), FG_sceneViewCenter, FG_sceneViewGridStep.x);
+
+				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+				if (b_isActive)
+				{
+					FL::DrawCircle(center1, radius, FL::GetColor("colliderActive"), drawList);
+					FL::DrawCircle(center2, radius, FL::GetColor("colliderActive"), drawList);
+				}
+				else if (!b_isActive)
+				{
+					FL::DrawCircle(center1, radius, FL::GetColor("colliderInactive"), drawList);
+					FL::DrawCircle(center2, radius, FL::GetColor("colliderInactive"), drawList);
+				}
+				//else if (b_isColliding)
+				//{
+				//	FL::DrawCircle(center, activeRadius, FL::GetColor("colliderColliding"), drawList);
+				//}
+			}
 
 			//if (tileMap != nullptr && tileMap->IsActive())
 			//{
@@ -1468,6 +1499,11 @@ namespace FlatGui
 			static Vector2 transformScreenPos = Vector2(0, 0);
 			static Vector2 cursorPosAtClick = inputOutput.MousePos;
 			Vector2 relativePosition = transform->GetPosition();
+
+			if (focusedObject->GetBoxBody() != nullptr)
+			{
+				relativePosition = focusedObject->GetBoxBody()->GetPosition();
+			}
 
 			if (b_baseClicked || b_xClicked || b_yClicked)
 			{

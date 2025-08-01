@@ -13,6 +13,9 @@
 #include "CharacterController.h"
 #include "RayCast.h"
 #include "BoxBody.h"
+#include "CircleBody.h"
+#include "CapsuleBody.h"
+#include "PolygonBody.h"
 
 #include <vector>
 #include <map>
@@ -65,6 +68,9 @@ namespace FlatEngine
 		Text* AddText(Text text, long ownerID);
 		RayCast* AddRayCast(RayCast rayCast, long ownerID);
 		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
+		CircleBody* AddCircleBody(CircleBody circleBody, long ownerID);
+		CapsuleBody* AddCapsuleBody(CapsuleBody capsuleBody, long ownerID);
+		PolygonBody* AddPolygonBody(PolygonBody polygonBody, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
@@ -82,6 +88,9 @@ namespace FlatEngine
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
 		BoxBody* GetBoxBodyByOwner(long ownerID);
+		CircleBody* GetCircleBodyByOwner(long ownerID);
+		CapsuleBody* GetCapsuleBodyByOwner(long ownerID);
+		PolygonBody* GetPolygonBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		//TileMap* GetTileMapByOwner(long ownerID);
 

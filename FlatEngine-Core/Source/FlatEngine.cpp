@@ -3225,21 +3225,22 @@ namespace FlatEngine
 								newCharacterController->SetMaxAcceleration(CheckJsonFloat(componentJson, "maxAcceleration", objectName));
 								newCharacterController->SetMaxSpeed(CheckJsonFloat(componentJson, "maxSpeed", objectName));
 								newCharacterController->SetAirControl(CheckJsonFloat(componentJson, "airControl", objectName));
-
 							}
 							else if (type == "BoxBody")
 							{
-								//RigidBody* newRigidBody = loadedObject->AddRigidBody(id, b_isActive, b_isCollapsed);
-								//newRigidBody->SetMass(CheckJsonFloat(componentJson, "mass", objectName));
-								//newRigidBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
-								//newRigidBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
-								//newRigidBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
-								//newRigidBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-								//newRigidBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));
-								//newRigidBody->SetEquilibriumForce(CheckJsonFloat(componentJson, "equilibriumForce", objectName));
-								//newRigidBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));
-								//newRigidBody->SetIsStatic(CheckJsonBool(componentJson, "_isStatic", objectName));
-								//newRigidBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
+								BoxBody* newBoxBody = loadedObject->AddBoxBody(id, b_isActive, b_isCollapsed);
+								newBoxBody->SetBodyType((b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName));
+								Vector2 dimensions = Vector2(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
+								newBoxBody->SetDimensions(dimensions);
+								newBoxBody->SetDensity(CheckJsonFloat(componentJson, "density", objectName));
+								newBoxBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
+								//newBoxBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
+								//newBoxBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
+								//newBoxBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
+								//newBoxBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
+								//newBoxBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));								
+								//newBoxBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));								
+								//newBoxBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
 							}
 							else if (type == "TileMap")
 							{

@@ -281,6 +281,9 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
+    <ClInclude Include="Source\CapsuleBody.h" />
+    <ClInclude Include="Source\PolygonBody.h" />
+    <ClInclude Include="Source\CircleBody.h" />
     <ClInclude Include="Source\BoxBody.h" />
     <ClInclude Include="Source\Body.h" />
     <ClInclude Include="Source\Animation.h" />
@@ -342,6 +345,9 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
     <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
+    <ClCompile Include="Source\CapsuleBody.cpp" />
+    <ClCompile Include="Source\PolygonBody.cpp" />
+    <ClCompile Include="Source\CircleBody.cpp" />
     <ClCompile Include="Source\BoxBody.cpp" />
     <ClCompile Include="Source\Body.cpp" />
     <ClCompile Include="Source\Animation.cpp" />

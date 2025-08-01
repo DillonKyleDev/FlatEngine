@@ -1,8 +1,6 @@
 #include "BoxBody.h"
 #include "GameObject.h"
 #include "Transform.h"
-#include "FlatEngine.h"
-
 
 
 namespace FlatEngine
@@ -10,29 +8,49 @@ namespace FlatEngine
 	BoxBody::BoxBody(long myID, long parentID) : Body::Body(myID, parentID)
 	{
 		SetType(T_BoxBody);
+		m_bodyProps.shape = Physics::BodyShape::BS_Box;
+		m_bodyProps.type = b2_staticBody;
 		m_bodyProps.position = GetParent()->GetTransform()->GetTruePosition();
-		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);
-		m_bodyProps.type = b2_staticBody;		
+		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);			
 		m_bodyProps.density = 1.0f;
 		m_bodyProps.friction = 0.3f;
-		F_Physics->CreateBody(m_bodyProps, m_bodyID);
+		F_Physics->CreateBody(m_bodyProps, m_bodyID, m_shapeIDs);
 	}
 
 	BoxBody::~BoxBody()
 	{
 	}
 
-	void BoxBody::UpdateDimensions()
+	std::string BoxBody::GetData()
 	{
-		SetDimensions(m_bodyProps.dimensions);
+		json jsonData = {
+			{ "type", "BoxBody" },
+			{ "id", GetID() },
+			{ "_isCollapsed", IsCollapsed() },
+			{ "_isActive", IsActive() },
+			{ "bodyType", (int)m_bodyProps.type },
+			{ "width", m_bodyProps.dimensions.x },
+			{ "height", m_bodyProps.dimensions.y },
+			{ "density", m_bodyProps.density },
+			{ "friction", m_bodyProps.friction },
+			//{ "angularDrag", m_angularDrag },
+			//{ "gravity", m_gravity },
+			//{ "fallingGravity", m_fallingGravity },
+			//{ "terminalVelocity", m_terminalVelocity },
+			//{ "windResistance", m_windResistance },			
+			//{ "_allowTorques", m_b_allowTorques },
+		};
+
+		std::string data = jsonData.dump();
+		// Return dumped json object with required data for saving
+		return data;
 	}
 
 	void BoxBody::SetDimensions(Vector2 dimensions)
 	{
 		if (dimensions.x != 0 && dimensions.y != 0)
-		{
-			Vector2 scale = GetParent()->GetTransform()->GetScale();
-			m_bodyProps.dimensions = Vector2(dimensions.x * scale.x, dimensions.y * scale.y);
+		{			
+			m_bodyProps.dimensions = dimensions;
 			RecreateBody();
 		}
 		else
@@ -43,16 +61,15 @@ namespace FlatEngine
 
 	void BoxBody::UpdateCorners()
 	{
-		Transform* transform = GetParent()->GetTransform();
-		Vector2 scale = transform->GetScale();
-		float rotation = RadiansToDegrees(GetRotation());
+		Transform* transform = GetParent()->GetTransform();		
+		float rotation = GetRotation();
 		float width = m_bodyProps.dimensions.x;
 		float height = m_bodyProps.dimensions.y;
 
-		Vector2 topLeft = Vector2::Rotate(Vector2(-width / 2 * scale.x, height / 2 * scale.y), rotation);
-		Vector2 topRight = Vector2::Rotate(Vector2(+width / 2 * scale.x, height / 2 * scale.y), rotation);
-		Vector2 bottomRight = Vector2::Rotate(Vector2(+width / 2 * scale.x, -height / 2 * scale.y), rotation);
-		Vector2 bottomLeft = Vector2::Rotate(Vector2(-width / 2 * scale.x, -height / 2 * scale.y), rotation);
+		Vector2 topLeft = Vector2::Rotate(Vector2(-width / 2, height / 2), rotation);
+		Vector2 topRight = Vector2::Rotate(Vector2(+width / 2, height / 2), rotation);
+		Vector2 bottomRight = Vector2::Rotate(Vector2(+width / 2, -height / 2), rotation);
+		Vector2 bottomLeft = Vector2::Rotate(Vector2(-width / 2, -height / 2), rotation);
 
 		Vector2 position = GetPosition();
 		Vector2 corners[4] =

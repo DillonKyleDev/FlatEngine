@@ -133,6 +133,24 @@ namespace FlatGui
 						}
 					}
 
+					if (!focusedObject->HasComponent("CircleBody"))
+					{
+						if (ImGui::MenuItem("CircleBody"))
+						{
+							focusedObject->AddCircleBody();
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
+					if (!focusedObject->HasComponent("CapsuleBody"))
+					{
+						if (ImGui::MenuItem("CapsuleBody"))
+						{
+							focusedObject->AddCapsuleBody();
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
 					//if (!focusedObject->HasComponent("TileMap"))
 					//{
 					//	if (ImGui::MenuItem("TileMap"))
@@ -387,7 +405,40 @@ namespace FlatGui
 								RenderBoxBodyComponent(boxBody);
 							}
 							EndComponent(boxBody);
-						}					
+						}	
+
+						CircleBody* circleBody = focusedObject->GetCircleBody();
+						if (circleBody != nullptr)
+						{
+							BeginComponent(circleBody, queuedForDelete);
+							if (!circleBody->IsCollapsed())
+							{
+								RenderCircleBodyComponent(circleBody);
+							}
+							EndComponent(circleBody);
+						}
+
+						CapsuleBody* capsuleBody = focusedObject->GetCapsuleBody();
+						if (capsuleBody != nullptr)
+						{
+							BeginComponent(capsuleBody, queuedForDelete);
+							if (!capsuleBody->IsCollapsed())
+							{
+								RenderCapsuleBodyComponent(capsuleBody);
+							}
+							EndComponent(capsuleBody);
+						}
+
+						PolygonBody* polygonBody = focusedObject->GetPolygonBody();
+						if (polygonBody != nullptr)
+						{
+							BeginComponent(polygonBody, queuedForDelete);
+							if (!polygonBody->IsCollapsed())
+							{
+								RenderPolygonBodyComponent(polygonBody);
+							}
+							EndComponent(polygonBody);
+						}
 						
 						//TileMap* tileMap = focusedObject->GetTileMap();
 						//if (tileMap != nullptr)

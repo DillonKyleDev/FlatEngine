@@ -11,7 +11,7 @@ namespace FlatEngine
 {
 	BoxCollider::BoxCollider(long myID, long parentID) : Collider(myID, parentID)
 	{		
-		SetType(T_BoxCollider);
+		//SetType(T_BoxCollider);
 		m_b_isTileMapCollider = false;
 		m_activeWidth = 2;
 		m_activeHeight = 2;

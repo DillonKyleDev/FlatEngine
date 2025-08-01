@@ -13,6 +13,9 @@
 #include "TileMap.h"
 #include "Project.h"
 #include "BoxBody.h"
+#include "CircleBody.h"
+#include "CapsuleBody.h"
+#include "PolygonBody.h"
 
 
 namespace FlatEngine
@@ -564,6 +567,129 @@ namespace FlatEngine
 		return boxBodyPtr;
 	}
 
+	CircleBody* GameObject::AddCircleBody(long ID, bool b_active, bool b_collapsed)
+	{
+		Vector2 position = GetTransform()->GetPosition();		
+
+		long nextID = ID;
+		if (nextID == -1)
+		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		CircleBody circleBody = CircleBody(nextID, m_ID);
+		circleBody.SetActive(b_active);
+		circleBody.SetCollapsed(b_collapsed);
+		circleBody.SetPosition(position);		
+
+		CircleBody* circleBodyPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			circleBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCircleBody(circleBody, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			circleBodyPtr = GetLoadedScene()->AddCircleBody(circleBody, m_ID);
+		}
+
+		if (circleBodyPtr != nullptr)
+		{
+			m_components.push_back(circleBodyPtr);
+		}
+
+		return circleBodyPtr;
+	}
+
+	CapsuleBody* GameObject::AddCapsuleBody(long ID, bool b_active, bool b_collapsed)
+	{
+		Vector2 position = GetTransform()->GetPosition();
+		float rotation = GetTransform()->GetRotation();
+
+		long nextID = ID;
+		if (nextID == -1)
+		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		CapsuleBody capsuleBody = CapsuleBody(nextID, m_ID);
+		capsuleBody.SetActive(b_active);
+		capsuleBody.SetCollapsed(b_collapsed);
+		capsuleBody.SetPosition(position);
+		capsuleBody.SetRotation(rotation);
+
+		CapsuleBody* capsuleBodyPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			capsuleBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCapsuleBody(capsuleBody, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			capsuleBodyPtr = GetLoadedScene()->AddCapsuleBody(capsuleBody, m_ID);
+		}
+
+		if (capsuleBodyPtr != nullptr)
+		{
+			m_components.push_back(capsuleBodyPtr);
+		}
+
+		return capsuleBodyPtr;
+	}
+
+	PolygonBody* GameObject::AddPolygonBody(long ID, bool b_active, bool b_collapsed)
+	{
+		Vector2 position = GetTransform()->GetPosition();
+		float rotation = GetTransform()->GetRotation();
+
+		long nextID = ID;
+		if (nextID == -1)
+		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		PolygonBody polygonBody = PolygonBody(nextID, m_ID);
+		polygonBody.SetActive(b_active);
+		polygonBody.SetCollapsed(b_collapsed);
+		polygonBody.SetPosition(position);
+
+		PolygonBody* polygonBodyPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			polygonBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddPolygonBody(polygonBody, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			polygonBodyPtr = GetLoadedScene()->AddPolygonBody(polygonBody, m_ID);
+		}
+
+		if (polygonBodyPtr != nullptr)
+		{
+			m_components.push_back(polygonBodyPtr);
+		}
+
+		return polygonBodyPtr;
+	}
+
 	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
 	{
 		long nextID = ID;
@@ -797,6 +923,45 @@ namespace FlatEngine
 		}
 		return nullptr;
 	}
+	CircleBody* GameObject::GetCircleBody()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetCircleBodyByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetCircleBodyByOwner(m_ID);
+		}
+		return nullptr;
+	}
+
+	CapsuleBody* GameObject::GetCapsuleBody()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetCapsuleBodyByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetCapsuleBodyByOwner(m_ID);
+		}
+		return nullptr;
+	}
+
+	PolygonBody* GameObject::GetPolygonBody()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetPolygonBodyByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetPolygonBodyByOwner(m_ID);
+		}
+		return nullptr;
+	}
+
 	//TileMap* GameObject::GetTileMap()
 	//{
 	//	if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)

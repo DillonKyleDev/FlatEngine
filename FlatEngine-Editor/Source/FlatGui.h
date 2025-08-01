@@ -45,6 +45,9 @@ namespace FlatEngine
 	class CharacterController;
 	class RigidBody;
 	class BoxBody;
+	class CircleBody;
+	class CapsuleBody;
+	class PolygonBody;
 	class TileMap;
 	class TileSet;
 }
@@ -72,6 +75,9 @@ using Text = FL::Text;
 using CharacterController = FL::CharacterController;
 using RigidBody = FL::RigidBody;
 using BoxBody = FL::BoxBody;
+using CircleBody = FL::CircleBody;
+using CapsuleBody = FL::CapsuleBody;
+using PolygonBody = FL::PolygonBody;
 using TileMap = FL::TileMap;
 using TileSet = FL::TileSet;
 
@@ -211,7 +217,9 @@ namespace FlatGui
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
 	extern void RenderBoxBodyComponent(BoxBody* boxBody);
-	extern void RenderRigidBodyComponent(RigidBody* rigidBody);
+	extern void RenderCircleBodyComponent(CircleBody* circleBody);
+	extern void RenderCapsuleBodyComponent(CapsuleBody* capsuleBody);
+	extern void RenderPolygonBodyComponent(PolygonBody* polygonBody);	
 	extern void RenderTileMapComponent(TileMap* tileMap);
 
 	// SceneView

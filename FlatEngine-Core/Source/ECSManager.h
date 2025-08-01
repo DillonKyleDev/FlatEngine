@@ -21,6 +21,9 @@ namespace FlatEngine
 	class CircleCollider;
 	class RayCast;
 	class BoxBody;
+	class CircleBody;
+	class CapsuleBody;
+	class PolygonBody;
 	class Animation;
 	class Button;
 	class RigidBody;
@@ -43,6 +46,9 @@ namespace FlatEngine
 		Text* AddText(Text text, long ownerID);
 		RayCast* AddRayCast(RayCast rayCast, long ownerID);
 		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
+		CircleBody* AddCircleBody(CircleBody circleBody, long ownerID);
+		CapsuleBody* AddCapsuleBody(CapsuleBody capsuleBody, long ownerID);
+		PolygonBody* AddPolygonBody(PolygonBody polygonBody, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);		
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);	
@@ -73,6 +79,9 @@ namespace FlatEngine
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
 		BoxBody* GetBoxBodyByOwner(long ownerID);
+		CircleBody* GetCircleBodyByOwner(long ownerID);
+		CapsuleBody* GetCapsuleBodyByOwner(long ownerID);
+		PolygonBody* GetPolygonBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
@@ -104,6 +113,9 @@ namespace FlatEngine
 		std::map<long, Text> m_Texts;		
 		std::map<long, RayCast> m_RayCasts;
 		std::map<long, BoxBody> m_BoxBodies;
+		std::map<long, CircleBody> m_CircleBodies;
+		std::map<long, CapsuleBody> m_CapsuleBodies;
+		std::map<long, PolygonBody> m_PolygonBodies;
 		std::map<long, CharacterController> m_CharacterControllers;
 		//std::map<long, TileMap> m_TileMaps;		
 	};

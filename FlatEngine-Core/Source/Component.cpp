@@ -101,18 +101,6 @@ namespace FlatEngine
 			return "RayCast";
 			break;
 
-		case T_BoxCollider:
-			return "BoxCollider";
-			break;
-
-		case T_CircleCollider:
-			return "CircleCollider";
-			break;
-
-		case T_RigidBody:
-			return "RigidBody";
-			break;
-
 		case T_CharacterController:
 			return "CharacterController";
 			break;
@@ -131,6 +119,10 @@ namespace FlatEngine
 
 		case T_CapsuleBody:
 			return "CapsuleBody";
+			break;
+
+		case T_PolygonBody:
+			return "PolygonBody";
 			break;
 
 		default:

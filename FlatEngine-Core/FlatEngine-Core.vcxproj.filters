@@ -644,6 +644,9 @@
     </ClInclude>
     <ClInclude Include="Source\Body.h" />
     <ClInclude Include="Source\BoxBody.h" />
+    <ClInclude Include="Source\CircleBody.h" />
+    <ClInclude Include="Source\CapsuleBody.h" />
+    <ClInclude Include="Source\PolygonBody.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -828,6 +831,9 @@
     </ClCompile>
     <ClCompile Include="Source\Body.cpp" />
     <ClCompile Include="Source\BoxBody.cpp" />
+    <ClCompile Include="Source\CircleBody.cpp" />
+    <ClCompile Include="Source\CapsuleBody.cpp" />
+    <ClCompile Include="Source\PolygonBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

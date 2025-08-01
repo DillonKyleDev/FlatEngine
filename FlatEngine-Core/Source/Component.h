@@ -16,14 +16,12 @@ namespace FlatEngine
 		T_Audio,
 		T_Text,
 		T_RayCast,
-		T_BoxCollider,
-		T_CircleCollider,
-		T_RigidBody,
 		T_CharacterController,
 		T_TileMap,
 		T_BoxBody,
 		T_CircleBody,
 		T_CapsuleBody,
+		T_PolygonBody,
 	};
 
 	class GameObject;

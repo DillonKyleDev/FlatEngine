@@ -78,9 +78,10 @@ namespace FlatEngine
 
 		for (std::map<long, BoxBody>::iterator iterator = boxBodies.begin(); iterator != boxBodies.end(); iterator++)
 		{
-			LogVector2(iterator->second.GetBodyProps().position, iterator->second.GetParent()->GetName() + " Props Pos: ");	
+			//LogInt((int)iterator->second.GetBodyProps().type);
+			//LogVector2(iterator->second.GetBodyProps().position, iterator->second.GetParent()->GetName() + " Props Pos: ");	
 			LogVector2(iterator->second.GetPosition(), iterator->second.GetParent()->GetName() + "BoxBody Pos: ");
-			LogVector2(iterator->second.GetBodyProps().dimensions);
+			//LogVector2(iterator->second.GetBodyProps().dimensions);
 		}
 	}
 

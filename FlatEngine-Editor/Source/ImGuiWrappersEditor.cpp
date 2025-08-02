@@ -1528,7 +1528,6 @@ namespace FlatGui
 		long ID = boxBody->GetID();
 		bool b_isActive = boxBody->IsActive();
 		FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
-		Vector2 dimensions = bodyProps.dimensions;
 		bool b_lockedRotation = bodyProps.b_lockedRotation;
 		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
 		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
@@ -1537,6 +1536,11 @@ namespace FlatGui
 		float angularDamping = bodyProps.angularDamping;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		Vector2 dimensions = bodyProps.dimensions;
+
+		// Read only
+		Vector2 linearVelocity = boxBody->GetLinearVelocity();
+		float angularVelocity = boxBody->GetAngularVelocity();
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1546,10 +1550,6 @@ namespace FlatGui
 			boxBody->SetBodyType((b2BodyType)currentType);
 		}
 			
-		// Read
-		Vector2 linearVelocity = boxBody->GetLinearVelocity();
-		float angularVelocity = boxBody->GetAngularVelocity();
-
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
 			boxBody->SetActive(b_isActive);
@@ -1602,13 +1602,9 @@ namespace FlatGui
 			//{
 			//	rigidBody->SetAngularDrag(angularDrag);
 			//}
-			//FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(velocity.x));
-			//FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(velocity.y));
-			//FL::RenderTextTableRow("##PendingForcesX" + std::to_string(ID), "X Pending Forces", std::to_string(pendingForces.x));
-			//FL::RenderTextTableRow("##PendingForcesY" + std::to_string(ID), "Y Pending Forces", std::to_string(pendingForces.y));
-			//FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
-			//FL::RenderTextTableRow("##PendingTorques" + std::to_string(ID), "Pending Torques", std::to_string(pendingTorques));
-			//FL::RenderTextTableRow("##RigidBodyGrounded" + std::to_string(ID), "Is Grounded", isGroundedString);
+			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
+			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
+			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
@@ -1638,9 +1634,13 @@ namespace FlatGui
 		float gravityScale = bodyProps.gravityScale;
 		float linearDamping = bodyProps.linearDamping;
 		float angularDamping = bodyProps.angularDamping;
-		float radius = bodyProps.radius;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		float radius = bodyProps.radius;
+
+		// Read only
+		Vector2 linearVelocity = circleBody->GetLinearVelocity();
+		float angularVelocity = circleBody->GetAngularVelocity();
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1681,6 +1681,9 @@ namespace FlatGui
 			{
 				circleBody->SetAngularDamping(angularDamping);
 			}
+			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
+			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
+			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
@@ -1710,10 +1713,15 @@ namespace FlatGui
 		float gravityScale = bodyProps.gravityScale;
 		float linearDamping = bodyProps.linearDamping;
 		float angularDamping = bodyProps.angularDamping;
-		float length = bodyProps.capsuleLength;
-		float radius = bodyProps.radius;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		float length = bodyProps.capsuleLength;
+		float radius = bodyProps.radius;
+		bool b_horizontal = bodyProps.b_horizontal;
+
+		// Read only
+		Vector2 linearVelocity = capsuleBody->GetLinearVelocity();
+		float angularVelocity = capsuleBody->GetAngularVelocity();
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1727,6 +1735,13 @@ namespace FlatGui
 		{
 			capsuleBody->SetActive(b_isActive);
 		}
+
+		if (FL::RenderCheckbox(" Horizontal", b_horizontal))
+		{
+			capsuleBody->SetHorizontal(b_horizontal);
+		}
+
+		FL::MoveScreenCursor(0, 3);
 
 		if (FL::PushTable("##CapsuleBodyProps" + std::to_string(ID), 2))
 		{
@@ -1758,6 +1773,9 @@ namespace FlatGui
 			{
 				capsuleBody->SetAngularDamping(angularDamping);
 			}
+			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
+			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
+			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
@@ -1790,6 +1808,10 @@ namespace FlatGui
 		Vector2 dimensions = bodyProps.dimensions;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+
+		// Read only
+		Vector2 linearVelocity = polygonBody->GetLinearVelocity();
+		float angularVelocity = polygonBody->GetAngularVelocity();
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1826,6 +1848,9 @@ namespace FlatGui
 			{
 				polygonBody->SetAngularDamping(angularDamping);
 			}
+			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
+			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
+			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 

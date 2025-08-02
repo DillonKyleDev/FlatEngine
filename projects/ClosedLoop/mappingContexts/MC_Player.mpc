@@ -2,6 +2,7 @@
     "Mapping Context": [
         {
             "Keyboard_a": "IA_MoveLeft",
+            "Keyboard_backspace": "IA_Jump",
             "Keyboard_d": "IA_MoveRight",
             "Keyboard_leftShift": "IA_Roll",
             "Keyboard_s": "IA_MoveBackward",

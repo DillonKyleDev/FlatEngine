@@ -16,6 +16,7 @@ namespace FlatEngine
 
 		void SetLength(float length);
 		void SetRadius(float radius);
+		void SetHorizontal(bool b_horizontal);
 
 	private:
 

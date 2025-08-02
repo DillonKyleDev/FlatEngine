@@ -3000,6 +3000,23 @@ namespace FlatEngine
 
 				loadedObject->SetTagList(tags);
 
+				// Lambda
+				auto L_RetrieveBasicBodyProps = [&](Body* body, json componentJson, std::string objectName)
+				{
+					body->SetBodyType((b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName));
+					body->SetDensity(CheckJsonFloat(componentJson, "density", objectName));
+					body->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
+					body->SetLockedRotation(CheckJsonBool(componentJson, "_lockedRotation", objectName));
+					body->SetLockedXAxis(CheckJsonBool(componentJson, "_lockedXAxis", objectName));
+					body->SetLockedYAxis(CheckJsonBool(componentJson, "_lockedYAxis", objectName));
+					body->SetGravityScale(CheckJsonFloat(componentJson, "gravityScale", objectName));
+					body->SetLinearDamping(CheckJsonFloat(componentJson, "linearDamping", objectName));
+					body->SetAngularDamping(CheckJsonFloat(componentJson, "angularDamping", objectName));
+					body->SetRestitution(CheckJsonFloat(componentJson, "restitution", objectName));
+					body->SetDensity(CheckJsonFloat(componentJson, "density", objectName));
+					body->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
+				};
+				
 				float objectRotation = 0;
 				try
 				{
@@ -3226,21 +3243,40 @@ namespace FlatEngine
 								newCharacterController->SetMaxSpeed(CheckJsonFloat(componentJson, "maxSpeed", objectName));
 								newCharacterController->SetAirControl(CheckJsonFloat(componentJson, "airControl", objectName));
 							}
+							else if (type == "Body")
+							{
+								//Body* newBody = loadedObject->AddBody(id, b_isActive, b_isCollapsed);
+								//L_RetrieveBasicBodyProps(newBody, componentJson, objectName);
+								
+								// Other Body props here
+							}
 							else if (type == "BoxBody")
 							{
-								BoxBody* newBoxBody = loadedObject->AddBoxBody(id, b_isActive, b_isCollapsed);
-								newBoxBody->SetBodyType((b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName));
+								BoxBody* newBoxBody = loadedObject->AddBoxBody(id, b_isActive, b_isCollapsed);		
+								L_RetrieveBasicBodyProps(newBoxBody, componentJson, objectName);
 								Vector2 dimensions = Vector2(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
-								newBoxBody->SetDimensions(dimensions);
-								newBoxBody->SetDensity(CheckJsonFloat(componentJson, "density", objectName));
-								newBoxBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-								//newBoxBody->SetAngularDrag(CheckJsonFloat(componentJson, "angularDrag", objectName));
-								//newBoxBody->SetGravity(CheckJsonFloat(componentJson, "gravity", objectName));
-								//newBoxBody->SetFallingGravity(CheckJsonFloat(componentJson, "fallingGravity", objectName));
-								//newBoxBody->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-								//newBoxBody->SetWindResistance(CheckJsonFloat(componentJson, "windResistance", objectName));								
-								//newBoxBody->SetTerminalVelocity(CheckJsonFloat(componentJson, "terminalVelocity", objectName));								
-								//newBoxBody->SetTorquesAllowed(CheckJsonBool(componentJson, "_allowTorques", objectName));
+								newBoxBody->SetDimensions(dimensions);																																					
+							}
+							else if (type == "CircleBody")
+							{
+								CircleBody* newCircleBody = loadedObject->AddCircleBody(id, b_isActive, b_isCollapsed);
+								L_RetrieveBasicBodyProps(newCircleBody, componentJson, objectName);
+								newCircleBody->SetRadius(CheckJsonFloat(componentJson, "radius", objectName));															
+							}
+							else if (type == "CapsuleBody")
+							{
+								CapsuleBody* newCapsuleBody = loadedObject->AddCapsuleBody(id, b_isActive, b_isCollapsed);
+								L_RetrieveBasicBodyProps(newCapsuleBody, componentJson, objectName);
+								newCapsuleBody->SetRadius(CheckJsonFloat(componentJson, "radius", objectName));
+								newCapsuleBody->SetLength(CheckJsonFloat(componentJson, "capsuleLength", objectName));
+								newCapsuleBody->SetHorizontal(CheckJsonBool(componentJson, "_horizontal", objectName));
+							}
+							else if (type == "PolygonBody")
+							{
+								PolygonBody* newPolygonBody = loadedObject->AddPolygonBody(id, b_isActive, b_isCollapsed);
+								L_RetrieveBasicBodyProps(newPolygonBody, componentJson, objectName);
+								
+								// Other PolygonBody props here
 							}
 							else if (type == "TileMap")
 							{

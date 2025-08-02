@@ -61,14 +61,30 @@ namespace FlatEngine
 		m_Animations.clear();
 		m_Audios.clear();
 		m_Texts.clear();
+		m_CharacterControllers.clear();
 		m_RayCasts.clear();
+		//m_TileMaps.clear();
+
 		for (std::map<long, BoxBody>::iterator iterator = m_BoxBodies.begin(); iterator != m_BoxBodies.end(); iterator++)
 		{
 			F_Physics->DestroyBody(iterator->second.GetBodyID());
 		}
 		m_BoxBodies.clear();
-		m_CharacterControllers.clear();
-		//m_TileMaps.clear();		
+		for (std::map<long, CircleBody>::iterator iterator = m_CircleBodies.begin(); iterator != m_CircleBodies.end(); iterator++)
+		{
+			F_Physics->DestroyBody(iterator->second.GetBodyID());
+		}
+		m_CircleBodies.clear();
+		for (std::map<long, CapsuleBody>::iterator iterator = m_CapsuleBodies.begin(); iterator != m_CapsuleBodies.end(); iterator++)
+		{
+			F_Physics->DestroyBody(iterator->second.GetBodyID());
+		}
+		m_CapsuleBodies.clear();
+		for (std::map<long, PolygonBody>::iterator iterator = m_PolygonBodies.begin(); iterator != m_PolygonBodies.end(); iterator++)
+		{
+			F_Physics->DestroyBody(iterator->second.GetBodyID());
+		}
+		m_PolygonBodies.clear();
 	}
 
 	Transform* ECSManager::AddTransform(Transform transform, long ownerID)

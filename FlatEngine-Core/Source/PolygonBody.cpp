@@ -29,19 +29,19 @@ namespace FlatEngine
 			{ "type", "CapsuleBody" },
 			{ "id", GetID() },
 			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "_isActive", IsActive() },			
 			{ "bodyType", (int)m_bodyProps.type },
-			
-			// Use animation component as reference for vectors of data in GetData for bodyProps.points member
-
+			{ "_lockedRotation", m_bodyProps.b_lockedRotation },
+			{ "_lockedXAxis", m_bodyProps.b_lockedXAxis },
+			{ "_lockedYAxis", m_bodyProps.b_lockedYAxis },
+			{ "gravityScale", m_bodyProps.gravityScale },
+			{ "linearDamping", m_bodyProps.linearDamping },
+			{ "angularDamping", m_bodyProps.angularDamping },
+			{ "restitution", m_bodyProps.restitution },
 			{ "density", m_bodyProps.density },
 			{ "friction", m_bodyProps.friction },
-			//{ "angularDrag", m_angularDrag },
-			//{ "gravity", m_gravity },
-			//{ "fallingGravity", m_fallingGravity },
-			//{ "terminalVelocity", m_terminalVelocity },
-			//{ "windResistance", m_windResistance },			
-			//{ "_allowTorques", m_b_allowTorques },
+			
+			// Use animation component as reference for vectors of data in GetData for bodyProps.points member
 		};
 
 		std::string data = jsonData.dump();

@@ -40,6 +40,7 @@ namespace FlatEngine
 		liveProps.dimensions = m_bodyProps.dimensions;
 		liveProps.radius = m_bodyProps.radius;
 		liveProps.capsuleLength = m_bodyProps.capsuleLength;
+		liveProps.b_horizontal = m_bodyProps.b_horizontal;
 
 		return liveProps;
 	}

@@ -34,12 +34,13 @@ namespace FlatEngine
 			float linearDamping = 0.0f;
 			float angularDamping = 0.0f;
 			float restitution = 0.3f;
+			float density = 1;
+			float friction = 0.3f;
 			Vector2 dimensions = Vector2(1.0f, 1.0f);
 			float radius = 1.0f;
 			float capsuleLength = 4.0f;
+			bool b_horizontal = false;
 			std::vector<Vector2> points = std::vector<Vector2>();
-			float density = 1;
-			float friction = 0.3f;		
 		};
 
 		Physics();

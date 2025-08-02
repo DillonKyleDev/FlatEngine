@@ -121,8 +121,24 @@ namespace FlatEngine
 		case Physics::BodyShape::BS_Capsule:
 		{
 			b2Capsule capsule;		
-			capsule.center1 = b2Vec2(0, -((bodyProps.capsuleLength / 2) - bodyProps.radius));
-			capsule.center2 = b2Vec2(0, ((bodyProps.capsuleLength / 2) - bodyProps.radius));
+			float center1Value = ((bodyProps.capsuleLength / 2) - bodyProps.radius) * -1;
+			float center2Value = (bodyProps.capsuleLength / 2) - bodyProps.radius;
+			b2Vec2 center1 = b2Vec2(0,0);
+			b2Vec2 center2 = b2Vec2(0,0);
+
+			if (bodyProps.b_horizontal)
+			{				
+				center1.x = center1Value;
+				center2.x = center2Value;
+			}
+			else
+			{
+				center1.y = center1Value;
+				center2.y = center2Value;
+			}		
+
+			capsule.center1 = center1;
+			capsule.center2 = center2;
 			capsule.radius = bodyProps.radius;
 			shapeID = b2CreateCapsuleShape(bodyID, &shapeDef, &capsule);
 			break;

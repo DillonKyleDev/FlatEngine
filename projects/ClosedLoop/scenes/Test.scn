@@ -22,11 +22,18 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.30000001192092896,
                     "bodyType": 2,
                     "density": 1.0,
                     "friction": 0.30000001192092896,
+                    "gravityScale": 1.0,
                     "height": 2.0,
                     "id": 6,
+                    "linearDamping": 0.0,
+                    "restitution": -1.0,
                     "type": "BoxBody",
                     "width": 2.0
                 }
@@ -148,11 +155,18 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.30000001192092896,
                     "bodyType": 0,
                     "density": 1.0,
                     "friction": 0.30000001192092896,
+                    "gravityScale": 1.0,
                     "height": 2.0,
                     "id": 3,
+                    "linearDamping": 0.0,
+                    "restitution": -1.0,
                     "type": "BoxBody",
                     "width": 20.0
                 }
@@ -265,20 +279,27 @@
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 6.793479919433594,
+                    "xPos": 6.193479537963867,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 3.2727279663085938,
+                    "yPos": 2.0909109115600586,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.30000001192092896,
                     "bodyType": 2,
                     "density": 1.0,
                     "friction": 0.30000001192092896,
+                    "gravityScale": 1.0,
                     "height": 2.0,
                     "id": 5,
+                    "linearDamping": 0.0,
+                    "restitution": -1.0,
                     "type": "BoxBody",
                     "width": 2.0
                 }
@@ -331,8 +352,8 @@
             "name": "BoxBody(2)",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 6.793479919433594,
-            "spawnLocationY": 3.2727279663085938,
+            "spawnLocationX": 6.193479537963867,
+            "spawnLocationY": 2.0909109115600586,
             "tags": [
                 {
                     "Collectable": false
@@ -400,18 +421,25 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.30000001192092896,
                     "bodyType": 2,
                     "density": 1.0,
                     "friction": 0.30000001192092896,
+                    "gravityScale": 1.0,
                     "id": 10,
+                    "linearDamping": 0.0,
                     "radius": 1.0,
+                    "restitution": -1.0,
                     "type": "CircleBody"
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 11,
-                    "path": "..\\projects\\ClosedLoop\\images\\colors\\chasm.png",
+                    "path": "..\\projects\\ClosedLoop\\images\\sprites\\healthPack.png",
                     "pivotPoint": "PivotCenter",
                     "renderOrder": 27,
                     "tintColorW": 1.0,
@@ -419,10 +447,10 @@
                     "tintColorY": 1.0,
                     "tintColorZ": 1.0,
                     "type": "Sprite",
-                    "xOffset": 8.0,
-                    "xScale": 1.0,
-                    "yOffset": 8.0,
-                    "yScale": 1.0
+                    "xOffset": 3.5,
+                    "xScale": 2.200000047683716,
+                    "yOffset": 3.5,
+                    "yScale": 2.200000047683716
                 }
             ],
             "id": 3,
@@ -475,6 +503,157 @@
             "prefabName": "",
             "spawnLocationX": 0.0,
             "spawnLocationY": 0.0,
+            "tags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 12,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -0.7636947631835938,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 6.235930442810059,
+                    "yScale": 1.0
+                },
+                {
+                    "_horizontal": true,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.0,
+                    "bodyType": 2,
+                    "capsuleLength": 4.0,
+                    "density": 1.0,
+                    "friction": 0.30000001192092896,
+                    "gravityScale": 1.0,
+                    "id": 13,
+                    "linearDamping": 0.0,
+                    "radius": 1.0,
+                    "restitution": 0.30000001192092896,
+                    "type": "CapsuleBody"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "airControl": 0.20000000298023224,
+                    "id": 14,
+                    "maxAcceleration": 0.5,
+                    "maxSpeed": 10.0,
+                    "type": "CharacterController"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "Player (C++)",
+                    "id": 15,
+                    "scriptParameters": [],
+                    "type": "Script"
+                }
+            ],
+            "id": 4,
+            "ignoreTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "name": "GameObject(4)",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -0.7636947631835938,
+            "spawnLocationY": 6.235930442810059,
             "tags": [
                 {
                     "Collectable": false

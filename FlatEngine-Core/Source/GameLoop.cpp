@@ -105,6 +105,7 @@ namespace FlatEngine
 			b2ShapeId id = iterator->second.GetShapeIDs().back();
 			b2Capsule capsule = b2Shape_GetCapsule(id);
 			//LogVector2(capsule.center1, "Center1: ");
+			//LogVector2(capsule.center2, "Center2: ");
 		}
 	}
 

@@ -1,7 +1,8 @@
 #pragma once
 #include "FlatEngine.h"
 #include "CPPScript.h"
-#include "RayCast.h"
+#include "MappingContext.h"
+
 
 namespace FlatEngine
 {
@@ -14,5 +15,9 @@ namespace FlatEngine
 		void Awake();
 		void Start();
 		void Update();
+
+	private:
+		MappingContext* m_context;
+		CapsuleBody* m_capsule;
 	};
 }

@@ -30,18 +30,20 @@ namespace FlatEngine
 			{ "type", "CapsuleBody" },
 			{ "id", GetID() },
 			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "_isActive", IsActive() },			
 			{ "bodyType", (int)m_bodyProps.type },
-			{ "radius", m_bodyProps.radius },
-			{ "capsuleLength", m_bodyProps.capsuleLength },
+			{ "_lockedRotation", m_bodyProps.b_lockedRotation },
+			{ "_lockedXAxis", m_bodyProps.b_lockedXAxis },
+			{ "_lockedYAxis", m_bodyProps.b_lockedYAxis },
+			{ "gravityScale", m_bodyProps.gravityScale },
+			{ "linearDamping", m_bodyProps.linearDamping },
+			{ "angularDamping", m_bodyProps.angularDamping },
+			{ "restitution", m_bodyProps.restitution },
 			{ "density", m_bodyProps.density },
 			{ "friction", m_bodyProps.friction },
-			//{ "angularDrag", m_angularDrag },
-			//{ "gravity", m_gravity },
-			//{ "fallingGravity", m_fallingGravity },
-			//{ "terminalVelocity", m_terminalVelocity },
-			//{ "windResistance", m_windResistance },			
-			//{ "_allowTorques", m_b_allowTorques },
+			{ "radius", m_bodyProps.radius },
+			{ "capsuleLength", m_bodyProps.capsuleLength },
+			{ "_horizontal", m_bodyProps.b_horizontal },
 		};
 
 		std::string data = jsonData.dump();
@@ -52,21 +54,36 @@ namespace FlatEngine
 
 	void CapsuleBody::SetLength(float length)
 	{
-		if (length >= m_bodyProps.radius * 2)
+		if (length > m_bodyProps.radius * 2)
 		{
 			m_bodyProps = GetLiveProps();
 			m_bodyProps.capsuleLength = length;
 			RecreateBody();
 		}
+		else
+		{
+			LogError("CapsuleBody length must be less than CapsuleBody radius * 2");
+		}
 	}
 
 	void CapsuleBody::SetRadius(float radius)
 	{
-		if (radius > 0 && radius <= m_bodyProps.capsuleLength / 2)
+		if (radius > 0 && radius < m_bodyProps.capsuleLength / 2)
 		{
 			m_bodyProps = GetLiveProps();
 			m_bodyProps.radius = radius;
 			RecreateBody();
 		}
+		else
+		{
+			LogError("CapsuleBody radii must be greater than 0 and less than CapsuleBody length / 2");
+		}
+	}
+
+	void CapsuleBody::SetHorizontal(bool b_horizontal)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.b_horizontal = b_horizontal;
+		RecreateBody();
 	}
 }

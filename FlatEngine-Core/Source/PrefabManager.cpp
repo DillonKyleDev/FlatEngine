@@ -35,7 +35,7 @@ namespace FlatEngine
 		object.b_isActive = CheckJsonBool(objectJson, "_isActive", objectName);
 		object.ID = CheckJsonLong(objectJson, "id", objectName);
 		object.parentID = CheckJsonLong(objectJson, "parent", objectName);
-		TagList tags = TagList();
+		TagList tags = TagList(object.ID);
 
 		if (JsonContains(objectJson, "children", objectName))
 		{

@@ -19,10 +19,9 @@ namespace FlatEngine
 	class Transform;
 	class Text;	
 	class CharacterController;
-	class BoxCollider;
-	class CircleCollider;
 	class CompositeCollider;
 	class TileMap;
+	class Body;
 	class BoxBody;
 	class CircleBody;
 	class CapsuleBody;
@@ -97,6 +96,7 @@ namespace FlatEngine
 		std::vector<Script*> GetScripts();
 		Text* GetText();
 		CharacterController* GetCharacterController();
+		Body* GetBody();
 		BoxBody* GetBoxBody();	
 		CircleBody* GetCircleBody();
 		CapsuleBody* GetCapsuleBody();

@@ -2949,7 +2949,7 @@ namespace FlatEngine
 		long loadedID = CheckJsonLong(objectJson, "id", objectName);
 		long loadedParentID = CheckJsonLong(objectJson, "parent", objectName);
 		std::vector<long> loadedChildrenIDs = std::vector<long>();
-		TagList tags = TagList();
+		TagList tags = TagList(loadedID);
 
 		if (JsonContains(objectJson, "children", objectName))
 		{

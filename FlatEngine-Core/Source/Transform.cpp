@@ -4,6 +4,9 @@
 #include "Button.h"
 #include "BoxCollider.h"
 #include "BoxBody.h"
+#include "CircleBody.h"
+#include "CapsuleBody.h"
+#include "PolygonBody.h"
 
 
 namespace FlatEngine
@@ -86,9 +89,9 @@ namespace FlatEngine
 				}
 			}
 
-			if (GetParent()->GetBoxBody() != nullptr)
+			if (GetParent()->GetBody() != nullptr)
 			{
-				GetParent()->GetBoxBody()->SetPosition(newPosition);
+				GetParent()->GetBody()->SetPosition(newPosition);
 			}
 		}
 	}
@@ -170,11 +173,10 @@ namespace FlatEngine
 		{
 			m_rotation = newRotation;
 		}
-
-		// Just for debugging, not for release, since it would update at least once per frame otherwise <- OLD
-		if (GetParent()->GetBoxBody() != nullptr)
+		
+		if (GetParent()->GetBody() != nullptr)
 		{
-			GetParent()->GetBoxBody()->SetRotation(m_rotation);
+			GetParent()->GetBody()->SetRotation(m_rotation);
 		}
 	}
 

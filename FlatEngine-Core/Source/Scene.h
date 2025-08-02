@@ -105,6 +105,9 @@ namespace FlatEngine
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
 		std::map<long, BoxBody>& GetBoxBodies();
+		std::map<long, CircleBody>& GetCircleBodies();
+		std::map<long, CapsuleBody>& GetCapsuleBodies();
+		std::map<long, PolygonBody>& GetPolygonBodies();
 		std::map<long, RayCast>& GetRayCasts();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		//std::map<long, TileMap>& GetTileMaps();		

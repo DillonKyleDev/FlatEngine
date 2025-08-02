@@ -7,6 +7,8 @@
 
 namespace FlatEngine
 {
+	class GameObject;
+
 	class Physics
 	{
 	public:
@@ -19,10 +21,19 @@ namespace FlatEngine
 			BS_Polygon
 		};
 		struct BodyProps {
+			bool b_isEnabled = true;
+			GameObject* userData = nullptr;
 			BodyShape shape = BS_None;
-			b2BodyType type = b2_staticBody;
+			b2BodyType type = b2_dynamicBody;
 			Vector2 position = Vector2(0,0);	
-			float rotation = 0;
+			b2Rot rotation = b2MakeRot(0);
+			bool b_lockedRotation = false;
+			bool b_lockedXAxis = false;
+			bool b_lockedYAxis = false;
+			float gravityScale = 1.0f;
+			float linearDamping = 0.0f;
+			float angularDamping = 0.0f;
+			float restitution = 0.3f;
 			Vector2 dimensions = Vector2(1.0f, 1.0f);
 			float radius = 1.0f;
 			float capsuleLength = 4.0f;

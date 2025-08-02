@@ -31,7 +31,9 @@ F_Colors = {
 	openFileButtonHovered = Vector4:new(0.3, 0.3, 0.32, 1.0),
 	-- Colliders
 	colliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	colliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.35),
 	colliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
+	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
 	colliderColliding = Vector4:new(0.76, 0.42, 0.0, 1.0),
 	rayCast = Vector4:new(0.76, 0.42, 0.0, 1.0),
 	-- Button Components

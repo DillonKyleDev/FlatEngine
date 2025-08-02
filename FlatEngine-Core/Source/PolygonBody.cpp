@@ -9,7 +9,7 @@ namespace FlatEngine
 	{
 		SetType(T_PolygonBody);
 		m_bodyProps.shape = Physics::BodyShape::BS_Polygon;
-		m_bodyProps.type = b2_staticBody;
+		m_bodyProps.type = b2_dynamicBody;
 		m_bodyProps.position = GetParent()->GetTransform()->GetTruePosition();
 		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);
 		m_bodyProps.radius = 1.0f;

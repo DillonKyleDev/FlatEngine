@@ -33,7 +33,7 @@ namespace FlatEngine
 		m_b_isPrefab = false;
 		m_prefabName = "";
 		m_prefabSpawnLocation = Vector2();
-		m_tagList = TagList();
+		m_tagList = TagList(m_ID);
 		m_parentID = newParentID;
 		m_name = "GameObject(" + std::to_string(m_ID) + ")";
 		m_components = std::vector<Component*>();
@@ -910,6 +910,34 @@ namespace FlatEngine
 			return GetLoadedScene()->GetCharacterControllerByOwner(m_ID);
 		}
 		return nullptr;
+	}
+	Body* GameObject::GetBody()
+	{
+		BoxBody* boxBody = GetBoxBody();
+		CircleBody* circleBody = GetCircleBody();
+		CapsuleBody* capsuleBody = GetCapsuleBody();
+		PolygonBody* polygonBody = GetPolygonBody();
+
+		if (boxBody != nullptr)
+		{
+			return boxBody;
+		}
+		else if (circleBody != nullptr)
+		{
+			return circleBody;
+		}
+		else if (capsuleBody != nullptr)
+		{
+			return capsuleBody;
+		}
+		else if (polygonBody != nullptr)
+		{
+			return polygonBody;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 	BoxBody* GameObject::GetBoxBody()
 	{

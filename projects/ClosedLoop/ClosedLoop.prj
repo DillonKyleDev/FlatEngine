@@ -2,7 +2,7 @@
     "Project Properties": [
         {
             "_autoSave": true,
-            "_clearLogBuffer": false,
+            "_clearLogBuffer": true,
             "_fullscreen": false,
             "_showAnimationPreview": false,
             "_showAnimator": false,
@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\ClosedLoop\\images\\colors",
             "effectsVolume": 10,
-            "focusedGameObjectID": 1,
+            "focusedGameObjectID": 3,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Test.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 20.0,
-            "sceneViewGridStepY": 20.0,
-            "sceneViewScrollingX": 389.3470458984375,
-            "sceneViewScrollingY": -8.5
+            "sceneViewGridStepX": 34.0,
+            "sceneViewGridStepY": 34.0,
+            "sceneViewScrollingX": 365.3470458984375,
+            "sceneViewScrollingY": 364.5
         }
     ]
 }

@@ -34,12 +34,11 @@ using Sprite = FL::Sprite;
 using Camera = FL::Camera;
 using Canvas = FL::Canvas;
 using Text = FL::Text;
+using Body = FL::Body;
 using BoxBody = FL::BoxBody;
 using CircleBody = FL::CircleBody;
 using CapsuleBody = FL::CapsuleBody;
 using PolygonBody = FL::PolygonBody;
-using BoxCollider = FL::BoxCollider;
-using CircleCollider = FL::CircleCollider;
 using Sound = FL::Sound;
 using TileMap = FL::TileMap;
 
@@ -706,17 +705,23 @@ namespace FlatGui
 		PolygonBody* polygonBody = self.GetPolygonBody();
 		//TileMap* tileMap = self.GetTileMap();
 
+		bool b_spriteButtonAdded = false;
+
 
 		if (transform != nullptr)
 		{
 			long focusedObjectID = GetFocusedGameObjectID();
 			Vector2 position = transform->GetTruePosition();
 			float rotation = transform->GetRotation();
+			Body* body = self.GetBody();
 			BoxBody* boxBody = self.GetBoxBody();
-			if (boxBody != nullptr)
+			CircleBody* circleBody = self.GetCircleBody();
+			CapsuleBody* capsuleBody = self.GetCapsuleBody();
+			PolygonBody* polygonBody = self.GetPolygonBody();
+			if (body != nullptr)
 			{
-				position = boxBody->GetPosition();
-				rotation = boxBody->GetRotation();
+				position = body->GetPosition();
+				rotation = body->GetRotation();
 			}
 			Vector2 relativePosition = transform->GetPosition();
 			Vector2 origin = transform->GetOrigin();
@@ -726,6 +731,7 @@ namespace FlatGui
 			
 			if (sprite != nullptr && sprite->GetTexture() != nullptr && sprite->IsActive())
 			{
+				b_spriteButtonAdded = true;
 				SDL_Texture* spriteTexture = sprite->GetTexture();
 				float spriteTextureWidth = (float)sprite->GetTextureWidth();
 				float spriteTextureHeight = (float)sprite->GetTextureHeight();
@@ -978,23 +984,43 @@ namespace FlatGui
 				b2BodyId capsuleBodyID = capsuleBody->GetBodyID();
 				bool b_isActive = capsuleBody->IsActive();
 				FL::Physics::BodyProps bodyProps = capsuleBody->GetBodyProps();
-				b2Capsule capsule = b2Shape_GetCapsule(capsuleBody->GetShapeIDs()[0]);
+				b2Capsule capsule = b2Shape_GetCapsule(capsuleBody->GetShapeIDs().back());
 				float length = bodyProps.capsuleLength;
-				float radius = bodyProps.radius * FG_sceneViewGridStep.x;
-				Vector2 center1 = ConvertWorldToScreen(Vector2(capsule.center1.x, capsule.center1.y), FG_sceneViewCenter, FG_sceneViewGridStep.x);
-				Vector2 center2 = ConvertWorldToScreen(Vector2(capsule.center2.x, capsule.center2.y), FG_sceneViewCenter, FG_sceneViewGridStep.x);
+				float radius = bodyProps.radius;
+				float radiusScreen = radius * FG_sceneViewGridStep.x;	
+				Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center1)), FG_sceneViewCenter, FG_sceneViewGridStep.x);
+				Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center2)), FG_sceneViewCenter, FG_sceneViewGridStep.x);								
+				Vector2 difference = center2 - center1;
+				Vector2 diffN = Vector2::Normalize(difference);
+				Vector2 diffNR = diffN * radiusScreen;
+				Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
+				Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
 
 				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
 				if (b_isActive)
 				{
-					FL::DrawCircle(center1, radius, FL::GetColor("colliderActive"), drawList);
-					FL::DrawCircle(center2, radius, FL::GetColor("colliderActive"), drawList);
+					FL::DrawCircle(center1, radiusScreen, FL::GetColor("colliderActive"), drawList);
+					FL::DrawCircle(center2, radiusScreen, FL::GetColor("colliderActive"), drawList);
+					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("colliderActiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("colliderActiveLight"), 1, drawList);
+					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("colliderActiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("colliderActiveLight"), 1, drawList);
+					// Sides
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("colliderActive"), 1, drawList);
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("colliderActive"), 1, drawList);
 				}
 				else if (!b_isActive)
 				{
-					FL::DrawCircle(center1, radius, FL::GetColor("colliderInactive"), drawList);
-					FL::DrawCircle(center2, radius, FL::GetColor("colliderInactive"), drawList);
+					FL::DrawCircle(center1, radiusScreen, FL::GetColor("colliderInactive"), drawList);
+					FL::DrawCircle(center2, radiusScreen, FL::GetColor("colliderInactive"), drawList);
+					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					// Sides
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("colliderInactiveLight"), 1, drawList);
 				}
 				//else if (b_isColliding)
 				//{
@@ -1434,16 +1460,20 @@ namespace FlatGui
 		{	
 			Transform* transform = focusedObject->GetTransform();
 			Vector2 position = Vector2(0, 0);
+			Body* body = focusedObject->GetBody();
 			BoxBody* boxBody = focusedObject->GetBoxBody();
+			CircleBody* circleBody = focusedObject->GetCircleBody();
+			CapsuleBody* capsuleBody = focusedObject->GetCapsuleBody();
+			PolygonBody* polygonBody = focusedObject->GetPolygonBody();
 
 			if (transform != nullptr)
 			{
 				position = transform->GetTruePosition();
 			}
 
-			if (boxBody != nullptr)
+			if (body != nullptr)
 			{
-				position = boxBody->GetPosition();
+				position = body->GetPosition();
 			}
 
 			SDL_Texture* arrowToRender = FL::GetTexture("transformArrow");
@@ -1500,9 +1530,9 @@ namespace FlatGui
 			static Vector2 cursorPosAtClick = inputOutput.MousePos;
 			Vector2 relativePosition = transform->GetPosition();
 
-			if (focusedObject->GetBoxBody() != nullptr)
+			if (body != nullptr)
 			{
-				relativePosition = focusedObject->GetBoxBody()->GetPosition();
+				relativePosition = position;
 			}
 
 			if (b_baseClicked || b_xClicked || b_yClicked)

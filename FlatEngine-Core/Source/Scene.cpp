@@ -565,6 +565,18 @@ namespace FlatEngine
 	{
 		return m_ECSManager.GetBoxBodies();
 	}
+	std::map<long, CircleBody>& Scene::GetCircleBodies()
+	{
+		return m_ECSManager.GetCircleBodies();
+	}
+	std::map<long, CapsuleBody>& Scene::GetCapsuleBodies()
+	{
+		return m_ECSManager.GetCapsuleBodies();
+	}
+	std::map<long, PolygonBody>& Scene::GetPolygonBodies()
+	{
+		return m_ECSManager.GetPolygonBodies();
+	}
 	std::map<long, CharacterController>& Scene::GetCharacterControllers()
 	{
 		return m_ECSManager.GetCharacterControllers();

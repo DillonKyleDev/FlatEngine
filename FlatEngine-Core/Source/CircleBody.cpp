@@ -9,8 +9,8 @@ namespace FlatEngine
 	{
 		SetType(T_CircleBody);
 		m_bodyProps.shape = Physics::BodyShape::BS_Circle;
-		m_bodyProps.type = b2_staticBody;
-		m_bodyProps.position = GetParent()->GetTransform()->GetTruePosition();
+		m_bodyProps.type = b2_dynamicBody;
+		m_bodyProps.position = GetParent()->GetTransform()->GetPosition();
 		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);
 		m_bodyProps.radius = 1.0f;
 		m_bodyProps.density = 1.0f;
@@ -51,7 +51,9 @@ namespace FlatEngine
 	{
 		if (radius > 0)
 		{
+			m_bodyProps = GetLiveProps();
 			m_bodyProps.radius = radius;
+			RecreateBody();
 		}
 	}
 }

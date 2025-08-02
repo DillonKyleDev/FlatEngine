@@ -1,5 +1,6 @@
 #pragma once
 #include "Body.h"
+#include "Vector2.h"
 
 #include <string>
 

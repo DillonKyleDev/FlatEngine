@@ -10,6 +10,13 @@ namespace FlatEngine
 
 	TagList::TagList()
 	{
+		m_ownerID = -1;
+		UpdateAvailableTags();
+	}
+
+	TagList::TagList(long ownerID)
+	{
+		m_ownerID = ownerID;
 		UpdateAvailableTags();
 	}
 
@@ -49,16 +56,17 @@ namespace FlatEngine
 		}
 	}
 
-	void TagList::SetTag(std::string tag, bool b_value, bool b_updateColliderPairs)
+	void TagList::SetTag(std::string tag, bool b_value)
 	{
 		if (m_tags.count(tag) > 0)
 		{
 			m_tags.at(tag) = b_value;
 		}
 
-		if (b_updateColliderPairs)
+		GameObject* owner = GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->GetBody() != nullptr)
 		{
-			//UpdateColliderPairs();
+			owner->GetBody()->RecreateLiveBody();
 		}
 	}
 
@@ -68,7 +76,12 @@ namespace FlatEngine
 		{
 			m_tags.at(tag) = !m_tags.at(tag);
 		}
-		//UpdateColliderPairs();
+
+		GameObject* owner = GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->GetBody() != nullptr)
+		{
+			owner->GetBody()->RecreateLiveBody();
+		}
 	}
 
 	bool TagList::HasTag(std::string tag)
@@ -83,16 +96,17 @@ namespace FlatEngine
 		}
 	}
 
-	void TagList::SetIgnore(std::string tag, bool b_value, bool b_updateColliderPairs)
+	void TagList::SetIgnore(std::string tag, bool b_value)
 	{
 		if (m_ignoreTags.count(tag) > 0)
 		{
 			m_ignoreTags.at(tag) = b_value;
 		}
 
-		if (b_updateColliderPairs)
+		GameObject* owner = GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->GetBody() != nullptr)
 		{
-			//UpdateColliderPairs();
+			owner->GetBody()->RecreateLiveBody();
 		}
 	}
 
@@ -102,7 +116,12 @@ namespace FlatEngine
 		{
 			m_ignoreTags.at(tag) = !m_ignoreTags.at(tag);
 		}
-		//UpdateColliderPairs();
+
+		GameObject* owner = GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->GetBody() != nullptr)
+		{
+			owner->GetBody()->RecreateLiveBody();
+		}
 	}
 
 	bool TagList::IgnoresTag(std::string tag)

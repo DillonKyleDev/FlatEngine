@@ -1,8 +1,10 @@
 #include "Physics.h"
+#include "GameObject.h"
+#include "TagList.h"
 #include "FlatEngine.h"
 
 #include <memory>
-#include <vector>
+#include <string>
 
 
 namespace FlatEngine
@@ -42,27 +44,61 @@ namespace FlatEngine
 	void Physics::CreateBody(BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs)
 	{
 		b2BodyDef bodyDef = b2DefaultBodyDef();
+		bodyDef.isEnabled = bodyProps.b_isEnabled;
+		bodyDef.userData = bodyProps.userData;
 		bodyDef.position = b2Vec2(bodyProps.position.x, bodyProps.position.y);
-		float rotation = bodyProps.rotation;
-		
-		if (rotation < -179.99f)
-		{
-			bodyDef.rotation = b2MakeRot(DegreesToRadians(179.99f));
-		}
-		else if (rotation > 179.99f)
-		{
-			bodyDef.rotation = b2MakeRot(DegreesToRadians(-179.99f));
-		}
-		else
-		{
-			bodyDef.rotation = b2MakeRot(DegreesToRadians(rotation));
-		}
-
+		bodyDef.rotation = bodyProps.rotation;
+		b2MotionLocks motionLocks;		
+		motionLocks.angularZ = bodyProps.b_lockedRotation;
+		motionLocks.linearX = bodyProps.b_lockedXAxis;
+		motionLocks.linearY = bodyProps.b_lockedYAxis;
+		bodyDef.motionLocks = motionLocks;
+		bodyDef.gravityScale = bodyProps.gravityScale;
+		bodyDef.linearDamping = bodyProps.linearDamping;
+		bodyDef.angularDamping = bodyProps.angularDamping;
 		bodyDef.type = bodyProps.type;		
 		bodyID = b2CreateBody(m_worldID, &bodyDef);
+
 		b2ShapeDef shapeDef = b2DefaultShapeDef();
 		shapeDef.density = bodyProps.density;
 		shapeDef.material.friction = bodyProps.friction;
+		shapeDef.material.restitution = bodyProps.restitution;
+
+		TagList tagList = static_cast<GameObject*>(bodyDef.userData)->GetTagList();
+		// Category tags
+		std::map<std::string, bool> hasTags = tagList.GetTagsMap();
+		for (std::map<std::string, bool>::iterator iterator = hasTags.begin(); iterator != hasTags.end(); iterator++)
+		{
+			if (iterator->second)
+			{
+				uint64_t bit = 1;
+				int index = (int)std::distance(hasTags.begin(), iterator);
+
+				for (int i = 0; i < index; i++)
+				{
+					bit *= 2;
+				}
+
+				shapeDef.filter.categoryBits |= bit;
+			}
+		}
+		// Masked tags
+		std::map<std::string, bool> ignoreTags = tagList.GetIgnoreTagsMap();
+		for (std::map<std::string, bool>::iterator iterator = ignoreTags.begin(); iterator != ignoreTags.end(); iterator++)
+		{
+			if (iterator->second)
+			{
+				uint64_t bit = 1;
+				int index = (int)std::distance(ignoreTags.begin(), iterator);
+
+				for (int i = 0; i < index; i++)
+				{
+					bit *= 2;
+				}
+
+				shapeDef.filter.maskBits |= bit;
+			}
+		}
 
 		b2ShapeId shapeID;
 
@@ -77,16 +113,16 @@ namespace FlatEngine
 		case Physics::BodyShape::BS_Circle:
 		{
 			b2Circle circle;
-			circle.center = b2Vec2(bodyProps.position.x, bodyProps.position.y);
+			circle.center = b2Vec2(0,0);
 			circle.radius = bodyProps.radius;
 			shapeID = b2CreateCircleShape(bodyID, &shapeDef, &circle);
 			break;
 		}
 		case Physics::BodyShape::BS_Capsule:
 		{
-			b2Capsule capsule;
-			capsule.center1 = b2Vec2(bodyProps.position.x, bodyProps.position.y);
-			capsule.center2 = b2Vec2(bodyProps.position.x, bodyProps.position.y + bodyProps.capsuleLength - bodyProps.radius);
+			b2Capsule capsule;		
+			capsule.center1 = b2Vec2(0, -((bodyProps.capsuleLength / 2) - bodyProps.radius));
+			capsule.center2 = b2Vec2(0, ((bodyProps.capsuleLength / 2) - bodyProps.radius));
 			capsule.radius = bodyProps.radius;
 			shapeID = b2CreateCapsuleShape(bodyID, &shapeDef, &capsule);
 			break;
@@ -101,11 +137,14 @@ namespace FlatEngine
 
 	void Physics::CreateBox(BodyProps bodyProps, b2BodyId& bodyID)
 	{
-		bodyProps.type = b2_staticBody;		
+		bodyProps.shape = BS_Box;
+		bodyProps.type = b2_dynamicBody;	
+		bodyProps.position = Vector2(0, 0);
 		bodyProps.density = 1.0f;
 		bodyProps.friction = 0.3f;
+		std::vector<b2ShapeId> shapeId;
 
-		//CreateBody(bodyProps, bodyID);
+		CreateBody(bodyProps, bodyID, shapeId);
 	}
 
 	void Physics::DestroyBody(b2BodyId bodyID)

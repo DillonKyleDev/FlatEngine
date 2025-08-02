@@ -678,6 +678,18 @@ namespace FlatEngine
 	{
 		return m_BoxBodies;
 	}
+	std::map<long, CircleBody>& ECSManager::GetCircleBodies()
+	{
+		return m_CircleBodies;
+	}
+	std::map<long, CapsuleBody>& ECSManager::GetCapsuleBodies()
+	{
+		return m_CapsuleBodies;
+	}
+	std::map<long, PolygonBody>& ECSManager::GetPolygonBodies()
+	{
+		return m_PolygonBodies;
+	}
 	std::map<long, CharacterController> &ECSManager::GetCharacterControllers()
 	{
 		return m_CharacterControllers;

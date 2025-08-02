@@ -167,10 +167,10 @@ namespace FlatGui
 	{
 		Vector2 position = transform->GetPosition();
 		float rotation = transform->GetRotation();
-		if (transform->GetParent()->GetBoxBody() != nullptr)
+		if (transform->GetParent()->GetBody() != nullptr)
 		{
-			position = transform->GetParent()->GetBoxBody()->GetPosition();
-			rotation = transform->GetParent()->GetBoxBody()->GetRotation();
+			position = transform->GetParent()->GetBody()->GetPosition();
+			rotation = transform->GetParent()->GetBody()->GetRotation();
 		}
 		float xPos = position.x;
 		float yPos = position.y;
@@ -1529,22 +1529,26 @@ namespace FlatGui
 		bool b_isActive = boxBody->IsActive();
 		FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
 		Vector2 dimensions = bodyProps.dimensions;
+		bool b_lockedRotation = bodyProps.b_lockedRotation;
+		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
+		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
+		float gravityScale = bodyProps.gravityScale;
+		float linearDamping = bodyProps.linearDamping;
+		float angularDamping = bodyProps.angularDamping;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
 		std::string comboID = "##BoxBodyTypeCombo";
-		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
+		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 100))
 		{
 			boxBody->SetBodyType((b2BodyType)currentType);
 		}
-
-		//// Read only		
-		//Vector2 velocity = boxBody->GetVelocity();
-		//Vector2 pendingForces = boxBody->GetPendingForces();
-		//float angularVelocity = boxBody->GetAngularVelocity();
-		//float pendingTorques = boxBody->GetPendingTorques();
+			
+		// Read
+		Vector2 linearVelocity = boxBody->GetLinearVelocity();
+		float angularVelocity = boxBody->GetAngularVelocity();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1561,6 +1565,10 @@ namespace FlatGui
 			{
 				boxBody->SetDimensions(dimensions);
 			}
+			if (FL::RenderFloatDragTableRow("##BoxBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
+			{
+				boxBody->SetGravityScale(gravityScale);
+			}
 			if (FL::RenderFloatDragTableRow("##BoxBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
 			{
 				boxBody->SetDensity(density);
@@ -1569,10 +1577,15 @@ namespace FlatGui
 			{
 				boxBody->SetFriction(friction);
 			}
-			//if (FL::RenderFloatDragTableRow("##GravityScale" + std::to_string(ID), "Gravity Scale", gravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetGravity(gravity);
-			//}
+			if (FL::RenderFloatDragTableRow("##BoxBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				boxBody->SetLinearDamping(linearDamping);
+			}
+			if (FL::RenderFloatDragTableRow("##BoxBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				boxBody->SetAngularDamping(angularDamping);
+			}
+
 			//if (FL::RenderFloatDragTableRow("##FallingGravityScale" + std::to_string(ID), "Falling Gravity", fallingGravity, 0.01f, -FLT_MAX, -FLT_MAX))
 			//{
 			//	rigidBody->SetFallingGravity(fallingGravity);
@@ -1600,10 +1613,18 @@ namespace FlatGui
 		}
 
 		FL::MoveScreenCursor(0, 5);
-		//if (FL::RenderCheckbox(" Allow Torques", b_allowTorques))
-		//{
-			//boxBody->SetTorquesAllowed(b_allowTorques);
-		//}
+		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
+		{
+			boxBody->SetLockedRotation(b_lockedRotation);
+		}
+		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
+		{
+			boxBody->SetLockedXAxis(b_lockedXAxis);
+		}
+		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
+		{
+			boxBody->SetLockedYAxis(b_lockedYAxis);
+		}
 	}
 					
 	void RenderCircleBodyComponent(CircleBody* circleBody)
@@ -1611,78 +1632,71 @@ namespace FlatGui
 		long ID = circleBody->GetID();
 		bool b_isActive = circleBody->IsActive();
 		FL::Physics::BodyProps bodyProps = circleBody->GetBodyProps();
+		bool b_lockedRotation = bodyProps.b_lockedRotation;
+		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
+		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
+		float gravityScale = bodyProps.gravityScale;
+		float linearDamping = bodyProps.linearDamping;
+		float angularDamping = bodyProps.angularDamping;
 		float radius = bodyProps.radius;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
-		std::string comboID = "##circleBodyTypeCombo";
+		std::string comboID = "##CircleBodyTypeCombo";
 		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
 		{
 			circleBody->SetBodyType((b2BodyType)currentType);
 		}
-
-		//// Read only		
-		//Vector2 velocity = circleBody->GetVelocity();
-		//Vector2 pendingForces = circleBody->GetPendingForces();
-		//float angularVelocity = circleBody->GetAngularVelocity();
-		//float pendingTorques = circleBody->GetPendingTorques();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
 			circleBody->SetActive(b_isActive);
 		}
 
-		if (FL::PushTable("##circleBodyProps" + std::to_string(ID), 2))
+		if (FL::PushTable("##CircleBodyProps" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##circleBodyWidth" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CircleBodyWidth" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, -FLT_MAX))
 			{
 				circleBody->SetRadius(radius);
 			}
-			if (FL::RenderFloatDragTableRow("##circleBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CircleBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
+			{
+				circleBody->SetGravityScale(gravityScale);
+			}
+			if (FL::RenderFloatDragTableRow("##CircleBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
 			{
 				circleBody->SetDensity(density);
 			}
-			if (FL::RenderFloatDragTableRow("##circleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CircleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
 			{
 				circleBody->SetFriction(friction);
 			}
-			//if (FL::RenderFloatDragTableRow("##GravityScale" + std::to_string(ID), "Gravity Scale", gravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetGravity(gravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##FallingGravityScale" + std::to_string(ID), "Falling Gravity", fallingGravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetFallingGravity(fallingGravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##TerminalVelocity" + std::to_string(ID), "Terminal Velocity", terminalVelocity, 0.01f, 0.001f, 1000))
-			//{
-			//	rigidBody->SetTerminalVelocity(terminalVelocity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##WindResistance" + std::to_string(ID), "Wind Resistance", windResistance, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetWindResistance(windResistance);
-			//}
-			//if (FL::RenderFloatDragTableRow("##AngularDrag" + std::to_string(ID), "Angular Drag", angularDrag, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetAngularDrag(angularDrag);
-			//}
-			//FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(velocity.x));
-			//FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(velocity.y));
-			//FL::RenderTextTableRow("##PendingForcesX" + std::to_string(ID), "X Pending Forces", std::to_string(pendingForces.x));
-			//FL::RenderTextTableRow("##PendingForcesY" + std::to_string(ID), "Y Pending Forces", std::to_string(pendingForces.y));
-			//FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
-			//FL::RenderTextTableRow("##PendingTorques" + std::to_string(ID), "Pending Torques", std::to_string(pendingTorques));
-			//FL::RenderTextTableRow("##RigidBodyGrounded" + std::to_string(ID), "Is Grounded", isGroundedString);
+			if (FL::RenderFloatDragTableRow("##CircleBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				circleBody->SetLinearDamping(linearDamping);
+			}
+			if (FL::RenderFloatDragTableRow("##CircleBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				circleBody->SetAngularDamping(angularDamping);
+			}
 			FL::PopTable();
 		}
 
 		FL::MoveScreenCursor(0, 5);
-		//if (FL::RenderCheckbox(" Allow Torques", b_allowTorques))
-		//{
-			//circleBody->SetTorquesAllowed(b_allowTorques);
-		//}
+		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
+		{
+			circleBody->SetLockedRotation(b_lockedRotation);
+		}
+		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
+		{
+			circleBody->SetLockedXAxis(b_lockedXAxis);
+		}
+		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
+		{
+			circleBody->SetLockedYAxis(b_lockedYAxis);
+		}
 	}
 
 	void RenderCapsuleBodyComponent(CapsuleBody* capsuleBody)
@@ -1690,6 +1704,12 @@ namespace FlatGui
 		long ID = capsuleBody->GetID();
 		bool b_isActive = capsuleBody->IsActive();
 		FL::Physics::BodyProps bodyProps = capsuleBody->GetBodyProps();
+		bool b_lockedRotation = bodyProps.b_lockedRotation;
+		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
+		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
+		float gravityScale = bodyProps.gravityScale;
+		float linearDamping = bodyProps.linearDamping;
+		float angularDamping = bodyProps.angularDamping;
 		float length = bodyProps.capsuleLength;
 		float radius = bodyProps.radius;
 		float density = bodyProps.density;
@@ -1697,76 +1717,63 @@ namespace FlatGui
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
-		std::string comboID = "##capsuleBodyTypeCombo";
+		std::string comboID = "##CapsuleBodyTypeCombo";
 		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
 		{
 			capsuleBody->SetBodyType((b2BodyType)currentType);
 		}
-
-		//// Read only		
-		//Vector2 velocity = capsuleBody->GetVelocity();
-		//Vector2 pendingForces = capsuleBody->GetPendingForces();
-		//float angularVelocity = capsuleBody->GetAngularVelocity();
-		//float pendingTorques = capsuleBody->GetPendingTorques();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
 			capsuleBody->SetActive(b_isActive);
 		}
 
-		if (FL::PushTable("##capsuleBodyProps" + std::to_string(ID), 2))
+		if (FL::PushTable("##CapsuleBodyProps" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##capsuleBodyLength" + std::to_string(ID), "Length", length, 0.01f, 0.01f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyLength" + std::to_string(ID), "Length", length, 0.01f, 0.01f, -FLT_MAX))
 			{
 				capsuleBody->SetLength(length);
 			}
-			if (FL::RenderFloatDragTableRow("##capsuleBodyHeight" + std::to_string(ID), "Radii", radius, 0.01f, 0.01f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyHeight" + std::to_string(ID), "Radii", radius, 0.01f, 0.01f, -FLT_MAX))
 			{
 				capsuleBody->SetRadius(radius);
 			}
-			if (FL::RenderFloatDragTableRow("##capsuleBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
+			{
+				capsuleBody->SetGravityScale(gravityScale);
+			}
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
 			{
 				capsuleBody->SetDensity(density);
 			}
-			if (FL::RenderFloatDragTableRow("##capsuleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
 			{
 				capsuleBody->SetFriction(friction);
 			}
-			//if (FL::RenderFloatDragTableRow("##GravityScale" + std::to_string(ID), "Gravity Scale", gravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetGravity(gravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##FallingGravityScale" + std::to_string(ID), "Falling Gravity", fallingGravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetFallingGravity(fallingGravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##TerminalVelocity" + std::to_string(ID), "Terminal Velocity", terminalVelocity, 0.01f, 0.001f, 1000))
-			//{
-			//	rigidBody->SetTerminalVelocity(terminalVelocity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##WindResistance" + std::to_string(ID), "Wind Resistance", windResistance, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetWindResistance(windResistance);
-			//}
-			//if (FL::RenderFloatDragTableRow("##AngularDrag" + std::to_string(ID), "Angular Drag", angularDrag, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetAngularDrag(angularDrag);
-			//}
-			//FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(velocity.x));
-			//FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(velocity.y));
-			//FL::RenderTextTableRow("##PendingForcesX" + std::to_string(ID), "X Pending Forces", std::to_string(pendingForces.x));
-			//FL::RenderTextTableRow("##PendingForcesY" + std::to_string(ID), "Y Pending Forces", std::to_string(pendingForces.y));
-			//FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
-			//FL::RenderTextTableRow("##PendingTorques" + std::to_string(ID), "Pending Torques", std::to_string(pendingTorques));
-			//FL::RenderTextTableRow("##RigidBodyGrounded" + std::to_string(ID), "Is Grounded", isGroundedString);
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				capsuleBody->SetLinearDamping(linearDamping);
+			}
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				capsuleBody->SetAngularDamping(angularDamping);
+			}
 			FL::PopTable();
 		}
 
 		FL::MoveScreenCursor(0, 5);
-		//if (FL::RenderCheckbox(" Allow Torques", b_allowTorques))
-		//{
-			//capsuleBody->SetTorquesAllowed(b_allowTorques);
-		//}
+		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
+		{
+			capsuleBody->SetLockedRotation(b_lockedRotation);
+		}
+		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
+		{
+			capsuleBody->SetLockedXAxis(b_lockedXAxis);
+		}
+		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
+		{
+			capsuleBody->SetLockedYAxis(b_lockedYAxis);
+		}
 	}
 
 	void RenderPolygonBodyComponent(PolygonBody* polygonBody)
@@ -1774,6 +1781,12 @@ namespace FlatGui
 		long ID = polygonBody->GetID();
 		bool b_isActive = polygonBody->IsActive();
 		FL::Physics::BodyProps bodyProps = polygonBody->GetBodyProps();
+		bool b_lockedRotation = bodyProps.b_lockedRotation;
+		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
+		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
+		float gravityScale = bodyProps.gravityScale;
+		float linearDamping = bodyProps.linearDamping;
+		float angularDamping = bodyProps.angularDamping;
 		Vector2 dimensions = bodyProps.dimensions;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
@@ -1786,12 +1799,6 @@ namespace FlatGui
 			polygonBody->SetBodyType((b2BodyType)currentType);
 		}
 
-		//// Read only		
-		//Vector2 velocity = boxBody->GetVelocity();
-		//Vector2 pendingForces = boxBody->GetPendingForces();
-		//float angularVelocity = boxBody->GetAngularVelocity();
-		//float pendingTorques = boxBody->GetPendingTorques();
-
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
 			polygonBody->SetActive(b_isActive);
@@ -1799,14 +1806,10 @@ namespace FlatGui
 
 		if (FL::PushTable("##PolygonBodyProps" + std::to_string(ID), 2))
 		{
-			//if (FL::RenderFloatDragTableRow("##PolygonBodyWidth" + std::to_string(ID), "Width", dimensions.x, 0.01f, 0.01f, -FLT_MAX))
-			//{
-			//	polygonBody->SetDimensions(dimensions);
-			//}
-			//if (FL::RenderFloatDragTableRow("##PolygonBodyHeight" + std::to_string(ID), "Height", dimensions.y, 0.01f, 0.01f, -FLT_MAX))
-			//{
-			//	polygonBody->SetDimensions(dimensions);
-			//}
+			if (FL::RenderFloatDragTableRow("##PolygonBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
+			{
+				polygonBody->SetGravityScale(gravityScale);
+			}
 			if (FL::RenderFloatDragTableRow("##PolygonBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
 			{
 				polygonBody->SetDensity(density);
@@ -1815,41 +1818,30 @@ namespace FlatGui
 			{
 				polygonBody->SetFriction(friction);
 			}
-			//if (FL::RenderFloatDragTableRow("##GravityScale" + std::to_string(ID), "Gravity Scale", gravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetGravity(gravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##FallingGravityScale" + std::to_string(ID), "Falling Gravity", fallingGravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetFallingGravity(fallingGravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##TerminalVelocity" + std::to_string(ID), "Terminal Velocity", terminalVelocity, 0.01f, 0.001f, 1000))
-			//{
-			//	rigidBody->SetTerminalVelocity(terminalVelocity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##WindResistance" + std::to_string(ID), "Wind Resistance", windResistance, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetWindResistance(windResistance);
-			//}
-			//if (FL::RenderFloatDragTableRow("##AngularDrag" + std::to_string(ID), "Angular Drag", angularDrag, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetAngularDrag(angularDrag);
-			//}
-			//FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(velocity.x));
-			//FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(velocity.y));
-			//FL::RenderTextTableRow("##PendingForcesX" + std::to_string(ID), "X Pending Forces", std::to_string(pendingForces.x));
-			//FL::RenderTextTableRow("##PendingForcesY" + std::to_string(ID), "Y Pending Forces", std::to_string(pendingForces.y));
-			//FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
-			//FL::RenderTextTableRow("##PendingTorques" + std::to_string(ID), "Pending Torques", std::to_string(pendingTorques));
-			//FL::RenderTextTableRow("##RigidBodyGrounded" + std::to_string(ID), "Is Grounded", isGroundedString);
+			if (FL::RenderFloatDragTableRow("##PolygonBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				polygonBody->SetLinearDamping(linearDamping);
+			}
+			if (FL::RenderFloatDragTableRow("##PolygonBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				polygonBody->SetAngularDamping(angularDamping);
+			}
 			FL::PopTable();
 		}
 
 		FL::MoveScreenCursor(0, 5);
-		//if (FL::RenderCheckbox(" Allow Torques", b_allowTorques))
-		//{
-			//boxBody->SetTorquesAllowed(b_allowTorques);
-		//}
+		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
+		{
+			polygonBody->SetLockedRotation(b_lockedRotation);
+		}
+		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
+		{
+			polygonBody->SetLockedXAxis(b_lockedXAxis);
+		}
+		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
+		{
+			polygonBody->SetLockedYAxis(b_lockedYAxis);
+		}
 	}
 
 	void RenderTileMapComponent(TileMap* tileMap)

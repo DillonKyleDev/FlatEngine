@@ -43,7 +43,7 @@ namespace FlatEngine
 	class Audio;
 	class Text;
 	class CharacterController;
-	class RigidBody;
+	class Body;
 	class BoxBody;
 	class CircleBody;
 	class CapsuleBody;
@@ -73,7 +73,7 @@ using Animation = FL::Animation;
 using Audio = FL::Audio;
 using Text = FL::Text;
 using CharacterController = FL::CharacterController;
-using RigidBody = FL::RigidBody;
+using Body = FL::Body;
 using BoxBody = FL::BoxBody;
 using CircleBody = FL::CircleBody;
 using CapsuleBody = FL::CapsuleBody;

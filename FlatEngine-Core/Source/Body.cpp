@@ -11,6 +11,7 @@ namespace FlatEngine
 
 		m_bodyID = b2BodyId();
 		m_bodyProps = Physics::BodyProps();
+		m_bodyProps.userData = GetParent();
 	}
 
 	Body::~Body()
@@ -21,12 +22,25 @@ namespace FlatEngine
 	Physics::BodyProps Body::GetLiveProps()
 	{
 		Physics::BodyProps liveProps;
+		liveProps.userData = m_bodyProps.userData;
+		liveProps.b_isEnabled = IsActive();
+		liveProps.shape = m_bodyProps.shape;
 		liveProps.type = m_bodyProps.type;
 		liveProps.position = GetPosition();
-		liveProps.rotation = GetRotation();
-		liveProps.dimensions = m_bodyProps.dimensions;
+		liveProps.rotation = GetB2Rotation();
+		liveProps.b_lockedRotation = m_bodyProps.b_lockedRotation;
+		liveProps.b_lockedXAxis = m_bodyProps.b_lockedXAxis;
+		liveProps.b_lockedYAxis = m_bodyProps.b_lockedYAxis;
+		liveProps.gravityScale = m_bodyProps.gravityScale;
+		liveProps.linearDamping = m_bodyProps.linearDamping;
+		liveProps.angularDamping = m_bodyProps.angularDamping;
+		liveProps.restitution = m_bodyProps.restitution;
 		liveProps.density = m_bodyProps.density;
 		liveProps.friction = m_bodyProps.friction;
+		liveProps.dimensions = m_bodyProps.dimensions;
+		liveProps.radius = m_bodyProps.radius;
+		liveProps.capsuleLength = m_bodyProps.capsuleLength;
+
 		return liveProps;
 	}
 
@@ -34,7 +48,7 @@ namespace FlatEngine
 	{
 		m_bodyProps = GetLiveProps();
 		m_bodyProps.position = position;				
-		RecreateBody();
+		RecreateBody();		
 	}
 
 	Vector2 Body::GetPosition()
@@ -47,7 +61,14 @@ namespace FlatEngine
 	void Body::SetRotation(float rotation)
 	{
 		m_bodyProps = GetLiveProps();
-		m_bodyProps.rotation = rotation;		
+		m_bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
+		RecreateBody();
+	}
+
+	void Body::SetRotation(b2Rot rotation)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.rotation = rotation;
 		RecreateBody();
 	}
 
@@ -60,11 +81,71 @@ namespace FlatEngine
 		return rotation;
 	}
 
+	b2Rot Body::GetB2Rotation()
+	{
+		return b2Body_GetRotation(m_bodyID);
+	}
+
+	void Body::SetLockedRotation(bool b_lockedRotation)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.b_lockedRotation = b_lockedRotation;
+		RecreateBody();
+	}
+
+	void Body::SetLockedXAxis(bool b_lockedXAxis)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.b_lockedXAxis = b_lockedXAxis;
+		RecreateBody();
+	}
+
+	void Body::SetLockedYAxis(bool b_lockedYAxis)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.b_lockedYAxis = b_lockedYAxis;
+		RecreateBody();
+	}
+
+	void Body::SetGravityScale(float gravityScale)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.gravityScale = gravityScale;
+		RecreateBody();
+	}
+
+	void Body::SetLinearDamping(float linearDamping)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.linearDamping = linearDamping;
+		RecreateBody();
+	}
+
+	void Body::SetAngularDamping(float angularDamping)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.angularDamping = angularDamping;
+		RecreateBody();
+	}
+
+	void Body::SetRestitution(float restitution)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.restitution = restitution;
+		RecreateBody();
+	}
+
 	void Body::SetBodyType(b2BodyType type)
 	{
 		m_bodyProps = GetLiveProps();
 		m_bodyProps.type = type;
 		RecreateBody();
+
+		// If is KINEMATIC, you can drive the body to a specific transform (position and rotation) using:
+		// b2Vec2 targetPosition = { x, y };
+		// b2Rot targetRotation = b2MakeRot(B2_PI);
+		// b2Transform target = {targetPosition, targetRotation};
+		// b2Body_SetTargetTransform(m_bodyID, target, timeStep);
 	}
 
 	void Body::SetDensity(float density)
@@ -86,6 +167,63 @@ namespace FlatEngine
 		F_Physics->RecreateBody(m_bodyProps, m_bodyID, m_shapeIDs);
 	}
 
+	void Body::RecreateLiveBody()
+	{
+		m_bodyProps = GetLiveProps();
+		RecreateBody();
+	}
+
+	// Conversions from local to world space:
+	// b2Vec2 worldPoint = b2Body_GetWorldPoint(m_bodyID, localPoint);
+	// b2Vec2 worldVector = b2Body_GetWorldVector(m_bodyID, localVector);
+	// b2Vec2 localPoint = b2Body_GetLocalPoint(m_bodyID, worldPoint);
+	// b2Vec2 localVector = b2Body_GetLocalVector(m_bodyID, worldVector);
+	void Body::ApplyForce(Vector2 force, Vector2 worldPoint)
+	{
+		bool b_wake = true;
+		b2Body_ApplyForce(m_bodyID, b2Vec2(force.x, force.y), b2Vec2(worldPoint.x, worldPoint.y), b_wake);
+	}
+
+	void Body::ApplyLinearInpulse(Vector2 impulse, Vector2 worldPoint)
+	{
+		bool b_wake = true;
+		b2Body_ApplyLinearImpulse(m_bodyID, b2Vec2(impulse.x, impulse.y), b2Vec2(worldPoint.x, worldPoint.y), b_wake);
+	}
+
+	void Body::ApplyForceToCenter(Vector2 force)
+	{
+		bool b_wake = true;
+		b2Body_ApplyForceToCenter(m_bodyID, b2Vec2(force.x, force.y), b_wake);
+	}
+
+	void Body::ApplyLinearImpulseToCenter(Vector2 impulse)
+	{
+		bool b_wake = true;
+		b2Body_ApplyLinearImpulseToCenter(m_bodyID, b2Vec2(impulse.x, impulse.y), b_wake);
+	}
+
+	void Body::ApplyTorque(float torque)
+	{
+		bool b_wake = true;
+		b2Body_ApplyTorque(m_bodyID, torque, b_wake);
+	}
+
+	void Body::ApplyAngularImpulse(float impulse)
+	{
+		bool b_wake = true;
+		b2Body_ApplyAngularImpulse(m_bodyID, impulse, b_wake);
+	}
+
+	Vector2 Body::GetLinearVelocity()
+	{		
+		return Vector2(b2Body_GetLinearVelocity(m_bodyID));
+	}
+
+	float Body::GetAngularVelocity()
+	{
+		return b2Body_GetAngularVelocity(m_bodyID);
+	}
+
 	Physics::BodyProps Body::GetBodyProps()
 	{
 		return m_bodyProps;
@@ -104,5 +242,12 @@ namespace FlatEngine
 	void Body::AddShapeID(b2ShapeId shapeID)
 	{
 		m_shapeIDs.push_back(shapeID);
+	}
+
+	void Body::SetOwner(GameObject* ownerPtr)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.userData = ownerPtr;
+		RecreateBody();
 	}
 }

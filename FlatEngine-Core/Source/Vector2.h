@@ -1,5 +1,6 @@
 #pragma once
 #include <imgui.h>
+#include <box2d.h>
 
 
 namespace FlatEngine
@@ -12,6 +13,7 @@ namespace FlatEngine
 		Vector2(float x, float y);
 		Vector2(const ImVec2& toCopy);
 		Vector2(const Vector2& toCopy);
+		Vector2(b2Vec2 b2Vec2);
 		~Vector2();
 
 		static float GetAngleBetween(Vector2 vec1, Vector2 vec2);

@@ -36,6 +36,12 @@ namespace FlatEngine
 		y = toCopy.y;
 	}
 
+	Vector2::Vector2(b2Vec2 b2Vec2)
+	{
+		x = b2Vec2.x;
+		y = b2Vec2.y;
+	}
+
 	Vector2::~Vector2()
 	{
 	}

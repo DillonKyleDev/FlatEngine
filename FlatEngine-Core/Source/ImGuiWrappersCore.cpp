@@ -286,9 +286,9 @@ namespace FlatEngine
 	{
 		bool b_changed = false;
 		bool b_hasTag = tagList.HasTag(fieldName);
-		bool b_ignoreTag = tagList.IgnoresTag(fieldName);
+		bool b_collidesTag = tagList.CollidesTag(fieldName);
 		std::string hasTagID = "##" + fieldName + "CheckboxHasTagID";
-		std::string ignoreTagID = "##" + fieldName + "CheckboxIgnoreTagID";
+		std::string collidesTagID = "##" + fieldName + "CheckboxCollideTagID";
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
@@ -305,9 +305,9 @@ namespace FlatEngine
 
 		ImGui::TableSetColumnIndex(2);
 		MoveScreenCursor(0, 2);
-		if (RenderCheckbox(ignoreTagID.c_str(), b_ignoreTag))
+		if (RenderCheckbox(collidesTagID.c_str(), b_collidesTag))
 		{
-			tagList.ToggleIgnore(fieldName);
+			tagList.ToggleCollides(fieldName);
 			b_changed = true;
 		}
 

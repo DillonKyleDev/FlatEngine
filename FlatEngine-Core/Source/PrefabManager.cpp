@@ -56,14 +56,14 @@ namespace FlatEngine
 				tags.SetTag(tag, b_hasTag);
 			}
 		}
-		if (JsonContains(objectJson, "ignoreTags", objectName))
+		if (JsonContains(objectJson, "collidesTags", objectName))
 		{
-			json ignoreTagsJson = objectJson["ignoreTags"];
-			for (json jsonIgnoreTag : ignoreTagsJson)
+			json collidesTagsJson = objectJson["collidesTags"];
+			for (json jsonCollidesTag : collidesTagsJson)
 			{
-				std::string ignoreTag = jsonIgnoreTag.items().begin().key();
-				bool b_ignoresTag = jsonIgnoreTag.items().begin().value();
-				tags.SetIgnore(ignoreTag, b_ignoresTag);
+				std::string collidesTag = jsonCollidesTag.items().begin().key();
+				bool b_collidesTag = jsonCollidesTag.items().begin().value();
+				tags.SetCollides(collidesTag, b_collidesTag);
 			}
 		}
 
@@ -87,6 +87,7 @@ namespace FlatEngine
 			if (type == "Transform")
 			{
 				std::shared_ptr<TransformPrefabData> transform = std::make_shared<TransformPrefabData>();
+				transform->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				transform->type = "Transform";
 				transform->id = componentID;
 				transform->b_isActive = b_isActive;
@@ -103,6 +104,7 @@ namespace FlatEngine
 			else if (type == "Sprite")
 			{
 				std::shared_ptr<SpritePrefabData> sprite = std::make_shared<SpritePrefabData>();
+				sprite->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				sprite->type = "Sprite";
 				sprite->id = componentID;
 				sprite->b_isActive = b_isActive;
@@ -130,6 +132,7 @@ namespace FlatEngine
 			else if (type == "Camera")
 			{
 				std::shared_ptr<CameraPrefabData> camera = std::make_shared<CameraPrefabData>();
+				camera->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				camera->type = "Camera";
 				camera->id = componentID;
 				camera->b_isActive = b_isActive;
@@ -154,6 +157,7 @@ namespace FlatEngine
 			else if (type == "Script")
 			{
 				std::shared_ptr<ScriptPrefabData> script = std::make_shared<ScriptPrefabData>();
+				script->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				script->type = "Script";
 				script->id = componentID;
 				script->b_isActive = b_isActive;
@@ -185,6 +189,7 @@ namespace FlatEngine
 			else if (type == "Button")
 			{
 				std::shared_ptr<ButtonPrefabData> button = std::make_shared<ButtonPrefabData>();
+				button->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				button->type = "Button";
 				button->activeDimensions = Vector2(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
 				button->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
@@ -195,6 +200,7 @@ namespace FlatEngine
 			else if (type == "Canvas")
 			{
 				std::shared_ptr<CanvasPrefabData> canvas = std::make_shared<CanvasPrefabData>();
+				canvas->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				canvas->type = "Canvas";
 				canvas->width = CheckJsonFloat(componentJson, "width", objectName);
 				canvas->height = CheckJsonFloat(componentJson, "height", objectName);
@@ -206,6 +212,7 @@ namespace FlatEngine
 			else if (type == "Animation")
 			{
 				std::shared_ptr<AnimationPrefabData> animation = std::make_shared<AnimationPrefabData>();
+				animation->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				animation->type = "Animation";
 
 				if (JsonContains(componentJson, "animationData", objectName))
@@ -229,6 +236,7 @@ namespace FlatEngine
 			else if (type == "Audio")
 			{
 				std::shared_ptr<AudioPrefabData> audio = std::make_shared<AudioPrefabData>();
+				audio->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				audio->type = "Audio";
 				if (JsonContains(componentJson, "soundData", objectName))
 				{
@@ -266,6 +274,7 @@ namespace FlatEngine
 			else if (type == "Text")
 			{
 				std::shared_ptr<TextPrefabData> text = std::make_shared<TextPrefabData>();
+				text->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				text->type = "Text";
 				text->fontPath = CheckJsonString(componentJson, "fontPath", objectName);
 				text->fontSize = CheckJsonInt(componentJson, "fontSize", objectName);
@@ -284,6 +293,7 @@ namespace FlatEngine
 			else if (type == "CharacterController")
 			{
 				std::shared_ptr<CharacterControllerPrefabData> characterController = std::make_shared<CharacterControllerPrefabData>();
+				characterController->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				characterController->type = "CharacterController";
 				characterController->maxSpeed = CheckJsonFloat(componentJson, "maxSpeed", objectName);
 				characterController->maxAcceleration = CheckJsonFloat(componentJson, "maxAcceleration", objectName);
@@ -291,53 +301,86 @@ namespace FlatEngine
 
 				prefab.components.emplace(componentID, characterController);
 			}
-			else if (type == "BoxCollider")
+			else if (type == "BoxBody")
 			{
-				std::shared_ptr<BoxColliderPrefabData> boxCollider = std::make_shared<BoxColliderPrefabData>();
-				boxCollider->type = "BoxCollider";
-				boxCollider->id = componentID;
-				boxCollider->b_isActive = b_isActive;
-				boxCollider->b_isCollapsed = b_isCollapsed;
-				boxCollider->ownerId = object.ID;
-				boxCollider->b_tileMapCollider = CheckJsonBool(componentJson, "_isTileMapCollider", objectName);
-				boxCollider->activeDimensions = Vector2(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
-				boxCollider->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
-				boxCollider->b_isContinuous = CheckJsonBool(componentJson, "_isContinuous", objectName);
-				boxCollider->b_isSolid = CheckJsonBool(componentJson, "_isSolid", objectName);
-				boxCollider->activeLayer = CheckJsonInt(componentJson, "activeLayer", objectName);
-				boxCollider->b_showActiveRadius = CheckJsonBool(componentJson, "_showActiveRadius", objectName);
-				boxCollider->rotation = objectRotation;
+				std::shared_ptr<BoxBodyPrefabData> boxBody = std::make_shared<BoxBodyPrefabData>();
+				boxBody->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
+				boxBody->type = "BoxBody";
+				boxBody->bodyType = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
+				//boxBody->b_isEnabled = CheckJsonBool(componentJson, "_isEnabled", objectName);
+				boxBody->b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
+				boxBody->b_lockedXAxis = CheckJsonBool(componentJson, "_lockedXAxis", objectName);
+				boxBody->b_lockedYAxis = CheckJsonBool(componentJson, "_lockedYAxis", objectName);				
+				boxBody->linearDamping = CheckJsonFloat(componentJson, "linearDamping", objectName);
+				boxBody->angularDamping = CheckJsonFloat(componentJson, "angularDamping", objectName);
+				boxBody->gravityScale = CheckJsonFloat(componentJson, "gravityScale", objectName);
+				boxBody->restitution = CheckJsonFloat(componentJson, "restitution", objectName);
+				boxBody->density = CheckJsonFloat(componentJson, "density", objectName);
+				boxBody->friction = CheckJsonFloat(componentJson, "friction", objectName);
+				boxBody->dimensions = Vector2(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));			
 
-				prefab.components.emplace(componentID, boxCollider);
+				prefab.components.emplace(componentID, boxBody);
 			}
-			else if (type == "CircleCollider")
+			else if (type == "CircleBody")
 			{
-				std::shared_ptr<CircleColliderPrefabData> circleCollider = std::make_shared<CircleColliderPrefabData>();
-				circleCollider->type = "CircleCollider";
-				circleCollider->activeRadius = CheckJsonFloat(componentJson, "activeRadius", objectName);
-				circleCollider->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
-				circleCollider->b_isContinuous = CheckJsonBool(componentJson, "_isContinuous", objectName);
-				circleCollider->b_isSolid = CheckJsonBool(componentJson, "_isSolid", objectName);
-				circleCollider->activeLayer = CheckJsonInt(componentJson, "activeLayer", objectName);
+				std::shared_ptr<CircleBodyPrefabData> circleBody = std::make_shared<CircleBodyPrefabData>();
+				circleBody->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
+				circleBody->type = "CircleBody";
+				circleBody->bodyType = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
+				//circleBody->b_isEnabled = CheckJsonBool(componentJson, "_isEnabled", objectName);
+				circleBody->b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
+				circleBody->b_lockedXAxis = CheckJsonBool(componentJson, "_lockedXAxis", objectName);
+				circleBody->b_lockedYAxis = CheckJsonBool(componentJson, "_lockedYAxis", objectName);
+				circleBody->linearDamping = CheckJsonFloat(componentJson, "linearDamping", objectName);
+				circleBody->angularDamping = CheckJsonFloat(componentJson, "angularDamping", objectName);
+				circleBody->gravityScale = CheckJsonFloat(componentJson, "gravityScale", objectName);
+				circleBody->restitution = CheckJsonFloat(componentJson, "restitution", objectName);
+				circleBody->density = CheckJsonFloat(componentJson, "density", objectName);
+				circleBody->friction = CheckJsonFloat(componentJson, "friction", objectName);
+				circleBody->radius = CheckJsonFloat(componentJson, "radius", objectName);
 
-				prefab.components.emplace(componentID, circleCollider);
+				prefab.components.emplace(componentID, circleBody);
 			}
-			else if (type == "RigidBody")
+			else if (type == "CapsuleBody")
 			{
-				std::shared_ptr<RigidBodyPrefabData> rigidBody = std::make_shared<RigidBodyPrefabData>();
-				rigidBody->type = "RigidBody";
-				rigidBody->mass = CheckJsonFloat(componentJson, "mass", objectName);
-				rigidBody->angularDrag = CheckJsonFloat(componentJson, "angularDrag", objectName);
-				rigidBody->gravity = CheckJsonFloat(componentJson, "gravity", objectName);
-				rigidBody->fallingGravity = CheckJsonFloat(componentJson, "fallingGravity", objectName);
-				rigidBody->friction = CheckJsonFloat(componentJson, "friction", objectName);
-				rigidBody->windResistance = CheckJsonFloat(componentJson, "windResistance", objectName);
-				rigidBody->equilibriumForce = CheckJsonFloat(componentJson, "equilibriumForce", objectName);
-				rigidBody->terminalVelocity = CheckJsonFloat(componentJson, "terminalVelocity", objectName);
-				rigidBody->b_isStatic = CheckJsonBool(componentJson, "_isStatic", objectName);
-				rigidBody->b_allowTorques = CheckJsonBool(componentJson, "_allowTorques", objectName);
+				std::shared_ptr<CapsuleBodyPrefabData> capsuleBody = std::make_shared<CapsuleBodyPrefabData>();
+				capsuleBody->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
+				capsuleBody->type = "CapsuleBody";
+				capsuleBody->bodyType = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
+				//capsuleBody->b_isEnabled = CheckJsonBool(componentJson, "_isEnabled", objectName);
+				capsuleBody->b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
+				capsuleBody->b_lockedXAxis = CheckJsonBool(componentJson, "_lockedXAxis", objectName);
+				capsuleBody->b_lockedYAxis = CheckJsonBool(componentJson, "_lockedYAxis", objectName);
+				capsuleBody->linearDamping = CheckJsonFloat(componentJson, "linearDamping", objectName);
+				capsuleBody->angularDamping = CheckJsonFloat(componentJson, "angularDamping", objectName);
+				capsuleBody->gravityScale = CheckJsonFloat(componentJson, "gravityScale", objectName);
+				capsuleBody->restitution = CheckJsonFloat(componentJson, "restitution", objectName);
+				capsuleBody->density = CheckJsonFloat(componentJson, "density", objectName);
+				capsuleBody->friction = CheckJsonFloat(componentJson, "friction", objectName);
+				capsuleBody->radius = CheckJsonFloat(componentJson, "radius", objectName);
+				capsuleBody->capsuleLength = CheckJsonFloat(componentJson, "capsuleLength", objectName);
+				capsuleBody->b_horizontal = CheckJsonFloat(componentJson, "_horizontal", objectName);
 
-				prefab.components.emplace(componentID, rigidBody);
+				prefab.components.emplace(componentID, capsuleBody);
+			}
+			else if (type == "PolygonBody")
+			{
+				std::shared_ptr<PolygonBodyPrefabData> polygonBody = std::make_shared<PolygonBodyPrefabData>();
+				polygonBody->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
+				polygonBody->type = "PolygonBody";
+				polygonBody->bodyType = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
+				//polygonBody->b_isEnabled = CheckJsonBool(componentJson, "_isEnabled", objectName);
+				polygonBody->b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
+				polygonBody->b_lockedXAxis = CheckJsonBool(componentJson, "_lockedXAxis", objectName);
+				polygonBody->b_lockedYAxis = CheckJsonBool(componentJson, "_lockedYAxis", objectName);
+				polygonBody->linearDamping = CheckJsonFloat(componentJson, "linearDamping", objectName);
+				polygonBody->angularDamping = CheckJsonFloat(componentJson, "angularDamping", objectName);
+				polygonBody->gravityScale = CheckJsonFloat(componentJson, "gravityScale", objectName);
+				polygonBody->restitution = CheckJsonFloat(componentJson, "restitution", objectName);
+				polygonBody->density = CheckJsonFloat(componentJson, "density", objectName);
+				polygonBody->friction = CheckJsonFloat(componentJson, "friction", objectName);				
+
+				prefab.components.emplace(componentID, polygonBody);
 			}
 			else if (type == "TileMap")
 			{
@@ -676,18 +719,85 @@ namespace FlatEngine
 					}
 					else if (prefab.components.at(componentID)->type == "BoxBody")
 					{
-						//std::shared_ptr<RigidBodyPrefabData> rigidBodyData = std::static_pointer_cast<RigidBodyPrefabData>(prefab.components.at(componentID));
-						//RigidBody* rigidBody = self->AddRigidBody(-1, rigidBodyData->b_isActive, rigidBodyData->b_isCollapsed);
-						//rigidBody->SetMass(rigidBodyData->mass);
-						//rigidBody->SetAngularDrag(rigidBodyData->angularDrag);
-						//rigidBody->SetGravity(rigidBodyData->gravity);
-						//rigidBody->SetFallingGravity(rigidBodyData->fallingGravity);
-						//rigidBody->SetFriction(rigidBodyData->friction);
-						//rigidBody->SetWindResistance(rigidBodyData->windResistance);
-						//rigidBody->SetEquilibriumForce(rigidBodyData->equilibriumForce);
-						//rigidBody->SetTerminalVelocity(rigidBodyData->terminalVelocity);
-						//rigidBody->SetIsStatic(rigidBodyData->b_isStatic);
-						//rigidBody->SetTorquesAllowed(rigidBodyData->b_allowTorques);
+						std::shared_ptr<BoxBodyPrefabData> boxBodyData = std::static_pointer_cast<BoxBodyPrefabData>(prefab.components.at(componentID));					
+						Physics::BodyProps bodyProps;
+						bodyProps.shape = Physics::BodyShape::BS_Box;
+						bodyProps.type = boxBodyData->bodyType;
+						/*bodyProps.b_isEnabled = boxBodyData->b_isEnabled;*/
+						bodyProps.b_lockedRotation = boxBodyData->b_lockedRotation;
+						bodyProps.b_lockedXAxis = boxBodyData->b_lockedXAxis;
+						bodyProps.b_lockedYAxis = boxBodyData->b_lockedYAxis;
+						bodyProps.linearDamping = boxBodyData->linearDamping;
+						bodyProps.angularDamping = boxBodyData->angularDamping;
+						bodyProps.gravityScale = boxBodyData->gravityScale;
+						bodyProps.restitution = boxBodyData->restitution;						
+						bodyProps.density = boxBodyData->density;
+						bodyProps.friction = boxBodyData->friction;	
+						bodyProps.dimensions = boxBodyData->dimensions;
+
+						BoxBody* boxBody = self->AddBoxBody(bodyProps, -1, boxBodyData->b_isActive, boxBodyData->b_isCollapsed);
+					}
+					else if (prefab.components.at(componentID)->type == "CircleBody")
+					{
+						std::shared_ptr<CircleBodyPrefabData> circleBodyData = std::static_pointer_cast<CircleBodyPrefabData>(prefab.components.at(componentID));						
+						Physics::BodyProps bodyProps;
+						bodyProps.shape = Physics::BodyShape::BS_Circle;
+						bodyProps.type = circleBodyData->bodyType;
+						//bodyProps.b_isEnabled = circleBodyData->b_isEnabled;
+						bodyProps.b_lockedRotation = circleBodyData->b_lockedRotation;
+						bodyProps.b_lockedXAxis = circleBodyData->b_lockedXAxis;
+						bodyProps.b_lockedYAxis = circleBodyData->b_lockedYAxis;
+						bodyProps.linearDamping = circleBodyData->linearDamping;
+						bodyProps.angularDamping = circleBodyData->angularDamping;
+						bodyProps.gravityScale = circleBodyData->gravityScale;
+						bodyProps.restitution = circleBodyData->restitution;					
+						bodyProps.density = circleBodyData->density;
+						bodyProps.friction = circleBodyData->friction;
+						bodyProps.radius = circleBodyData->radius;
+
+						CircleBody* circleBody = self->AddCircleBody(bodyProps, -1, circleBodyData->b_isActive, circleBodyData->b_isCollapsed);
+					}
+					else if (prefab.components.at(componentID)->type == "CapsuleBody")
+					{
+						std::shared_ptr<CapsuleBodyPrefabData> capsuleBodyData = std::static_pointer_cast<CapsuleBodyPrefabData>(prefab.components.at(componentID));						
+						Physics::BodyProps bodyProps;
+						bodyProps.shape = Physics::BodyShape::BS_Capsule;
+						bodyProps.type = capsuleBodyData->bodyType;
+						//bodyProps.b_isEnabled = capsuleBodyData->b_isEnabled;
+						bodyProps.b_lockedRotation = capsuleBodyData->b_lockedRotation;
+						bodyProps.b_lockedXAxis = capsuleBodyData->b_lockedXAxis;
+						bodyProps.b_lockedYAxis = capsuleBodyData->b_lockedYAxis;
+						bodyProps.linearDamping = capsuleBodyData->linearDamping;
+						bodyProps.angularDamping = capsuleBodyData->angularDamping;
+						bodyProps.gravityScale = capsuleBodyData->gravityScale;
+						bodyProps.restitution = capsuleBodyData->restitution;
+						bodyProps.density = capsuleBodyData->density;
+						bodyProps.friction = capsuleBodyData->friction;
+						bodyProps.radius = capsuleBodyData->radius;
+						bodyProps.capsuleLength = capsuleBodyData->capsuleLength;
+						bodyProps.b_horizontal = capsuleBodyData->b_horizontal;
+
+						CapsuleBody* capsuleBody = self->AddCapsuleBody(bodyProps, -1, capsuleBodyData->b_isActive, capsuleBodyData->b_isCollapsed);
+					}
+					else if (prefab.components.at(componentID)->type == "PolygonBody")
+					{
+						std::shared_ptr<PolygonBodyPrefabData> polygonBodyData = std::static_pointer_cast<PolygonBodyPrefabData>(prefab.components.at(componentID));
+						Physics::BodyProps bodyProps;
+						bodyProps.shape = Physics::BodyShape::BS_Polygon;
+						bodyProps.type = polygonBodyData->bodyType;
+						//bodyProps.b_isEnabled = polygonBodyData->b_isEnabled;
+						bodyProps.b_lockedRotation = polygonBodyData->b_lockedRotation;
+						bodyProps.b_lockedXAxis = polygonBodyData->b_lockedXAxis;
+						bodyProps.b_lockedYAxis = polygonBodyData->b_lockedYAxis;
+						bodyProps.linearDamping = polygonBodyData->linearDamping;
+						bodyProps.angularDamping = polygonBodyData->angularDamping;
+						bodyProps.gravityScale = polygonBodyData->gravityScale;
+						bodyProps.restitution = polygonBodyData->restitution;
+						bodyProps.density = polygonBodyData->density;
+						bodyProps.friction = polygonBodyData->friction;
+						
+						self->AddPolygonBody(bodyProps , -1, polygonBodyData->b_isActive, polygonBodyData->b_isCollapsed);
+										
 					}
 					else if (prefab.components.at(componentID)->type == "CharacterController")
 					{

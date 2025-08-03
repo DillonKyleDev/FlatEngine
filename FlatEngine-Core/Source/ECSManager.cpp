@@ -67,22 +67,22 @@ namespace FlatEngine
 
 		for (std::map<long, BoxBody>::iterator iterator = m_BoxBodies.begin(); iterator != m_BoxBodies.end(); iterator++)
 		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
+			F_Physics->DestroyBody(iterator->second.GetBodyID(), iterator->second.GetShapeIDs());
 		}
 		m_BoxBodies.clear();
 		for (std::map<long, CircleBody>::iterator iterator = m_CircleBodies.begin(); iterator != m_CircleBodies.end(); iterator++)
 		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
+			F_Physics->DestroyBody(iterator->second.GetBodyID(), iterator->second.GetShapeIDs());
 		}
 		m_CircleBodies.clear();
 		for (std::map<long, CapsuleBody>::iterator iterator = m_CapsuleBodies.begin(); iterator != m_CapsuleBodies.end(); iterator++)
 		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
+			F_Physics->DestroyBody(iterator->second.GetBodyID(), iterator->second.GetShapeIDs());
 		}
 		m_CapsuleBodies.clear();
 		for (std::map<long, PolygonBody>::iterator iterator = m_PolygonBodies.begin(); iterator != m_PolygonBodies.end(); iterator++)
 		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
+			F_Physics->DestroyBody(iterator->second.GetBodyID(), iterator->second.GetShapeIDs());
 		}
 		m_PolygonBodies.clear();
 	}
@@ -565,7 +565,7 @@ namespace FlatEngine
 		bool b_success = false;
 		if (m_BoxBodies.count(ownerID))
 		{
-			F_Physics->DestroyBody(m_BoxBodies.at(ownerID).GetBodyID());
+			F_Physics->DestroyBody(m_BoxBodies.at(ownerID).GetBodyID(), m_BoxBodies.at(ownerID).GetShapeIDs());
 			m_BoxBodies.erase(ownerID);
 			b_success = true;							
 		}

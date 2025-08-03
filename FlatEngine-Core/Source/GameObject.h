@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "TagList.h"
 #include "Vector2.h"
+#include "Physics.h"
 
 #include <string>
 #include <vector>
@@ -25,7 +26,7 @@ namespace FlatEngine
 	class BoxBody;
 	class CircleBody;
 	class CapsuleBody;
-	class PolygonBody;
+	class PolygonBody;	
 
 	class GameObject
 	{
@@ -48,7 +49,7 @@ namespace FlatEngine
 		void SetTagList(TagList tagList);
 		bool HasTag(std::string tagName);
 		void SetTag(std::string tagName, bool b_hasTag);
-		void SetIgnore(std::string tagName, bool b_hasTag);
+		void SetCollides(std::string tagName, bool b_hasTag);
 		bool HasScript(std::string scriptName);
 		Script* GetScript(std::string scriptName);
 
@@ -65,10 +66,10 @@ namespace FlatEngine
 		Animation* AddAnimation(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		BoxBody* AddBoxBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		CircleBody* AddCircleBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		CapsuleBody* AddCapsuleBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		PolygonBody* AddPolygonBody(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		BoxBody* AddBoxBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		CircleBody* AddCircleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		CapsuleBody* AddCapsuleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		PolygonBody* AddPolygonBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 

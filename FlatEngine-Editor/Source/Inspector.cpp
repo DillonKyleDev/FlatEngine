@@ -225,10 +225,10 @@ namespace FlatGui
 				FL::PushMenuStyles();
 				if (ImGui::BeginPopupContextItem("TagsPopup", ImGuiPopupFlags_MouseButtonLeft))
 				{
-					std::string labels[2] = { "Tag", "Ignore" };
+					std::string labels[2] = { "Is", "Collides" };
 					if (FL::PushTable("TagsTable", 3, FL::F_resizeableTableFlags))
 					{
-						FL::RenderTextTableRow("TagsTableHeaders", "Tag", "Has", "Ignore");
+						FL::RenderTextTableRow("TagsTableHeaders", "Tag", "Has", "Collides");
 
 						for (std::string tag : FL::F_TagsAvailable)
 						{

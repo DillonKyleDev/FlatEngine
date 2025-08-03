@@ -8,71 +8,7 @@
                 10,
                 15
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "id": 0,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_blocksLayers": true,
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "height": 10.0,
-                    "id": 1,
-                    "layerNumber": 0,
-                    "type": "Canvas",
-                    "width": 20.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 5,
-                    "path": "..\\projects\\FlatSpace\\images\\colors\\chasm.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 0,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.4312499761581421,
-                    "tintColorY": 0.4312499761581421,
-                    "tintColorZ": 0.4312499761581421,
-                    "type": "Sprite",
-                    "xOffset": 8.0,
-                    "xScale": 20.0,
-                    "yOffset": 8.0,
-                    "yScale": 10.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "",
-                    "id": 104,
-                    "scriptParameters": [
-                        {
-                            "bool": false,
-                            "double": 0.0,
-                            "float": 0.0,
-                            "int": 0,
-                            "long": 0,
-                            "paramName": "stringName",
-                            "string": "",
-                            "type": "string",
-                            "vector2X": 0.0,
-                            "vector2Y": 0.0
-                        }
-                    ],
-                    "type": "Script"
-                }
-            ],
-            "id": 0,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -116,6 +52,49 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "id": 0,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_blocksLayers": true,
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "height": 10.0,
+                    "id": 1,
+                    "layerNumber": 0,
+                    "type": "Canvas",
+                    "width": 20.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 5,
+                    "path": "..\\projects\\FlatSpace\\images\\colors\\chasm.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.4312499761581421,
+                    "tintColorY": 0.4312499761581421,
+                    "tintColorZ": 0.4312499761581421,
+                    "type": "Sprite",
+                    "xOffset": 8.0,
+                    "xScale": 20.0,
+                    "yOffset": 8.0,
+                    "yScale": 10.0
+                }
+            ],
+            "id": 0,
             "name": "Canvas",
             "parent": -1,
             "prefabName": "",
@@ -171,40 +150,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 2,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_follow": false,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isPrimaryCamera": true,
-                    "followSmoothing": 0.8999999761581421,
-                    "following": 0,
-                    "frustrumAlpha": 255.0,
-                    "frustrumBlue": 255.0,
-                    "frustrumGreen": 255.0,
-                    "frustrumRed": 255.0,
-                    "height": 20.399999618530273,
-                    "id": 3,
-                    "type": "Camera",
-                    "width": 35.5,
-                    "zoom": 50.0
-                }
-            ],
-            "id": 1,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -248,6 +194,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 2,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_follow": false,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isPrimaryCamera": true,
+                    "followSmoothing": 0.8999999761581421,
+                    "following": 0,
+                    "frustrumAlpha": 255.0,
+                    "frustrumBlue": 255.0,
+                    "frustrumGreen": 255.0,
+                    "frustrumRed": 255.0,
+                    "height": 20.399999618530273,
+                    "id": 3,
+                    "type": "Camera",
+                    "width": 35.5,
+                    "zoom": 50.0
+                }
+            ],
+            "id": 1,
             "name": "Camera",
             "parent": -1,
             "prefabName": "",
@@ -303,23 +282,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 7,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 2,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -363,6 +326,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 7,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 2,
             "name": "StartButton",
             "parent": -1,
             "prefabName": "",
@@ -418,40 +397,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 21,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.8830000162124634,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
-                    "fontSize": 160,
-                    "id": 22,
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 0,
-                    "text": "Flat Space",
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Text",
-                    "xOffset": 350.0,
-                    "yOffset": 65.0
-                }
-            ],
-            "id": 7,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -495,6 +441,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 21,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.8830000162124634,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
+                    "fontSize": 160,
+                    "id": 22,
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 0,
+                    "text": "Flat Space",
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Text",
+                    "xOffset": 350.0,
+                    "yOffset": 65.0
+                }
+            ],
+            "id": 7,
             "name": "Title",
             "parent": -1,
             "prefabName": "",
@@ -550,40 +529,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 25,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": -1.7294111251831055,
-                    "yPos": -0.05555582046508789,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
-                    "fontSize": 65,
-                    "id": 26,
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 28,
-                    "text": "Start",
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Text",
-                    "xOffset": 70.0,
-                    "yOffset": 26.5
-                }
-            ],
-            "id": 8,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -627,6 +573,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 25,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": -1.7294111251831055,
+                    "yPos": -0.05555582046508789,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
+                    "fontSize": 65,
+                    "id": 26,
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 28,
+                    "text": "Start",
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Text",
+                    "xOffset": 70.0,
+                    "yOffset": 26.5
+                }
+            ],
+            "id": 8,
             "name": "ButtonText",
             "parent": 3,
             "prefabName": "",
@@ -682,46 +661,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 23,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 57,
-                    "soundData": [
-                        {
-                            "b_isMusic": false,
-                            "name": "Hover",
-                            "path": "..\\projects\\FlatSpace\\audio\\hover.wav"
-                        },
-                        {
-                            "b_isMusic": false,
-                            "name": "Click",
-                            "path": "..\\projects\\FlatSpace\\audio\\click.wav"
-                        },
-                        {
-                            "b_isMusic": false,
-                            "name": "Success",
-                            "path": "..\\projects\\FlatSpace\\audio\\success.wav"
-                        }
-                    ],
-                    "type": "Audio"
-                }
-            ],
-            "id": 9,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -765,6 +705,45 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 23,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 57,
+                    "soundData": [
+                        {
+                            "b_isMusic": false,
+                            "name": "Hover",
+                            "path": "..\\projects\\FlatSpace\\audio\\hover.wav"
+                        },
+                        {
+                            "b_isMusic": false,
+                            "name": "Click",
+                            "path": "..\\projects\\FlatSpace\\audio\\click.wav"
+                        },
+                        {
+                            "b_isMusic": false,
+                            "name": "Success",
+                            "path": "..\\projects\\FlatSpace\\audio\\success.wav"
+                        }
+                    ],
+                    "type": "Audio"
+                }
+            ],
+            "id": 9,
             "name": "GlobalSounds",
             "parent": -1,
             "prefabName": "",
@@ -823,6 +802,50 @@
                 11,
                 14
             ],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -879,50 +902,6 @@
                 }
             ],
             "id": 10,
-            "ignoreTags": [
-                {
-                    "Collectable": false
-                },
-                {
-                    "Enemy": false
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
             "name": "QuitButton",
             "parent": 0,
             "prefabName": "",
@@ -978,40 +957,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 31,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": -3.0999999046325684,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
-                    "fontSize": 65,
-                    "id": 32,
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 44,
-                    "text": "Quit",
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Text",
-                    "xOffset": 56.0,
-                    "yOffset": 26.5
-                }
-            ],
-            "id": 11,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1055,6 +1001,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 31,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": -3.0999999046325684,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
+                    "fontSize": 65,
+                    "id": 32,
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 44,
+                    "text": "Quit",
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Text",
+                    "xOffset": 56.0,
+                    "yOffset": 26.5
+                }
+            ],
+            "id": 11,
             "name": "QuitText",
             "parent": 10,
             "prefabName": "",
@@ -1110,40 +1089,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 41,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 2.0999999046325684,
-                    "yOrigin": -1.7294111251831055,
-                    "yPos": 0.0,
-                    "yScale": 0.6000000238418579
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 42,
-                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 11,
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 8.0,
-                    "xScale": 1.0,
-                    "yOffset": 8.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 13,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1187,6 +1133,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 41,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 2.0999999046325684,
+                    "yOrigin": -1.7294111251831055,
+                    "yPos": 0.0,
+                    "yScale": 0.6000000238418579
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 42,
+                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 11,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 8.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 13,
             "name": "Border",
             "parent": 3,
             "prefabName": "",
@@ -1242,40 +1221,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 43,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 2.0999999046325684,
-                    "yOrigin": -3.0999999046325684,
-                    "yPos": 0.0,
-                    "yScale": 0.6000000238418579
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 44,
-                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 10,
-                    "tintColorW": 0.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 8.0,
-                    "xScale": 1.0,
-                    "yOffset": 8.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 14,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1319,6 +1265,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 43,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 2.0999999046325684,
+                    "yOrigin": -3.0999999046325684,
+                    "yPos": 0.0,
+                    "yScale": 0.6000000238418579
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 44,
+                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 10,
+                    "tintColorW": 0.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 8.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 14,
             "name": "Border",
             "parent": 10,
             "prefabName": "",
@@ -1376,6 +1355,50 @@
             "children": [
                 16,
                 17
+            ],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
             ],
             "components": [
                 {
@@ -1445,50 +1468,6 @@
                 }
             ],
             "id": 15,
-            "ignoreTags": [
-                {
-                    "Collectable": false
-                },
-                {
-                    "Enemy": false
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
             "name": "StartButton",
             "parent": 0,
             "prefabName": "",
@@ -1544,40 +1523,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 47,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": -1.7466669082641602,
-                    "yPos": -0.03999999910593033,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
-                    "fontSize": 67,
-                    "id": 48,
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 40,
-                    "text": "Start",
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Text",
-                    "xOffset": 72.5,
-                    "yOffset": 27.5
-                }
-            ],
-            "id": 16,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1621,6 +1567,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 47,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": -1.7466669082641602,
+                    "yPos": -0.03999999910593033,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "fontPath": "..\\engine\\fonts\\ProggyClean.ttf",
+                    "fontSize": 67,
+                    "id": 48,
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 40,
+                    "text": "Start",
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Text",
+                    "xOffset": 72.5,
+                    "yOffset": 27.5
+                }
+            ],
+            "id": 16,
             "name": "StartText",
             "parent": 15,
             "prefabName": "",
@@ -1676,40 +1655,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 50,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 2.0999999046325684,
-                    "yOrigin": -1.7466669082641602,
-                    "yPos": 0.0,
-                    "yScale": 0.6000000238418579
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 49,
-                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 20,
-                    "tintColorW": 0.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 8.0,
-                    "xScale": 1.0,
-                    "yOffset": 8.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 17,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1753,6 +1699,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 50,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 2.0999999046325684,
+                    "yOrigin": -1.7466669082641602,
+                    "yPos": 0.0,
+                    "yScale": 0.6000000238418579
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 49,
+                    "path": "..\\projects\\FlatSpace\\images\\colors\\white.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 20,
+                    "tintColorW": 0.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 8.0,
+                    "xScale": 1.0,
+                    "yOffset": 8.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 17,
             "name": "Border",
             "parent": 15,
             "prefabName": "",
@@ -1808,31 +1787,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 65,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "GameManager",
-                    "id": 66,
-                    "scriptParameters": [],
-                    "type": "Script"
-                }
-            ],
-            "id": 18,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1876,6 +1831,30 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 65,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "GameManager",
+                    "id": 66,
+                    "scriptParameters": [],
+                    "type": "Script"
+                }
+            ],
+            "id": 18,
             "name": "GameManager",
             "parent": -1,
             "prefabName": "",
@@ -1931,6 +1910,50 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -1996,39 +2019,6 @@
                     "type": "Script"
                 },
                 {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 1.0,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 1.0,
-                    "gravity": 0.0,
-                    "id": 70,
-                    "mass": 1.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "_isComposite": false,
-                    "_isContinuous": true,
-                    "_isSolid": false,
-                    "_isStatic": false,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.625,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.75,
-                    "id": 71,
-                    "type": "BoxCollider"
-                },
-                {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "animationData": [
@@ -2042,50 +2032,6 @@
                 }
             ],
             "id": 19,
-            "ignoreTags": [
-                {
-                    "Collectable": true
-                },
-                {
-                    "Enemy": true
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": true
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": true
-                }
-            ],
             "name": "Asteroid2",
             "parent": -1,
             "prefabName": "",
@@ -2141,6 +2087,50 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -2206,39 +2196,6 @@
                     "type": "Script"
                 },
                 {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 1.0,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 1.0,
-                    "gravity": 0.0,
-                    "id": 76,
-                    "mass": 1.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "_isComposite": false,
-                    "_isContinuous": true,
-                    "_isSolid": false,
-                    "_isStatic": false,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.375,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.625,
-                    "id": 77,
-                    "type": "BoxCollider"
-                },
-                {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "animationData": [
@@ -2252,50 +2209,6 @@
                 }
             ],
             "id": 20,
-            "ignoreTags": [
-                {
-                    "Collectable": true
-                },
-                {
-                    "Enemy": true
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": true
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": true
-                }
-            ],
             "name": "Asteroid3",
             "parent": -1,
             "prefabName": "",
@@ -2351,6 +2264,50 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -2416,39 +2373,6 @@
                     "type": "Script"
                 },
                 {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 1.0,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 1.0,
-                    "gravity": 0.0,
-                    "id": 82,
-                    "mass": 1.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isComposite": false,
-                    "_isContinuous": true,
-                    "_isSolid": false,
-                    "_isStatic": false,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 1.25,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 1.25,
-                    "id": 83,
-                    "type": "BoxCollider"
-                },
-                {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "animationData": [
@@ -2462,50 +2386,6 @@
                 }
             ],
             "id": 21,
-            "ignoreTags": [
-                {
-                    "Collectable": true
-                },
-                {
-                    "Enemy": true
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": true
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
             "name": "Asteroid",
             "parent": -1,
             "prefabName": "",
@@ -2561,6 +2441,50 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -2626,39 +2550,6 @@
                     "type": "Script"
                 },
                 {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 1.0,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 1.0,
-                    "gravity": 0.0,
-                    "id": 88,
-                    "mass": 1.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isComposite": false,
-                    "_isContinuous": true,
-                    "_isSolid": false,
-                    "_isStatic": false,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 1.25,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 1.25,
-                    "id": 89,
-                    "type": "BoxCollider"
-                },
-                {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "animationData": [
@@ -2672,50 +2563,6 @@
                 }
             ],
             "id": 22,
-            "ignoreTags": [
-                {
-                    "Collectable": true
-                },
-                {
-                    "Enemy": true
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": true
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
             "name": "Asteroid",
             "parent": -1,
             "prefabName": "",
@@ -2771,6 +2618,50 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -2836,39 +2727,6 @@
                     "type": "Script"
                 },
                 {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 1.0,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 1.0,
-                    "gravity": 0.0,
-                    "id": 94,
-                    "mass": 1.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isComposite": false,
-                    "_isContinuous": true,
-                    "_isSolid": false,
-                    "_isStatic": false,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 1.25,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 1.25,
-                    "id": 95,
-                    "type": "BoxCollider"
-                },
-                {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "animationData": [
@@ -2882,50 +2740,6 @@
                 }
             ],
             "id": 23,
-            "ignoreTags": [
-                {
-                    "Collectable": true
-                },
-                {
-                    "Enemy": true
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": true
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
             "name": "Asteroid",
             "parent": -1,
             "prefabName": "",
@@ -2981,6 +2795,50 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
+            "collidesTags": [
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
             "components": [
                 {
                     "_isActive": true,
@@ -3075,39 +2933,6 @@
                 },
                 {
                     "_isActive": true,
-                    "_isCollapsed": true,
-                    "_isComposite": false,
-                    "_isContinuous": true,
-                    "_isSolid": false,
-                    "_isStatic": false,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 1.100000023841858,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 1.100000023841858,
-                    "id": 101,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": true,
-                    "_isStatic": false,
-                    "angularDrag": 1.0,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 1.0,
-                    "gravity": 0.0,
-                    "id": 102,
-                    "mass": 1.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "Orbit",
                     "id": 103,
@@ -3116,50 +2941,6 @@
                 }
             ],
             "id": 24,
-            "ignoreTags": [
-                {
-                    "Collectable": true
-                },
-                {
-                    "Enemy": true
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": true
-                }
-            ],
             "name": "Satellite",
             "parent": -1,
             "prefabName": "",

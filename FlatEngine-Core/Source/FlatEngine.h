@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Animation.h"
 #include "CPPScript.h"
+#include "Physics.h"
 
 #include <stdio.h>
 #include <string>
@@ -396,6 +397,7 @@ namespace FlatEngine
 
 	// Json parsing
 	extern json CreateJsonFromObject(GameObject gameObject);
+	extern void RetrieveBasicBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName);
 	extern GameObject* CreateObjectFromJson(json objectJson, Scene* scene);
 	extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName);
 	extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName, std::string& errorMessage);

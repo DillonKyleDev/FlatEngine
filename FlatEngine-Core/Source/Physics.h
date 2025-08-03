@@ -8,6 +8,7 @@
 namespace FlatEngine
 {
 	class GameObject;
+	class Body;
 
 	class Physics
 	{
@@ -22,7 +23,7 @@ namespace FlatEngine
 		};
 		struct BodyProps {
 			bool b_isEnabled = true;
-			GameObject* userData = nullptr;
+			bool b_enableContactEvents = true;			
 			BodyShape shape = BS_None;
 			b2BodyType type = b2_dynamicBody;
 			Vector2 position = Vector2(0,0);	
@@ -34,7 +35,7 @@ namespace FlatEngine
 			float linearDamping = 0.0f;
 			float angularDamping = 0.0f;
 			float restitution = 0.3f;
-			float density = 1;
+			float density = 1.0f;
 			float friction = 0.3f;
 			Vector2 dimensions = Vector2(1.0f, 1.0f);
 			float radius = 1.0f;
@@ -49,11 +50,11 @@ namespace FlatEngine
 		void Init();
 		void Shutdown();
 		void Update(float deltaTime);
+		void HandleCollisions();
 
-		void CreateBody(BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs);
-		void CreateBox(BodyProps bodyProps, b2BodyId& bodyID);
-		void DestroyBody(b2BodyId bodyID);
-		void RecreateBody(BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId> shapeIDs);
+		void CreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs);
+		void DestroyBody(b2BodyId bodyID, std::vector<b2ShapeId>& shapeIDs);
+		void RecreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs);
 
 	private:
 		b2WorldId m_worldID;

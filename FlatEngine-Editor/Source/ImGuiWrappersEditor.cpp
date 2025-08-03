@@ -1536,11 +1536,18 @@ namespace FlatGui
 		float angularDamping = bodyProps.angularDamping;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		float restitution = bodyProps.restitution;
 		Vector2 dimensions = bodyProps.dimensions;
 
 		// Read only
 		Vector2 linearVelocity = boxBody->GetLinearVelocity();
 		float angularVelocity = boxBody->GetAngularVelocity();
+
+		if (RenderIsActiveCheckbox(b_isActive))
+		{
+			boxBody->SetActive(b_isActive);
+			boxBody->RecreateLiveBody();
+		}
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1548,11 +1555,6 @@ namespace FlatGui
 		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 100))
 		{
 			boxBody->SetBodyType((b2BodyType)currentType);
-		}
-			
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			boxBody->SetActive(b_isActive);
 		}
 
 		if (FL::PushTable("##BoxBodyProps" + std::to_string(ID), 2))
@@ -1577,6 +1579,10 @@ namespace FlatGui
 			{
 				boxBody->SetFriction(friction);
 			}
+			if (FL::RenderFloatDragTableRow("##BoxBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
+			{
+				boxBody->SetRestitution(restitution);
+			}
 			if (FL::RenderFloatDragTableRow("##BoxBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
 			{
 				boxBody->SetLinearDamping(linearDamping);
@@ -1586,22 +1592,6 @@ namespace FlatGui
 				boxBody->SetAngularDamping(angularDamping);
 			}
 
-			//if (FL::RenderFloatDragTableRow("##FallingGravityScale" + std::to_string(ID), "Falling Gravity", fallingGravity, 0.01f, -FLT_MAX, -FLT_MAX))
-			//{
-			//	rigidBody->SetFallingGravity(fallingGravity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##TerminalVelocity" + std::to_string(ID), "Terminal Velocity", terminalVelocity, 0.01f, 0.001f, 1000))
-			//{
-			//	rigidBody->SetTerminalVelocity(terminalVelocity);
-			//}
-			//if (FL::RenderFloatDragTableRow("##WindResistance" + std::to_string(ID), "Wind Resistance", windResistance, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetWindResistance(windResistance);
-			//}
-			//if (FL::RenderFloatDragTableRow("##AngularDrag" + std::to_string(ID), "Angular Drag", angularDrag, 0.01f, 0, 1))
-			//{
-			//	rigidBody->SetAngularDrag(angularDrag);
-			//}
 			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
 			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
 			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
@@ -1636,11 +1626,18 @@ namespace FlatGui
 		float angularDamping = bodyProps.angularDamping;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		float restitution = bodyProps.restitution;
 		float radius = bodyProps.radius;
 
 		// Read only
 		Vector2 linearVelocity = circleBody->GetLinearVelocity();
 		float angularVelocity = circleBody->GetAngularVelocity();
+
+		if (RenderIsActiveCheckbox(b_isActive))
+		{
+			circleBody->SetActive(b_isActive);
+			circleBody->RecreateLiveBody();
+		}
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1648,11 +1645,6 @@ namespace FlatGui
 		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
 		{
 			circleBody->SetBodyType((b2BodyType)currentType);
-		}
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			circleBody->SetActive(b_isActive);
 		}
 
 		if (FL::PushTable("##CircleBodyProps" + std::to_string(ID), 2))
@@ -1672,6 +1664,10 @@ namespace FlatGui
 			if (FL::RenderFloatDragTableRow("##CircleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
 			{
 				circleBody->SetFriction(friction);
+			}
+			if (FL::RenderFloatDragTableRow("##CircleBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
+			{
+				circleBody->SetRestitution(restitution);
 			}
 			if (FL::RenderFloatDragTableRow("##CircleBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
 			{
@@ -1715,6 +1711,7 @@ namespace FlatGui
 		float angularDamping = bodyProps.angularDamping;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		float restitution = bodyProps.restitution;
 		float length = bodyProps.capsuleLength;
 		float radius = bodyProps.radius;
 		bool b_horizontal = bodyProps.b_horizontal;
@@ -1723,17 +1720,18 @@ namespace FlatGui
 		Vector2 linearVelocity = capsuleBody->GetLinearVelocity();
 		float angularVelocity = capsuleBody->GetAngularVelocity();
 
+		if (RenderIsActiveCheckbox(b_isActive))
+		{
+			capsuleBody->SetActive(b_isActive);
+			capsuleBody->RecreateLiveBody();
+		}
+
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
 		std::string comboID = "##CapsuleBodyTypeCombo";
 		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
 		{
 			capsuleBody->SetBodyType((b2BodyType)currentType);
-		}
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			capsuleBody->SetActive(b_isActive);
 		}
 
 		if (FL::RenderCheckbox(" Horizontal", b_horizontal))
@@ -1764,6 +1762,10 @@ namespace FlatGui
 			if (FL::RenderFloatDragTableRow("##CapsuleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
 			{
 				capsuleBody->SetFriction(friction);
+			}
+			if (FL::RenderFloatDragTableRow("##CapsuleBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
+			{
+				capsuleBody->SetRestitution(restitution);
 			}
 			if (FL::RenderFloatDragTableRow("##CapsuleBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
 			{
@@ -1808,10 +1810,17 @@ namespace FlatGui
 		Vector2 dimensions = bodyProps.dimensions;
 		float density = bodyProps.density;
 		float friction = bodyProps.friction;
+		float restitution = bodyProps.restitution;
 
 		// Read only
 		Vector2 linearVelocity = polygonBody->GetLinearVelocity();
 		float angularVelocity = polygonBody->GetAngularVelocity();
+
+		if (RenderIsActiveCheckbox(b_isActive))
+		{
+			polygonBody->SetActive(b_isActive);
+			polygonBody->RecreateLiveBody();
+		}
 
 		int currentType = bodyProps.type;
 		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
@@ -1819,11 +1828,6 @@ namespace FlatGui
 		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
 		{
 			polygonBody->SetBodyType((b2BodyType)currentType);
-		}
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			polygonBody->SetActive(b_isActive);
 		}
 
 		if (FL::PushTable("##PolygonBodyProps" + std::to_string(ID), 2))
@@ -1839,6 +1843,10 @@ namespace FlatGui
 			if (FL::RenderFloatDragTableRow("##PolygonBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
 			{
 				polygonBody->SetFriction(friction);
+			}
+			if (FL::RenderFloatDragTableRow("##PolygonBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
+			{
+				polygonBody->SetRestitution(restitution);
 			}
 			if (FL::RenderFloatDragTableRow("##PolygonBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
 			{

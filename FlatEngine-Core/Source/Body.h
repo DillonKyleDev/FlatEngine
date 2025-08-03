@@ -20,11 +20,17 @@ namespace FlatEngine
 		Body(long myID = -1, long parentID = -1);
 		~Body();
 		
+		void SetOnBeginContact(void (*beginContactCallback)(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID));
+		void OnBeginContact(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID);
+		void SetOnEndContact(void (*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID));
+		void OnEndContact(b2ShapeId myID, b2ShapeId collidedWithID);
+
+		void SetBodyProps(Physics::BodyProps bodyProps);
+		Physics::BodyProps& GetBodyProps();
 		Physics::BodyProps GetLiveProps();
 		b2BodyId GetBodyID();
-		std::vector<b2ShapeId> GetShapeIDs();
-		void AddShapeID(b2ShapeId shapeID);
-		void SetOwner(GameObject* ownerPtr);
+		std::vector<b2ShapeId>& GetShapeIDs();
+		void AddShapeID(b2ShapeId shapeID);		
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);
 		Vector2 GetPosition();
@@ -41,6 +47,7 @@ namespace FlatEngine
 		void SetRestitution(float restitution);
 		void SetDensity(float mass);
 		void SetFriction(float friction);
+		void CreateBody();
 		void RecreateBody();
 		void RecreateLiveBody();
 		void ApplyForce(Vector2 force, Vector2 worldPoint);
@@ -52,11 +59,13 @@ namespace FlatEngine
 		Vector2 GetLinearVelocity();
 		float GetAngularVelocity();
 
-		Physics::BodyProps GetBodyProps();
-
 	private:
 		b2BodyId m_bodyID;
 		std::vector<b2ShapeId> m_shapeIDs;
 		Physics::BodyProps m_bodyProps;		
+		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);
+		bool m_b_beginContactCallbackSet;
+		void (*m_endContactCallback)(b2ShapeId, b2ShapeId);
+		bool m_b_endContactCallbackSet;
 	};
 }

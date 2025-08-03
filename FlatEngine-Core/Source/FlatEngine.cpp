@@ -2699,7 +2699,7 @@ namespace FlatEngine
 		}
 		
 		std::map <std::string, bool> tagList = currentObject.GetTagList().GetTagsMap();
-		std::map <std::string, bool> ignoreTagList = currentObject.GetTagList().GetIgnoreTagsMap();
+		std::map <std::string, bool> collidesTagList = currentObject.GetTagList().GetCollidesTagsMap();
 
 		json tagsObjectArray = json::array();
 		for (std::map<std::string, bool>::iterator tagIter = tagList.begin(); tagIter != tagList.end(); tagIter++)
@@ -2714,16 +2714,16 @@ namespace FlatEngine
 				}
 			}
 		}
-		json ignoreTagsObjectArray = json::array();
-		for (std::map<std::string, bool>::iterator tagIter = ignoreTagList.begin(); tagIter != ignoreTagList.end(); tagIter++)
+		json collidesTagsObjectArray = json::array();
+		for (std::map<std::string, bool>::iterator tagIter = collidesTagList.begin(); tagIter != collidesTagList.end(); tagIter++)
 		{
-			// For making sure we don't save any stale ignore tags that aren't available in the Tags.lua file
+			// For making sure we don't save any stale collides tags that aren't available in the Tags.lua file
 			for (std::string availableTag : F_TagsAvailable)
 			{
 				if (tagIter->first == availableTag)
 				{
-					json ignore = json::object({ { tagIter->first, tagIter->second } });
-					ignoreTagsObjectArray.push_back(ignore);
+					json collides = json::object({ { tagIter->first, tagIter->second } });
+					collidesTagsObjectArray.push_back(collides);
 				}
 			}
 		}
@@ -2748,7 +2748,7 @@ namespace FlatEngine
 			{ "children", childrenArray },
 			{ "components", componentsArray },
 			{ "tags", tagsObjectArray },
-			{ "ignoreTags", ignoreTagsObjectArray },
+			{ "collidesTags", collidesTagsObjectArray },
 		});
 
 		return gameObjectJson;
@@ -2935,6 +2935,20 @@ namespace FlatEngine
 		return value;
 	}
 
+	void RetrieveBasicBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName)
+	{
+		bodyProps.type = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
+		bodyProps.b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
+		bodyProps.b_lockedXAxis = CheckJsonBool(componentJson, "_lockedXAxis", objectName);
+		bodyProps.b_lockedYAxis = CheckJsonBool(componentJson, "_lockedYAxis", objectName);
+		bodyProps.gravityScale = CheckJsonFloat(componentJson, "gravityScale", objectName);
+		bodyProps.linearDamping = CheckJsonFloat(componentJson, "linearDamping", objectName);
+		bodyProps.angularDamping = CheckJsonFloat(componentJson, "angularDamping", objectName);
+		bodyProps.restitution = CheckJsonFloat(componentJson, "restitution", objectName);
+		bodyProps.density = CheckJsonFloat(componentJson, "density", objectName);
+		bodyProps.friction = CheckJsonFloat(componentJson, "friction", objectName);
+	}
+
 	GameObject *CreateObjectFromJson(json objectJson, Scene* scene)
 	{
 		GameObject *loadedObject;
@@ -2987,35 +3001,18 @@ namespace FlatEngine
 						tags.SetTag(tag, b_hasTag);
 					}
 				}
-				if (JsonContains(objectJson, "ignoreTags", objectName))
+				if (JsonContains(objectJson, "collidesTags", objectName))
 				{
-					json ignoreTagsJson = objectJson["ignoreTags"];
-					for (json jsonIgnoreTag : ignoreTagsJson)
+					json collidesTagsJson = objectJson["collidesTags"];
+					for (json jsonCollidesTag : collidesTagsJson)
 					{
-						std::string ignoreTag = jsonIgnoreTag.items().begin().key();
-						bool b_ignoresTag = jsonIgnoreTag.items().begin().value();
-						tags.SetIgnore(ignoreTag, b_ignoresTag);
+						std::string collidesTag = jsonCollidesTag.items().begin().key();
+						bool b_collidesTag = jsonCollidesTag.items().begin().value();
+						tags.SetCollides(collidesTag, b_collidesTag);
 					}
 				}				
 
 				loadedObject->SetTagList(tags);
-
-				// Lambda
-				auto L_RetrieveBasicBodyProps = [&](Body* body, json componentJson, std::string objectName)
-				{
-					body->SetBodyType((b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName));
-					body->SetDensity(CheckJsonFloat(componentJson, "density", objectName));
-					body->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-					body->SetLockedRotation(CheckJsonBool(componentJson, "_lockedRotation", objectName));
-					body->SetLockedXAxis(CheckJsonBool(componentJson, "_lockedXAxis", objectName));
-					body->SetLockedYAxis(CheckJsonBool(componentJson, "_lockedYAxis", objectName));
-					body->SetGravityScale(CheckJsonFloat(componentJson, "gravityScale", objectName));
-					body->SetLinearDamping(CheckJsonFloat(componentJson, "linearDamping", objectName));
-					body->SetAngularDamping(CheckJsonFloat(componentJson, "angularDamping", objectName));
-					body->SetRestitution(CheckJsonFloat(componentJson, "restitution", objectName));
-					body->SetDensity(CheckJsonFloat(componentJson, "density", objectName));
-					body->SetFriction(CheckJsonFloat(componentJson, "friction", objectName));
-				};
 				
 				float objectRotation = 0;
 				try
@@ -3251,31 +3248,39 @@ namespace FlatEngine
 								// Other Body props here
 							}
 							else if (type == "BoxBody")
-							{
-								BoxBody* newBoxBody = loadedObject->AddBoxBody(id, b_isActive, b_isCollapsed);		
-								L_RetrieveBasicBodyProps(newBoxBody, componentJson, objectName);
+							{	
+								Physics::BodyProps bodyProps;
+								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
+								bodyProps.shape = Physics::BodyShape::BS_Box;
 								Vector2 dimensions = Vector2(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
-								newBoxBody->SetDimensions(dimensions);																																					
+								bodyProps.dimensions = dimensions;
+								loadedObject->AddBoxBody(bodyProps, id, b_isActive, b_isCollapsed);							
 							}
 							else if (type == "CircleBody")
-							{
-								CircleBody* newCircleBody = loadedObject->AddCircleBody(id, b_isActive, b_isCollapsed);
-								L_RetrieveBasicBodyProps(newCircleBody, componentJson, objectName);
-								newCircleBody->SetRadius(CheckJsonFloat(componentJson, "radius", objectName));															
+							{		
+								Physics::BodyProps bodyProps;															
+								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
+								bodyProps.shape = Physics::BodyShape::BS_Circle;
+								bodyProps.radius = CheckJsonFloat(componentJson, "radius", objectName);		
+								loadedObject->AddCircleBody(bodyProps, id, b_isActive, b_isCollapsed);
 							}
 							else if (type == "CapsuleBody")
-							{
-								CapsuleBody* newCapsuleBody = loadedObject->AddCapsuleBody(id, b_isActive, b_isCollapsed);
-								L_RetrieveBasicBodyProps(newCapsuleBody, componentJson, objectName);
-								newCapsuleBody->SetRadius(CheckJsonFloat(componentJson, "radius", objectName));
-								newCapsuleBody->SetLength(CheckJsonFloat(componentJson, "capsuleLength", objectName));
-								newCapsuleBody->SetHorizontal(CheckJsonBool(componentJson, "_horizontal", objectName));
+							{		
+								Physics::BodyProps bodyProps;																
+								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
+								bodyProps.shape = Physics::BodyShape::BS_Capsule;
+								bodyProps.radius = CheckJsonFloat(componentJson, "radius", objectName);
+								bodyProps.capsuleLength = CheckJsonFloat(componentJson, "capsuleLength", objectName);
+								bodyProps.b_horizontal = CheckJsonBool(componentJson, "_horizontal", objectName);
+								loadedObject->AddCapsuleBody(bodyProps, id, b_isActive, b_isCollapsed);
 							}
 							else if (type == "PolygonBody")
-							{
-								PolygonBody* newPolygonBody = loadedObject->AddPolygonBody(id, b_isActive, b_isCollapsed);
-								L_RetrieveBasicBodyProps(newPolygonBody, componentJson, objectName);
-								
+							{	
+								Physics::BodyProps bodyProps;																
+								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
+								bodyProps.shape = Physics::BodyShape::BS_Polygon;
+								loadedObject->AddPolygonBody(bodyProps, id, b_isActive, b_isCollapsed);
+
 								// Other PolygonBody props here
 							}
 							else if (type == "TileMap")

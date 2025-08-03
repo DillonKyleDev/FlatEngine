@@ -33,7 +33,7 @@ namespace FlatEngine
 		m_bodyProps.position = GetParent()->GetTransform()->GetTruePosition();
 		m_bodyProps.dimensions = Vector2(m_activeWidth, m_activeHeight);
 
-		F_Physics->CreateBox(m_bodyProps, m_bodyID);
+		//F_Physics->CreateBox(m_bodyProps, m_bodyID);
 	}
 
 	BoxCollider::~BoxCollider()
@@ -78,8 +78,8 @@ namespace FlatEngine
 		if (width >= 0 && height >= 0)
 		{
 			m_bodyProps.dimensions = Vector2(width, height);
-			F_Physics->DestroyBody(m_bodyID);
-			F_Physics->CreateBox(m_bodyProps, m_bodyID);
+			//F_Physics->DestroyBody(m_bodyID);
+			//F_Physics->CreateBox(m_bodyProps, m_bodyID);
 
 			m_activeWidth = width;
 			m_activeHeight = height;

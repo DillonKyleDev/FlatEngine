@@ -20,9 +20,9 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\mappingContexts",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\prefabs",
             "effectsVolume": 10,
-            "focusedGameObjectID": 4,
+            "focusedGameObjectID": 2,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Test.scn",
             "musicVolume": 10,
@@ -34,7 +34,7 @@
             "sceneViewGridStepX": 23.0,
             "sceneViewGridStepY": 23.0,
             "sceneViewScrollingX": 442.3470458984375,
-            "sceneViewScrollingY": 313.5
+            "sceneViewScrollingY": 338.5
         }
     ]
 }

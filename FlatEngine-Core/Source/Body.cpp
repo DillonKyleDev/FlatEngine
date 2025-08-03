@@ -11,7 +11,10 @@ namespace FlatEngine
 
 		m_bodyID = b2BodyId();
 		m_bodyProps = Physics::BodyProps();
-		m_bodyProps.userData = GetParent();
+		m_beginContactCallback = nullptr;
+		m_b_beginContactCallbackSet = false;
+		m_endContactCallback = nullptr;
+		m_b_endContactCallbackSet = false;
 	}
 
 	Body::~Body()
@@ -19,10 +22,37 @@ namespace FlatEngine
 	}
 
 
+	void Body::SetOnBeginContact(void(*beginContactCallback)(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID))
+	{
+		m_beginContactCallback = beginContactCallback;
+		m_b_beginContactCallbackSet = true;
+	}
+
+	void Body::OnBeginContact(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID)
+	{		
+		if (m_b_beginContactCallbackSet)
+		{
+			m_beginContactCallback(manifold, myID, collidedWithID);
+		}
+	}
+
+	void Body::SetOnEndContact(void(*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID))
+	{
+		m_endContactCallback = endContactCallback;
+		m_b_endContactCallbackSet = true;
+	}
+
+	void Body::OnEndContact(b2ShapeId myID, b2ShapeId collidedWithID)
+	{		
+		if (m_b_endContactCallbackSet)
+		{
+			m_endContactCallback(myID, collidedWithID);
+		}
+	}
+
 	Physics::BodyProps Body::GetLiveProps()
 	{
-		Physics::BodyProps liveProps;
-		liveProps.userData = m_bodyProps.userData;
+		Physics::BodyProps liveProps;		
 		liveProps.b_isEnabled = IsActive();
 		liveProps.shape = m_bodyProps.shape;
 		liveProps.type = m_bodyProps.type;
@@ -163,9 +193,14 @@ namespace FlatEngine
 		RecreateBody();
 	}
 
+	void Body::CreateBody()
+	{
+		F_Physics->CreateBody(this, m_bodyProps, m_bodyID, m_shapeIDs);
+	}
+
 	void Body::RecreateBody()
 	{
-		F_Physics->RecreateBody(m_bodyProps, m_bodyID, m_shapeIDs);
+		F_Physics->RecreateBody(this, m_bodyProps, m_bodyID, m_shapeIDs);
 	}
 
 	void Body::RecreateLiveBody()
@@ -225,7 +260,13 @@ namespace FlatEngine
 		return b2Body_GetAngularVelocity(m_bodyID);
 	}
 
-	Physics::BodyProps Body::GetBodyProps()
+
+	void Body::SetBodyProps(Physics::BodyProps bodyProps)
+	{
+		m_bodyProps = bodyProps;		
+	}
+
+	Physics::BodyProps& Body::GetBodyProps()
 	{
 		return m_bodyProps;
 	}
@@ -235,7 +276,7 @@ namespace FlatEngine
 		return m_bodyID;
 	}
 
-	std::vector<b2ShapeId> Body::GetShapeIDs()
+	std::vector<b2ShapeId>& Body::GetShapeIDs()
 	{
 		return m_shapeIDs;
 	}
@@ -243,12 +284,5 @@ namespace FlatEngine
 	void Body::AddShapeID(b2ShapeId shapeID)
 	{
 		m_shapeIDs.push_back(shapeID);
-	}
-
-	void Body::SetOwner(GameObject* ownerPtr)
-	{
-		m_bodyProps = GetLiveProps();
-		m_bodyProps.userData = ownerPtr;
-		RecreateBody();
 	}
 }

@@ -11,10 +11,13 @@
 #include "Animation.h"
 #include "Text.h"
 #include "CharacterController.h"
-#include "RigidBody.h"
 #include "Script.h"
 #include "MappingContext.h"
 #include "Project.h"
+#include "BoxBody.h"
+#include "CircleBody.h"
+#include "CapsuleBody.h"
+#include "PolygonBody.h"
 
 #include <fstream>
 #include <random>
@@ -440,7 +443,7 @@ namespace FlatEngine
 			"GetParentID", &GameObject::GetParentID,
 			"HasTag", &GameObject::HasTag,
 			"SetTag", &GameObject::SetTag,
-			"SetIgnore", &GameObject::SetIgnore,
+			"SetCollides", &GameObject::SetCollides,
 			"GetTransform", &GameObject::GetTransform,
 			"GetSprite", &GameObject::GetSprite,
 			"GetScript", &GameObject::GetScript,
@@ -450,6 +453,10 @@ namespace FlatEngine
 			"GetButton", &GameObject::GetButton,
 			"GetCanvas", &GameObject::GetCanvas,
 			"GetText", &GameObject::GetText,
+			"GetBoxBody", &GameObject::GetBoxBody,
+			"GetCircleBody", &GameObject::GetCircleBody,
+			"GetCapsuleBody", &GameObject::GetCapsuleBody,
+			"GetPolygonBody", &GameObject::GetPolygonBody,
 			"GetCharacterController", &GameObject::GetCharacterController,		
 			//"GetTileMap", &GameObject::GetTileMap,
 			
@@ -461,6 +468,10 @@ namespace FlatEngine
 			"AddButton", &GameObject::AddButtonLua,
 			"AddCanvas", &GameObject::AddCanvasLua,
 			"AddText", &GameObject::AddTextLua,
+			"AddBoxBody", &GameObject::AddBoxBody,
+			"AddCircleBody", & GameObject::AddCircleBody,
+			"AddCapsuleBody", & GameObject::AddCapsuleBody,
+			"AddPolygonBody", & GameObject::AddPolygonBody,
 			"AddCharacterController", &GameObject::AddCharacterControllerLua,
 			"AddTileMap", &GameObject::AddTileMapLua,
 
@@ -599,35 +610,31 @@ namespace FlatEngine
 			"AddParameter", &Animation::S_Event::AddParameter
 		);
 
-		F_Lua.new_usertype<RigidBody>("RigidBody",
-			"SetActive", &RigidBody::SetActive,
-			"IsActive", &RigidBody::IsActive,
-			"GetParent", &RigidBody::GetParent,
-			"GetParentID", &RigidBody::GetParentID,
-			"GetID", &RigidBody::GetID,
-			"SetMass", &RigidBody::SetMass,
-			"GetMass", &RigidBody::GetMass,
-			"SetGravity", &RigidBody::SetGravity,
-			"GetGravity", &RigidBody::GetGravity,
-			"SetFallingGravity", &RigidBody::SetFallingGravity,
-			"GetFallingGravity", &RigidBody::GetFallingGravity,
-			"SetFriction", &RigidBody::SetFriction,
-			"GetFriction", &RigidBody::GetFriction,
-			"SetAngularDrag", &RigidBody::SetAngularDrag,
-			"GetAngularDrag", &RigidBody::GetAngularDrag,
-			"SetAngularVelocity", &RigidBody::SetAngularVelocity,
-			"GetAngularVelocity", &RigidBody::GetAngularVelocity,
-			"SetTorquesAllowed", &RigidBody::SetTorquesAllowed,
-			"TorquesAllowed", &RigidBody::TorquesAllowed,
-			"AddForce", &RigidBody::AddForce,
-			"AddTorque", &RigidBody::AddTorque,
-			"SetVelocity", &RigidBody::SetVelocity,
-			"GetVelocity", &RigidBody::GetVelocity,
-			"SetPendingForces", &RigidBody::SetPendingForces,
-			"GetPendingForces", &RigidBody::GetPendingForces,
-			"SetTerminalVelocity", &RigidBody::SetTerminalVelocity,
-			"GetTerminalVelocity", &RigidBody::GetTerminalVelocity,
-			"IsGrounded", &RigidBody::IsGrounded
+		//F_Lua.new_usertype<Physics::BodyProps>("BodyProps",
+
+		//);
+
+		F_Lua.new_usertype<Body>("Body",
+			"SetActive", &Body::SetActive,
+			"IsActive", &Body::IsActive,
+			"GetParent", &Body::GetParent,
+			"GetParentID", &Body::GetParentID,
+			"GetID", &Body::GetID,
+			"GetBodyProps", &Body::GetBodyProps,
+			"SetDensity", &Body::SetDensity,
+			"SetGravity", &Body::SetGravityScale,
+			//"SetFallingGravity", &Body::SetFallingGravity,
+			"SetFriction", &Body::SetFriction,
+			"SetLinearDamping", &Body::SetLinearDamping,
+			"SetAngularDamping", &Body::SetAngularDamping,
+			"AddForce", &Body::ApplyForce,
+			"ApplyLinearInpulse", &Body::ApplyLinearInpulse,
+			"ApplyForceToCenter", &Body::ApplyForceToCenter,
+			"ApplyLinearImpulseToCenter", &Body::ApplyLinearImpulseToCenter,
+			"ApplyTorque", &Body::ApplyTorque,
+			"ApplyAngularImpulse", &Body::ApplyAngularImpulse,
+			"GetLinearVelocity", &Body::GetLinearVelocity,
+			"GetAngularVelocity", &Body::GetAngularVelocity
 		);
 
 		F_Lua.new_usertype<CharacterController>("CharacterController",

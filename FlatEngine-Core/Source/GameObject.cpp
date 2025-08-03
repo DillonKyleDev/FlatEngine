@@ -116,9 +116,9 @@ namespace FlatEngine
 		m_tagList.SetTag(tagName, b_hasTag);
 	}
 
-	void GameObject::SetIgnore(std::string tagName, bool b_hasTag)
+	void GameObject::SetCollides(std::string tagName, bool b_hasTag)
 	{
-		m_tagList.SetIgnore(tagName, b_hasTag);
+		m_tagList.SetCollides(tagName, b_hasTag);
 	}
 
 	bool GameObject::HasScript(std::string scriptName)
@@ -517,7 +517,7 @@ namespace FlatEngine
 		return textPtr;
 	}
 
-	BoxBody* GameObject::AddBoxBody(long ID, bool b_active, bool b_collapsed)
+	BoxBody* GameObject::AddBoxBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
 		Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
@@ -535,11 +535,16 @@ namespace FlatEngine
 			}
 		}
 
-		BoxBody boxBody = BoxBody(nextID, m_ID);
+		BoxBody boxBody = BoxBody(nextID, m_ID);				
 		boxBody.SetActive(b_active);
-		boxBody.SetCollapsed(b_collapsed);
-		boxBody.SetPosition(position);
-		boxBody.SetRotation(rotation);
+		boxBody.SetCollapsed(b_collapsed);	
+
+		if (bodyProps.shape == Physics::BodyShape::BS_None)
+		{
+			bodyProps = boxBody.GetBodyProps();
+		}
+		bodyProps.position = position;
+		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
 
 		BoxBody* boxBodyPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
@@ -556,20 +561,23 @@ namespace FlatEngine
 			Sprite* sprite = GetSprite();
 			// Get sprite dimensions in terms of grid squares because that is the unit used by the engine
 			Vector2 dimensions = Vector2(sprite->GetTextureWidth() / F_pixelsPerGridSpace, sprite->GetTextureHeight() / F_pixelsPerGridSpace);
-			boxBodyPtr->SetDimensions(dimensions);
+			bodyProps.dimensions = dimensions;
 		}
 		
 		if (boxBodyPtr != nullptr)
 		{
 			m_components.push_back(boxBodyPtr);
-		}
+			boxBodyPtr->SetBodyProps(bodyProps);
+			boxBodyPtr->CreateBody();
+		}	
 
 		return boxBodyPtr;
 	}
 
-	CircleBody* GameObject::AddCircleBody(long ID, bool b_active, bool b_collapsed)
+	CircleBody* GameObject::AddCircleBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
 		Vector2 position = GetTransform()->GetPosition();		
+		float rotation = GetTransform()->GetRotation();
 
 		long nextID = ID;
 		if (nextID == -1)
@@ -586,8 +594,14 @@ namespace FlatEngine
 
 		CircleBody circleBody = CircleBody(nextID, m_ID);
 		circleBody.SetActive(b_active);
-		circleBody.SetCollapsed(b_collapsed);
-		circleBody.SetPosition(position);		
+		circleBody.SetCollapsed(b_collapsed);	
+
+		if (bodyProps.shape == Physics::BodyShape::BS_None)
+		{
+			bodyProps = circleBody.GetBodyProps();
+		}
+		bodyProps.position = position;
+		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
 
 		CircleBody* circleBodyPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
@@ -602,12 +616,14 @@ namespace FlatEngine
 		if (circleBodyPtr != nullptr)
 		{
 			m_components.push_back(circleBodyPtr);
-		}
+			circleBodyPtr->SetBodyProps(bodyProps);
+			circleBodyPtr->CreateBody();
+		}		
 
 		return circleBodyPtr;
 	}
 
-	CapsuleBody* GameObject::AddCapsuleBody(long ID, bool b_active, bool b_collapsed)
+	CapsuleBody* GameObject::AddCapsuleBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
 		Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
@@ -627,9 +643,14 @@ namespace FlatEngine
 
 		CapsuleBody capsuleBody = CapsuleBody(nextID, m_ID);
 		capsuleBody.SetActive(b_active);
-		capsuleBody.SetCollapsed(b_collapsed);
-		capsuleBody.SetPosition(position);
-		capsuleBody.SetRotation(rotation);
+		capsuleBody.SetCollapsed(b_collapsed);		
+
+		if (bodyProps.shape == Physics::BodyShape::BS_None)
+		{
+			bodyProps = capsuleBody.GetBodyProps();
+		}
+		bodyProps.position = position;
+		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));		
 
 		CapsuleBody* capsuleBodyPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
@@ -644,12 +665,14 @@ namespace FlatEngine
 		if (capsuleBodyPtr != nullptr)
 		{
 			m_components.push_back(capsuleBodyPtr);
-		}
+			capsuleBodyPtr->SetBodyProps(bodyProps);
+			capsuleBodyPtr->CreateBody();
+		}		
 
 		return capsuleBodyPtr;
 	}
 
-	PolygonBody* GameObject::AddPolygonBody(long ID, bool b_active, bool b_collapsed)
+	PolygonBody* GameObject::AddPolygonBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
 		Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
@@ -669,8 +692,14 @@ namespace FlatEngine
 
 		PolygonBody polygonBody = PolygonBody(nextID, m_ID);
 		polygonBody.SetActive(b_active);
-		polygonBody.SetCollapsed(b_collapsed);
-		polygonBody.SetPosition(position);
+		polygonBody.SetCollapsed(b_collapsed);	
+
+		if (bodyProps.shape == Physics::BodyShape::BS_None)
+		{
+			bodyProps = polygonBody.GetBodyProps();
+		}
+		bodyProps.position = position;
+		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));		
 
 		PolygonBody* polygonBodyPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
@@ -685,7 +714,9 @@ namespace FlatEngine
 		if (polygonBodyPtr != nullptr)
 		{
 			m_components.push_back(polygonBodyPtr);
-		}
+			polygonBodyPtr->SetBodyProps(bodyProps);
+			polygonBodyPtr->CreateBody();
+		}		
 
 		return polygonBodyPtr;
 	}

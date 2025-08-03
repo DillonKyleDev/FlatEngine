@@ -3,13 +3,15 @@
 #include "Transform.h"
 #include "Vector2.h"
 #include "CapsuleBody.h"
+#include "Body.h"
 
 
 namespace FlatEngine
 {
-	void CallbackFunction(RayCast* rayCast, Collider* collidedWith)
+	void CallbackFunction(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID)
 	{
-
+		GameObject* self = static_cast<Body*>(b2Shape_GetUserData(myID))->GetParent();
+		GameObject* collidedWith = static_cast<Body*>(b2Shape_GetUserData(collidedWithID))->GetParent();		
 	}
 
 
@@ -32,21 +34,7 @@ namespace FlatEngine
 	{		
 		m_context = GetMappingContext("MC_Player");
 		m_capsule = GetParent()->GetCapsuleBody();
-		LogString("Player script started..");
-
-		//RayCast* rayCast = CastRay(GetParent()->GetTransform()->GetPosition(), Vector2(1, 0), 1, 10, CallbackFunction, GetParent()->GetID(), true);
-		//std::vector<GameObject*> collidingObjects = rayCast->GetCollidingObjects();
-		//Vector2 forceDirection = (rayCast->GetPoint() - rayCast->GetTail());
-		//Vector2 impactToCenter = (collidingObjects[0]->GetTransform()->GetTruePosition() - rayCast->GetPoint()).Normalize();
-		//float forceInDirectionOfCenter = forceDirection.Dot(impactToCenter);
-		//float torque = forceDirection.GetMagnitude() - forceInDirectionOfCenter;
-		//float direction = 1;
-		//if (forceDirection.CrossKResult(impactToCenter) > 0)
-		//{
-		//	direction = -1;
-		//}
-		//collidingObjects[0]->GetRigidBody()->AddTorque(torque, direction);
-		//collidingObjects[0]->GetRigidBody()->AddForce(impactToCenter, forceInDirectionOfCenter);
+		m_capsule->SetOnBeginContact(CallbackFunction);
 	}
 
 	void Player::Update()

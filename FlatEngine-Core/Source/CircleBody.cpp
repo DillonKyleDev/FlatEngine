@@ -7,15 +7,10 @@ namespace FlatEngine
 {
 	CircleBody::CircleBody(long myID, long parentID) : Body::Body(myID, parentID)
 	{
-		SetType(T_CircleBody);
+		SetType(T_CircleBody);		
 		m_bodyProps.shape = Physics::BodyShape::BS_Circle;
-		m_bodyProps.type = b2_dynamicBody;
 		m_bodyProps.position = GetParent()->GetTransform()->GetPosition();
-		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);
-		m_bodyProps.radius = 1.0f;
-		m_bodyProps.density = 1.0f;
-		m_bodyProps.friction = 0.3f;
-		F_Physics->CreateBody(m_bodyProps, m_bodyID, m_shapeIDs);
+		m_bodyProps.radius = 1.0f;	
 	}
 
 	CircleBody::~CircleBody()

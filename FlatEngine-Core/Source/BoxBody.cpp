@@ -7,14 +7,11 @@ namespace FlatEngine
 {
 	BoxBody::BoxBody(long myID, long parentID) : Body::Body(myID, parentID)
 	{
-		SetType(T_BoxBody);
+		SetType(T_BoxBody);		
+		m_bodyProps.b_isEnabled = IsActive();
 		m_bodyProps.shape = Physics::BodyShape::BS_Box;
-		m_bodyProps.type = b2_dynamicBody;
+		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);
 		m_bodyProps.position = GetParent()->GetTransform()->GetPosition();
-		m_bodyProps.dimensions = Vector2(2.0f, 2.0f);			
-		m_bodyProps.density = 1.0f;
-		m_bodyProps.friction = 0.3f;
-		F_Physics->CreateBox(m_bodyProps, m_bodyID);
 	}
 
 	BoxBody::~BoxBody()

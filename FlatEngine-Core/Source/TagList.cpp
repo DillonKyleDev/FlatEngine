@@ -49,9 +49,9 @@ namespace FlatEngine
 			{
 				m_tags.emplace(tag, false);
 			}
-			if (m_ignoreTags.count(tag) == 0)
+			if (m_collidesTags.count(tag) == 0)
 			{
-				m_ignoreTags.emplace(tag, false);
+				m_collidesTags.emplace(tag, false);
 			}
 		}
 	}
@@ -96,11 +96,11 @@ namespace FlatEngine
 		}
 	}
 
-	void TagList::SetIgnore(std::string tag, bool b_value)
+	void TagList::SetCollides(std::string tag, bool b_value)
 	{
-		if (m_ignoreTags.count(tag) > 0)
+		if (m_collidesTags.count(tag) > 0)
 		{
-			m_ignoreTags.at(tag) = b_value;
+			m_collidesTags.at(tag) = b_value;
 		}
 
 		GameObject* owner = GetObjectByID(m_ownerID);
@@ -110,11 +110,11 @@ namespace FlatEngine
 		}
 	}
 
-	void TagList::ToggleIgnore(std::string tag)
+	void TagList::ToggleCollides(std::string tag)
 	{
-		if (m_ignoreTags.count(tag) > 0)
+		if (m_collidesTags.count(tag) > 0)
 		{
-			m_ignoreTags.at(tag) = !m_ignoreTags.at(tag);
+			m_collidesTags.at(tag) = !m_collidesTags.at(tag);
 		}
 
 		GameObject* owner = GetObjectByID(m_ownerID);
@@ -124,11 +124,11 @@ namespace FlatEngine
 		}
 	}
 
-	bool TagList::IgnoresTag(std::string tag)
+	bool TagList::CollidesTag(std::string tag)
 	{
-		if (m_ignoreTags.count(tag) > 0)
+		if (m_collidesTags.count(tag) > 0)
 		{
-			return m_ignoreTags.at(tag);
+			return m_collidesTags.at(tag);
 		}
 		else 
 		{
@@ -154,15 +154,15 @@ namespace FlatEngine
 		return m_tags;
 	}
 
-	std::map<std::string, bool> TagList::GetIgnoreTagsMap()
+	std::map<std::string, bool> TagList::GetCollidesTagsMap()
 	{
-		return m_ignoreTags;
+		return m_collidesTags;
 	}
 
-	std::vector<std::string> TagList::GetIgnoredTags()
+	std::vector<std::string> TagList::GetCollidesTags()
 	{
 		std::vector<std::string> ignoredTags;
-		for (std::pair<std::string, bool> ignoreTag : m_ignoreTags)
+		for (std::pair<std::string, bool> ignoreTag : m_collidesTags)
 		{
 			if (ignoreTag.second)
 			{

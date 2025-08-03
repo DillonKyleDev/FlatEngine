@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "TagList.h"
 #include "FlatEngine.h"
+#include "Body.h"
 
 #include <memory>
 #include <string>
@@ -39,13 +40,48 @@ namespace FlatEngine
 		int substepCount = 4;
 
 		b2World_Step(m_worldID, timeStep, substepCount);
+		HandleCollisions();
 	}
 
-	void Physics::CreateBody(BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs)
+	void Physics::HandleCollisions()
+	{
+		b2ContactEvents contactEvents = b2World_GetContactEvents(m_worldID);
+
+		for (int i = 0; i < contactEvents.beginCount; ++i)
+		{
+			b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
+			b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;			
+			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdA))->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
+			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdB))->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
+		}
+
+		for (int i = 0; i < contactEvents.endCount; ++i)
+		{
+			b2ContactEndTouchEvent* endEvent = contactEvents.endEvents + i;
+			if (b2Shape_IsValid(endEvent->shapeIdA) && b2Shape_IsValid(endEvent->shapeIdB))
+			{
+				static_cast<Body*>(b2Shape_GetUserData(endEvent->shapeIdA))->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
+				static_cast<Body*>(b2Shape_GetUserData(endEvent->shapeIdB))->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
+			}
+		}
+
+		for (int i = 0; i < contactEvents.hitCount; ++i)
+		{
+			float hitSpeedForSound = 10.0f;
+
+			b2ContactHitEvent* hitEvent = contactEvents.hitEvents + i;
+			if (hitEvent->approachSpeed > hitSpeedForSound)
+			{
+				// Play sound
+			}
+		}
+	}
+
+	void Physics::CreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs)
 	{
 		b2BodyDef bodyDef = b2DefaultBodyDef();
-		bodyDef.isEnabled = bodyProps.b_isEnabled;
-		bodyDef.userData = bodyProps.userData;
+		bodyDef.isEnabled = parentBody->IsActive();
+		bodyDef.userData = parentBody;
 		bodyDef.position = b2Vec2(bodyProps.position.x, bodyProps.position.y);
 		bodyDef.rotation = bodyProps.rotation;
 		b2MotionLocks motionLocks;		
@@ -60,11 +96,14 @@ namespace FlatEngine
 		bodyID = b2CreateBody(m_worldID, &bodyDef);
 
 		b2ShapeDef shapeDef = b2DefaultShapeDef();
+		shapeDef.enableContactEvents = bodyProps.b_enableContactEvents;
 		shapeDef.density = bodyProps.density;
 		shapeDef.material.friction = bodyProps.friction;
 		shapeDef.material.restitution = bodyProps.restitution;
+		shapeDef.filter.categoryBits = 0;
+		shapeDef.filter.maskBits = 0;
 
-		TagList tagList = static_cast<GameObject*>(bodyDef.userData)->GetTagList();
+		TagList tagList = static_cast<Body*>(bodyDef.userData)->GetParent()->GetTagList();
 		// Category tags
 		std::map<std::string, bool> hasTags = tagList.GetTagsMap();
 		for (std::map<std::string, bool>::iterator iterator = hasTags.begin(); iterator != hasTags.end(); iterator++)
@@ -78,22 +117,30 @@ namespace FlatEngine
 				{
 					bit *= 2;
 				}
+				if (index == 0)
+				{
+					bit = 2;
+				}
 
 				shapeDef.filter.categoryBits |= bit;
 			}
 		}
 		// Masked tags
-		std::map<std::string, bool> ignoreTags = tagList.GetIgnoreTagsMap();
-		for (std::map<std::string, bool>::iterator iterator = ignoreTags.begin(); iterator != ignoreTags.end(); iterator++)
+		std::map<std::string, bool> collidesTags = tagList.GetCollidesTagsMap();
+		for (std::map<std::string, bool>::iterator iterator = collidesTags.begin(); iterator != collidesTags.end(); iterator++)
 		{
 			if (iterator->second)
 			{
 				uint64_t bit = 1;
-				int index = (int)std::distance(ignoreTags.begin(), iterator);
+				int index = (int)std::distance(collidesTags.begin(), iterator);
 
 				for (int i = 0; i < index; i++)
 				{
 					bit *= 2;
+				}
+				if (index == 0)
+				{
+					bit = 2;
 				}
 
 				shapeDef.filter.maskBits |= bit;
@@ -106,8 +153,8 @@ namespace FlatEngine
 		{
 		case Physics::BodyShape::BS_Box:
 		{
-			b2Polygon box = b2MakeBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2);			
-			shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &box);
+			b2Polygon box = b2MakeBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2);				
+			shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &box);			
 			break;
 		}
 		case Physics::BodyShape::BS_Circle:
@@ -148,30 +195,19 @@ namespace FlatEngine
 			break;
 		}
 
+		b2Shape_SetUserData(shapeID, parentBody);
 		shapeIDs.push_back(shapeID);
 	}
 
-	void Physics::CreateBox(BodyProps bodyProps, b2BodyId& bodyID)
-	{
-		bodyProps.shape = BS_Box;
-		bodyProps.type = b2_dynamicBody;	
-		bodyProps.position = Vector2(0, 0);
-		bodyProps.density = 1.0f;
-		bodyProps.friction = 0.3f;
-		std::vector<b2ShapeId> shapeId;
-
-		CreateBody(bodyProps, bodyID, shapeId);
-	}
-
-	void Physics::DestroyBody(b2BodyId bodyID)
+	void Physics::DestroyBody(b2BodyId bodyID, std::vector<b2ShapeId>& shapeIDs)
 	{
 		b2DestroyBody(bodyID);
 	}
 
-	void Physics::RecreateBody(BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId> shapeIDs)
+	void Physics::RecreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs)
 	{
-		DestroyBody(bodyID);
-		CreateBody(bodyProps, bodyID, shapeIDs);
+		DestroyBody(bodyID, shapeIDs);
+		CreateBody(parentBody, bodyProps, bodyID, shapeIDs);
 	}
 
 

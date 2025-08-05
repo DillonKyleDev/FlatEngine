@@ -281,6 +281,7 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
+    <ClInclude Include="Source\ChainBody.h" />
     <ClInclude Include="Source\CapsuleBody.h" />
     <ClInclude Include="Source\PolygonBody.h" />
     <ClInclude Include="Source\CircleBody.h" />
@@ -290,7 +291,6 @@
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetManager.h" />
     <ClInclude Include="Source\Audio.h" />
-    <ClInclude Include="Source\BoxCollider.h" />
     <ClInclude Include="Source\Button.h" />
     <ClInclude Include="Source\CPPScript.h" />
     <ClInclude Include="Source\CPPScriptHeaders.h" />
@@ -298,8 +298,6 @@
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\Canvas.h" />
     <ClInclude Include="Source\CharacterController.h" />
-    <ClInclude Include="Source\CircleCollider.h" />
-    <ClInclude Include="Source\Collider.h" />
     <ClInclude Include="Source\Component.h" />
     <ClInclude Include="Source\ECSManager.h" />
     <ClInclude Include="Source\EntryPoint.h" />
@@ -315,7 +313,6 @@
     <ClInclude Include="Source\ProfilerProcess.h" />
     <ClInclude Include="Source\Project.h" />
     <ClInclude Include="Source\RayCast.h" />
-    <ClInclude Include="Source\RigidBody.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\Script.h" />
@@ -345,6 +342,7 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
     <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
+    <ClCompile Include="Source\ChainBody.cpp" />
     <ClCompile Include="Source\CapsuleBody.cpp" />
     <ClCompile Include="Source\PolygonBody.cpp" />
     <ClCompile Include="Source\CircleBody.cpp" />
@@ -354,7 +352,6 @@
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AssetManager.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
-    <ClCompile Include="Source\BoxCollider.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\CPPScript.cpp" />
     <ClCompile Include="Source\CPPScriptMethods.cpp" />
@@ -362,8 +359,6 @@
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Canvas.cpp" />
     <ClCompile Include="Source\CharacterController.cpp" />
-    <ClCompile Include="Source\CircleCollider.cpp" />
-    <ClCompile Include="Source\Collider.cpp" />
     <ClCompile Include="Source\Component.cpp" />
     <ClCompile Include="Source\ECSManager.cpp" />
     <ClCompile Include="Source\FlatEngine.cpp" />
@@ -382,7 +377,6 @@
     <ClCompile Include="Source\ProfilerProcess.cpp" />
     <ClCompile Include="Source\Project.cpp" />
     <ClCompile Include="Source\RayCast.cpp" />
-    <ClCompile Include="Source\RigidBody.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\Script.cpp" />

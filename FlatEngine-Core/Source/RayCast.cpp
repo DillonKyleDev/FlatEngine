@@ -1,26 +1,18 @@
 #include "RayCast.h"
 #include "FlatEngine.h"
-#include "Scene.h"
 
 
 namespace FlatEngine
 {
-	RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void (*callback)(RayCast*, Collider*), long parentID, bool b_visible)
+	RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void (*callback)(RayCast*, Body*), long parentID, bool b_visible)
 	{
 		RayCast newRay = RayCast(initialPos, direction, increment, length, callback, parentID);
-		RayCast* rayPtr = GetLoadedScene()->AddRayCast(newRay, newRay.GetID());		
-		rayPtr->Cast(b_visible);
-		newRay = RayCast(*rayPtr);
-		GetLoadedScene()->RemoveComponent(rayPtr, newRay.GetID());
 		return newRay;
 	}
 
 
-	RayCast::RayCast(Vector2 initialPos, Vector2 direction, float increment, float length, void (*callback)(RayCast*, Collider*), long parentID, bool b_visible)
+	RayCast::RayCast(Vector2 initialPos, Vector2 direction, float increment, float length, void (*callback)(RayCast*, Body*), long parentID, bool b_visible)
 	{
-		SetID(GetNextComponentID());
-		SetType(T_RayCast);
-		SetParentID(parentID);
 		m_initialPos = initialPos;
 		m_currentPos = m_initialPos;
 		if (direction == Vector2(0, 0))
@@ -32,8 +24,7 @@ namespace FlatEngine
 		m_length = length;
 		m_b_casting = false;
 		m_b_visible = b_visible;
-		m_callback = callback;
-		SetActiveRadiusGrid(1);		
+		m_callback = callback;		
 		m_collidedWith = nullptr;
 	}
 
@@ -45,24 +36,6 @@ namespace FlatEngine
 	{
 		m_b_casting = true;
 		m_b_visible = b_visible;
-
-		//std::map<long, std::map<long, BoxCollider>>& sceneBoxColliders = GetLoadedScene()->GetBoxColliders();
-		//while (m_b_casting)
-		//{
-		//	for (std::map<long, std::map<long, BoxCollider>>::iterator outerIter = sceneBoxColliders.begin(); outerIter != sceneBoxColliders.end();)
-		//	{
-		//		for (std::map<long, BoxCollider>::iterator innerIter = outerIter->second.begin(); innerIter != outerIter->second.end();)
-		//		{
-		//			if (innerIter->second.GetParentID() != this->GetParentID())
-		//			{
-		//				CheckForCollisionBoxRayCastSAT(&innerIter->second, this);
-		//			}
-		//			innerIter++;
-		//		}
-		//		outerIter++;
-		//	}
-		//	Update();
-		//}
 	}
 
 	void RayCast::Update()
@@ -93,7 +66,7 @@ namespace FlatEngine
 		return m_b_casting;
 	}
 
-	void RayCast::OnHit(Collider* collidedWith)
+	void RayCast::OnHit(Body* collidedWith)
 	{
 		m_b_casting = false;
 		m_callback(this, collidedWith);
@@ -110,7 +83,7 @@ namespace FlatEngine
 		return m_initialPos;
 	}
 
-	Collider* RayCast::GetCollidedWith()
+	Body* RayCast::GetCollidedWith()
 	{
 		return m_collidedWith;
 	}

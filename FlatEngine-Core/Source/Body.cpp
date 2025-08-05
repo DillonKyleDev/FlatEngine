@@ -30,10 +30,20 @@ namespace FlatEngine
 
 	void Body::OnBeginContact(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID)
 	{		
+		// C++ scripts
 		if (m_b_beginContactCallbackSet)
 		{
-			m_beginContactCallback(manifold, myID, collidedWithID);
+			m_beginContactCallback(manifold, myID, collidedWithID);		
 		}
+		// Lua scripts
+		Body* caller = GetBodyFromShapeID(myID);
+		Body* collidedWith = GetBodyFromShapeID(collidedWithID);
+		CallLuaCollisionFunction(LuaEventFunction::OnBeginCollision, caller, collidedWith, manifold);
+	}
+
+	Body* Body::GetBodyFromShapeID(b2ShapeId shapeID)
+	{
+		return static_cast<Body*>(b2Shape_GetUserData(shapeID));
 	}
 
 	void Body::SetOnEndContact(void(*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID))
@@ -43,11 +53,16 @@ namespace FlatEngine
 	}
 
 	void Body::OnEndContact(b2ShapeId myID, b2ShapeId collidedWithID)
-	{		
+	{	
+		// C++ scripts
 		if (m_b_endContactCallbackSet)
-		{
-			m_endContactCallback(myID, collidedWithID);
+		{			
+			m_endContactCallback(myID, collidedWithID);	
 		}
+		// Lua scripts
+		Body* caller = GetBodyFromShapeID(myID);
+		Body* collidedWith = GetBodyFromShapeID(collidedWithID);
+		CallLuaCollisionFunction(LuaEventFunction::OnEndCollision, caller, collidedWith);
 	}
 
 	Physics::BodyProps Body::GetLiveProps()
@@ -71,8 +86,17 @@ namespace FlatEngine
 		liveProps.radius = m_bodyProps.radius;
 		liveProps.capsuleLength = m_bodyProps.capsuleLength;
 		liveProps.b_horizontal = m_bodyProps.b_horizontal;
+		liveProps.points = m_bodyProps.points;	
+		liveProps.b_isLoop = m_bodyProps.b_isLoop;
+		liveProps.tangentSpeed = m_bodyProps.tangentSpeed;
+		liveProps.rollingResistance = m_bodyProps.rollingResistance;
 
 		return liveProps;
+	}
+
+	void Body::SetBodyID(b2BodyId bodyID)
+	{
+		m_bodyID = bodyID;
 	}
 
 	void Body::SetPosition(Vector2 position)
@@ -195,12 +219,12 @@ namespace FlatEngine
 
 	void Body::CreateBody()
 	{
-		F_Physics->CreateBody(this, m_bodyProps, m_bodyID, m_shapeIDs);
+		F_Physics->CreateBody(this);
 	}
 
 	void Body::RecreateBody()
 	{
-		F_Physics->RecreateBody(this, m_bodyProps, m_bodyID, m_shapeIDs);
+		F_Physics->RecreateBody(this);
 	}
 
 	void Body::RecreateLiveBody()
@@ -260,7 +284,6 @@ namespace FlatEngine
 		return b2Body_GetAngularVelocity(m_bodyID);
 	}
 
-
 	void Body::SetBodyProps(Physics::BodyProps bodyProps)
 	{
 		m_bodyProps = bodyProps;		
@@ -276,13 +299,25 @@ namespace FlatEngine
 		return m_bodyID;
 	}
 
-	std::vector<b2ShapeId>& Body::GetShapeIDs()
+	std::vector<b2ShapeId> Body::GetShapeIDs()
 	{
 		return m_shapeIDs;
+	}
+
+	void Body::SetChainID(b2ChainId chainID)
+	{
+		m_chainID = chainID;
 	}
 
 	void Body::AddShapeID(b2ShapeId shapeID)
 	{
 		m_shapeIDs.push_back(shapeID);
+	}
+
+	void Body::CleanupIDs()
+	{
+		m_bodyID = b2_nullBodyId;
+		m_shapeIDs.clear();
+		m_chainID = b2_nullChainId;
 	}
 }

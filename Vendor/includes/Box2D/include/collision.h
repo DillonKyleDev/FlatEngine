@@ -7,6 +7,7 @@
 #include "math_functions.h"
 
 #include <stdbool.h>
+#include <vector>
 
 typedef struct b2SimplexCache b2SimplexCache;
 typedef struct b2Hull b2Hull;
@@ -558,6 +559,16 @@ typedef struct b2Manifold
 
 	/// The number of contacts points, will be 0, 1, or 2
 	int pointCount;
+
+	std::vector<b2ManifoldPoint> GetPoints() 
+	{ 
+		std::vector<b2ManifoldPoint> pointsVec;
+		for (int i = 0; i < pointCount; i++)
+		{
+			pointsVec.push_back(points[i]);
+		}
+		return pointsVec;
+	}
 
 } b2Manifold;
 

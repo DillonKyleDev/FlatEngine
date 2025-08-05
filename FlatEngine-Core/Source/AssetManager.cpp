@@ -174,6 +174,7 @@ namespace FlatEngine
 							std::string sValue = value.as<std::string>();
 
 							std::shared_ptr<Texture> newTexture = std::make_shared<Texture>();
+
 							m_textures.emplace(sKey, newTexture);
 							m_textures.at(sKey)->LoadFromFile(sValue);
 						}
@@ -251,7 +252,7 @@ namespace FlatEngine
 		}
 	}
 
-	std::shared_ptr<Texture> AssetManager::GetTextureObject(std::string textureName)
+	std::shared_ptr<Texture>& AssetManager::GetTextureObject(std::string textureName)
 	{
 		if (m_textures.count(textureName))
 		{

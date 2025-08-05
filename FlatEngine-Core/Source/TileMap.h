@@ -1,6 +1,5 @@
 #pragma once
 #include "Component.h"
-#include "BoxCollider.h"
 #include "TileSet.h"
 #include "Vector2.h"
 
@@ -23,7 +22,6 @@ namespace FlatEngine
     struct CollisionAreaData {
         Vector2 startCoord;
         Vector2 endCoord;
-        BoxCollider *collider;
     };
 
     class TileMap : public Component
@@ -46,7 +44,7 @@ namespace FlatEngine
         std::string GetSelectedTileSet();
         void SetSelectedTileSet(std::string tileSet);
         std::map<std::string, std::vector<CollisionAreaData>>& GetCollisionAreas();
-        BoxCollider* AddCollisionArea(std::string label, Vector2 startCoord, Vector2 endCoord);
+        //BoxCollider* AddCollisionArea(std::string label, Vector2 startCoord, Vector2 endCoord);
         void SetCollisionAreas(std::map<std::string, std::vector<CollisionAreaData>> collisionAreas);
         //void RemoveCollisionArea(std::string label, Vector2 startCoord, Vector2 endCoord);
         void SetCollisionAreaValues(std::string label, std::vector<std::pair<Vector2, Vector2>> colCoords);

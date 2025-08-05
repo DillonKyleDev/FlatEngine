@@ -35,7 +35,7 @@
                     "NpcTrigger": false
                 },
                 {
-                    "Player": false
+                    "Player": true
                 },
                 {
                     "PlayerDamage": false
@@ -54,14 +54,14 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "id": 0,
+                    "id": 72,
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 0.04166412353515625,
+                    "xPos": -2.306126832962036,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 4.681818008422852,
+                    "yPos": 11.354166984558105,
                     "yScale": 1.0
                 },
                 {
@@ -77,7 +77,7 @@
                     "density": 1.0,
                     "friction": 0.30000001192092896,
                     "gravityScale": 1.0,
-                    "id": 1,
+                    "id": 73,
                     "linearDamping": 0.0,
                     "radius": 1.0,
                     "restitution": 0.30000001192092896,
@@ -87,7 +87,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "attachedScript": "Player (C++)",
-                    "id": 2,
+                    "id": 74,
                     "scriptParameters": [],
                     "type": "Script"
                 },
@@ -95,18 +95,18 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "airControl": 0.20000000298023224,
-                    "id": 3,
+                    "id": 75,
                     "maxAcceleration": 0.5,
                     "maxSpeed": 10.0,
                     "type": "CharacterController"
                 }
             ],
-            "id": 0,
+            "id": 32,
             "name": "Player",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": 0.04166412353515625,
-            "spawnLocationY": 4.681818008422852,
+            "spawnLocationX": -2.306126832962036,
+            "spawnLocationY": 11.354166984558105,
             "tags": [
                 {
                     "Collectable": false

@@ -30,7 +30,7 @@ namespace FlatEngine
 		std::string GetFilePath(std::string fileName);
 		Vector4 GetColor(std::string colorName);
 		Uint32 GetColor32(std::string colorName);
-		std::shared_ptr<Texture>GetTextureObject(std::string textureName);
+		std::shared_ptr<Texture>& GetTextureObject(std::string textureName);
 		SDL_Texture* GetTexture(std::string textureName);		
 	private:
 		std::map<std::string, std::string> m_directories;

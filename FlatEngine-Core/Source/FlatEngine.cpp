@@ -98,8 +98,8 @@ namespace FlatEngine
 	std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
 
 	// Scene View
-	Vector2 F_sceneViewCenter = Vector2();
-	Vector2 F_sceneViewGridStep = Vector2();
+	Vector2* F_sceneViewCenter = nullptr;
+	Vector2* F_sceneViewGridStep = nullptr;
 
 
 	bool LoadFonts()
@@ -135,7 +135,7 @@ namespace FlatEngine
 	}
 	
 	// Get entire std::shared_ptr<Texture> object using name given in Textures.lua file
-	std::shared_ptr<Texture> GetTextureObject(std::string textureName)
+	std::shared_ptr<Texture>& GetTextureObject(std::string textureName)
 	{
 		return F_AssetManager.GetTextureObject(textureName);
 	}
@@ -2050,8 +2050,8 @@ namespace FlatEngine
 
 	void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness)
 	{
-		Vector2 start = ConvertWorldToScreen(startingPoint, F_sceneViewCenter, F_sceneViewGridStep.x);
-		Vector2 end = ConvertWorldToScreen(endingPoint, F_sceneViewCenter, F_sceneViewGridStep.x);
+		Vector2 start = ConvertWorldToScreen(startingPoint);
+		Vector2 end = ConvertWorldToScreen(endingPoint);
 		F_Logger.DrawLine(start, end, color, thickness, ImGui::GetForegroundDrawList());
 	}
 
@@ -2085,10 +2085,20 @@ namespace FlatEngine
 		}
 	}
 
-	Vector2 ConvertWorldToScreen(Vector2 positionInWorld, Vector2 relativeCenterPoint, float zoomMultiplier)
+	// Converts from world grid space in Scene View to screen space
+	Vector2 ConvertWorldToScreen(Vector2 positionInWorld)
 	{
-		float x = relativeCenterPoint.x + (positionInWorld.x * zoomMultiplier);
-		float y = relativeCenterPoint.y - (positionInWorld.y * zoomMultiplier);
+		float x = F_sceneViewCenter->x + (positionInWorld.x * F_sceneViewGridStep->x);
+		float y = F_sceneViewCenter->y - (positionInWorld.y * F_sceneViewGridStep->x);
+
+		return Vector2(x, y);
+	}
+
+	// Converts from screen space to world grid space in Scene View
+	Vector2 ConvertScreenToWorld(Vector2 positionOnScreen)
+	{
+		float x = (positionOnScreen.x - F_sceneViewCenter->x) / F_sceneViewGridStep->x;
+		float y = (F_sceneViewCenter->y - positionOnScreen.y) / F_sceneViewGridStep->x;
 
 		return Vector2(x, y);
 	}
@@ -3282,6 +3292,33 @@ namespace FlatEngine
 								loadedObject->AddPolygonBody(bodyProps, id, b_isActive, b_isCollapsed);
 
 								// Other PolygonBody props here
+							}
+							else if (type == "ChainBody")
+							{
+								Physics::BodyProps bodyProps;
+								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
+								bodyProps.shape = Physics::BodyShape::BS_Chain;
+								std::vector<Vector2> points = std::vector<Vector2>();
+
+								for (int i = 0; i < componentJson.at("points").size(); i++)
+								{
+									try
+									{
+										json pointsJson = componentJson.at("points").at(i);
+										Vector2 point = Vector2(CheckJsonFloat(pointsJson, "xPos", objectName), CheckJsonFloat(pointsJson, "yPos", objectName));										
+										points.push_back(point);
+									}
+									catch (const json::out_of_range& e)
+									{
+										LogError(e.what());
+									}
+								}
+
+								bodyProps.points = points;
+								bodyProps.b_isLoop = CheckJsonBool(componentJson, "_isLoop", objectName);
+								bodyProps.tangentSpeed = CheckJsonFloat(componentJson, "tangentSpeed", objectName);
+								bodyProps.rollingResistance = CheckJsonFloat(componentJson, "rollingResistance", objectName);
+								loadedObject->AddChainBody(bodyProps, id, b_isActive, b_isCollapsed);								
 							}
 							else if (type == "TileMap")
 							{

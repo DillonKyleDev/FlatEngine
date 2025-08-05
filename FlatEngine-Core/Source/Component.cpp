@@ -125,6 +125,10 @@ namespace FlatEngine
 			return "PolygonBody";
 			break;
 
+		case T_ChainBody:
+			return "ChainBody";
+			break;
+
 		default:
 			return "Null";
 		}

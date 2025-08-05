@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\ClosedLoop\\prefabs",
             "effectsVolume": 10,
-            "focusedGameObjectID": 2,
+            "focusedGameObjectID": 32,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Test.scn",
             "musicVolume": 10,
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 23.0,
-            "sceneViewGridStepY": 23.0,
-            "sceneViewScrollingX": 442.3470458984375,
-            "sceneViewScrollingY": 338.5
+            "sceneViewGridStepX": 24.0,
+            "sceneViewGridStepY": 24.0,
+            "sceneViewScrollingX": 557.3470458984375,
+            "sceneViewScrollingY": 394.5
         }
     ]
 }

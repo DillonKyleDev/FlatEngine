@@ -52,7 +52,7 @@ namespace FlatEngine
 			b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
 			b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;			
 			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdA))->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
-			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdB))->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
+			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdB))->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);		
 		}
 
 		for (int i = 0; i < contactEvents.endCount; ++i)
@@ -77,12 +77,14 @@ namespace FlatEngine
 		}
 	}
 
-	void Physics::CreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs)
+	void Physics::CreateBody(Body* parentBody)
 	{
+		BodyProps bodyProps = parentBody->GetBodyProps();
 		b2BodyDef bodyDef = b2DefaultBodyDef();
+		b2Vec2 position = b2Vec2(bodyProps.position.x, bodyProps.position.y);
 		bodyDef.isEnabled = parentBody->IsActive();
 		bodyDef.userData = parentBody;
-		bodyDef.position = b2Vec2(bodyProps.position.x, bodyProps.position.y);
+		bodyDef.position = position;
 		bodyDef.rotation = bodyProps.rotation;
 		b2MotionLocks motionLocks;		
 		motionLocks.angularZ = bodyProps.b_lockedRotation;
@@ -93,15 +95,19 @@ namespace FlatEngine
 		bodyDef.linearDamping = bodyProps.linearDamping;
 		bodyDef.angularDamping = bodyProps.angularDamping;
 		bodyDef.type = bodyProps.type;		
-		bodyID = b2CreateBody(m_worldID, &bodyDef);
+		b2BodyId bodyID = b2CreateBody(m_worldID, &bodyDef);
+		parentBody->SetBodyID(bodyID);
 
 		b2ShapeDef shapeDef = b2DefaultShapeDef();
+		shapeDef.userData = parentBody;
 		shapeDef.enableContactEvents = bodyProps.b_enableContactEvents;
 		shapeDef.density = bodyProps.density;
 		shapeDef.material.friction = bodyProps.friction;
 		shapeDef.material.restitution = bodyProps.restitution;
-		shapeDef.filter.categoryBits = 0;
-		shapeDef.filter.maskBits = 0;
+
+		b2Filter filter = b2DefaultFilter();
+		filter.categoryBits = 0;
+		filter.maskBits = 0;
 
 		TagList tagList = static_cast<Body*>(bodyDef.userData)->GetParent()->GetTagList();
 		// Category tags
@@ -122,7 +128,7 @@ namespace FlatEngine
 					bit = 2;
 				}
 
-				shapeDef.filter.categoryBits |= bit;
+				filter.categoryBits |= bit;
 			}
 		}
 		// Masked tags
@@ -143,11 +149,13 @@ namespace FlatEngine
 					bit = 2;
 				}
 
-				shapeDef.filter.maskBits |= bit;
+				filter.maskBits |= bit;
 			}
 		}
 
-		b2ShapeId shapeID;
+		shapeDef.filter = filter;
+
+		b2ShapeId shapeID = b2ShapeId();
 
 		switch (bodyProps.shape)
 		{
@@ -190,30 +198,64 @@ namespace FlatEngine
 			shapeID = b2CreateCapsuleShape(bodyID, &shapeDef, &capsule);
 			break;
 		}
-		default:
-			shapeID = b2ShapeId();
+		case Physics::BodyShape::BS_Polygon:
+		{
+			// Polygon things
+			break;
+		}
+		case Physics::BodyShape::BS_Chain:
+		{												
+			b2ChainDef chainDef = b2DefaultChainDef();
+			chainDef.userData = parentBody;
+			chainDef.filter = filter;
+			chainDef.isLoop = bodyProps.b_isLoop;
+
+			b2SurfaceMaterial material = b2DefaultSurfaceMaterial();
+			material.friction = bodyProps.friction;
+			material.restitution = bodyProps.restitution;
+			material.rollingResistance = bodyProps.rollingResistance;
+			material.tangentSpeed = bodyProps.tangentSpeed;
+			chainDef.materialCount = 1;
+			chainDef.materials = &material;
+
+			std::vector<b2Vec2> points;
+
+			for (Vector2 point : bodyProps.points)
+			{
+				points.push_back(b2Vec2(point.x, point.y));
+			}
+			
+			chainDef.points = &points[0];
+			chainDef.count = points.size();
+
+			b2ChainId chainID = b2CreateChain(bodyID, &chainDef);
+			if (b2Chain_IsValid(chainID))
+			{
+				parentBody->SetChainID(chainID);
+			}
+			
+			break;
+		}
+		default:		
 			break;
 		}
 
-		b2Shape_SetUserData(shapeID, parentBody);
-		shapeIDs.push_back(shapeID);
+		if (b2Shape_IsValid(shapeID))
+		{
+			b2Shape_SetUserData(shapeID, parentBody);			
+			parentBody->AddShapeID(shapeID);
+		}
 	}
 
-	void Physics::DestroyBody(b2BodyId bodyID, std::vector<b2ShapeId>& shapeIDs)
+	void Physics::DestroyBody(b2BodyId bodyID)
 	{
 		b2DestroyBody(bodyID);
 	}
 
-	void Physics::RecreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs)
+	void Physics::RecreateBody(Body* parentBody)
 	{
-		DestroyBody(bodyID, shapeIDs);
-		CreateBody(parentBody, bodyProps, bodyID, shapeIDs);
+		DestroyBody(parentBody->GetBodyID());
+		parentBody->CleanupIDs();
+		CreateBody(parentBody);
 	}
-
-
-
-	//b2Vec2 position = b2Body_GetPosition(F_Physics->m_dynamicID);
-	//b2Rot rotation = b2Body_GetRotation(F_Physics->m_dynamicID);
-	//LogVector2(Vector2(position.x, position.y), "Position: ");
-	//LogFloat(b2Rot_GetAngle(rotation), "Rotation: ");
 }

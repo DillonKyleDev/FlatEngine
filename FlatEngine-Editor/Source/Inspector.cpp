@@ -13,9 +13,6 @@
 #include "Text.h"
 #include "Audio.h"
 #include "CharacterController.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
-#include "RigidBody.h"
 #include "Component.h"
 #include "TileMap.h"
 #include "BoxBody.h"	
@@ -124,30 +121,51 @@ namespace FlatGui
 						}
 					}
 
-					if (!focusedObject->HasComponent("BoxBody"))
+					if (focusedObject->GetBody() == nullptr)
 					{
-						if (ImGui::MenuItem("BoxBody"))
+						if (!focusedObject->HasComponent("BoxBody"))
 						{
-							focusedObject->AddBoxBody();
-							ImGui::CloseCurrentPopup();
+							if (ImGui::MenuItem("BoxBody"))
+							{
+								focusedObject->AddBoxBody();
+								ImGui::CloseCurrentPopup();
+							}
 						}
-					}
 
-					if (!focusedObject->HasComponent("CircleBody"))
-					{
-						if (ImGui::MenuItem("CircleBody"))
+						if (!focusedObject->HasComponent("CircleBody"))
 						{
-							focusedObject->AddCircleBody();
-							ImGui::CloseCurrentPopup();
+							if (ImGui::MenuItem("CircleBody"))
+							{
+								focusedObject->AddCircleBody();
+								ImGui::CloseCurrentPopup();
+							}
 						}
-					}
 
-					if (!focusedObject->HasComponent("CapsuleBody"))
-					{
-						if (ImGui::MenuItem("CapsuleBody"))
+						if (!focusedObject->HasComponent("CapsuleBody"))
 						{
-							focusedObject->AddCapsuleBody();
-							ImGui::CloseCurrentPopup();
+							if (ImGui::MenuItem("CapsuleBody"))
+							{
+								focusedObject->AddCapsuleBody();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
+						if (!focusedObject->HasComponent("PolygonBody"))
+						{
+							if (ImGui::MenuItem("PolygonBody"))
+							{
+								focusedObject->AddPolygonBody();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
+						if (!focusedObject->HasComponent("ChainBody"))
+						{
+							if (ImGui::MenuItem("ChainBody"))
+							{
+								focusedObject->AddChainBody();
+								ImGui::CloseCurrentPopup();
+							}
 						}
 					}
 
@@ -438,6 +456,17 @@ namespace FlatGui
 								RenderPolygonBodyComponent(polygonBody);
 							}
 							EndComponent(polygonBody);
+						}
+
+						ChainBody* chainBody = focusedObject->GetChainBody();
+						if (chainBody != nullptr)
+						{
+							BeginComponent(chainBody, queuedForDelete);
+							if (!chainBody->IsCollapsed())
+							{
+								RenderChainBodyComponent(chainBody);
+							}
+							EndComponent(chainBody);
 						}
 						
 						//TileMap* tileMap = focusedObject->GetTileMap();

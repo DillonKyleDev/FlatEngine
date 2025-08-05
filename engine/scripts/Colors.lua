@@ -34,7 +34,25 @@ F_Colors = {
 	colliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.35),
 	colliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
 	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
-	colliderColliding = Vector4:new(0.76, 0.42, 0.0, 1.0),
+	-- Box
+	boxColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
+	boxColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),	
+	-- Circle	
+	circleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	circleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	-- Capsule
+	capsuleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	capsuleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	capsuleColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.35),
+	capsuleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
+	-- Polygon
+	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	-- Chain
+	chainColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	chainColliderInactive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	chainColliderEndSegments = Vector4:new(1.0, 1.0, 0.0, 1.0),
+
 	rayCast = Vector4:new(0.76, 0.42, 0.0, 1.0),
 	-- Button Components
 	buttonComponentActive = Vector4:new(0.75, 0.06, 0.41, 1.0),

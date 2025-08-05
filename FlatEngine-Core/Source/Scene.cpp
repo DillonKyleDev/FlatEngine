@@ -11,10 +11,6 @@
 #include "Animation.h"
 #include "Audio.h"
 #include "Text.h"
-#include "Collider.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
-#include "RigidBody.h"
 #include "GameLoop.h"
 #include "ECSManager.h"
 #include "TileMap.h"
@@ -354,12 +350,6 @@ namespace FlatEngine
 		return m_ECSManager.AddText(text, ownerID);
 	}
 
-	RayCast* Scene::AddRayCast(RayCast rayCast, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(rayCast.GetID());
-		return m_ECSManager.AddRayCast(rayCast, ownerID);
-	}
-
 	BoxBody* Scene::AddBoxBody(BoxBody boxBody, long ownerID)
 	{
 		KeepNextComponentIDUpToDate(boxBody.GetID());
@@ -384,17 +374,11 @@ namespace FlatEngine
 		return m_ECSManager.AddPolygonBody(polygonBody, ownerID);
 	}
 
-	//BoxCollider* Scene::AddBoxCollider(BoxCollider collider, long ownerID)
-	//{
-	//	KeepNextComponentIDUpToDate(collider.GetID());
-	//	return m_ECSManager.AddBoxCollider(collider, ownerID);
-	//}
-
-	//CircleCollider* Scene::AddCircleCollider(CircleCollider collider, long ownerID)
-	//{
-	//	KeepNextComponentIDUpToDate(collider.GetID());
-	//	return m_ECSManager.AddCircleCollider(collider, ownerID);
-	//}
+	ChainBody* Scene::AddChainBody(ChainBody chainBody, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(chainBody.GetID());
+		return m_ECSManager.AddChainBody(chainBody, ownerID);
+	}
 
 	Animation* Scene::AddAnimation(Animation animation, long ownerID)
 	{
@@ -507,6 +491,11 @@ namespace FlatEngine
 		return m_ECSManager.GetPolygonBodyByOwner(ownerID);
 	}
 
+	ChainBody* Scene::GetChainBodyByOwner(long ownerID)
+	{
+		return m_ECSManager.GetChainBodyByOwner(ownerID);
+	}
+
 	CharacterController* Scene::GetCharacterControllerByOwner(long ownerID)
 	{
 		return m_ECSManager.GetCharacterControllerByOwner(ownerID);
@@ -556,10 +545,6 @@ namespace FlatEngine
 	std::map<long, Text>& Scene::GetTexts()
 	{
 		return m_ECSManager.GetTexts();
-	}
-	std::map<long, RayCast>& Scene::GetRayCasts()
-	{
-		return m_ECSManager.GetRayCasts();
 	}
 	std::map<long, BoxBody>& Scene::GetBoxBodies()
 	{

@@ -3,12 +3,10 @@
 #include "GameObject.h"
 #include "AssetManager.h"
 #include "Sprite.h"
-#include "BoxCollider.h"
 #include "SceneManager.h"
 #include "Project.h"
 #include "Vector2.h"
 #include "PrefabManager.h"
-#include "SceneManager.h"
 #include "TagList.h"
 
 #include "imgui.h"
@@ -207,11 +205,6 @@ namespace FlatGui
 					FG_b_showTileSetEditor = !FG_b_showTileSetEditor;
 					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 				}
-				//if (ImGui::MenuItem("Script Editor", NULL, FG_b_showScriptEditor))
-				//{
-				//	FG_b_showScriptEditor = !FG_b_showScriptEditor;
-				//	SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
-				//}
 				if (ImGui::MenuItem("Mapping Context Editor", NULL, FG_b_showMappingContextEditor))
 				{
 					FG_b_showMappingContextEditor = !FG_b_showMappingContextEditor;
@@ -336,6 +329,13 @@ namespace FlatGui
 					//	newObject->SetName("PolygonBody_" + std::to_string(newObject->GetID()));
 					//	SetFocusedGameObjectID(newObject->GetID());
 					//}
+					if (ImGui::MenuItem("ChainBody"))
+					{
+						GameObject* newObject = FL::CreateGameObject(-1);
+						newObject->AddChainBody();
+						newObject->SetName("ChainBody_" + std::to_string(newObject->GetID()));
+						SetFocusedGameObjectID(newObject->GetID());
+					}
 					//if (ImGui::MenuItem("TileMap"))
 					//{
 					//	GameObject* newObject = FL::CreateGameObject(-1);

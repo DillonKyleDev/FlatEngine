@@ -42,12 +42,14 @@ namespace FlatEngine
 	class Animation;
 	class Audio;
 	class Text;
-	class CharacterController;
+	class CharacterController;	
+	class Physics;
 	class Body;
 	class BoxBody;
 	class CircleBody;
 	class CapsuleBody;
 	class PolygonBody;
+	class ChainBody;
 	class TileMap;
 	class TileSet;
 }
@@ -73,11 +75,13 @@ using Animation = FL::Animation;
 using Audio = FL::Audio;
 using Text = FL::Text;
 using CharacterController = FL::CharacterController;
+using Physics = FL::Physics;
 using Body = FL::Body;
 using BoxBody = FL::BoxBody;
 using CircleBody = FL::CircleBody;
 using CapsuleBody = FL::CapsuleBody;
 using PolygonBody = FL::PolygonBody;
+using ChainBody = FL::ChainBody;
 using TileMap = FL::TileMap;
 using TileSet = FL::TileSet;
 
@@ -184,6 +188,8 @@ namespace FlatGui
 	extern void RenderGridView(Vector2& centerPoint, Vector2& scrolling, bool b_weightedScroll, Vector2 canvasP0, Vector2 canvasP1, Vector2 canvasSize, Vector2& gridStep, Vector2 centerOffset, bool b_showAxis = true);
 	extern void RenderViewObjects(std::map<long, GameObject>& objects, Vector2 centerPoint, Vector2 canvasP0, Vector2 canvasSize, float gridStep);
 	extern void RenderViewObject(GameObject& self, Vector2 scrolling, Vector2 canvasP0, Vector2 canvasSize, float gridStep, ImDrawList* drawList, ImDrawListSplitter* drawSplitter);
+	extern bool RenderChainAddPointWidget(ChainBody* chainBody, Vector2 point, int startIndex);
+	extern bool RenderChainPointWidget(ChainBody* chainBody, Vector2& point, int index);
 	extern void RenderTransformArrowWidget();
 	extern void RenderFileExplorer();
 	extern void RenderFilesTopBar();
@@ -216,10 +222,12 @@ namespace FlatGui
 	extern void RenderAudioComponent(Audio* audio);
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
+	extern void RenderBodyComponentAttributes(Body* body);
 	extern void RenderBoxBodyComponent(BoxBody* boxBody);
 	extern void RenderCircleBodyComponent(CircleBody* circleBody);
 	extern void RenderCapsuleBodyComponent(CapsuleBody* capsuleBody);
 	extern void RenderPolygonBodyComponent(PolygonBody* polygonBody);	
+	extern void RenderChainBodyComponent(ChainBody* chainBody);
 	extern void RenderTileMapComponent(TileMap* tileMap);
 
 	// SceneView

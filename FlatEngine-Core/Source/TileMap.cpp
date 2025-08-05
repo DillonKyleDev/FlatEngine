@@ -166,44 +166,44 @@ namespace FlatEngine
 		return m_collisionAreas;
 	}
 
-	BoxCollider* TileMap::AddCollisionArea(std::string label, Vector2 startCoord, Vector2 endCoord)
-	{
-		BoxCollider newCollisionArea = BoxCollider(GetNextComponentID(), GetParentID());
+	//BoxCollider* TileMap::AddCollisionArea(std::string label, Vector2 startCoord, Vector2 endCoord)
+	//{
+	//	BoxCollider newCollisionArea = BoxCollider(GetNextComponentID(), GetParentID());
 
-		newCollisionArea.SetTileMapCollider(true);
-		newCollisionArea.SetActive(true);
-		newCollisionArea.SetCollapsed(false);
-		newCollisionArea.SetIsContinuous(false);		
-		newCollisionArea.SetIsSolid(true);
-		newCollisionArea.SetActiveLayer(0);
-		newCollisionArea.SetRotation(0);
-		newCollisionArea.SetShowActiveRadius(false);		
+	//	newCollisionArea.SetTileMapCollider(true);
+	//	newCollisionArea.SetActive(true);
+	//	newCollisionArea.SetCollapsed(false);
+	//	newCollisionArea.SetIsContinuous(false);		
+	//	newCollisionArea.SetIsSolid(true);
+	//	newCollisionArea.SetActiveLayer(0);
+	//	newCollisionArea.SetRotation(0);
+	//	newCollisionArea.SetShowActiveRadius(false);		
 
-		BoxCollider* colliderPtr = nullptr;
-		
-		if (GetLoadedScene() != nullptr)
-		{
-			//colliderPtr = GetLoadedScene()->AddBoxCollider(newCollisionArea, GetParentID());
+	//	BoxCollider* colliderPtr = nullptr;
+	//	
+	//	if (GetLoadedScene() != nullptr)
+	//	{
+	//		//colliderPtr = GetLoadedScene()->AddBoxCollider(newCollisionArea, GetParentID());
 
-			CollisionAreaData colData;
-			colData.collider = colliderPtr;
-			colData.startCoord = startCoord;
-			colData.endCoord = endCoord;
+	//		CollisionAreaData colData;
+	//		colData.collider = colliderPtr;
+	//		colData.startCoord = startCoord;
+	//		colData.endCoord = endCoord;
 
-			if (m_collisionAreas.count(label) == 0)
-			{
-				std::vector<CollisionAreaData> colVector;
-				colVector.push_back(colData);
-				m_collisionAreas.emplace(label, colVector);
-			}
-			else
-			{
-				m_collisionAreas.at(label).push_back(colData);
-			}
-		}
+	//		if (m_collisionAreas.count(label) == 0)
+	//		{
+	//			std::vector<CollisionAreaData> colVector;
+	//			colVector.push_back(colData);
+	//			m_collisionAreas.emplace(label, colVector);
+	//		}
+	//		else
+	//		{
+	//			m_collisionAreas.at(label).push_back(colData);
+	//		}
+	//	}
 
-		return colliderPtr;
-	}
+	//	return colliderPtr;
+	//}
 
 	void TileMap::SetCollisionAreas(std::map<std::string, std::vector<CollisionAreaData>> collisionAreas)
 	{
@@ -225,18 +225,14 @@ namespace FlatEngine
 		// Delete old BoxColliders
 		for (CollisionAreaData collisionArea : m_collisionAreas.at(label))
 		{
-			if (GetLoadedScene() != nullptr)
-			{
-				GetLoadedScene()->RemoveComponent(collisionArea.collider);
-			}
+
 		}
 		m_collisionAreas.at(label).clear();
 
 		// Use the passed coords to create new CollisionAreaDatas in this Collision Area
 		for (std::pair<Vector2, Vector2> coord : colCoords)
 		{
-			// Create CollisionAreaData object with that data, including BoxCollider
-			BoxCollider* collider = AddCollisionArea(label, coord.first, coord.second);
+			// Create CollisionAreaData object with that data, including BoxCollider			
 		}
 
 		CalculateColliderValues(label);
@@ -249,9 +245,9 @@ namespace FlatEngine
 			// Delete old BoxColliders
 			for (CollisionAreaData collisionArea : m_collisionAreas.at(label))
 			{
-				BoxCollider* collider = collisionArea.collider;
+				//BoxCollider* collider = collisionArea.collider;
 
-				if (collider != nullptr)
+				//if (collider != nullptr)
 				{
 					// Use that data to set the positioning of the BoxCollider relative to the TileMap
 					Vector2 colliderStart = Vector2(collisionArea.startCoord.x + 1, collisionArea.startCoord.y + 1);
@@ -318,8 +314,8 @@ namespace FlatEngine
 						colliderCenterY = colliderEnd.y + heightToAdd - tileMapCenterY;
 					}
 
-					collider->SetActiveOffset(Vector2(colliderCenterX * gridWidthsInATile, -colliderCenterY * gridHeightsInATile));
-					collider->SetActiveDimensions(colWidthInTiles * gridWidthsInATile, colHeightInTiles * gridHeightsInATile);
+					//collider->SetActiveOffset(Vector2(colliderCenterX * gridWidthsInATile, -colliderCenterY * gridHeightsInATile));
+					//collider->SetActiveDimensions(colWidthInTiles * gridWidthsInATile, colHeightInTiles * gridHeightsInATile);
 				}
 			}
 		}

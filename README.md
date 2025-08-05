@@ -604,7 +604,7 @@ Please see the section at the very bottom where every engine and class function 
 
 Scripting in FlatEngine2D is done in a specific way due to how Lua is implemented in it.  Before each script is run, a Lua table is created for each Lua Script that exists.  These tables will be used by each script of the same name to keep track of and access each instance of the GameObject that "owns" a copy, using the GameObjects ID.  For example:
 
-A Script named "Health" is created.  At time of creation, a new Lua table is made called Health.  Then, in the `Awake()` function of the `PlayerController.scp.lua` script file, a new index in the Health table is created using the ID of the GameObject.  This means that each GameObject can only have ONE script component for each script that exists.  You cannot have two script components that have the same Script attached in one GameObject (I am not sure why you would want to anyway).  IMPORTANT: All data that is specific to this script that needs to be tracked and accessed on a per-object basis MUST be put inside this table if you want to access it later in the script and from other script files.  This is because of the global nature of the Lua implementation. Every Script sees every other Script and every other function.
+A Script named "Health" is created.  At time of creation, a new Lua table is made called Health.  Then, in the `Awake()` function of the `Health.scp.lua` script file, a new index in the Health table is created using the ID of the GameObject.  This means that each GameObject can only have ONE script component for each script file that exists.  You cannot have two script components that have the same Script attached in one GameObject (I am not sure why you would want to anyway).  IMPORTANT: All data that is specific to this script that needs to be tracked and accessed on a per-object basis MUST be put inside this table if you want to access it later in the script and from other script files.  This is because of the global nature of the Lua implementation. Every Script sees every other Script and every other function.
 
 *Note: GameObject IDs can be viewed by hovering over a GameObject in the Hierarchies and holding `left alt`.  The same can be done to view the IDs of components in the Inspector View.*
 
@@ -629,7 +629,7 @@ If you then needed to access these values for the specific GameObject, you need 
 1. Through the engine, either via the main script functions: Awake, Start, and Update, or through an Animation Event call.
 2. From other scripts
 
-When a script is called in the first way, the script is "initialized" by FlatEngine, which just means it sets some variables that you can access with Lua to specific values.  It sets the variable `this_object` to the GameObject that is calling the function, and it sets the variable `my_id` to the ID of the GameObject that is being called.  If the Script is called via the engine you can use the my_id variable in conjunction with the script table to access the data of the specific script instance (in the `Update()` function of the Health script, for example) like so:
+When a script is called in the first way, the script is "initialized" by FlatEngine, which just means it sets some variables that you can access with Lua to specific values.  It sets the variable `this_object` to the GameObject that is calling the function, and it sets the variable `my_id` to the ID of the GameObject that is being called.  If the Script is called via the engine you can use the `my_id` variable in conjunction with the script table to access the data of the specific script instance (in the `Update()` function of the Health script, for example) like so:
 
 
 ```
@@ -654,17 +654,17 @@ end
 The data variable is a convenient way to not have to type `Health[my_id].currentHealth` every time and it is local because the default for Lua variables is global and we want to keep this variable only accessable to this Update function.
 
 
-For the second way a script can be called, through another script, you must ensure that the ID you are referencing belongs to the script you actually want to perform actions on before you do so.  Let's say you have a BlasterRound script that when `OnBoxCollisionEnter` is called it needs to tell whoever it collided with that it has done damage:
+For the second way a script can be called, through another script, you must ensure that the ID you are referencing belongs to the script you actually want to perform actions on before you do so.  Let's say you have a BlasterRound script that when `OnBeginCollision` is called, it needs to tell whoever it collided with that it has done damage:
 
 
 ```
 -- BlasterRound.scp.lua
 
-function OnBoxCollisionEnter(collidedWith)
+function OnBeginCollision(collidedWith, manifold)
      local data = BlasterRound[my_id]
-     local collidedID = collidedWith:GetParentID()
 
-     if collidedWith:GetParent():HasTag("Enemy") then          
+     if collidedWith:GetParent():HasTag("Enemy") then 
+          local collidedID = collidedWith:GetParentID()         
           Damage(collidedID, 5)          
      end     
 end
@@ -673,13 +673,13 @@ end
 
 There is a lot going on here so let's break it down:
 
-This function, `OnBoxCollisionEnter()`, is one of many functions that are called during specific events by FlatEngine.  It is called whenever this object collides with another GameObject.  Because it is a function that is called by the engine, it is guaranteed that the `my_id` and `this_object` variables will contain the data associated with this scripts instance so we can freely use `my_id` to access its data.  However, because we need to communicate with another script to tell it to do damage, we have to get ahold of that objects ID.  To do that we can use the `GetParentID()` function.  This function is a function of the Component class and can be used on any component to get the ID of the GameObject that owns it. Convenient!  Let's continue:
+This function, `OnBeginCollision()`, is one of several functions that are called during specific events by FlatEngine.  It is called whenever the owning GameObject's collision body collides with another GameObject's.  Because it is a function that is called by the engine, it is guaranteed that the `my_id` and `this_object` variables will contain the data associated with this script's instance so we can freely use `my_id` to access it's data.  However, because we need to communicate with another script to tell it to do damage, we have to get ahold of that object's ID.  To do that we can use the `GetParentID()` function on the `Body* collidedWith` parameter that is passed into `OnBeginCollision()`.  `GetParentID()` is a function of the Component class and can be used on any Component to get the ID of the GameObject that owns it.  Let's continue:
 
 `local data = BlasterRound[my_id]`<br/>
-We saw this earlier. We are using the `my_id` variable to gain access to the script instances data and storing it in the local data variable.
+We saw this earlier. We are using the `my_id` variable to gain access to the script instances data and storing it in the local `data` variable.
 
 `local collidedID = collidedWith:GetParentID()`<br/>
-collidedWith is a of type BoxCollider, which like all components, has a `GetParentID()` function. We assign the BoxColliders parent ID to a local variable collidedID.
+collidedWith is a of type `Body*`, which like all components, has a `GetParentID()` function. We assign the `Body*`'s parent ID to a local variable `collidedID`.
 
 `if collidedWith:GetParent():HasTag("Enemy") then`<br/>
 `GetParent()` is a Component function that gets the actual GameObject that owns this component.  `HasTag()` is a boolean function that checks for a specific Tag on a GameObject (not as important to this demonstration).
@@ -697,7 +697,7 @@ end
 ```
 
 
-Then when the Damage function is called from BlasterRound in the `OnBoxCollisionEnter()` function, the engine will have assigned the variables `my_id` and `this_object` with references to the BlasterRound object (in this case), the `Damage()` function would be doing damage to the BlasterRound GameObject because it is accessing the table using its ID.  That is also assuming there is any data to access in the first place, as the BlasterRound GameObject may not even have a Health script with data to access.
+Then when the Damage function is called from `BlasterRound.lua.scp` in the `OnBeginCollision()` function, the engine will have assigned the variables `my_id` and `this_object` with references to the BlasterRound object (in this case), the `Damage()` function would be doing damage to the BlasterRound GameObject because it is accessing the Health table using it's ID.  That is also assuming there is any data to access in the first place, as the BlasterRound GameObject may not even have a Health script with data to access.
 
 Hopefully this distinction makes sense because it is essential in understanding how Lua operates on GameObjects within FlatEngine.
 
@@ -709,12 +709,9 @@ Here is a list of every function that is called by the engine at specific times 
 `Awake()` -- Called upon instantiation of the GameObject</br>
 `Start()` -- Called after all Awake functions have been called upon instantiation of the GameObject</br>
 `Update()` -- Called once per frame</br>
-`OnBoxCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a BoxCollider that is colliding</br>
-`OnBoxCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a BoxCollider that is colliding</br>
-`OnBoxCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a BoxCollider that is now no longer colliding</br>
-`OnCircleCollision(collidedWith)` -- Called every frame there is a collision happening on an object that has a CircleCollider that is colliding</br>
-`OnCircleCollisionEnter(collidedWith)` -- Called on the first frame a collision happens on an object that has a CircleCollider that is colliding</br>
-`OnCircleCollisionLeave(collidedWith)` -- Called when a collision ceases on an object that has a CircleCollider that is now no longer colliding</br>
+`OnCollision(collidedWith, manifold)` -- Called every frame there is a collision happening on an object that has a Body that is colliding</br>
+`OnBeginCollision(collidedWith, manifold)` -- Called on the first frame a collision happens on an object that has a Body that is colliding</br>
+`OnEndCollision(collidedWith, manifold)` -- Called when a collision ceases on an object that has a Body that is now no longer colliding</br>
 `OnButtonMouseOver()` -- Called every frame the mouse is hovering a Button</br>
 `OnButtonMouseEnter()` -- Called on the first frame a mouse is hovering a Button</br>
 `OnButtonMouseLeave()` -- Called when the mouse stops hovering a Button</br>

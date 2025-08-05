@@ -16,6 +16,7 @@
 #include "CircleBody.h"
 #include "CapsuleBody.h"
 #include "PolygonBody.h"
+#include "ChainBody.h"
 
 
 namespace FlatEngine
@@ -721,6 +722,55 @@ namespace FlatEngine
 		return polygonBodyPtr;
 	}
 
+	ChainBody* GameObject::AddChainBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	{
+		Vector2 position = GetTransform()->GetPosition();
+		float rotation = GetTransform()->GetRotation();
+
+		long nextID = ID;
+		if (nextID == -1)
+		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		ChainBody chainBody = ChainBody(nextID, m_ID);
+		chainBody.SetActive(b_active);
+		chainBody.SetCollapsed(b_collapsed);
+
+		if (bodyProps.shape == Physics::BodyShape::BS_None)
+		{
+			bodyProps = chainBody.GetBodyProps();
+		}
+		bodyProps.position = position;
+		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
+
+		ChainBody* chainBodyPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			chainBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddChainBody(chainBody, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			chainBodyPtr = GetLoadedScene()->AddChainBody(chainBody, m_ID);
+		}
+
+		if (chainBodyPtr != nullptr)
+		{
+			m_components.push_back(chainBodyPtr);
+			chainBodyPtr->SetBodyProps(bodyProps);
+			chainBodyPtr->CreateBody();
+		}
+
+		return chainBodyPtr;
+	}
+
 	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
 	{
 		long nextID = ID;
@@ -948,6 +998,7 @@ namespace FlatEngine
 		CircleBody* circleBody = GetCircleBody();
 		CapsuleBody* capsuleBody = GetCapsuleBody();
 		PolygonBody* polygonBody = GetPolygonBody();
+		ChainBody* chainBody = GetChainBody();
 
 		if (boxBody != nullptr)
 		{
@@ -964,6 +1015,10 @@ namespace FlatEngine
 		else if (polygonBody != nullptr)
 		{
 			return polygonBody;
+		}
+		else if (chainBody != nullptr)
+		{
+			return chainBody;
 		}
 		else
 		{
@@ -1017,6 +1072,19 @@ namespace FlatEngine
 		else if (GetLoadedScene() != nullptr)
 		{
 			return GetLoadedScene()->GetPolygonBodyByOwner(m_ID);
+		}
+		return nullptr;
+	}
+
+	ChainBody* GameObject::GetChainBody()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetChainBodyByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetChainBodyByOwner(m_ID);
 		}
 		return nullptr;
 	}

@@ -19,7 +19,8 @@ namespace FlatEngine
 			BS_Box,
 			BS_Circle,
 			BS_Capsule,
-			BS_Polygon
+			BS_Polygon,
+			BS_Chain
 		};
 		struct BodyProps {
 			bool b_isEnabled = true;
@@ -41,7 +42,10 @@ namespace FlatEngine
 			float radius = 1.0f;
 			float capsuleLength = 4.0f;
 			bool b_horizontal = false;
-			std::vector<Vector2> points = std::vector<Vector2>();
+			std::vector<Vector2> points = std::vector<Vector2>();			
+			bool b_isLoop = false;
+			float tangentSpeed = 0.0f;
+			float rollingResistance = 0.0f;
 		};
 
 		Physics();
@@ -52,11 +56,11 @@ namespace FlatEngine
 		void Update(float deltaTime);
 		void HandleCollisions();
 
-		void CreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs);
-		void DestroyBody(b2BodyId bodyID, std::vector<b2ShapeId>& shapeIDs);
-		void RecreateBody(Body* parentBody, BodyProps bodyProps, b2BodyId& bodyID, std::vector<b2ShapeId>& shapeIDs);
+		void CreateBody(Body* parentBody);
+		void DestroyBody(b2BodyId bodyID);
+		void RecreateBody(Body* parentBody);
 
 	private:
-		b2WorldId m_worldID;
+		b2WorldId m_worldID{};
 	};
 }

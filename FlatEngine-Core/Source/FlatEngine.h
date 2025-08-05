@@ -71,6 +71,7 @@ namespace FlatEngine
 	class ECSManager;
 	class TileSet;
 	class Physics;
+	class Body;
 
 	enum F_CURSOR_MODE {
 		TRANSLATE,
@@ -166,18 +167,18 @@ namespace FlatEngine
 	extern Camera* F_primaryCamera;
 
 	// Scene View
-	extern Vector2 F_sceneViewCenter;
-	extern Vector2 F_sceneViewGridStep; 
+	extern Vector2* F_sceneViewCenter;
+	extern Vector2* F_sceneViewGridStep; 
 
 
 	// Collision Detection
-	extern RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, Collider*), long parentID, bool b_visible = false);
+	extern RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, Body*), long parentID, bool b_visible = false);
 
 	extern bool LoadFonts();
 	extern void FreeFonts();
 	extern std::string GetDir(std::string dirName);
 	extern std::string GetFilePath(std::string fileName);
-	extern std::shared_ptr<Texture> GetTextureObject(std::string textureName);
+	extern std::shared_ptr<Texture>& GetTextureObject(std::string textureName);
 	extern SDL_Texture* GetTexture(std::string textureName);
 	extern Vector4 GetColor(std::string colorName);
 	extern Uint32 GetColor32(std::string colorName);
@@ -194,12 +195,8 @@ namespace FlatEngine
 
 	// Lua / Sol
 	enum LuaEventFunction {
-		OnBoxCollision,
-		OnBoxCollisionEnter,
-		OnBoxCollisionLeave,
-		OnCircleCollision,
-		OnCircleCollisionEnter,
-		OnCircleCollisionLeave,
+		OnBeginCollision,
+		OnEndCollision,
 		OnButtonMouseOver,
 		OnButtonMouseEnter,
 		OnButtonMouseLeave,
@@ -207,12 +204,8 @@ namespace FlatEngine
 		OnButtonRightClick
 	};
 	const std::string F_LuaEventNames[11] = {
-		"OnBoxCollision",
-		"OnBoxCollisionEnter",
-		"OnBoxCollisionLeave",
-		"OnCircleCollision",
-		"OnCircleCollisionEnter",
-		"OnCircleCollisionLeave",
+		"OnBeginCollision",
+		"OnEndCollision",
 		"OnButtonMouseOver",
 		"OnButtonMouseEnter",
 		"OnButtonMouseLeave",
@@ -231,12 +224,12 @@ namespace FlatEngine
 	extern void RetrieveLuaScriptPaths();
 	extern bool CheckLuaScriptFile(std::string filePath);
 	extern void LoadLuaGameObject(GameObject* object, std::string scriptName);
-	// Lua/Sol Events
+	// Lua/Sol Events	
 	template <class T>
 	extern void CallVoidLuaFunction(std::string functionName, T param);
 	template <class T>
 	extern void CallVoidLuaFunction(std::string functionName);
-	extern void CallLuaCollisionFunction(GameObject* caller, Collider* collidedWith, LuaEventFunction eventFunc);
+	extern void CallLuaCollisionFunction(LuaEventFunction eventFunc, Body* caller, Body* collidedWith, b2Manifold manifold = {});
 	extern void CallLuaButtonEventFunction(GameObject* caller, LuaEventFunction eventFunc);
 	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc);
 	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param3 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param4 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param5 = Animation::S_EventFunctionParam());
@@ -331,7 +324,8 @@ namespace FlatEngine
 	extern void DrawPoint(Vector2 point, Vector4 color, ImDrawList* drawList);
 	extern void DebugRectangle(Vector2 startingPoint, Vector2 endPoint, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void SaveDebugLogToFile(std::string path = "");
-	extern Vector2 ConvertWorldToScreen(Vector2 positionInWorld, Vector2 relativeCenterPoint, float zoomMultiplier);
+	extern Vector2 ConvertWorldToScreen(Vector2 positionInWorld);
+	extern Vector2 ConvertScreenToWorld(Vector2 positionOnScreen);
 
 	// Game View
 	extern void Game_RenderView(bool b_inRuntime = false);

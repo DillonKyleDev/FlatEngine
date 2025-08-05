@@ -2,7 +2,6 @@
 #include "FlatEngine.h"
 #include "GameObject.h"
 #include "Button.h"
-#include "BoxCollider.h"
 #include "BoxBody.h"
 #include "CircleBody.h"
 #include "CapsuleBody.h"

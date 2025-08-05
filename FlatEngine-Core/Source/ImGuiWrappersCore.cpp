@@ -12,9 +12,6 @@
 #include "Audio.h"
 #include "Text.h"
 #include "CharacterController.h"
-#include "BoxCollider.h"
-#include "CircleCollider.h"
-#include "RigidBody.h"
 #include "Project.h"
 
 #include "imgui.h"

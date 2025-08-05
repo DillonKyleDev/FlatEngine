@@ -27,6 +27,7 @@ namespace FlatEngine
 	class CircleBody;
 	class CapsuleBody;
 	class PolygonBody;	
+	class ChainBody;
 
 	class GameObject
 	{
@@ -70,6 +71,7 @@ namespace FlatEngine
 		CircleBody* AddCircleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CapsuleBody* AddCapsuleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
 		PolygonBody* AddPolygonBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		ChainBody* AddChainBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
@@ -102,6 +104,7 @@ namespace FlatEngine
 		CircleBody* GetCircleBody();
 		CapsuleBody* GetCapsuleBody();
 		PolygonBody* GetPolygonBody();
+		ChainBody* GetChainBody();
 		//CompositeCollider* GetCompositeCollider();	
 		//TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		

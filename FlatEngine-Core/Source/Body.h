@@ -15,6 +15,7 @@ namespace FlatEngine
 		friend class CircleBody;
 		friend class CapsuleBody;
 		friend class PolygonBody;
+		friend class ChainBody;
 
 	public:
 		Body(long myID = -1, long parentID = -1);
@@ -22,14 +23,17 @@ namespace FlatEngine
 		
 		void SetOnBeginContact(void (*beginContactCallback)(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID));
 		void OnBeginContact(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID);
+		static Body* GetBodyFromShapeID(b2ShapeId shapeID);
 		void SetOnEndContact(void (*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID));
 		void OnEndContact(b2ShapeId myID, b2ShapeId collidedWithID);
 
 		void SetBodyProps(Physics::BodyProps bodyProps);
 		Physics::BodyProps& GetBodyProps();
 		Physics::BodyProps GetLiveProps();
+		void SetBodyID(b2BodyId bodyID);
 		b2BodyId GetBodyID();
-		std::vector<b2ShapeId>& GetShapeIDs();
+		std::vector<b2ShapeId> GetShapeIDs();
+		void SetChainID(b2ChainId chainID);
 		void AddShapeID(b2ShapeId shapeID);		
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);
@@ -58,10 +62,12 @@ namespace FlatEngine
 		void ApplyAngularImpulse(float impulse);
 		Vector2 GetLinearVelocity();
 		float GetAngularVelocity();
+		void CleanupIDs();
 
 	private:
-		b2BodyId m_bodyID;
+		b2BodyId m_bodyID = b2_nullBodyId;
 		std::vector<b2ShapeId> m_shapeIDs;
+		b2ChainId m_chainID = b2_nullChainId;
 		Physics::BodyProps m_bodyProps;		
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);
 		bool m_b_beginContactCallbackSet;

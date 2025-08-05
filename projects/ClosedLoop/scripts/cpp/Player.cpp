@@ -10,8 +10,8 @@ namespace FlatEngine
 {
 	void CallbackFunction(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID)
 	{
-		GameObject* self = static_cast<Body*>(b2Shape_GetUserData(myID))->GetParent();
-		GameObject* collidedWith = static_cast<Body*>(b2Shape_GetUserData(collidedWithID))->GetParent();		
+		GameObject* self = Body::GetBodyFromShapeID(myID)->GetParent();
+		GameObject* collidedWith = Body::GetBodyFromShapeID(collidedWithID)->GetParent();
 	}
 
 

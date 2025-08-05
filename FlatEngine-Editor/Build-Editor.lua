@@ -66,11 +66,9 @@ project "FlatEngine-Editor"
     "_WINDOWS"
    }
 
---    targetdir ("../Binaries/" .. OutputDir .. "/%{prj.name}")
---    objdir ("../Binaries/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
-    targetdir ("C:/Users/Dillon/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
-    objdir ("C:/Users/Dillon/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
+    targetdir ("FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
+    objdir ("FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"

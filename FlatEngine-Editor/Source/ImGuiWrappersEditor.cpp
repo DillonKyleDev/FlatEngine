@@ -14,11 +14,12 @@
 #include "Audio.h"
 #include "Text.h"
 #include "CharacterController.h"
+#include "Physics.h"
 #include "BoxBody.h"
 #include "CircleBody.h"
 #include "CapsuleBody.h"
 #include "PolygonBody.h"
-#include "Physics.h"
+#include "ChainBody.h"
 #include "Project.h"
 #include "TileMap.h"
 #include "TileSet.h"
@@ -1523,25 +1524,100 @@ namespace FlatGui
 		}
 	}
 
+	void RenderBodyComponentAttributes(Body* body)
+	{
+		std::string shapeString = "";
+		Physics::BodyProps bodyProps = body->GetBodyProps();
+		long ID = body->GetID();
+
+		// Read only
+		Vector2 linearVelocity = body->GetLinearVelocity();
+		float angularVelocity = body->GetAngularVelocity();
+
+		switch (bodyProps.shape)
+		{
+		case Physics::BodyShape::BS_Box:
+		{
+			shapeString = "Box";
+			break;
+		}
+		case Physics::BodyShape::BS_Circle:
+		{
+			shapeString = "Circle";
+			break;
+		}
+		case Physics::BodyShape::BS_Capsule:
+		{
+			shapeString = "Capsule";
+			break;
+		}
+		case Physics::BodyShape::BS_Polygon:
+		{
+			shapeString = "Polygon";
+			break;
+		}
+		case Physics::BodyShape::BS_Chain:
+		{
+			shapeString = "Chain";
+			break;
+		}
+		}
+
+		FL::MoveScreenCursor(0, 5);
+		if (FL::PushTable("##" + shapeString + "BodyPropsMain" + std::to_string(ID), 2))
+		{
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyGravityScale" + std::to_string(ID), "Gravity Scale", bodyProps.gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
+			{
+				body->SetGravityScale(bodyProps.gravityScale);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyDensity" + std::to_string(ID), "Density", bodyProps.density, 0.001f, 0.001f, -FLT_MAX))
+			{
+				body->SetDensity(bodyProps.density);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyFriction" + std::to_string(ID), "Friction", bodyProps.friction, 0.001f, 0.0f, -FLT_MAX))
+			{
+				body->SetFriction(bodyProps.friction);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyRestitution" + std::to_string(ID), "Restitution", bodyProps.restitution, 0.001f, 0.0f, -FLT_MAX))
+			{
+				body->SetRestitution(bodyProps.restitution);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyLinearDamping" + std::to_string(ID), "Linear Damping", bodyProps.linearDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				body->SetLinearDamping(bodyProps.linearDamping);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyAngularDamping" + std::to_string(ID), "Angular Damping", bodyProps.angularDamping, 0.001f, 0.0f, -FLT_MAX))
+			{
+				body->SetAngularDamping(bodyProps.angularDamping);
+			}
+
+			FL::RenderTextTableRow("##" + shapeString + "VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
+			FL::RenderTextTableRow("##" + shapeString + "VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
+			FL::RenderTextTableRow("##" + shapeString + "AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
+			FL::PopTable();
+		}
+
+		FL::MoveScreenCursor(0, 5);
+		if (FL::RenderCheckbox(" Lock Rotation", bodyProps.b_lockedRotation))
+		{
+			body->SetLockedRotation(bodyProps.b_lockedRotation);
+		}
+		if (FL::RenderCheckbox(" Lock x-axis", bodyProps.b_lockedXAxis))
+		{
+			body->SetLockedXAxis(bodyProps.b_lockedXAxis);
+		}
+		if (FL::RenderCheckbox(" Lock y-axis", bodyProps.b_lockedYAxis))
+		{
+			body->SetLockedYAxis(bodyProps.b_lockedYAxis);
+		}
+	}
+
 	void RenderBoxBodyComponent(BoxBody* boxBody)
 	{
 		long ID = boxBody->GetID();
 		bool b_isActive = boxBody->IsActive();
 		FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
-		bool b_lockedRotation = bodyProps.b_lockedRotation;
-		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
-		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
-		float gravityScale = bodyProps.gravityScale;
-		float linearDamping = bodyProps.linearDamping;
-		float angularDamping = bodyProps.angularDamping;
-		float density = bodyProps.density;
-		float friction = bodyProps.friction;
-		float restitution = bodyProps.restitution;
 		Vector2 dimensions = bodyProps.dimensions;
-
-		// Read only
-		Vector2 linearVelocity = boxBody->GetLinearVelocity();
-		float angularVelocity = boxBody->GetAngularVelocity();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1567,50 +1643,10 @@ namespace FlatGui
 			{
 				boxBody->SetDimensions(dimensions);
 			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
-			{
-				boxBody->SetGravityScale(gravityScale);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
-			{
-				boxBody->SetDensity(density);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
-			{
-				boxBody->SetFriction(friction);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
-			{
-				boxBody->SetRestitution(restitution);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				boxBody->SetLinearDamping(linearDamping);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				boxBody->SetAngularDamping(angularDamping);
-			}
-
-			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
-			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
-			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
-		FL::MoveScreenCursor(0, 5);
-		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
-		{
-			boxBody->SetLockedRotation(b_lockedRotation);
-		}
-		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
-		{
-			boxBody->SetLockedXAxis(b_lockedXAxis);
-		}
-		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
-		{
-			boxBody->SetLockedYAxis(b_lockedYAxis);
-		}
+		RenderBodyComponentAttributes(boxBody);
 	}
 					
 	void RenderCircleBodyComponent(CircleBody* circleBody)
@@ -1618,20 +1654,7 @@ namespace FlatGui
 		long ID = circleBody->GetID();
 		bool b_isActive = circleBody->IsActive();
 		FL::Physics::BodyProps bodyProps = circleBody->GetBodyProps();
-		bool b_lockedRotation = bodyProps.b_lockedRotation;
-		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
-		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
-		float gravityScale = bodyProps.gravityScale;
-		float linearDamping = bodyProps.linearDamping;
-		float angularDamping = bodyProps.angularDamping;
-		float density = bodyProps.density;
-		float friction = bodyProps.friction;
-		float restitution = bodyProps.restitution;
 		float radius = bodyProps.radius;
-
-		// Read only
-		Vector2 linearVelocity = circleBody->GetLinearVelocity();
-		float angularVelocity = circleBody->GetAngularVelocity();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1653,49 +1676,10 @@ namespace FlatGui
 			{
 				circleBody->SetRadius(radius);
 			}
-			if (FL::RenderFloatDragTableRow("##CircleBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
-			{
-				circleBody->SetGravityScale(gravityScale);
-			}
-			if (FL::RenderFloatDragTableRow("##CircleBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
-			{
-				circleBody->SetDensity(density);
-			}
-			if (FL::RenderFloatDragTableRow("##CircleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
-			{
-				circleBody->SetFriction(friction);
-			}
-			if (FL::RenderFloatDragTableRow("##CircleBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
-			{
-				circleBody->SetRestitution(restitution);
-			}
-			if (FL::RenderFloatDragTableRow("##CircleBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				circleBody->SetLinearDamping(linearDamping);
-			}
-			if (FL::RenderFloatDragTableRow("##CircleBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				circleBody->SetAngularDamping(angularDamping);
-			}
-			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
-			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
-			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
-
-		FL::MoveScreenCursor(0, 5);
-		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
-		{
-			circleBody->SetLockedRotation(b_lockedRotation);
-		}
-		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
-		{
-			circleBody->SetLockedXAxis(b_lockedXAxis);
-		}
-		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
-		{
-			circleBody->SetLockedYAxis(b_lockedYAxis);
-		}
+	
+		RenderBodyComponentAttributes(circleBody);
 	}
 
 	void RenderCapsuleBodyComponent(CapsuleBody* capsuleBody)
@@ -1703,22 +1687,9 @@ namespace FlatGui
 		long ID = capsuleBody->GetID();
 		bool b_isActive = capsuleBody->IsActive();
 		FL::Physics::BodyProps bodyProps = capsuleBody->GetBodyProps();
-		bool b_lockedRotation = bodyProps.b_lockedRotation;
-		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
-		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
-		float gravityScale = bodyProps.gravityScale;
-		float linearDamping = bodyProps.linearDamping;
-		float angularDamping = bodyProps.angularDamping;
-		float density = bodyProps.density;
-		float friction = bodyProps.friction;
-		float restitution = bodyProps.restitution;
 		float length = bodyProps.capsuleLength;
 		float radius = bodyProps.radius;
 		bool b_horizontal = bodyProps.b_horizontal;
-
-		// Read only
-		Vector2 linearVelocity = capsuleBody->GetLinearVelocity();
-		float angularVelocity = capsuleBody->GetAngularVelocity();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1751,49 +1722,10 @@ namespace FlatGui
 			{
 				capsuleBody->SetRadius(radius);
 			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
-			{
-				capsuleBody->SetGravityScale(gravityScale);
-			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
-			{
-				capsuleBody->SetDensity(density);
-			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
-			{
-				capsuleBody->SetFriction(friction);
-			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
-			{
-				capsuleBody->SetRestitution(restitution);
-			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				capsuleBody->SetLinearDamping(linearDamping);
-			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				capsuleBody->SetAngularDamping(angularDamping);
-			}
-			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
-			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
-			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
-		FL::MoveScreenCursor(0, 5);
-		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
-		{
-			capsuleBody->SetLockedRotation(b_lockedRotation);
-		}
-		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
-		{
-			capsuleBody->SetLockedXAxis(b_lockedXAxis);
-		}
-		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
-		{
-			capsuleBody->SetLockedYAxis(b_lockedYAxis);
-		}
+		RenderBodyComponentAttributes(capsuleBody);
 	}
 
 	void RenderPolygonBodyComponent(PolygonBody* polygonBody)
@@ -1801,20 +1733,6 @@ namespace FlatGui
 		long ID = polygonBody->GetID();
 		bool b_isActive = polygonBody->IsActive();
 		FL::Physics::BodyProps bodyProps = polygonBody->GetBodyProps();
-		bool b_lockedRotation = bodyProps.b_lockedRotation;
-		bool b_lockedXAxis = bodyProps.b_lockedXAxis;
-		bool b_lockedYAxis = bodyProps.b_lockedYAxis;
-		float gravityScale = bodyProps.gravityScale;
-		float linearDamping = bodyProps.linearDamping;
-		float angularDamping = bodyProps.angularDamping;
-		Vector2 dimensions = bodyProps.dimensions;
-		float density = bodyProps.density;
-		float friction = bodyProps.friction;
-		float restitution = bodyProps.restitution;
-
-		// Read only
-		Vector2 linearVelocity = polygonBody->GetLinearVelocity();
-		float angularVelocity = polygonBody->GetAngularVelocity();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1832,49 +1750,73 @@ namespace FlatGui
 
 		if (FL::PushTable("##PolygonBodyProps" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##PolygonBodyGravityScale" + std::to_string(ID), "Gravity Scale", gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
-			{
-				polygonBody->SetGravityScale(gravityScale);
-			}
-			if (FL::RenderFloatDragTableRow("##PolygonBodyDensity" + std::to_string(ID), "Density", density, 0.001f, 0.001f, -FLT_MAX))
-			{
-				polygonBody->SetDensity(density);
-			}
-			if (FL::RenderFloatDragTableRow("##PolygonBodyFriction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, -FLT_MAX))
-			{
-				polygonBody->SetFriction(friction);
-			}
-			if (FL::RenderFloatDragTableRow("##PolygonBodyRestitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, -FLT_MAX))
-			{
-				polygonBody->SetRestitution(restitution);
-			}
-			if (FL::RenderFloatDragTableRow("##PolygonBodyLinearDamping" + std::to_string(ID), "Linear Damping", linearDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				polygonBody->SetLinearDamping(linearDamping);
-			}
-			if (FL::RenderFloatDragTableRow("##PolygonBodyAngularDamping" + std::to_string(ID), "Angular Damping", angularDamping, 0.001f, 0.0f, -FLT_MAX))
-			{
-				polygonBody->SetAngularDamping(angularDamping);
-			}
-			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
-			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
-			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
-		FL::MoveScreenCursor(0, 5);
-		if (FL::RenderCheckbox(" Lock Rotation", b_lockedRotation))
+		RenderBodyComponentAttributes(polygonBody);
+	}
+
+	void RenderChainBodyComponent(ChainBody* chainBody)
+	{
+		long ID = chainBody->GetID();
+		bool b_isActive = chainBody->IsActive();		
+		FL::Physics::BodyProps bodyProps = chainBody->GetBodyProps();
+		bool b_isLoop = bodyProps.b_isLoop;
+		float tangentSpeed = bodyProps.tangentSpeed;
+		float rollingResistance = bodyProps.rollingResistance;
+		std::vector<Vector2> points = bodyProps.points;
+		int pointCount = (int)points.size();
+		static bool b_showPoints = false;
+
+		if (RenderIsActiveCheckbox(b_isActive))
 		{
-			polygonBody->SetLockedRotation(b_lockedRotation);
-		}
-		if (FL::RenderCheckbox(" Lock x-axis", b_lockedXAxis))
+			chainBody->SetActive(b_isActive);
+			chainBody->RecreateLiveBody();
+		}		
+
+		if (FL::PushTable("##ChainBodyProps" + std::to_string(ID), 2))
 		{
-			polygonBody->SetLockedXAxis(b_lockedXAxis);
+			if (FL::RenderFloatDragTableRow("##ChainBodyTangentSpeed" + std::to_string(ID), "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
+			{
+				chainBody->SetTangentSpeed(tangentSpeed);
+			}
+			if (FL::RenderFloatDragTableRow("##ChainBodyRollingResistance" + std::to_string(ID), "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
+			{
+				chainBody->SetRollingResistance(rollingResistance);
+			}
+			FL::PopTable();
 		}
-		if (FL::RenderCheckbox(" Lock y-axis", b_lockedYAxis))
+
+		FL::MoveScreenCursor(0, 3);
+		if (FL::RenderCheckbox(" Loop endpoints", b_isLoop))
 		{
-			polygonBody->SetLockedYAxis(b_lockedYAxis);
+			chainBody->SetIsLoop(b_isLoop);
 		}
+
+		FL::MoveScreenCursor(0, 3);
+		FL::RenderCheckbox(" Show points", b_showPoints);
+
+		if (b_showPoints)
+		{
+			ImGui::Text("Point Positions");
+			if (FL::PushTable("##ChainBodyPointPositions" + std::to_string(ID), 2))
+			{
+				for (int i = 0; i < pointCount; i++)
+				{
+					if (FL::RenderFloatDragTableRow("##ChainBodyPointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+					{
+						chainBody->SetPoints(points);
+					}
+					if (FL::RenderFloatDragTableRow("##ChainBodyPointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+					{
+						chainBody->SetPoints(points);
+					}
+				}
+				FL::PopTable();
+			}
+		}
+
+		RenderBodyComponentAttributes(chainBody);
 	}
 
 	void RenderTileMapComponent(TileMap* tileMap)

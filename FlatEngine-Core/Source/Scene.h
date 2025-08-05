@@ -11,11 +11,11 @@
 #include "Audio.h"
 #include "Text.h"
 #include "CharacterController.h"
-#include "RayCast.h"
 #include "BoxBody.h"
 #include "CircleBody.h"
 #include "CapsuleBody.h"
 #include "PolygonBody.h"
+#include "ChainBody.h"
 
 #include <vector>
 #include <map>
@@ -65,12 +65,12 @@ namespace FlatEngine
 		Script* AddScript(Script script, long ownerID);
 		Canvas* AddCanvas(Canvas canvas, long ownerID);
 		Audio* AddAudio(Audio audio, long ownerID);
-		Text* AddText(Text text, long ownerID);
-		RayCast* AddRayCast(RayCast rayCast, long ownerID);
+		Text* AddText(Text text, long ownerID);		
 		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
 		CircleBody* AddCircleBody(CircleBody circleBody, long ownerID);
 		CapsuleBody* AddCapsuleBody(CapsuleBody capsuleBody, long ownerID);
 		PolygonBody* AddPolygonBody(PolygonBody polygonBody, long ownerID);
+		ChainBody* AddChainBody(ChainBody chainBody, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
@@ -91,6 +91,7 @@ namespace FlatEngine
 		CircleBody* GetCircleBodyByOwner(long ownerID);
 		CapsuleBody* GetCapsuleBodyByOwner(long ownerID);
 		PolygonBody* GetPolygonBodyByOwner(long ownerID);
+		ChainBody* GetChainBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		//TileMap* GetTileMapByOwner(long ownerID);
 
@@ -108,7 +109,6 @@ namespace FlatEngine
 		std::map<long, CircleBody>& GetCircleBodies();
 		std::map<long, CapsuleBody>& GetCapsuleBodies();
 		std::map<long, PolygonBody>& GetPolygonBodies();
-		std::map<long, RayCast>& GetRayCasts();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		//std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);

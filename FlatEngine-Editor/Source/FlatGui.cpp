@@ -6,6 +6,7 @@
 #include "Vector4.h"
 #include "Matrix.h"
 #include "box2d.h"
+#include "Texture.h"
 
 #include <string>
 #include "imgui_internal.h"
@@ -360,7 +361,7 @@ namespace FlatGui
 		FG_sceneViewScrolling = scrolling;
 		Vector2 gridStep = FL::F_LoadedProject.GetSceneViewGridStep();
 		FG_sceneViewGridStep = gridStep;
-		FL::F_sceneViewGridStep = FG_sceneViewGridStep;
+		FL::F_sceneViewGridStep = &FG_sceneViewGridStep;
 
 		if (FL::F_LoadedProject.GetFocusedGameObjectID() != -1 && FL::GetObjectByID(FL::F_LoadedProject.GetFocusedGameObjectID()) != nullptr)
 		{
@@ -690,7 +691,7 @@ namespace FlatGui
 		drawSplitter = nullptr;
 	}
 
-	void RenderViewObject(GameObject &self, Vector2 scrolling, Vector2 canvasP0, Vector2 canvasSize, float gridStep, ImDrawList* drawList, ImDrawListSplitter* drawSplitter)
+	void RenderViewObject(GameObject &self, Vector2 centerPoint, Vector2 canvasP0, Vector2 canvasSize, float gridStep, ImDrawList* drawList, ImDrawListSplitter* drawSplitter)
 	{
 		Transform* transform = self.GetTransform();
 		Animation* animation = self.GetAnimation();
@@ -703,6 +704,7 @@ namespace FlatGui
 		CircleBody* circleBody = self.GetCircleBody();
 		CapsuleBody* capsuleBody = self.GetCapsuleBody();
 		PolygonBody* polygonBody = self.GetPolygonBody();
+		ChainBody* chainBody = self.GetChainBody();
 		//TileMap* tileMap = self.GetTileMap();
 
 		bool b_spriteButtonAdded = false;
@@ -726,9 +728,20 @@ namespace FlatGui
 			Vector2 relativePosition = transform->GetPosition();
 			Vector2 origin = transform->GetOrigin();
 			Vector2 transformScale = transform->GetScale();		
-			Vector2 scale = transform->GetScale();
-			//Vector2 baseScale = transform->GetBaseScale();
+			Vector2 scale = transform->GetScale();			
 			
+			FL::RenderInvisibleButton("##TransformSelect_" + std::to_string(transform->GetID()), FL::ConvertWorldToScreen(position) - Vector2(5, 5), Vector2(10, 10), false, true);
+			const bool b_isItemClicked = ImGui::IsItemClicked();
+			const bool b_isItemHovered = ImGui::IsItemHovered();
+			if (b_isItemClicked || b_isItemHovered)
+			{
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+			if (b_isItemClicked)
+			{
+				SetFocusedGameObjectID(transform->GetParentID());
+			}
+
 			if (sprite != nullptr && sprite->GetTexture() != nullptr && sprite->IsActive())
 			{
 				b_spriteButtonAdded = true;
@@ -767,7 +780,7 @@ namespace FlatGui
 
 				if (spriteScale.x > 0 && spriteScale.y > 0 && spriteTexture != nullptr)
 				{
-					FL::AddImageToDrawList(spriteTexture, position, scrolling, spriteTextureWidth, spriteTextureHeight, offset, spriteScale, b_spriteScalesWithZoom, gridStep, drawList, rotation, ImGui::GetColorU32(tintColor));
+					FL::AddImageToDrawList(spriteTexture, position, centerPoint, spriteTextureWidth, spriteTextureHeight, offset, spriteScale, b_spriteScalesWithZoom, gridStep, drawList, rotation, ImGui::GetColorU32(tintColor));
 				}
 			}
 
@@ -816,10 +829,10 @@ namespace FlatGui
 				float cameraWidth = camera->GetWidth();
 				float cameraHeight = camera->GetHeight();
 
-				float cameraLeftEdge = scrolling.x + (position.x * FG_sceneViewGridStep.x) - (cameraWidth * FG_sceneViewGridStep.x / 2 * scale.x);
-				float cameraTopEdge = scrolling.y + (-position.y * FG_sceneViewGridStep.y) - (cameraHeight * FG_sceneViewGridStep.y / 2 * scale.y);
-				float cameraRightEdge = scrolling.x + (position.x * FG_sceneViewGridStep.x) + (cameraWidth * FG_sceneViewGridStep.x / 2 * scale.x);
-				float cameraBottomEdge = scrolling.y + (-position.y * FG_sceneViewGridStep.y) + (cameraHeight * FG_sceneViewGridStep.y / 2 * scale.y);
+				float cameraLeftEdge = centerPoint.x + (position.x * FG_sceneViewGridStep.x) - (cameraWidth * FG_sceneViewGridStep.x / 2 * scale.x);
+				float cameraTopEdge = centerPoint.y + (-position.y * FG_sceneViewGridStep.y) - (cameraHeight * FG_sceneViewGridStep.y / 2 * scale.y);
+				float cameraRightEdge = centerPoint.x + (position.x * FG_sceneViewGridStep.x) + (cameraWidth * FG_sceneViewGridStep.x / 2 * scale.x);
+				float cameraBottomEdge = centerPoint.y + (-position.y * FG_sceneViewGridStep.y) + (cameraHeight * FG_sceneViewGridStep.y / 2 * scale.y);
 
 				Vector2 topLeftCorner = Vector2(cameraLeftEdge, cameraTopEdge);
 				Vector2 bottomRightCorner = Vector2(cameraRightEdge, cameraBottomEdge);
@@ -841,7 +854,7 @@ namespace FlatGui
 				FL::DrawLine(topLeftCorner, bottomRightCorner, FL::GetColor("cameraBox"), 2.0f, drawList);
 				FL::DrawLine(topRightCorner, bottomLeftCorner, FL::GetColor("cameraBox"), 2.0f, drawList);
 				
-				FL::AddImageToDrawList(FL::GetTexture("camera"), position, scrolling, cameraTextureWidth, cameraTextureHeight, cameraTextureOffset, cameraTextureScale, b_scalesWithZoom, gridStep, drawList, 0, IM_COL32(255, 255, 255, FG_iconTransparency));
+				FL::AddImageToDrawList(FL::GetTexture("camera"), position, centerPoint, cameraTextureWidth, cameraTextureHeight, cameraTextureOffset, cameraTextureScale, b_scalesWithZoom, gridStep, drawList, 0, IM_COL32(255, 255, 255, FG_iconTransparency));
 			}
 
 			if (canvas != nullptr)
@@ -928,7 +941,7 @@ namespace FlatGui
 				bool b_isActive = boxBody->IsActive();
 				FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
 				Vector2 dimensions = bodyProps.dimensions;
-				Vector2 center = ConvertWorldToScreen(position, FG_sceneViewCenter, FG_sceneViewGridStep.x);
+				Vector2 center = ConvertWorldToScreen(position);
 				boxBody->UpdateCorners();
 				std::vector<Vector2> cornersVec = boxBody->GetCornersScreen();
 				Vector2 corners[4] = {
@@ -943,15 +956,11 @@ namespace FlatGui
 
 				if (b_isActive && !b_isColliding)
 				{
-					FL::DrawRectangleFromLines(corners, FL::GetColor("colliderActive"), 1.0f, drawList);
+					FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderActive"), 1.0f, drawList);
 				}
-				else if (!b_isActive)
+				else
 				{
-					FL::DrawRectangleFromLines(corners, FL::GetColor("colliderInactive"), 1.0f, drawList);
-				}
-				else if (b_isColliding)
-				{
-					FL::DrawRectangleFromLines(corners, FL::GetColor("colliderColliding"), 1.0f, drawList);
+					FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderInactive"), 1.0f, drawList);
 				}
 			}
 
@@ -961,22 +970,18 @@ namespace FlatGui
 				bool b_isActive = circleBody->IsActive();
 				FL::Physics::BodyProps bodyProps = circleBody->GetBodyProps();				
 				float radius = bodyProps.radius * FG_sceneViewGridStep.x;
-				Vector2 center = ConvertWorldToScreen(position, FG_sceneViewCenter, FG_sceneViewGridStep.x);
+				Vector2 center = ConvertWorldToScreen(position);
 
 				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
 				if (b_isActive)
 				{
-					FL::DrawCircle(center, radius, FL::GetColor("colliderActive"), drawList);
+					FL::DrawCircle(center, radius, FL::GetColor("circleColliderActive"), drawList);
 				}
-				else if (!b_isActive)
+				else
 				{
-					FL::DrawCircle(center, radius, FL::GetColor("colliderInactive"), drawList);
+					FL::DrawCircle(center, radius, FL::GetColor("circleColliderInactive"), drawList);
 				}
-				//else if (b_isColliding)
-				//{
-				//	FL::DrawCircle(center, activeRadius, FL::GetColor("colliderColliding"), drawList);
-				//}
 			}
 
 			if (capsuleBody != nullptr)
@@ -988,8 +993,8 @@ namespace FlatGui
 				float length = bodyProps.capsuleLength;
 				float radius = bodyProps.radius;
 				float radiusScreen = radius * FG_sceneViewGridStep.x;	
-				Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center1)), FG_sceneViewCenter, FG_sceneViewGridStep.x);
-				Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center2)), FG_sceneViewCenter, FG_sceneViewGridStep.x);								
+				Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center1)));
+				Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center2)));								
 				Vector2 difference = center2 - center1;
 				Vector2 diffN = Vector2::Normalize(difference);
 				Vector2 diffNR = diffN * radiusScreen;
@@ -1000,455 +1005,647 @@ namespace FlatGui
 
 				if (b_isActive)
 				{
-					FL::DrawCircle(center1, radiusScreen, FL::GetColor("colliderActive"), drawList);
-					FL::DrawCircle(center2, radiusScreen, FL::GetColor("colliderActive"), drawList);
-					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("colliderActiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("colliderActiveLight"), 1, drawList);
-					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("colliderActiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("colliderActiveLight"), 1, drawList);
+					FL::DrawCircle(center1, radiusScreen, FL::GetColor("capsuleColliderActive"), drawList);
+					FL::DrawCircle(center2, radiusScreen, FL::GetColor("capsuleColliderActive"), drawList);
+					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
+					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
 					// Sides
-					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("colliderActive"), 1, drawList);
-					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("colliderActive"), 1, drawList);
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("capsuleColliderActive"), 1, drawList);
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("capsuleColliderActive"), 1, drawList);
 				}
-				else if (!b_isActive)
+				else
 				{
-					FL::DrawCircle(center1, radiusScreen, FL::GetColor("colliderInactive"), drawList);
-					FL::DrawCircle(center2, radiusScreen, FL::GetColor("colliderInactive"), drawList);
-					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("colliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("colliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("colliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					FL::DrawCircle(center1, radiusScreen, FL::GetColor("capsuleColliderInactive"), drawList);
+					FL::DrawCircle(center2, radiusScreen, FL::GetColor("capsuleColliderInactive"), drawList);
+					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
 					// Sides
-					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("colliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("colliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
 				}
-				//else if (b_isColliding)
-				//{
-				//	FL::DrawCircle(center, activeRadius, FL::GetColor("colliderColliding"), drawList);
-				//}
 			}
 
-			//if (tileMap != nullptr && tileMap->IsActive())
-			//{
-			//	long id = tileMap->GetID();				
-			//	float width = (float)tileMap->GetWidth();							// in tiles
-			//	float height = (float)tileMap->GetHeight();							// in tiles
-			//	float tileWidth = (float)tileMap->GetTileWidth();
-			//	float tileHeight = (float)tileMap->GetTileHeight();
-			//	float gridWidth = width * tileWidth / FL::F_pixelsPerGridSpace;		// in grid tiles
-			//	float gridHeight = height * tileHeight / FL::F_pixelsPerGridSpace;	// in grid tiles
-			//	int renderOrder = tileMap->GetRenderOrder();
-			//	std::map<int, std::map<int, FL::Tile>> tiles = tileMap->GetTiles();
+			if (chainBody != nullptr)
+			{
+				b2BodyId chainBodyID = chainBody->GetBodyID();
+				bool b_isActive = chainBody->IsActive();
+				FL::Physics::BodyProps& bodyProps = chainBody->GetBodyProps();
+				bool b_isLoop = bodyProps.b_isLoop;
+				std::vector<Vector2>& points = bodyProps.points;
+				int pointCount = points.size();
 
-			//	static std::vector<Vector2> hoveredTiles = std::vector<Vector2>();
-			//	static std::vector<Vector2> selectedTiles = std::vector<Vector2>();
-			//	
-			//	// For Drawing TileMap border and background color
-			//	float renderXStart = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x);
-			//	float renderYStart = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x);
-			//	Vector2 renderStart = Vector2(renderXStart, renderYStart);
-			//	Vector2 renderEnd = Vector2(renderXStart + ((gridWidth * transformScale.x) * FG_sceneViewGridStep.x), renderYStart + ((gridHeight * transformScale.y) * FG_sceneViewGridStep.x));
-			//	Vector2 focusObjectButtonSize = Vector2(renderEnd.x - renderStart.x, renderEnd.y - renderStart.y);
+				if (b_isActive)
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (i < pointCount - 1 || b_isLoop)
+						{
+							Vector2 start = FL::ConvertWorldToScreen(position + points[i]);
+							Vector2 end = FL::ConvertWorldToScreen(position + points[FL::Fmod(i + 1, pointCount)]);
 
-			//	float tileWidthInPx = FG_sceneViewGridStep.x * (tileWidth / FL::F_pixelsPerGridSpace);
-			//	float tileHeightInPx = FG_sceneViewGridStep.x * (tileHeight / FL::F_pixelsPerGridSpace);
-			//	Vector2 tileSize = Vector2(tileWidthInPx, tileHeightInPx);
+							if (b_isLoop || (i > 0 && i < pointCount - 2))
+							{
+								FL::DrawLine(start, end, FL::GetColor("chainColliderActive"), 1, drawList);
+							}
+							else
+							{
+								FL::DrawLine(start, end, FL::GetColor("chainColliderEndSegments"), 1, drawList);
+							}
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						Vector2 start = FL::ConvertWorldToScreen(points[i]);
+						Vector2 end = FL::ConvertWorldToScreen(points[FL::Fmod(i + 1, pointCount)]);
+						FL::DrawLine(start, end, FL::GetColor("chainColliderInactive"), 1, drawList);
+					}
+				}		
 
-			//	// For selecting multiple tiles
-			//	static Vector2 multiSelectStartTile = Vector2(-1, -1);
-			//	static Vector2 multiSelectEndTile = Vector2(-1, -1);
-			//	static Vector2 multiSelectCurrentHoveredTile = Vector2(-1, -1);
-			//	static Vector2 savedMultiSelectStartTile = Vector2(-1, -1);
+				ImGuiIO& inputOutput = ImGui::GetIO();				
+				static Vector2 cursorPosAtClick = Vector2();
+				bool b_pointDeleted = false;
 
-			//	// For Moving MultiSelected Tiles
-			//	static Vector2 moveStartTile = Vector2(-1, -1);
-			//	static Vector2 moveEndTile = Vector2(-1, -1);
+				for (int i = 0; i < pointCount; i++)
+				{
+					b_pointDeleted = RenderChainPointWidget(chainBody, points[i], i);
 
-			//	// For selecting Collision Area coordinates
-			//	static std::vector<std::pair<Vector2, Vector2>> selectedCollisionCoords = std::vector<std::pair<Vector2, Vector2>>();
-			//	static Vector2 colAreaStartTile = Vector2(-1, -1);
-			//	static Vector2 colAreaEndTile = Vector2(-1, -1);
+					if (b_pointDeleted)
+					{
+						break;
+					}
+				}
 
-			//	// "Focus on this TileMap GameObject" button
-			//	if (focusedObjectID != self.GetID() && (FL::F_CursorMode == FL::F_CURSOR_MODE::TRANSLATE || FL::F_CursorMode == FL::F_CURSOR_MODE::SCALE || FL::F_CursorMode == FL::F_CURSOR_MODE::ROTATE))
-			//	{
-			//		if (focusObjectButtonSize.x <= 0 || focusObjectButtonSize.y <= 0)
-			//		{
-			//			focusObjectButtonSize = Vector2(1, 1);
-			//		}
-			//		std::string focusObjectButtonID = "##SelectThisTileMapObjectButton" + std::to_string(self.GetID()) + "-" + std::to_string(id);
-			//		AddSceneViewMouseControls(focusObjectButtonID, renderStart, focusObjectButtonSize, FG_sceneViewScrolling, FG_sceneViewCenter, FG_sceneViewGridStep, FL::GetColor32("transparent"), false, 0, true);
-			//		if (ImGui::IsItemClicked())
-			//		{						
-			//			SetFocusedGameObjectID(self.GetID());
-			//		}
-			//	}
+				if (!b_pointDeleted)
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (i != 0 && i < pointCount - 2)
+						{
+							Vector2 midPoint = points[i] + ((points[i + 1] - points[i]) * 0.5f);
 
-			//	drawSplitter->SetCurrentChannel(drawList, 0);
+							if (RenderChainAddPointWidget(chainBody, midPoint, i))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
 
-			//	// TileMap background color and border
-			//	if (focusedObjectID == self.GetID())
-			//	{
-			//		ImGui::GetWindowDrawList()->AddRectFilled(renderStart, renderEnd, FL::GetColor32("tileMapGridBgFocused"));
-			//		FL::DrawRectangle(renderStart, renderEnd, canvasP0, canvasSize, FL::GetColor("tileMapBoxFocused"), 2.0f, drawList);
-			//	}
-			//	else
-			//	{
-			//		ImGui::GetWindowDrawList()->AddRectFilled(renderStart, renderEnd, FL::GetColor32("tileMapGridBgUnfocused"));
-			//		FL::DrawRectangle(renderStart, renderEnd, canvasP0, canvasSize, FL::GetColor("tileMapBoxUnfocused"), 2.0f, drawList);
-			//	}
+			// TileMap
+			{
 
-			//	if (focusedObjectID == self.GetID())
-			//	{
-			//		// Handle Tiles
-			//		for (float w = 0; w < width; w++)
-			//		{
-			//			for (float h = 0; h < height; h++)
-			//			{
-			//				// TileMap interactions							
-			//				std::string tileButtonID = "##tileMapIndexButton" + std::to_string(id) + "-" + std::to_string(w) + std::to_string(h);
-			//				TileSet* activeTileSet = nullptr;
+				//if (tileMap != nullptr && tileMap->IsActive())
+				//{
+				//	long id = tileMap->GetID();				
+				//	float width = (float)tileMap->GetWidth();							// in tiles
+				//	float height = (float)tileMap->GetHeight();							// in tiles
+				//	float tileWidth = (float)tileMap->GetTileWidth();
+				//	float tileHeight = (float)tileMap->GetTileHeight();
+				//	float gridWidth = width * tileWidth / FL::F_pixelsPerGridSpace;		// in grid tiles
+				//	float gridHeight = height * tileHeight / FL::F_pixelsPerGridSpace;	// in grid tiles
+				//	int renderOrder = tileMap->GetRenderOrder();
+				//	std::map<int, std::map<int, FL::Tile>> tiles = tileMap->GetTiles();
 
-			//				// Get active TileSet for texture dimensions
-			//				std::string activeTileSetName = FL::F_tileSetAndIndexOnBrush.first;
-			//				if (activeTileSetName != "")
-			//				{
-			//					activeTileSet = FL::GetTileSet(activeTileSetName);
-			//				}
+				//	static std::vector<Vector2> hoveredTiles = std::vector<Vector2>();
+				//	static std::vector<Vector2> selectedTiles = std::vector<Vector2>();
+				//	
+				//	// For Drawing TileMap border and background color
+				//	float renderXStart = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x);
+				//	float renderYStart = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x);
+				//	Vector2 renderStart = Vector2(renderXStart, renderYStart);
+				//	Vector2 renderEnd = Vector2(renderXStart + ((gridWidth * transformScale.x) * FG_sceneViewGridStep.x), renderYStart + ((gridHeight * transformScale.y) * FG_sceneViewGridStep.x));
+				//	Vector2 focusObjectButtonSize = Vector2(renderEnd.x - renderStart.x, renderEnd.y - renderStart.y);
 
-			//				// tileStart = viewport center + top left corner in pixel screen space + tile offset
-			//				float tileStartX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (w * tileWidthInPx);
-			//				float tileStartY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x) + (h * tileHeightInPx);
+				//	float tileWidthInPx = FG_sceneViewGridStep.x * (tileWidth / FL::F_pixelsPerGridSpace);
+				//	float tileHeightInPx = FG_sceneViewGridStep.x * (tileHeight / FL::F_pixelsPerGridSpace);
+				//	Vector2 tileSize = Vector2(tileWidthInPx, tileHeightInPx);
 
-			//				Vector2 tileStart = Vector2(tileStartX, tileStartY);
-			//				Vector2 tileEnd = Vector2(tileStartX + tileWidthInPx, tileStartY + tileHeightInPx);
+				//	// For selecting multiple tiles
+				//	static Vector2 multiSelectStartTile = Vector2(-1, -1);
+				//	static Vector2 multiSelectEndTile = Vector2(-1, -1);
+				//	static Vector2 multiSelectCurrentHoveredTile = Vector2(-1, -1);
+				//	static Vector2 savedMultiSelectStartTile = Vector2(-1, -1);
 
-			//				// Catch interactions on the TileMap container
-			//				if ((focusedObjectID == self.GetID()) &&
-			//					((FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH && activeTileSet != nullptr && FL::F_tileSetAndIndexOnBrush.second != -1) ||
-			//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_ERASE) ||
-			//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW && tileMap->GetSelectedCollisionArea() != "")) ||
-			//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT) ||
-			//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE))
-			//				{
-			//					// Set Draw Channel to 2 for lower level UI
-			//					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+				//	// For Moving MultiSelected Tiles
+				//	static Vector2 moveStartTile = Vector2(-1, -1);
+				//	static Vector2 moveEndTile = Vector2(-1, -1);
 
-			//					AddSceneViewMouseControls(tileButtonID, tileStart, tileSize, FG_sceneViewScrolling, FG_sceneViewCenter, FG_sceneViewGridStep, FL::GetColor32("tileMapGridLines"));
-			//					// _RectOnly flag enables the buttons to work when dragging the mouse over them in a clicked state // https://github.com/ocornut/imgui/commit/564ff2dfd379d40568879a5bc89e8cfea7e51d2f
-			//					const bool b_isHovered = ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly);
+				//	// For selecting Collision Area coordinates
+				//	static std::vector<std::pair<Vector2, Vector2>> selectedCollisionCoords = std::vector<std::pair<Vector2, Vector2>>();
+				//	static Vector2 colAreaStartTile = Vector2(-1, -1);
+				//	static Vector2 colAreaEndTile = Vector2(-1, -1);
 
+				//	// "Focus on this TileMap GameObject" button
+				//	if (focusedObjectID != self.GetID() && (FL::F_CursorMode == FL::F_CURSOR_MODE::TRANSLATE || FL::F_CursorMode == FL::F_CURSOR_MODE::SCALE || FL::F_CursorMode == FL::F_CURSOR_MODE::ROTATE))
+				//	{
+				//		if (focusObjectButtonSize.x <= 0 || focusObjectButtonSize.y <= 0)
+				//		{
+				//			focusObjectButtonSize = Vector2(1, 1);
+				//		}
+				//		std::string focusObjectButtonID = "##SelectThisTileMapObjectButton" + std::to_string(self.GetID()) + "-" + std::to_string(id);
+				//		AddSceneViewMouseControls(focusObjectButtonID, renderStart, focusObjectButtonSize, FG_sceneViewcenterPoint, FG_sceneViewCenter, FG_sceneViewGridStep, FL::GetColor32("transparent"), false, 0, true);
+				//		if (ImGui::IsItemClicked())
+				//		{						
+				//			SetFocusedGameObjectID(self.GetID());
+				//		}
+				//	}
 
+				//	drawSplitter->SetCurrentChannel(drawList, 0);
 
-			//					// Collect all boxes between multiSelectStartTile tile and multiSelectCurrentlyHovered tile
-			//					if (focusedObjectID == self.GetID() &&
-			//						multiSelectStartTile.x != -1 &&
-			//						multiSelectStartTile.y != -1 &&
-			//						(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW || FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT) &&
-			//						ImGui::IsKeyDown(ImGuiKey_MouseLeft) &&
-			//						(multiSelectStartTile.x <= w && multiSelectCurrentHoveredTile.x >= w || multiSelectCurrentHoveredTile.x <= w && multiSelectStartTile.x >= w) &&
-			//						(multiSelectStartTile.y <= h && multiSelectCurrentHoveredTile.y >= h || multiSelectCurrentHoveredTile.y <= h && multiSelectStartTile.y >= h))
-			//					{
-			//						if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
-			//						{
-			//							ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileBoxColHighlight"));
-			//						}
-			//						else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
-			//						{
-			//							ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileMultiSelectHighlightDragging"));
+				//	// TileMap background color and border
+				//	if (focusedObjectID == self.GetID())
+				//	{
+				//		ImGui::GetWindowDrawList()->AddRectFilled(renderStart, renderEnd, FL::GetColor32("tileMapGridBgFocused"));
+				//		FL::DrawRectangle(renderStart, renderEnd, canvasP0, canvasSize, FL::GetColor("tileMapBoxFocused"), 2.0f, drawList);
+				//	}
+				//	else
+				//	{
+				//		ImGui::GetWindowDrawList()->AddRectFilled(renderStart, renderEnd, FL::GetColor32("tileMapGridBgUnfocused"));
+				//		FL::DrawRectangle(renderStart, renderEnd, canvasP0, canvasSize, FL::GetColor("tileMapBoxUnfocused"), 2.0f, drawList);
+				//	}
 
-			//							bool b_containsTile = false;
-			//							for (Vector2 tile : hoveredTiles)
-			//							{
-			//								if (tile.x == w && tile.y == h)
-			//									b_containsTile = true;
-			//							}
-			//							if (!b_containsTile)
-			//							{
-			//								hoveredTiles.push_back(Vector2(w, h));
-			//							}
-			//						}
-			//					}
+				//	if (focusedObjectID == self.GetID())
+				//	{
+				//		// Handle Tiles
+				//		for (float w = 0; w < width; w++)
+				//		{
+				//			for (float h = 0; h < height; h++)
+				//			{
+				//				// TileMap interactions							
+				//				std::string tileButtonID = "##tileMapIndexButton" + std::to_string(id) + "-" + std::to_string(w) + std::to_string(h);
+				//				TileSet* activeTileSet = nullptr;
 
-			//					if (b_isHovered)
-			//					{
-			//						// Mouse down
-			//						if (ImGui::IsKeyDown(ImGuiKey_MouseLeft))
-			//						{
-			//							// Record the tile that is currently under the clicked mouse
-			//							multiSelectCurrentHoveredTile = Vector2(w, h);
+				//				// Get active TileSet for texture dimensions
+				//				std::string activeTileSetName = FL::F_tileSetAndIndexOnBrush.first;
+				//				if (activeTileSetName != "")
+				//				{
+				//					activeTileSet = FL::GetTileSet(activeTileSetName);
+				//				}
 
-			//							if (activeTileSet != nullptr && FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetHoldingTile"));
-			//								tileMap->SetTile(Vector2(w, h), activeTileSet, FL::F_tileSetAndIndexOnBrush.second);
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_ERASE)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeClick"));
-			//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeClickBorder"));
-			//								tileMap->EraseTile(Vector2(w, h));
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileBoxColHighlight"));
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSelectModeClickBorder"));
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileMoveModeClickBorder"));
-			//							}
-			//						}
-			//						// Mouse not down
-			//						else
-			//						{
-			//							if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTile"));
-			//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTileBorder"));
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_ERASE)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeHover"));
-			//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeHoverBorder"));
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileBoxColHoveredHighlight"));
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
-			//							{
-			//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTile"));
-			//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTileBorder"));
-			//							}
-			//						}
+				//				// tileStart = viewport center + top left corner in pixel screen space + tile offset
+				//				float tileStartX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (w * tileWidthInPx);
+				//				float tileStartY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x) + (h * tileHeightInPx);
 
-			//						// Click pressed this frame
-			//						if (ImGui::IsKeyPressed(ImGuiKey_MouseLeft, false))
-			//						{
-			//							if (FL::F_CursorMode != FL::F_CURSOR_MODE::TILE_MOVE)
-			//							{
-			//								// Record the tile that was clicked on	
-			//								multiSelectStartTile = Vector2(w, h);
-			//								savedMultiSelectStartTile = Vector2(w, h);
-			//							}
+				//				Vector2 tileStart = Vector2(tileStartX, tileStartY);
+				//				Vector2 tileEnd = Vector2(tileStartX + tileWidthInPx, tileStartY + tileHeightInPx);
 
-			//							if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
-			//							{
-			//								colAreaStartTile = Vector2(w, h);
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
-			//							{
-			//								hoveredTiles.clear();
-			//								selectedTiles.clear();
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
-			//							{
-			//								moveStartTile = Vector2(w, h);
-			//							}
-			//						}
+				//				// Catch interactions on the TileMap container
+				//				if ((focusedObjectID == self.GetID()) &&
+				//					((FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH && activeTileSet != nullptr && FL::F_tileSetAndIndexOnBrush.second != -1) ||
+				//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_ERASE) ||
+				//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW && tileMap->GetSelectedCollisionArea() != "")) ||
+				//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT) ||
+				//					(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE))
+				//				{
+				//					// Set Draw Channel to 2 for lower level UI
+				//					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
-			//						// Click released this frame
-			//						if (ImGui::IsKeyReleased(ImGuiKey_MouseLeft))
-			//						{
-			//							if (FL::F_CursorMode != FL::F_CURSOR_MODE::TILE_MOVE)
-			//							{
-			//								// Record the tile that the mouse released on
-			//								multiSelectEndTile = Vector2(w, h);
-			//							}
+				//					AddSceneViewMouseControls(tileButtonID, tileStart, tileSize, FG_sceneViewcenterPoint, FG_sceneViewCenter, FG_sceneViewGridStep, FL::GetColor32("tileMapGridLines"));
+				//					// _RectOnly flag enables the buttons to work when dragging the mouse over them in a clicked state // https://github.com/ocornut/imgui/commit/564ff2dfd379d40568879a5bc89e8cfea7e51d2f
+				//					const bool b_isHovered = ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly);
 
 
-			//							if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
-			//							{
-			//								colAreaEndTile = Vector2(w, h);
 
-			//								if (colAreaStartTile.x != -1 && colAreaStartTile.y != -1)
-			//								{
-			//									std::pair<Vector2, Vector2> newPair = { colAreaStartTile, colAreaEndTile };
-			//									bool b_alreadyContains = false;
+				//					// Collect all boxes between multiSelectStartTile tile and multiSelectCurrentlyHovered tile
+				//					if (focusedObjectID == self.GetID() &&
+				//						multiSelectStartTile.x != -1 &&
+				//						multiSelectStartTile.y != -1 &&
+				//						(FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW || FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT) &&
+				//						ImGui::IsKeyDown(ImGuiKey_MouseLeft) &&
+				//						(multiSelectStartTile.x <= w && multiSelectCurrentHoveredTile.x >= w || multiSelectCurrentHoveredTile.x <= w && multiSelectStartTile.x >= w) &&
+				//						(multiSelectStartTile.y <= h && multiSelectCurrentHoveredTile.y >= h || multiSelectCurrentHoveredTile.y <= h && multiSelectStartTile.y >= h))
+				//					{
+				//						if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
+				//						{
+				//							ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileBoxColHighlight"));
+				//						}
+				//						else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
+				//						{
+				//							ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileMultiSelectHighlightDragging"));
 
-			//									for (std::vector<std::pair<Vector2, Vector2>>::iterator coordPair = FG_collisionAreasBuffer.begin(); coordPair != FG_collisionAreasBuffer.end(); coordPair++)
-			//									{
-			//										if ((coordPair->first == colAreaStartTile && coordPair->second == colAreaEndTile) || (coordPair->first == colAreaEndTile && coordPair->second == colAreaStartTile))
-			//										{
-			//											FG_collisionAreasBuffer.erase(coordPair);
-			//											b_alreadyContains = true;
-			//											break;
-			//										}
-			//									}
+				//							bool b_containsTile = false;
+				//							for (Vector2 tile : hoveredTiles)
+				//							{
+				//								if (tile.x == w && tile.y == h)
+				//									b_containsTile = true;
+				//							}
+				//							if (!b_containsTile)
+				//							{
+				//								hoveredTiles.push_back(Vector2(w, h));
+				//							}
+				//						}
+				//					}
 
-			//									if (!b_alreadyContains)
-			//									{
-			//										FG_collisionAreasBuffer.push_back(newPair);
-			//									}
-			//								}
+				//					if (b_isHovered)
+				//					{
+				//						// Mouse down
+				//						if (ImGui::IsKeyDown(ImGuiKey_MouseLeft))
+				//						{
+				//							// Record the tile that is currently under the clicked mouse
+				//							multiSelectCurrentHoveredTile = Vector2(w, h);
 
-			//								colAreaStartTile = Vector2(-1, -1);
-			//								colAreaEndTile = Vector2(-1, -1);
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
-			//							{
-			//								selectedTiles = hoveredTiles;
-			//								hoveredTiles.clear();
-			//							}
-			//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
-			//							{
-			//								moveEndTile = Vector2(w, h);
+				//							if (activeTileSet != nullptr && FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetHoldingTile"));
+				//								tileMap->SetTile(Vector2(w, h), activeTileSet, FL::F_tileSetAndIndexOnBrush.second);
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_ERASE)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeClick"));
+				//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeClickBorder"));
+				//								tileMap->EraseTile(Vector2(w, h));
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileBoxColHighlight"));
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSelectModeClickBorder"));
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileMoveModeClickBorder"));
+				//							}
+				//						}
+				//						// Mouse not down
+				//						else
+				//						{
+				//							if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_BRUSH)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTile"));
+				//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTileBorder"));
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_ERASE)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeHover"));
+				//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetEraseModeHoverBorder"));
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileBoxColHoveredHighlight"));
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
+				//							{
+				//								ImGui::GetWindowDrawList()->AddRectFilled(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTile"));
+				//								ImGui::GetWindowDrawList()->AddRect(tileStart, tileEnd, FL::GetColor32("tileSetHoveredTileBorder"));
+				//							}
+				//						}
 
-			//								if (moveStartTile.x != -1 && moveStartTile.y != -1)
-			//								{
-			//									float xMove = moveEndTile.x - moveStartTile.x;
-			//									float yMove = moveEndTile.y - moveStartTile.y;
+				//						// Click pressed this frame
+				//						if (ImGui::IsKeyPressed(ImGuiKey_MouseLeft, false))
+				//						{
+				//							if (FL::F_CursorMode != FL::F_CURSOR_MODE::TILE_MOVE)
+				//							{
+				//								// Record the tile that was clicked on	
+				//								multiSelectStartTile = Vector2(w, h);
+				//								savedMultiSelectStartTile = Vector2(w, h);
+				//							}
 
-			//									tileMap->MoveTiles(selectedTiles, Vector2(xMove, yMove));
-			//								}
+				//							if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
+				//							{
+				//								colAreaStartTile = Vector2(w, h);
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
+				//							{
+				//								hoveredTiles.clear();
+				//								selectedTiles.clear();
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
+				//							{
+				//								moveStartTile = Vector2(w, h);
+				//							}
+				//						}
 
-			//								moveStartTile = Vector2(-1, -1);
-			//								moveEndTile = Vector2(-1, -1);
-			//							}
-
-			//							if (FL::F_CursorMode != FL::F_CURSOR_MODE::TILE_MOVE)
-			//							{
-			//								// Reset the starting tile
-			//								multiSelectStartTile = Vector2(-1, -1);
-			//							}
-			//						}
-			//					}
-			//				}
-			//			}
-			//		}
-
-			//		// Draw box around selected multiselect tiles
-			//		if ((selectedTiles.size() > 0) && (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT || FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE))
-			//		{
-			//			float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (savedMultiSelectStartTile.x * tileWidthInPx);
-			//			float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.y) + (savedMultiSelectStartTile.y * tileHeightInPx);
-			//			float selectWidth = multiSelectEndTile.x - savedMultiSelectStartTile.x;
-			//			if (selectWidth < 0)
-			//			{
-			//				selectWidth *= -1;
-			//			}
-			//			selectWidth += 1;
-			//			float selectHeight = multiSelectEndTile.y - savedMultiSelectStartTile.y;
-			//			if (selectHeight < 0)
-			//			{
-			//				selectHeight *= -1;
-			//			}
-			//			selectHeight += 1;
-
-			//			Vector2 startTileScreenPos = Vector2(startPosX, startPosY);
-			//			Vector2 endTileScreenPos = Vector2(startPosX + (tileWidthInPx * selectWidth), startPosY + (tileHeightInPx * selectHeight));
-
-			//			ImGui::GetWindowDrawList()->AddRectFilled(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlight"));
-			//			ImGui::GetWindowDrawList()->AddRect(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlightBorder"));
-
-			//			if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
-			//			{
-			//				FL::RenderInvisibleButton("##MultiSelectDraggableBox", startTileScreenPos, Vector2(endTileScreenPos.x - startTileScreenPos.x, endTileScreenPos.y - startTileScreenPos.y));
-			//				if (ImGui::IsItemHovered())
-			//				{
-			//					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			//				}
-			//			}
-			//		}
-			//	}
-
-			//	// Draw box around each of the collision areas in the buffer
-			//	if (focusedObjectID == self.GetID() && FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
-			//	{
-			//		for (std::pair<Vector2, Vector2> collAreaBuffer : FG_collisionAreasBuffer)
-			//		{
-			//			Vector2 startCoord = collAreaBuffer.first;
-			//			Vector2 endCoord = collAreaBuffer.second;
-
-			//			float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (startCoord.x * tileWidthInPx);
-			//			float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.y) + (startCoord.y * tileHeightInPx);
-			//			float selectWidth = endCoord.x - startCoord.x;
-			//			if (selectWidth < 0)
-			//			{
-			//				selectWidth *= -1;
-			//			}
-			//			selectWidth += 1;
-			//			float selectHeight = endCoord.y - startCoord.y;
-			//			if (selectHeight < 0)
-			//			{
-			//				selectHeight *= -1;
-			//			}
-			//			selectHeight += 1;
-
-			//			Vector2 startTileScreenPos = Vector2(startPosX, startPosY);
-			//			Vector2 endTileScreenPos = Vector2(startPosX + (tileWidthInPx * selectWidth), startPosY + (tileHeightInPx * selectHeight));
-
-			//			ImGui::GetWindowDrawList()->AddRectFilled(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlight"));
-			//			ImGui::GetWindowDrawList()->AddRect(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlightBorder"));
-
-			//			if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
-			//			{
-			//				FL::RenderInvisibleButton("##MultiSelectDraggableBox", startTileScreenPos, Vector2(endTileScreenPos.x - startTileScreenPos.x, endTileScreenPos.y - startTileScreenPos.y));
-			//				if (ImGui::IsItemHovered())
-			//				{
-			//					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			//				}
-			//			}
-			//		}
-			//	}
-
-			//	// Draw TileMap indice Textures
-			//	for (std::pair<int, std::map<int, FL::Tile>> xPair : tiles)
-			//	{
-			//		float x = (float)xPair.first;
-			//		
-			//		if (x <= width)
-			//		{
-			//			for (std::pair<int, FL::Tile> yPair : xPair.second)
-			//			{
-			//				float y = (float)yPair.first;
-
-			//				if (y <= height)
-			//				{
-			//					FL::Tile tile = yPair.second;
-			//					TileSet* usedTileSet = nullptr;
-			//					std::string tileSetName = tile.tileSetName;
-
-			//					if (tileSetName != "")
-			//					{
-			//						usedTileSet = FL::GetTileSet(tileSetName);
-			//					}
-
-			//					// this many grid spaces fit into a single tiles width (if tileWidth is 16: 16 / 8 is 2 grid spaces in for a single tile 
-			//					float gridWidthsInATile = tileWidth / FL::F_pixelsPerGridSpace;
-			//					float gridHeightsInATile = tileHeight / FL::F_pixelsPerGridSpace;
-
-			//					SDL_Texture* texture = tile.tileSetTexture;
-			//					float textureWidth = (float)usedTileSet->GetTexture()->GetWidth();
-			//					float textureHeight = (float)usedTileSet->GetTexture()->GetHeight();
-			//					Vector2 uvStart = Vector2(tile.uvStart.x / textureWidth, tile.uvStart.y / textureHeight);
-			//					Vector2 uvEnd = Vector2(tile.uvEnd.x / textureWidth, tile.uvEnd.y / textureHeight);
-			//					float gridXPosition = (position.x - (gridWidth / 2)) + gridWidthsInATile * x;
-			//					float gridYPosition = (position.y + (gridHeight / 2)) - gridHeightsInATile * y;
-			//					Vector2 tilePosition = Vector2(gridXPosition, gridYPosition);
+				//						// Click released this frame
+				//						if (ImGui::IsKeyReleased(ImGuiKey_MouseLeft))
+				//						{
+				//							if (FL::F_CursorMode != FL::F_CURSOR_MODE::TILE_MOVE)
+				//							{
+				//								// Record the tile that the mouse released on
+				//								multiSelectEndTile = Vector2(w, h);
+				//							}
 
 
-			//					// Change the draw channel for the scene object
-			//					if (renderOrder <= FL::F_maxSpriteLayers && renderOrder >= 0)
-			//					{
-			//						drawSplitter->SetCurrentChannel(drawList, renderOrder);
-			//					}
-			//					else
-			//					{
-			//						drawSplitter->SetCurrentChannel(drawList, 0);
-			//					}
+				//							if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
+				//							{
+				//								colAreaEndTile = Vector2(w, h);
 
-			//					FL::AddImageToDrawList(texture, tilePosition, FG_sceneViewCenter, tileWidth, tileHeight, Vector2(0, 0), scale, true, FG_sceneViewGridStep.x, drawList, 0, FL::GetColor32("white"), uvStart, uvEnd);
-			//				}
-			//			}
-			//		}
-			//	}
-			//}
+				//								if (colAreaStartTile.x != -1 && colAreaStartTile.y != -1)
+				//								{
+				//									std::pair<Vector2, Vector2> newPair = { colAreaStartTile, colAreaEndTile };
+				//									bool b_alreadyContains = false;
+
+				//									for (std::vector<std::pair<Vector2, Vector2>>::iterator coordPair = FG_collisionAreasBuffer.begin(); coordPair != FG_collisionAreasBuffer.end(); coordPair++)
+				//									{
+				//										if ((coordPair->first == colAreaStartTile && coordPair->second == colAreaEndTile) || (coordPair->first == colAreaEndTile && coordPair->second == colAreaStartTile))
+				//										{
+				//											FG_collisionAreasBuffer.erase(coordPair);
+				//											b_alreadyContains = true;
+				//											break;
+				//										}
+				//									}
+
+				//									if (!b_alreadyContains)
+				//									{
+				//										FG_collisionAreasBuffer.push_back(newPair);
+				//									}
+				//								}
+
+				//								colAreaStartTile = Vector2(-1, -1);
+				//								colAreaEndTile = Vector2(-1, -1);
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT)
+				//							{
+				//								selectedTiles = hoveredTiles;
+				//								hoveredTiles.clear();
+				//							}
+				//							else if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
+				//							{
+				//								moveEndTile = Vector2(w, h);
+
+				//								if (moveStartTile.x != -1 && moveStartTile.y != -1)
+				//								{
+				//									float xMove = moveEndTile.x - moveStartTile.x;
+				//									float yMove = moveEndTile.y - moveStartTile.y;
+
+				//									tileMap->MoveTiles(selectedTiles, Vector2(xMove, yMove));
+				//								}
+
+				//								moveStartTile = Vector2(-1, -1);
+				//								moveEndTile = Vector2(-1, -1);
+				//							}
+
+				//							if (FL::F_CursorMode != FL::F_CURSOR_MODE::TILE_MOVE)
+				//							{
+				//								// Reset the starting tile
+				//								multiSelectStartTile = Vector2(-1, -1);
+				//							}
+				//						}
+				//					}
+				//				}
+				//			}
+				//		}
+
+				//		// Draw box around selected multiselect tiles
+				//		if ((selectedTiles.size() > 0) && (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT || FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE))
+				//		{
+				//			float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (savedMultiSelectStartTile.x * tileWidthInPx);
+				//			float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.y) + (savedMultiSelectStartTile.y * tileHeightInPx);
+				//			float selectWidth = multiSelectEndTile.x - savedMultiSelectStartTile.x;
+				//			if (selectWidth < 0)
+				//			{
+				//				selectWidth *= -1;
+				//			}
+				//			selectWidth += 1;
+				//			float selectHeight = multiSelectEndTile.y - savedMultiSelectStartTile.y;
+				//			if (selectHeight < 0)
+				//			{
+				//				selectHeight *= -1;
+				//			}
+				//			selectHeight += 1;
+
+				//			Vector2 startTileScreenPos = Vector2(startPosX, startPosY);
+				//			Vector2 endTileScreenPos = Vector2(startPosX + (tileWidthInPx * selectWidth), startPosY + (tileHeightInPx * selectHeight));
+
+				//			ImGui::GetWindowDrawList()->AddRectFilled(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlight"));
+				//			ImGui::GetWindowDrawList()->AddRect(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlightBorder"));
+
+				//			if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
+				//			{
+				//				FL::RenderInvisibleButton("##MultiSelectDraggableBox", startTileScreenPos, Vector2(endTileScreenPos.x - startTileScreenPos.x, endTileScreenPos.y - startTileScreenPos.y));
+				//				if (ImGui::IsItemHovered())
+				//				{
+				//					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				//				}
+				//			}
+				//		}
+				//	}
+
+				//	// Draw box around each of the collision areas in the buffer
+				//	if (focusedObjectID == self.GetID() && FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW)
+				//	{
+				//		for (std::pair<Vector2, Vector2> collAreaBuffer : FG_collisionAreasBuffer)
+				//		{
+				//			Vector2 startCoord = collAreaBuffer.first;
+				//			Vector2 endCoord = collAreaBuffer.second;
+
+				//			float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (startCoord.x * tileWidthInPx);
+				//			float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.y) + (startCoord.y * tileHeightInPx);
+				//			float selectWidth = endCoord.x - startCoord.x;
+				//			if (selectWidth < 0)
+				//			{
+				//				selectWidth *= -1;
+				//			}
+				//			selectWidth += 1;
+				//			float selectHeight = endCoord.y - startCoord.y;
+				//			if (selectHeight < 0)
+				//			{
+				//				selectHeight *= -1;
+				//			}
+				//			selectHeight += 1;
+
+				//			Vector2 startTileScreenPos = Vector2(startPosX, startPosY);
+				//			Vector2 endTileScreenPos = Vector2(startPosX + (tileWidthInPx * selectWidth), startPosY + (tileHeightInPx * selectHeight));
+
+				//			ImGui::GetWindowDrawList()->AddRectFilled(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlight"));
+				//			ImGui::GetWindowDrawList()->AddRect(startTileScreenPos, endTileScreenPos, FL::GetColor32("tileMultiSelectHighlightBorder"));
+
+				//			if (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE)
+				//			{
+				//				FL::RenderInvisibleButton("##MultiSelectDraggableBox", startTileScreenPos, Vector2(endTileScreenPos.x - startTileScreenPos.x, endTileScreenPos.y - startTileScreenPos.y));
+				//				if (ImGui::IsItemHovered())
+				//				{
+				//					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				//				}
+				//			}
+				//		}
+				//	}
+
+				//	// Draw TileMap indice Textures
+				//	for (std::pair<int, std::map<int, FL::Tile>> xPair : tiles)
+				//	{
+				//		float x = (float)xPair.first;
+				//		
+				//		if (x <= width)
+				//		{
+				//			for (std::pair<int, FL::Tile> yPair : xPair.second)
+				//			{
+				//				float y = (float)yPair.first;
+
+				//				if (y <= height)
+				//				{
+				//					FL::Tile tile = yPair.second;
+				//					TileSet* usedTileSet = nullptr;
+				//					std::string tileSetName = tile.tileSetName;
+
+				//					if (tileSetName != "")
+				//					{
+				//						usedTileSet = FL::GetTileSet(tileSetName);
+				//					}
+
+				//					// this many grid spaces fit into a single tiles width (if tileWidth is 16: 16 / 8 is 2 grid spaces in for a single tile 
+				//					float gridWidthsInATile = tileWidth / FL::F_pixelsPerGridSpace;
+				//					float gridHeightsInATile = tileHeight / FL::F_pixelsPerGridSpace;
+
+				//					SDL_Texture* texture = tile.tileSetTexture;
+				//					float textureWidth = (float)usedTileSet->GetTexture()->GetWidth();
+				//					float textureHeight = (float)usedTileSet->GetTexture()->GetHeight();
+				//					Vector2 uvStart = Vector2(tile.uvStart.x / textureWidth, tile.uvStart.y / textureHeight);
+				//					Vector2 uvEnd = Vector2(tile.uvEnd.x / textureWidth, tile.uvEnd.y / textureHeight);
+				//					float gridXPosition = (position.x - (gridWidth / 2)) + gridWidthsInATile * x;
+				//					float gridYPosition = (position.y + (gridHeight / 2)) - gridHeightsInATile * y;
+				//					Vector2 tilePosition = Vector2(gridXPosition, gridYPosition);
+
+
+				//					// Change the draw channel for the scene object
+				//					if (renderOrder <= FL::F_maxSpriteLayers && renderOrder >= 0)
+				//					{
+				//						drawSplitter->SetCurrentChannel(drawList, renderOrder);
+				//					}
+				//					else
+				//					{
+				//						drawSplitter->SetCurrentChannel(drawList, 0);
+				//					}
+
+				//					FL::AddImageToDrawList(texture, tilePosition, FG_sceneViewCenter, tileWidth, tileHeight, Vector2(0, 0), scale, true, FG_sceneViewGridStep.x, drawList, 0, FL::GetColor32("white"), uvStart, uvEnd);
+				//				}
+				//			}
+				//		}
+				//	}
+				//}
+			}
 		}
+	}
+
+	bool RenderChainAddPointWidget(ChainBody* chainBody, Vector2 midPoint, int startIndex)
+	{
+		std::vector<Vector2> points = chainBody->GetBodyProps().points;
+		Vector2 position = chainBody->GetBodyProps().position;
+		bool b_chainPointAdded = false;
+
+		SDL_Texture* chainAddJointTexture = FL::GetTexture("chainBodyAddJoint");		
+		float textureWidth = (float)FL::GetTextureObject("chainBodyAddJoint")->GetWidth();
+		float textureHeight = (float)FL::GetTextureObject("chainBodyAddJoint")->GetHeight();
+		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
+
+		Vector2 adjustedPoint = midPoint + position;
+		ImGuiIO& inputOutput = ImGui::GetIO();
+		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);		
+		jointScreenPos = jointScreenPos - jointOffset;
+
+		FL::RenderInvisibleButton("##chainBodyAddJoint_" + std::to_string(chainBody->GetID()) + "_" + std::to_string(startIndex), jointScreenPos, Vector2(textureWidth, textureHeight), false);
+		const bool b_jointHovered = ImGui::IsItemHovered();
+		const bool b_jointActive = ImGui::IsItemActive();
+		const bool b_jointClicked = ImGui::IsItemClicked();
+		if (b_jointHovered || b_jointActive)
+		{
+			chainAddJointTexture = FL::GetTexture("chainBodyAddJointHovered");
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);			
+			FL::RenderTextToolTip("Add new joint");
+		}
+
+		if (b_jointClicked)
+		{
+			std::vector<Vector2> newPoints;
+			
+			for (int i = 0; i < points.size(); i++)
+			{
+				newPoints.push_back(points[i]);
+
+				if (i == startIndex)
+				{
+					newPoints.push_back(midPoint);
+				}
+			}			
+
+			chainBody->SetPoints(newPoints);
+			b_chainPointAdded = true;
+		}
+
+		Vector2 jointScale = { 1, 1 };
+		bool b_scalesWithZoom = false;
+
+		FL::AddImageToDrawList(chainAddJointTexture, adjustedPoint, FG_sceneViewCenter, textureWidth, textureHeight, jointOffset, jointScale, b_scalesWithZoom, FG_sceneViewGridStep.x, ImGui::GetWindowDrawList());
+
+		return b_chainPointAdded;
+	}
+
+	bool RenderChainPointWidget(ChainBody* chainBody, Vector2& point, int index)
+	{
+		bool b_pointDeleted = false;
+
+		std::vector<Vector2> points = chainBody->GetBodyProps().points;
+		SDL_Texture* chainJointTexture = FL::GetTexture("chainBodyJoint");		
+		float textureWidth = (float)FL::GetTextureObject("chainBodyJoint")->GetWidth();
+		float textureHeight = (float)FL::GetTextureObject("chainBodyJoint")->GetHeight();
+
+		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
+
+		Vector2 adjustedPoint = point + chainBody->GetBodyProps().position;
+		ImGuiIO& inputOutput = ImGui::GetIO();
+		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);
+		jointScreenPos = jointScreenPos - jointOffset;		
+		std::string invisibleButtonID = "##chainBodyJoint_" + std::to_string(chainBody->GetID()) + "_" + std::to_string(index);
+
+		FL::RenderInvisibleButton(invisibleButtonID, jointScreenPos, Vector2(textureWidth, textureHeight), false, false, ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonLeft);
+		const bool b_jointHovered = ImGui::IsItemHovered();
+		const bool b_jointActive = ImGui::IsItemActive();
+		const bool b_jointRightClicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);		
+
+		if (points.size() > 4 && ImGui::BeginPopupContextItem(invisibleButtonID.c_str(), ImGuiPopupFlags_MouseButtonRight))
+		{
+			FL::PushMenuStyles();
+
+			if (ImGui::MenuItem("Delete"))
+			{
+				std::vector<Vector2> newPoints;
+
+				for (int i = 0; i < points.size(); i++)
+				{						
+					if (i != index)
+					{
+						newPoints.push_back(points[i]);
+					}
+				}
+
+				chainBody->SetPoints(newPoints);					
+				b_pointDeleted = true;
+			}
+
+			FL::PopMenuStyles();
+
+			ImGui::EndPopup();
+		}		
+
+		if (b_jointHovered || b_jointActive)
+		{			
+			chainJointTexture = FL::GetTexture("chainBodyJointHovered");
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			FL::RenderTextToolTip("Point index: " + std::to_string(index));
+		}		
+
+		if (b_jointActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+		{
+			Vector2 mousePosInGrid = FL::ConvertScreenToWorld(inputOutput.MousePos);
+			point = mousePosInGrid - chainBody->GetBodyProps().position;
+			chainBody->UpdatePoints();
+		}
+		
+		Vector2 jointScale = { 1, 1 };
+		bool b_scalesWithZoom = false;
+
+		FL::AddImageToDrawList(chainJointTexture, adjustedPoint, FG_sceneViewCenter, textureWidth, textureHeight, jointOffset, jointScale, b_scalesWithZoom, FG_sceneViewGridStep.x, ImGui::GetWindowDrawList());
+
+		return b_pointDeleted;
 	}
 
 	void RenderTransformArrowWidget()
@@ -1679,9 +1876,7 @@ namespace FlatGui
 					{
 						gridStep.y = minGridStep;
 					}
-				}
-
-				FL::F_sceneViewGridStep = gridStep;
+				}				
 			}
 		}
 	}

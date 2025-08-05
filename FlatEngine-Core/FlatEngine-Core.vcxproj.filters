@@ -522,9 +522,6 @@
     <ClInclude Include="Source\Audio.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\BoxCollider.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Button.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -544,12 +541,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\CharacterController.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\CircleCollider.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Collider.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Component.h">
@@ -595,9 +586,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\RayCast.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\RigidBody.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene.h">
@@ -647,6 +635,7 @@
     <ClInclude Include="Source\CircleBody.h" />
     <ClInclude Include="Source\CapsuleBody.h" />
     <ClInclude Include="Source\PolygonBody.h" />
+    <ClInclude Include="Source\ChainBody.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -700,9 +689,6 @@
     <ClCompile Include="Source\Audio.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BoxCollider.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Button.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -722,12 +708,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\CharacterController.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CircleCollider.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Collider.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Component.cpp">
@@ -784,9 +764,6 @@
     <ClCompile Include="Source\RayCast.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RigidBody.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -834,6 +811,7 @@
     <ClCompile Include="Source\CircleBody.cpp" />
     <ClCompile Include="Source\CapsuleBody.cpp" />
     <ClCompile Include="Source\PolygonBody.cpp" />
+    <ClCompile Include="Source\ChainBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

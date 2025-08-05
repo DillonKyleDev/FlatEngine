@@ -14,11 +14,13 @@
 #include "Script.h"
 #include "MappingContext.h"
 #include "Project.h"
+#include "Body.h"
 #include "BoxBody.h"
 #include "CircleBody.h"
 #include "CapsuleBody.h"
 #include "PolygonBody.h"
 
+#include "box2d.h"
 #include <fstream>
 #include <random>
 #include <vector>
@@ -612,7 +614,28 @@ namespace FlatEngine
 
 		//F_Lua.new_usertype<Physics::BodyProps>("BodyProps",
 
-		//);
+		//);		
+		F_Lua.new_usertype<b2Vec2>("b2Vec2",
+			"x", sol::readonly(&b2Vec2::x),
+			"y", sol::readonly(&b2Vec2::y)			
+		);
+		F_Lua.new_usertype<b2Manifold>("Manifold",
+			"pointCount", sol::readonly(&b2Manifold::pointCount),
+			"GetPoints", &b2Manifold::GetPoints,
+			"normal", sol::readonly(&b2Manifold::normal)
+		);
+		F_Lua.new_usertype<b2ManifoldPoint>("ManifoldPoint",
+			"point", sol::readonly(&b2ManifoldPoint::point),
+			"anchorA", sol::readonly(&b2ManifoldPoint::anchorA),
+			"anchorB", sol::readonly(&b2ManifoldPoint::anchorB),
+			"separation", sol::readonly(&b2ManifoldPoint::separation),
+			"normalImpulse", sol::readonly(&b2ManifoldPoint::normalImpulse),
+			"tangentImpulse", sol::readonly(&b2ManifoldPoint::tangentImpulse),
+			"totalNormalImpulse", sol::readonly(&b2ManifoldPoint::totalNormalImpulse),
+			"normalVelocity", sol::readonly(&b2ManifoldPoint::normalVelocity),
+			"id", sol::readonly(&b2ManifoldPoint::id),
+			"persisted", sol::readonly(&b2ManifoldPoint::persisted)
+		);
 
 		F_Lua.new_usertype<Body>("Body",
 			"SetActive", &Body::SetActive,
@@ -622,8 +645,7 @@ namespace FlatEngine
 			"GetID", &Body::GetID,
 			"GetBodyProps", &Body::GetBodyProps,
 			"SetDensity", &Body::SetDensity,
-			"SetGravity", &Body::SetGravityScale,
-			//"SetFallingGravity", &Body::SetFallingGravity,
+			"SetGravity", &Body::SetGravityScale,			
 			"SetFriction", &Body::SetFriction,
 			"SetLinearDamping", &Body::SetLinearDamping,
 			"SetAngularDamping", &Body::SetAngularDamping,
@@ -872,23 +894,12 @@ namespace FlatEngine
 			"end\n\n"+
 
 			"-- each of these functions must be present in each file if they are to be called otherwise other scripts copies will be used with this object instead\n" +
-			"function OnBoxCollision(collidedWith)\n" +
-			"end\n\n" +
-
-			"function OnBoxCollisionEnter(collidedWith)\n" +
+			"function OnBeginCollision(collidedWith, manifold)\n" +
 			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
 			"end\n\n" +
 
-			"function OnBoxCollisionLeave(collidedWith)\n" +
-			"end\n\n" +
-
-			"function OnCircleCollision(collidedWith)\n" +
-			"end\n\n" +
-
-			"function OnCircleCollisionEnter(collidedWith)\n" +
-			"end\n\n" +
-
-			"function OnCircleCollisionLeave(collidedWith)\n" +
+			"function OnEndCollision(collidedWith, manifold)\n" +
+			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
 			"end\n\n" +
 
 			"function OnButtonMouseOver()\n" +
@@ -904,7 +915,12 @@ namespace FlatEngine
 			"end\n\n" +
 
 			"function OnButtonRightClick()\n" +
-			"end";
+			"end\n\n\n" +
+			
+			"--Lua cheatsheet\n\n" +
+			"--Lua if statements:\n--if (test) then\n--elseif\n\n--end\n\n" +
+			"--Lua for loops:\n--for init, min/max value, increment\ndo\n\nend\n" +
+			"--example:\nfor i = 0, 10, 1\ndo\n\nLogInt(i)\nend";
 		outfile.close();
 
 		RetrieveLuaScriptPaths();
@@ -1060,27 +1076,39 @@ namespace FlatEngine
 	}
 
 	// Collision Events Passed to Lua
-	void CallLuaCollisionFunction(GameObject* caller, Collider* collidedWith, LuaEventFunction eventFunc)
+	void CallLuaCollisionFunction(LuaEventFunction eventFunc, Body* caller, Body* collidedWith, b2Manifold manifold)
 	{
-		if (caller->HasComponent("Script"))
+		GameObject* callingObject = caller->GetParent();
+
+		if (callingObject->HasComponent("Script"))
 		{
-			for (Script* script : caller->GetScripts())
+			for (Script* script : callingObject->GetScripts())
 			{
 				if (script->IsActive())
 				{
 					std::string attachedScript = script->GetAttachedScript();
 
 					if (F_LuaScriptsMap.count(attachedScript) > 0)
-					{
-						std::string filePath = F_LuaScriptsMap.at(attachedScript);
-						std::string functionName = GetFilenameFromPath(filePath) + F_LuaEventNames[eventFunc];
+					{						
+						std::string functionName = F_LuaEventNames[eventFunc];
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
 							LogError("Could not invoke script file " + attachedScript + " on " + script->GetParent()->GetName() + "\n" + message);
 						}
-						LoadLuaGameObject(caller, attachedScript);
-						CallVoidLuaFunction<Collider*>(F_LuaEventNames[eventFunc], collidedWith);						
+						LoadLuaGameObject(callingObject, attachedScript);
+
+						sol::protected_function protectedFunc = F_Lua[functionName];
+						if (protectedFunc)
+						{
+							auto result = protectedFunc(collidedWith, manifold);
+							if (!result.valid())
+							{
+								sol::error err = result;
+								LogError("Something went wrong in Lua function: " + functionName + "()");
+								LogError(err.what());
+							}
+						}
 					}
 				}
 			}

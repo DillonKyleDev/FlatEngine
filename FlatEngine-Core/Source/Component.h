@@ -22,6 +22,7 @@ namespace FlatEngine
 		T_CircleBody,
 		T_CapsuleBody,
 		T_PolygonBody,
+		T_ChainBody,
 	};
 
 	class GameObject;

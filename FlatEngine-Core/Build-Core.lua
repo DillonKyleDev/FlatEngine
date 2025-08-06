@@ -56,8 +56,8 @@ project "FlatEngine-Core"
    }
 
    
-   targetdir ("FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")
-   objdir ("FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
+   targetdir ("../Build/" .. OutputDir .. "/%{prj.name}")
+   objdir ("../Build/Intermediates/" .. OutputDir .. "/%{prj.name}")
 
    filter "system:windows"
        systemversion "latest"

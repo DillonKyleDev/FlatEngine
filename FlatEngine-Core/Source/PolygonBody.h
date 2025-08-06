@@ -12,6 +12,13 @@ namespace FlatEngine
         PolygonBody(long myID = -1, long parentID = -1);
         ~PolygonBody();
         std::string GetData();
+
+        void SetPoints(std::vector<Vector2> points);
+        void UpdatePoints();
+        void SetCornerRadius(float cornerRadius);
+
+    private:
+
     };
 }
 

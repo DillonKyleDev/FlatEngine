@@ -15,7 +15,7 @@ namespace FlatEngine
 		m_bodyProps.shape = Physics::BodyShape::BS_Chain;		
 		m_bodyProps.type = b2_staticBody;
 		m_bodyProps.position = GetParent()->GetTransform()->GetPosition();		
-		m_bodyProps.points = { {5.0f, -1.0f}, {4.0f, 0.0f}, {-4.0f, 0.0f}, {-5.0f, -1.0f} };		
+		m_bodyProps.points = { {4.0f, -2.0f}, {4.0f, 0.0f}, {-4.0f, 0.0f}, {-4.0f, -2.0f} };		
 		m_bodyProps.b_isLoop = false;
 		m_bodyProps.tangentSpeed = 0.0f;
 		m_bodyProps.rollingResistance = 0.0f;

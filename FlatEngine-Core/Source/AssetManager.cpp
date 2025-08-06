@@ -42,41 +42,46 @@ namespace FlatEngine
 		m_directories.emplace("tileTextures", "..\\projects\\" + projectName + "\\imagese\\tileTextures\\");
 	}
 
+	std::string AssetManager::GetRootPath()
+	{
+		return m_rootPath;
+	}
+
+	void AssetManager::FindRootDir()
+	{
+		std::filesystem::path currentDir = std::filesystem::current_path();
+		m_rootPath = "";
+		int timeout = 10;
+
+		while (timeout)
+		{
+			if (currentDir.stem().string() == "FlatEngine2D")
+			{
+				m_rootPath = currentDir.string();
+				timeout = 0;
+			}
+			else
+			{
+				currentDir._Remove_filename_and_separator();
+				timeout--;
+			}
+		}
+
+		if (m_rootPath == "")
+		{
+			LogError("Timeout: could not find directory FlatEngine2D.");
+		}
+	}
+
 	void AssetManager::CollectDirectories()
 	{
 		m_directories.clear();
 		m_directories.emplace("projects", "../projects/");
 		m_files.clear();
 
-		std::string dirPath = "..\\engine\\scripts\\RuntimeDirectories.lua";
-
-		// Load in lua script
-		if (DoesFileExist(dirPath))
-		{
-			try
-			{
-				auto script = F_Lua.safe_script_file(dirPath);
-				std::optional<sol::table> pathTable = F_Lua["F_Paths"];								
-
-				if (pathTable)
-				{
-					for (const auto& entry : pathTable.value())
-					{
-						sol::object key = entry.first;
-						sol::object value = entry.second;
-						std::string sKey = key.as<std::string>();
-						std::string sValue = value.as<std::string>();
-
-						m_files.emplace(sKey, sValue);
-					}
-				}
-			}
-			catch (sol::error err)
-			{
-				LogError("Something went wrong in lua Directories file.");
-				LogError(err.what());
-			}
-		}
+		m_files.emplace("colors", m_rootPath + "\\engine\\scripts\\Colors.lua");
+		m_files.emplace("textures", m_rootPath + "\\engine\\scripts\\Textures.lua");
+		m_files.emplace("cinzelBlack", m_rootPath + "\\engine\\fonts\\Cinzel\\Cinzel-Black.ttf");
 	}
 
 	void AssetManager::CollectTags()

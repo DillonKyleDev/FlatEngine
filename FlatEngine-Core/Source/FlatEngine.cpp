@@ -311,7 +311,8 @@ namespace FlatEngine
 						F_Physics->Init();
 						printf("Physics initialized...\n");
 
-						F_AssetManager.CollectDirectories();
+						F_AssetManager.FindRootDir();
+						F_AssetManager.CollectDirectories();					
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
 						F_AssetManager.CollectTextures();	                   // Collect and create Texture icons from Textures.lua
 						F_AssetManager.CollectTags();
@@ -321,7 +322,7 @@ namespace FlatEngine
 						printf("Engine Assets initialized...\n");
 						LogSeparator();
 						LogString("System ready. Begin logging...");
-						LogSeparator();
+						LogSeparator();					
 					}
 				}
 			}
@@ -622,10 +623,12 @@ namespace FlatEngine
 	{
 		if (F_LoadedProject.GetBuildPath() != "")
 		{
+			std::string rootPath = F_AssetManager.GetRootPath();
+
 			try
 			{				
 				std::filesystem::create_directories(F_LoadedProject.GetBuildPath());
-				std::filesystem::copy("..\\FlatEngine-Core", F_LoadedProject.GetBuildPath() + "\\Core", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
+				std::filesystem::copy(rootPath + "\\Build\\windows-x86_64\\Release\\FlatEngine-Core", F_LoadedProject.GetBuildPath() + "\\Core", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
 			catch (std::exception& e)
 			{
@@ -634,7 +637,7 @@ namespace FlatEngine
 			}
 			try
 			{
-				std::filesystem::copy("..\\FlatEngine-Runtime", F_LoadedProject.GetBuildPath() + "\\Runtime", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
+				std::filesystem::copy(rootPath + "\\Build\\windows-x86_64\\Release\\FlatEngine-Runtime", F_LoadedProject.GetBuildPath() + "\\Runtime", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
 			catch (std::exception& e)
 			{
@@ -643,7 +646,7 @@ namespace FlatEngine
 			}
 			try
 			{
-				std::string existingProjDir = "..\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath());
+				std::string existingProjDir = rootPath + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath());
 				std::string buildProjDir = F_LoadedProject.GetBuildPath() + "\\projects\\" + GetFilenameFromPath(F_LoadedProject.GetPath());
 				std::filesystem::create_directories(buildProjDir);
 				std::filesystem::copy(existingProjDir, buildProjDir, std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
@@ -655,7 +658,7 @@ namespace FlatEngine
 			}
 			try
 			{
-				std::filesystem::copy("..\\engine", F_LoadedProject.GetBuildPath() + "\\engine", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
+				std::filesystem::copy(rootPath + "\\engine", F_LoadedProject.GetBuildPath() + "\\engine", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
 			catch (std::exception& e)
 			{
@@ -664,7 +667,7 @@ namespace FlatEngine
 			}
 			try
 			{
-				std::filesystem::copy("..\\..\\..\\intermediates", F_LoadedProject.GetBuildPath() + "\\intermediates", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
+				std::filesystem::copy(rootPath + "\\Build\\Intermediates", F_LoadedProject.GetBuildPath() + "\\Intermediates", std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
 			}
 			catch (std::exception& e)
 			{

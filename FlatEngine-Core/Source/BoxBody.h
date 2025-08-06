@@ -18,6 +18,7 @@ namespace FlatEngine
 		void UpdateCorners();
 		Vector2* GetCornersWorld();
 		std::vector<Vector2> GetCornersScreen();
+		void SetCornerRadius(float cornerRadius);
 
 	private:
 		void SetCorners(Vector2 newCorners[4]);

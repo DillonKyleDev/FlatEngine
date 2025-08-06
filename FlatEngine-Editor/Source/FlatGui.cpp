@@ -715,16 +715,10 @@ namespace FlatGui
 			long focusedObjectID = GetFocusedGameObjectID();
 			Vector2 position = transform->GetTruePosition();
 			float rotation = transform->GetRotation();
-			Body* body = self.GetBody();
 			BoxBody* boxBody = self.GetBoxBody();
 			CircleBody* circleBody = self.GetCircleBody();
 			CapsuleBody* capsuleBody = self.GetCapsuleBody();
 			PolygonBody* polygonBody = self.GetPolygonBody();
-			if (body != nullptr)
-			{
-				position = body->GetPosition();
-				rotation = body->GetRotation();
-			}
 			Vector2 relativePosition = transform->GetPosition();
 			Vector2 origin = transform->GetOrigin();
 			Vector2 transformScale = transform->GetScale();		
@@ -1029,6 +1023,65 @@ namespace FlatGui
 				}
 			}
 
+			if (polygonBody != nullptr)
+			{
+				b2BodyId polygonBodyID = polygonBody->GetBodyID();
+				bool b_isActive = polygonBody->IsActive();
+				FL::Physics::BodyProps& bodyProps = polygonBody->GetBodyProps();
+				bool b_isLoop = bodyProps.b_isLoop;
+				std::vector<Vector2>& points = bodyProps.points;
+				int pointCount = (int)points.size();
+
+				if (b_isActive)
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						Vector2 start = FL::ConvertWorldToScreen(position + points[i]);
+						Vector2 end = FL::ConvertWorldToScreen(position + points[FL::Fmod(i + 1, pointCount)]);
+						FL::DrawLine(start, end, FL::GetColor("polygonColliderActive"), 1, drawList);						
+					}
+				}
+				else
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						Vector2 start = FL::ConvertWorldToScreen(points[i]);
+						Vector2 end = FL::ConvertWorldToScreen(points[FL::Fmod(i + 1, pointCount)]);
+						FL::DrawLine(start, end, FL::GetColor("polygonColliderInactive"), 1, drawList);
+					}
+				}
+
+				ImGuiIO& inputOutput = ImGui::GetIO();
+				static Vector2 cursorPosAtClick = Vector2();
+				bool b_pointDeleted = false;
+
+				for (int i = 0; i < pointCount; i++)
+				{
+					b_pointDeleted = RenderPointWidget(polygonBody, points[i], i);
+
+					if (b_pointDeleted)
+					{
+						break;
+					}
+				}
+
+				if (!b_pointDeleted)
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (i != 0 && i < pointCount - 2)
+						{
+							Vector2 midPoint = points[i] + ((points[i + 1] - points[i]) * 0.5f);
+
+							if (RenderAddPointWidget(polygonBody, midPoint, i))
+							{
+								break;
+							}
+						}
+					}
+				}
+			}
+
 			if (chainBody != nullptr)
 			{
 				b2BodyId chainBodyID = chainBody->GetBodyID();
@@ -1036,7 +1089,7 @@ namespace FlatGui
 				FL::Physics::BodyProps& bodyProps = chainBody->GetBodyProps();
 				bool b_isLoop = bodyProps.b_isLoop;
 				std::vector<Vector2>& points = bodyProps.points;
-				int pointCount = points.size();
+				int pointCount = (int)points.size();
 
 				if (b_isActive)
 				{
@@ -1074,7 +1127,7 @@ namespace FlatGui
 
 				for (int i = 0; i < pointCount; i++)
 				{
-					b_pointDeleted = RenderChainPointWidget(chainBody, points[i], i);
+					b_pointDeleted = RenderPointWidget(chainBody, points[i], i);
 
 					if (b_pointDeleted)
 					{
@@ -1090,7 +1143,7 @@ namespace FlatGui
 						{
 							Vector2 midPoint = points[i] + ((points[i + 1] - points[i]) * 0.5f);
 
-							if (RenderChainAddPointWidget(chainBody, midPoint, i))
+							if (RenderAddPointWidget(chainBody, midPoint, i))
 							{
 								break;
 							}
@@ -1526,29 +1579,28 @@ namespace FlatGui
 		}
 	}
 
-	bool RenderChainAddPointWidget(ChainBody* chainBody, Vector2 midPoint, int startIndex)
+	bool RenderAddPointWidget(Body* body, Vector2 midPoint, int startIndex)
 	{
-		std::vector<Vector2> points = chainBody->GetBodyProps().points;
-		Vector2 position = chainBody->GetBodyProps().position;
-		bool b_chainPointAdded = false;
+		bool b_pointAdded = false;
 
-		SDL_Texture* chainAddJointTexture = FL::GetTexture("chainBodyAddJoint");		
-		float textureWidth = (float)FL::GetTextureObject("chainBodyAddJoint")->GetWidth();
-		float textureHeight = (float)FL::GetTextureObject("chainBodyAddJoint")->GetHeight();
+		std::vector<Vector2> points = body->GetBodyProps().points;
+		Vector2 position = body->GetBodyProps().position;
+		SDL_Texture* chainAddJointTexture = FL::GetTexture("addJoint");		
+		float textureWidth = (float)FL::GetTextureObject("addJoint")->GetWidth();
+		float textureHeight = (float)FL::GetTextureObject("addJoint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
-
 		Vector2 adjustedPoint = midPoint + position;
 		ImGuiIO& inputOutput = ImGui::GetIO();
 		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);		
 		jointScreenPos = jointScreenPos - jointOffset;
 
-		FL::RenderInvisibleButton("##chainBodyAddJoint_" + std::to_string(chainBody->GetID()) + "_" + std::to_string(startIndex), jointScreenPos, Vector2(textureWidth, textureHeight), false);
+		FL::RenderInvisibleButton("##bodyAddJoint_" + std::to_string(body->GetID()) + "_" + std::to_string(startIndex), jointScreenPos, Vector2(textureWidth, textureHeight), false);
 		const bool b_jointHovered = ImGui::IsItemHovered();
 		const bool b_jointActive = ImGui::IsItemActive();
 		const bool b_jointClicked = ImGui::IsItemClicked();
 		if (b_jointHovered || b_jointActive)
 		{
-			chainAddJointTexture = FL::GetTexture("chainBodyAddJointHovered");
+			chainAddJointTexture = FL::GetTexture("addJointHovered");
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);			
 			FL::RenderTextToolTip("Add new joint");
 		}
@@ -1567,8 +1619,8 @@ namespace FlatGui
 				}
 			}			
 
-			chainBody->SetPoints(newPoints);
-			b_chainPointAdded = true;
+			body->SetPoints(newPoints);
+			b_pointAdded = true;
 		}
 
 		Vector2 jointScale = { 1, 1 };
@@ -1576,25 +1628,23 @@ namespace FlatGui
 
 		FL::AddImageToDrawList(chainAddJointTexture, adjustedPoint, FG_sceneViewCenter, textureWidth, textureHeight, jointOffset, jointScale, b_scalesWithZoom, FG_sceneViewGridStep.x, ImGui::GetWindowDrawList());
 
-		return b_chainPointAdded;
+		return b_pointAdded;
 	}
 
-	bool RenderChainPointWidget(ChainBody* chainBody, Vector2& point, int index)
+	bool RenderPointWidget(Body* body, Vector2& point, int index)
 	{
 		bool b_pointDeleted = false;
 
-		std::vector<Vector2> points = chainBody->GetBodyProps().points;
-		SDL_Texture* chainJointTexture = FL::GetTexture("chainBodyJoint");		
-		float textureWidth = (float)FL::GetTextureObject("chainBodyJoint")->GetWidth();
-		float textureHeight = (float)FL::GetTextureObject("chainBodyJoint")->GetHeight();
-
+		std::vector<Vector2> points = body->GetBodyProps().points;
+		SDL_Texture* chainJointTexture = FL::GetTexture("joint");		
+		float textureWidth = (float)FL::GetTextureObject("joint")->GetWidth();
+		float textureHeight = (float)FL::GetTextureObject("joint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
-
-		Vector2 adjustedPoint = point + chainBody->GetBodyProps().position;
+		Vector2 adjustedPoint = point + body->GetBodyProps().position;
 		ImGuiIO& inputOutput = ImGui::GetIO();
 		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);
 		jointScreenPos = jointScreenPos - jointOffset;		
-		std::string invisibleButtonID = "##chainBodyJoint_" + std::to_string(chainBody->GetID()) + "_" + std::to_string(index);
+		std::string invisibleButtonID = "##bodyJoint_" + std::to_string(body->GetID()) + "_" + std::to_string(index);
 
 		FL::RenderInvisibleButton(invisibleButtonID, jointScreenPos, Vector2(textureWidth, textureHeight), false, false, ImGuiButtonFlags_MouseButtonRight | ImGuiButtonFlags_MouseButtonLeft);
 		const bool b_jointHovered = ImGui::IsItemHovered();
@@ -1617,7 +1667,7 @@ namespace FlatGui
 					}
 				}
 
-				chainBody->SetPoints(newPoints);					
+				body->SetPoints(newPoints);					
 				b_pointDeleted = true;
 			}
 
@@ -1628,7 +1678,7 @@ namespace FlatGui
 
 		if (b_jointHovered || b_jointActive)
 		{			
-			chainJointTexture = FL::GetTexture("chainBodyJointHovered");
+			chainJointTexture = FL::GetTexture("jointHovered");
 			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			FL::RenderTextToolTip("Point index: " + std::to_string(index));
 		}		
@@ -1636,8 +1686,8 @@ namespace FlatGui
 		if (b_jointActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 		{
 			Vector2 mousePosInGrid = FL::ConvertScreenToWorld(inputOutput.MousePos);
-			point = mousePosInGrid - chainBody->GetBodyProps().position;
-			chainBody->UpdatePoints();
+			point = mousePosInGrid - body->GetBodyProps().position;
+			body->UpdatePoints();
 		}
 		
 		Vector2 jointScale = { 1, 1 };

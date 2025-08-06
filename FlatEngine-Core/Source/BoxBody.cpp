@@ -105,4 +105,10 @@ namespace FlatEngine
 
 		return corners;
 	}
+	void BoxBody::SetCornerRadius(float cornerRadius)
+	{
+		m_bodyProps = GetLiveProps();
+		m_bodyProps.cornerRadius = cornerRadius;
+		RecreateBody();
+	}
 }

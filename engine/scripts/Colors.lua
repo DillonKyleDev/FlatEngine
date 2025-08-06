@@ -47,11 +47,11 @@ F_Colors = {
 	capsuleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
 	-- Polygon
 	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	polygonColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
 	-- Chain
 	chainColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	chainColliderInactive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	chainColliderEndSegments = Vector4:new(1.0, 1.0, 0.0, 1.0),
+	chainColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
+	chainColliderEndSegments = Vector4:new(1.0, 0.0, 0.0, 1.0),
 
 	rayCast = Vector4:new(0.76, 0.42, 0.0, 1.0),
 	-- Button Components

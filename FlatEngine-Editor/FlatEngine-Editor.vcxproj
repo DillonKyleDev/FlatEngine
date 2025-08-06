@@ -55,22 +55,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Debug\FlatEngine-Editor\</OutDir>
-    <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Debug\FlatEngine-Editor\</IntDir>
+    <OutDir>..\Build\windows-x86_64\Debug\FlatEngine-Editor\</OutDir>
+    <IntDir>..\Build\Intermediates\windows-x86_64\Debug\FlatEngine-Editor\</IntDir>
     <TargetName>FlatEngine-Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Release\FlatEngine-Editor\</OutDir>
-    <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Release\FlatEngine-Editor\</IntDir>
+    <OutDir>..\Build\windows-x86_64\Release\FlatEngine-Editor\</OutDir>
+    <IntDir>..\Build\Intermediates\windows-x86_64\Release\FlatEngine-Editor\</IntDir>
     <TargetName>FlatEngine-Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\..\Desktop\FlatEngine2D_Build\windows-x86_64\Dist\FlatEngine-Editor\</OutDir>
-    <IntDir>..\..\..\..\Desktop\FlatEngine2D_Build\Intermediates\windows-x86_64\Dist\FlatEngine-Editor\</IntDir>
+    <OutDir>..\Build\windows-x86_64\Dist\FlatEngine-Editor\</OutDir>
+    <IntDir>..\Build\Intermediates\windows-x86_64\Dist\FlatEngine-Editor\</IntDir>
     <TargetName>FlatEngine-Editor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>

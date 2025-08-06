@@ -161,7 +161,18 @@ namespace FlatEngine
 		{
 		case Physics::BodyShape::BS_Box:
 		{
-			b2Polygon box = b2MakeBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2);				
+			float cornerRadius = bodyProps.cornerRadius;
+			b2Polygon box;
+			
+			if (cornerRadius == 0.0f)
+			{
+				box = b2MakeBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2);
+			}
+			else
+			{
+				box = b2MakeRoundedBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2, cornerRadius);
+			}
+
 			shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &box);			
 			break;
 		}
@@ -200,7 +211,26 @@ namespace FlatEngine
 		}
 		case Physics::BodyShape::BS_Polygon:
 		{
-			// Polygon things
+			std::vector<b2Vec2> points;
+			float cornerRadius = bodyProps.cornerRadius;
+
+			for (Vector2 point : bodyProps.points)
+			{
+				points.push_back(b2Vec2(point.x, point.y));
+			}
+
+			b2Hull hull = b2ComputeHull(&points[0], (int)points.size());
+			
+			if (hull.count == 0)
+			{
+				LogError("Hull not successfully created.");
+			}
+			else
+			{
+				b2Polygon polygon = b2MakePolygon(&hull, cornerRadius);
+				shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
+			}
+
 			break;
 		}
 		case Physics::BodyShape::BS_Chain:
@@ -226,7 +256,7 @@ namespace FlatEngine
 			}
 			
 			chainDef.points = &points[0];
-			chainDef.count = points.size();
+			chainDef.count = (int)points.size();
 
 			b2ChainId chainID = b2CreateChain(bodyID, &chainDef);
 			if (b2Chain_IsValid(chainID))

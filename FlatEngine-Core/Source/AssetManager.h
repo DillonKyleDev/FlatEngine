@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <string>
 
 
 
@@ -21,6 +22,8 @@ namespace FlatEngine
 		~AssetManager();	
 
 		void UpdateProjectDirs(std::string projectPath);
+		std::string GetRootPath();
+		void FindRootDir();
 		void CollectDirectories();
 		void CollectColors();
 		void CollectTextures();
@@ -33,6 +36,7 @@ namespace FlatEngine
 		std::shared_ptr<Texture>& GetTextureObject(std::string textureName);
 		SDL_Texture* GetTexture(std::string textureName);		
 	private:
+		std::string m_rootPath;
 		std::map<std::string, std::string> m_directories;
 		std::map<std::string, std::string> m_files;
 		std::map<std::string, Vector4> m_colors;

@@ -62,6 +62,11 @@ namespace FlatEngine
 		void ApplyAngularImpulse(float impulse);
 		Vector2 GetLinearVelocity();
 		float GetAngularVelocity();
+
+		// for PolygonBody and ChainBody
+		virtual void SetPoints(std::vector<Vector2> points) {};
+		virtual void UpdatePoints() {};
+
 		void CleanupIDs();
 
 	private:

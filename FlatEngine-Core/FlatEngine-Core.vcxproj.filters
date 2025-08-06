@@ -522,6 +522,12 @@
     <ClInclude Include="Source\Audio.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Body.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BoxBody.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Button.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -540,7 +546,16 @@
     <ClInclude Include="Source\Canvas.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CapsuleBody.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ChainBody.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\CharacterController.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CircleBody.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Component.h">
@@ -574,6 +589,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Physics.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PolygonBody.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\PrefabManager.h">
@@ -630,12 +648,6 @@
     <ClInclude Include="Source\WindowManager.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Body.h" />
-    <ClInclude Include="Source\BoxBody.h" />
-    <ClInclude Include="Source\CircleBody.h" />
-    <ClInclude Include="Source\CapsuleBody.h" />
-    <ClInclude Include="Source\PolygonBody.h" />
-    <ClInclude Include="Source\ChainBody.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -689,6 +701,12 @@
     <ClCompile Include="Source\Audio.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Body.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BoxBody.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Button.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -707,7 +725,16 @@
     <ClCompile Include="Source\Canvas.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CapsuleBody.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ChainBody.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\CharacterController.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CircleBody.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Component.cpp">
@@ -747,6 +774,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Physics.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PolygonBody.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\PrefabManager.cpp">
@@ -806,12 +836,6 @@
     <ClCompile Include="Source\WindowManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Body.cpp" />
-    <ClCompile Include="Source\BoxBody.cpp" />
-    <ClCompile Include="Source\CircleBody.cpp" />
-    <ClCompile Include="Source\CapsuleBody.cpp" />
-    <ClCompile Include="Source\PolygonBody.cpp" />
-    <ClCompile Include="Source\ChainBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

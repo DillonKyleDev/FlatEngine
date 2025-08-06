@@ -34,7 +34,7 @@
                     "NpcTrigger": false
                 },
                 {
-                    "Player": true
+                    "Player": false
                 },
                 {
                     "PlayerDamage": false

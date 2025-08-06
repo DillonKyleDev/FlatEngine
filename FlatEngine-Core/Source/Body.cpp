@@ -86,6 +86,7 @@ namespace FlatEngine
 		liveProps.radius = m_bodyProps.radius;
 		liveProps.capsuleLength = m_bodyProps.capsuleLength;
 		liveProps.b_horizontal = m_bodyProps.b_horizontal;
+		liveProps.cornerRadius = m_bodyProps.cornerRadius;
 		liveProps.points = m_bodyProps.points;	
 		liveProps.b_isLoop = m_bodyProps.b_isLoop;
 		liveProps.tangentSpeed = m_bodyProps.tangentSpeed;

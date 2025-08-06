@@ -1618,6 +1618,7 @@ namespace FlatGui
 		bool b_isActive = boxBody->IsActive();
 		FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
 		Vector2 dimensions = bodyProps.dimensions;
+		float cornerRadius = bodyProps.cornerRadius;
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1642,6 +1643,10 @@ namespace FlatGui
 			if (FL::RenderFloatDragTableRow("##BoxBodyHeight" + std::to_string(ID), "Height", dimensions.y, 0.01f, 0.01f, -FLT_MAX))
 			{
 				boxBody->SetDimensions(dimensions);
+			}
+			if (FL::RenderFloatDragTableRow("##BoxBodyCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, -FLT_MAX))
+			{
+				boxBody->SetCornerRadius(cornerRadius);
 			}
 			FL::PopTable();
 		}
@@ -1733,6 +1738,10 @@ namespace FlatGui
 		long ID = polygonBody->GetID();
 		bool b_isActive = polygonBody->IsActive();
 		FL::Physics::BodyProps bodyProps = polygonBody->GetBodyProps();
+		float cornerRadius = bodyProps.cornerRadius;
+		std::vector<Vector2> points = bodyProps.points;
+		int pointCount = (int)points.size();
+		static bool b_showPoints = false;
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -1751,6 +1760,30 @@ namespace FlatGui
 		if (FL::PushTable("##PolygonBodyProps" + std::to_string(ID), 2))
 		{
 			FL::PopTable();
+		}
+
+		if (b_showPoints)
+		{
+			ImGui::Text("Point Positions");
+			if (FL::PushTable("##PolygonBodyPointPositions" + std::to_string(ID), 2))
+			{
+				for (int i = 0; i < pointCount; i++)
+				{
+					if (FL::RenderFloatDragTableRow("##PolygonBodyPointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+					{
+						polygonBody->SetPoints(points);
+					}
+					if (FL::RenderFloatDragTableRow("##PolygonBodyPointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+					{
+						polygonBody->SetPoints(points);
+					}
+					if (FL::RenderFloatDragTableRow("##PolygonBodyCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, -FLT_MAX))
+					{
+						polygonBody->SetCornerRadius(cornerRadius);
+					}
+				}
+				FL::PopTable();
+			}
 		}
 
 		RenderBodyComponentAttributes(polygonBody);

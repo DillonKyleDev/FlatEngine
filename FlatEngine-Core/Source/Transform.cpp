@@ -70,6 +70,14 @@ namespace FlatEngine
 
 	Vector2 Transform::GetTruePosition()
 	{
+		Body* body = GetParent()->GetBody();
+
+		if (body != nullptr)
+		{
+			m_position = body->GetPosition();
+			m_rotation = body->GetRotation();
+		}
+
 		return Vector2(m_origin.x + m_position.x, m_origin.y + m_position.y);
 	}
 
@@ -181,6 +189,14 @@ namespace FlatEngine
 
 	Vector2 Transform::GetPosition()
 	{
+		Body* body = GetParent()->GetBody();
+
+		if (body != nullptr)
+		{
+			m_position = body->GetPosition();
+			m_rotation = body->GetRotation();
+		}
+
 		return m_position;
 	}
 

@@ -5,54 +5,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 4,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -14.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 12.5,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 1.0,
-                    "id": 5,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 42,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 2,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -96,6 +49,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 4,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -14.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 2,
             "name": "Left",
             "parent": 9,
             "prefabName": "",
@@ -151,54 +120,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 7,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 14.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 12.5,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 1.0,
-                    "id": 6,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 43,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 3,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -242,6 +164,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 7,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 14.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 3,
             "name": "Right",
             "parent": 9,
             "prefabName": "",
@@ -297,54 +235,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 8,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 7.75,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 1.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 25.0,
-                    "id": 9,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": false,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 44,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 4,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -388,6 +279,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 8,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 7.75,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 4,
             "name": "Top",
             "parent": 9,
             "prefabName": "",
@@ -443,54 +350,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 10,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -7.75,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 1.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 25.0,
-                    "id": 11,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": false,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 45,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 5,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -534,6 +394,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 10,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -7.75,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 5,
             "name": "Bottom",
             "parent": 9,
             "prefabName": "",
@@ -589,86 +465,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 12,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 4.854290008544922,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.06989002227783203,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 13,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.013000000268220901,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4399999976158142,
-                    "id": 14,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 15,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "PlayerController (Lua)",
-                    "id": 28,
-                    "scriptParameters": [],
-                    "type": "Script"
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "airControl": 0.20000000298023224,
-                    "id": 35,
-                    "maxAcceleration": 0.5,
-                    "maxSpeed": 10.0,
-                    "type": "CharacterController"
-                }
-            ],
-            "id": 6,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -712,6 +509,56 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 12,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 4.854290008544922,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.06989002227783203,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 13,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.013000000268220901,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "",
+                    "id": 28,
+                    "scriptParameters": [],
+                    "type": "Script"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "airControl": 0.20000000298023224,
+                    "id": 35,
+                    "maxAcceleration": 0.5,
+                    "maxSpeed": 10.0,
+                    "type": "CharacterController"
+                }
+            ],
+            "id": 6,
             "name": "WhiteBall",
             "parent": -1,
             "prefabName": "",
@@ -767,69 +614,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 16,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.7131786346435547,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.02278423309326172,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 17,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.7875000238418579,
-                    "tintColorY": 0.5315625071525574,
-                    "tintColorZ": 0.0,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.013000000268220901,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 18,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 19,
-                    "mass": 0.10000000149011612,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 7,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -873,6 +658,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 16,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.7131786346435547,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.02278423309326172,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 17,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.7875000238418579,
+                    "tintColorY": 0.5315625071525574,
+                    "tintColorZ": 0.0,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.013000000268220901,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 7,
             "name": "Ball",
             "parent": 43,
             "prefabName": "",
@@ -928,23 +746,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 20,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 8,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -988,6 +790,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 20,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 8,
             "name": "GameManager",
             "parent": -1,
             "prefabName": "",
@@ -1048,23 +866,7 @@
                 4,
                 5
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 21,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 9,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1108,6 +910,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 21,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 9,
             "name": "Table",
             "parent": -1,
             "prefabName": "",
@@ -1163,40 +981,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 24,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_follow": false,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isPrimaryCamera": true,
-                    "followSmoothing": 0.10000000149011612,
-                    "following": -1,
-                    "frustrumAlpha": 255.0,
-                    "frustrumBlue": 255.0,
-                    "frustrumGreen": 255.0,
-                    "frustrumRed": 255.0,
-                    "height": 30.0,
-                    "id": 25,
-                    "type": "Camera",
-                    "width": 50.0,
-                    "zoom": 35.79999923706055
-                }
-            ],
-            "id": 11,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1240,6 +1025,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 24,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_follow": false,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isPrimaryCamera": true,
+                    "followSmoothing": 0.10000000149011612,
+                    "following": -1,
+                    "frustrumAlpha": 255.0,
+                    "frustrumBlue": 255.0,
+                    "frustrumGreen": 255.0,
+                    "frustrumRed": 255.0,
+                    "height": 30.0,
+                    "id": 25,
+                    "type": "Camera",
+                    "width": 50.0,
+                    "zoom": 35.79999923706055
+                }
+            ],
+            "id": 11,
             "name": "Camera",
             "parent": -1,
             "prefabName": "",
@@ -1295,69 +1113,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 51,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -2.4685633182525635,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 1.8035385608673096,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 52,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 53,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 54,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 12,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1401,6 +1157,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 40,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -2.4685633182525635,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 1.8035385608673096,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 41,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 12,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -1456,69 +1245,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 55,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -2.4652023315429688,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.9327726364135742,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 56,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 57,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 58,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 13,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1562,6 +1289,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 42,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -2.4652023315429688,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.9327726364135742,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 43,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 13,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -1617,69 +1377,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 59,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -2.5240249633789063,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.03437614440917969,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 60,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 61,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 62,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 14,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1723,6 +1421,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 44,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -2.5240249633789063,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.03437614440917969,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 45,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 14,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -1778,69 +1509,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 63,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -2.5273869037628174,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -0.7258731722831726,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 64,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 65,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 66,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 15,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -1884,6 +1553,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 46,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -2.5273869037628174,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -0.7258731722831726,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 47,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 15,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -1939,69 +1641,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 67,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -2.5870513916015625,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -1.6278343200683594,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 68,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 69,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 70,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 16,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -2045,6 +1685,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 48,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -2.5870513916015625,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -1.6278343200683594,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 49,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 16,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -2100,69 +1773,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 71,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -1.674445629119873,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 1.2741268873214722,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 72,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 73,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 74,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 17,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -2206,6 +1817,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 50,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -1.674445629119873,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 1.2741268873214722,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 51,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 17,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -2261,69 +1905,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 75,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -1.7920926809310913,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.4211856722831726,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 76,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 77,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 78,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 18,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -2367,6 +1949,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 52,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -1.7920926809310913,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.4211856722831726,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 53,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 18,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -2422,69 +2037,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 79,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -1.703857421875,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -0.46116727590560913,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 80,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 81,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 82,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 19,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -2528,6 +2081,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 54,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -1.703857421875,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -0.46116727590560913,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 55,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 19,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -2583,69 +2169,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 83,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -1.762681007385254,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -1.2552849054336548,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 84,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 85,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 86,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 20,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -2689,6 +2213,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 56,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -1.762681007385254,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -1.2552849054336548,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 57,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 20,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -2744,69 +2301,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 87,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -0.9979750514030457,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.7741268277168274,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 88,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 89,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 90,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 21,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -2850,6 +2345,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 58,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -0.9979750514030457,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.7741268277168274,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 59,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 21,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -2905,69 +2433,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 91,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -0.9685633182525635,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -0.14476823806762695,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 92,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 93,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 94,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 22,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3011,6 +2477,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 60,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -0.9685633182525635,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -0.14476823806762695,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 61,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 22,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -3066,69 +2565,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 95,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -0.9391515254974365,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -1.030686378479004,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 96,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 97,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 98,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 23,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3172,6 +2609,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 62,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -0.9391515254974365,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -1.030686378479004,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 63,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 23,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -3227,69 +2697,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 99,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -0.2282276153564453,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.3302764892578125,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 100,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 101,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 102,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 24,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3333,6 +2741,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 64,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -0.2282276153564453,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.3302764892578125,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 65,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 24,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -3388,69 +2829,7 @@
             "_isPersistant": false,
             "_isPrefab": true,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 103,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -0.203857421875,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -0.6465506553649902,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 104,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 105,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 106,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 25,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3494,6 +2873,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 66,
+                    "rotation": 0.00015192976570688188,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -0.203857421875,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -0.6465506553649902,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 67,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 0.875,
+                    "tintColorY": 0.875,
+                    "tintColorZ": 0.875,
+                    "type": "Sprite",
+                    "xOffset": 250.0,
+                    "xScale": 0.012500000186264515,
+                    "yOffset": 250.0,
+                    "yScale": 0.013000000268220901
+                }
+            ],
+            "id": 25,
             "name": "Ball",
             "parent": -1,
             "prefabName": "Ball",
@@ -3549,40 +2961,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 109,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 110,
-                    "path": "..\\projects\\Pool\\images\\poolTable.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 20,
-                    "tintColorW": 1.0,
-                    "tintColorX": 1.0,
-                    "tintColorY": 1.0,
-                    "tintColorZ": 1.0,
-                    "type": "Sprite",
-                    "xOffset": 30.0,
-                    "xScale": 4.0,
-                    "yOffset": 17.5,
-                    "yScale": 4.0
-                }
-            ],
-            "id": 27,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3626,6 +3005,39 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 109,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 110,
+                    "path": "..\\projects\\Pool\\images\\poolTable.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 20,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 30.0,
+                    "xScale": 4.0,
+                    "yOffset": 17.5,
+                    "yScale": 4.0
+                }
+            ],
+            "id": 27,
             "name": "poolTable(27)",
             "parent": -1,
             "prefabName": "",
@@ -3681,60 +3093,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 111,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -14.15625,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 8.033332824707031,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": false,
-                    "_isSolid": false,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 1.5,
-                    "id": 112,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 113,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "Pocket (Lua)",
-                    "id": 164,
-                    "scriptParameters": [],
-                    "type": "Script"
-                }
-            ],
-            "id": 28,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3778,6 +3137,30 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 111,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -14.15625,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 8.033332824707031,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "Pocket (Lua)",
+                    "id": 164,
+                    "scriptParameters": [],
+                    "type": "Script"
+                }
+            ],
+            "id": 28,
             "name": "PoketCol",
             "parent": 32,
             "prefabName": "",
@@ -3833,54 +3216,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 114,
-                    "rotation": 60.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -14.828869819641113,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 5.899999618530273,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 115,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 118,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 29,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -3924,6 +3260,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 114,
+                    "rotation": 60.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -14.828869819641113,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 5.899999618530273,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 29,
             "name": "Side2",
             "parent": 32,
             "prefabName": "",
@@ -3979,54 +3331,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 116,
-                    "rotation": 30.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -12.142854690551758,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 8.60000228881836,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 117,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 119,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 30,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4070,6 +3375,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 116,
+                    "rotation": 30.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -12.142854690551758,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 8.60000228881836,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 30,
             "name": "Side1",
             "parent": 32,
             "prefabName": "",
@@ -4125,54 +3446,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 120,
-                    "rotation": 45.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -15.190476417541504,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 8.975000381469727,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 121,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 122,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 31,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4216,6 +3490,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 120,
+                    "rotation": 45.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -15.190476417541504,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 8.975000381469727,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 31,
             "name": "Back",
             "parent": 32,
             "prefabName": "",
@@ -4276,23 +3566,7 @@
                 30,
                 31
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 123,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 32,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4336,6 +3610,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 123,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 32,
             "name": "TopLeftPocket",
             "parent": -1,
             "prefabName": "",
@@ -4396,23 +3686,7 @@
                 36,
                 37
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 124,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 33,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4456,6 +3730,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 124,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 33,
             "name": "BottomLeftPocket",
             "parent": -1,
             "prefabName": "",
@@ -4511,52 +3801,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 125,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -14.15625,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -8.032999992370605,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": false,
-                    "_isSolid": false,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 1.5,
-                    "id": 126,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 127,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 34,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4600,6 +3845,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 125,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -14.15625,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -8.032999992370605,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 34,
             "name": "PoketCol",
             "parent": 33,
             "prefabName": "",
@@ -4655,54 +3916,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 128,
-                    "rotation": 30.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -14.828869819641113,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -5.900000095367432,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 129,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 130,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 35,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4746,6 +3960,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 128,
+                    "rotation": 30.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -14.828869819641113,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -5.900000095367432,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 35,
             "name": "Side2",
             "parent": 33,
             "prefabName": "",
@@ -4801,54 +4031,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 131,
-                    "rotation": 60.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -12.142854690551758,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -8.600000381469727,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 132,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 133,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 36,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -4892,6 +4075,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 131,
+                    "rotation": 60.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -12.142854690551758,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -8.600000381469727,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 36,
             "name": "Side1",
             "parent": 33,
             "prefabName": "",
@@ -4947,54 +4146,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 134,
-                    "rotation": 45.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -15.190476417541504,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -8.975000381469727,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 135,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 136,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 37,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5038,6 +4190,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 134,
+                    "rotation": 45.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -15.190476417541504,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -8.975000381469727,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 37,
             "name": "Back",
             "parent": 33,
             "prefabName": "",
@@ -5098,23 +4266,7 @@
                 41,
                 42
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 137,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 38,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5158,6 +4310,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 137,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 38,
             "name": "TopIghtPocket",
             "parent": -1,
             "prefabName": "",
@@ -5213,52 +4381,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 138,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 14.156000137329102,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 8.033332824707031,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": false,
-                    "_isSolid": false,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 1.5,
-                    "id": 139,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 140,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 39,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5302,6 +4425,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 138,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 14.156000137329102,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 8.033332824707031,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 39,
             "name": "PoketCol",
             "parent": 38,
             "prefabName": "",
@@ -5357,54 +4496,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 141,
-                    "rotation": 30.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 14.829000473022461,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 5.899999618530273,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 142,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 143,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 40,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5448,6 +4540,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 141,
+                    "rotation": 30.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 14.829000473022461,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 5.899999618530273,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 40,
             "name": "Side2",
             "parent": 38,
             "prefabName": "",
@@ -5503,54 +4611,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 144,
-                    "rotation": 60.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 12.142999649047852,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 8.60000228881836,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 145,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 146,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 41,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5594,6 +4655,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 144,
+                    "rotation": 60.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 12.142999649047852,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 8.60000228881836,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 41,
             "name": "Side1",
             "parent": 38,
             "prefabName": "",
@@ -5649,54 +4726,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 147,
-                    "rotation": 45.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 15.1899995803833,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 8.975000381469727,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 148,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 149,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 42,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5740,6 +4770,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 147,
+                    "rotation": 45.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 15.1899995803833,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 8.975000381469727,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 42,
             "name": "Back",
             "parent": 38,
             "prefabName": "",
@@ -5797,23 +4843,7 @@
             "children": [
                 7
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 150,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 43,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5857,6 +4887,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 150,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 43,
             "name": "Balls",
             "parent": -1,
             "prefabName": "",
@@ -5917,23 +4963,7 @@
                 47,
                 48
             ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 151,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 0.0,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.0,
-                    "yScale": 1.0
-                }
-            ],
-            "id": 44,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -5977,6 +5007,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 151,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 44,
             "name": "BottomIghtPocket",
             "parent": -1,
             "prefabName": "",
@@ -6032,52 +5078,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 152,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 14.156000137329102,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -8.032999992370605,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": false,
-                    "_isSolid": false,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 1.5,
-                    "id": 153,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 1.2000000476837158,
-                    "friction": 0.009999999776482582,
-                    "gravity": 1.0,
-                    "id": 154,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 45,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -6121,6 +5122,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 152,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 14.156000137329102,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -8.032999992370605,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 45,
             "name": "PoketCol",
             "parent": 44,
             "prefabName": "",
@@ -6176,54 +5193,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 155,
-                    "rotation": 60.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 14.829000473022461,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -5.900000095367432,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 156,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 157,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 46,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -6267,6 +5237,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 155,
+                    "rotation": 60.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 14.829000473022461,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -5.900000095367432,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 46,
             "name": "Side2",
             "parent": 44,
             "prefabName": "",
@@ -6322,54 +5308,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 158,
-                    "rotation": 30.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 12.142999649047852,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -8.600000381469727,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 159,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 160,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 47,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -6413,6 +5352,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 158,
+                    "rotation": 30.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 12.142999649047852,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -8.600000381469727,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 47,
             "name": "Side1",
             "parent": 44,
             "prefabName": "",
@@ -6468,54 +5423,7 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 161,
-                    "rotation": 45.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": 15.1899995803833,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -8.975000381469727,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_isTileMapCollider": false,
-                    "_showActiveRadius": false,
-                    "activeHeight": 2.0,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeWidth": 2.0,
-                    "id": 162,
-                    "type": "BoxCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": true,
-                    "angularDrag": 0.949999988079071,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.009999999776482582,
-                    "gravity": 0.0,
-                    "id": 163,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 48,
-            "ignoreTags": [
+            "collidesTags": [
                 {
                     "Collectable": false
                 },
@@ -6559,6 +5467,22 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 161,
+                    "rotation": 45.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 15.1899995803833,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -8.975000381469727,
+                    "yScale": 1.0
+                }
+            ],
+            "id": 48,
             "name": "Back",
             "parent": 44,
             "prefabName": "",

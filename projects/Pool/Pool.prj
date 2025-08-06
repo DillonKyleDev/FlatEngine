@@ -2,7 +2,7 @@
     "Project Properties": [
         {
             "_autoSave": true,
-            "_clearLogBuffer": true,
+            "_clearLogBuffer": false,
             "_fullscreen": false,
             "_showAnimationPreview": false,
             "_showAnimator": false,
@@ -22,7 +22,7 @@
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\Pool\\scenes",
             "effectsVolume": 10,
-            "focusedGameObjectID": 6,
+            "focusedGameObjectID": 12,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\Pool\\scenes\\Table.scn",
             "musicVolume": 10,

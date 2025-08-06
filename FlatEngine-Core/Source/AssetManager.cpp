@@ -52,23 +52,33 @@ namespace FlatEngine
 		std::filesystem::path currentDir = std::filesystem::current_path();
 		m_rootPath = "";
 		int timeout = 10;
+		bool b_rootFound = false;
 
 		while (timeout)
 		{
-			if (currentDir.stem().string() == "FlatEngine2D")
+
+
+			for (const auto& entry : std::filesystem::directory_iterator(currentDir))
 			{
-				m_rootPath = currentDir.string();
-				timeout = 0;
+				if (entry.path().filename().string() == "FlatEngine.sln")
+				{
+					m_rootPath = currentDir.string();
+					m_rootPath += "\\";
+					timeout = 0;
+					b_rootFound = true;
+				}
 			}
-			else
+			
+			if (!b_rootFound)
 			{
 				currentDir._Remove_filename_and_separator();
 				timeout--;
 			}
 		}
 
-		if (m_rootPath == "")
+		if (!b_rootFound)
 		{
+			m_rootPath = "../";
 			LogError("Timeout: could not find directory FlatEngine2D.");
 		}
 	}
@@ -79,9 +89,9 @@ namespace FlatEngine
 		m_directories.emplace("projects", "../projects/");
 		m_files.clear();
 
-		m_files.emplace("colors", m_rootPath + "\\engine\\scripts\\Colors.lua");
-		m_files.emplace("textures", m_rootPath + "\\engine\\scripts\\Textures.lua");
-		m_files.emplace("cinzelBlack", m_rootPath + "\\engine\\fonts\\Cinzel\\Cinzel-Black.ttf");
+		m_files.emplace("colors", m_rootPath + "engine\\scripts\\Colors.lua");
+		m_files.emplace("textures", m_rootPath + "engine\\scripts\\Textures.lua");
+		m_files.emplace("cinzelBlack", m_rootPath + "engine\\fonts\\Cinzel\\Cinzel-Black.ttf");
 	}
 
 	void AssetManager::CollectTags()

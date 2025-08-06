@@ -886,7 +886,7 @@ namespace FlatEngine
 			"function Start()\n" +
 			"     -- required to access instance data\n" +
 			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
-			"     LogString(\"" + fileName + " : Start() called on \"..this_object:GetName())\n" +
+			"     -- LogString(\"" + fileName + " : Start() called on \"..this_object:GetName())\n" +
 			"end\n\n" +
 
 			"function Update()\n" +

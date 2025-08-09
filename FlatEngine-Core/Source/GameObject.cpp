@@ -12,11 +12,6 @@
 #include "CharacterController.h"
 #include "TileMap.h"
 #include "Project.h"
-#include "BoxBody.h"
-#include "CircleBody.h"
-#include "CapsuleBody.h"
-#include "PolygonBody.h"
-#include "ChainBody.h"
 
 
 namespace FlatEngine
@@ -518,7 +513,7 @@ namespace FlatEngine
 		return textPtr;
 	}
 
-	BoxBody* GameObject::AddBoxBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	Body* GameObject::AddBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
 		Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
@@ -536,48 +531,91 @@ namespace FlatEngine
 			}
 		}
 
-		BoxBody boxBody = BoxBody(nextID, m_ID);				
-		boxBody.SetActive(b_active);
-		boxBody.SetCollapsed(b_collapsed);	
+		Body body = Body(nextID, m_ID);
+		body.SetCollapsed(b_collapsed);
 
-		if (bodyProps.shape == Physics::BodyShape::BS_None)
-		{
-			bodyProps = boxBody.GetBodyProps();
-		}
 		bodyProps.position = position;
 		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
 
-		BoxBody* boxBodyPtr = nullptr;
+		Body* bodyPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
-			boxBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBoxBody(boxBody, m_ID);
+			bodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBody(body, m_ID);
 		}
 		else if (GetLoadedScene() != nullptr)
 		{
-			boxBodyPtr = GetLoadedScene()->AddBoxBody(boxBody, m_ID);
+			bodyPtr = GetLoadedScene()->AddBody(body, m_ID);
 		}
-		
-		if (HasComponent("Sprite"))
-		{			 
-			Sprite* sprite = GetSprite();
-			// Get sprite dimensions in terms of grid squares because that is the unit used by the engine
-			Vector2 dimensions = Vector2(sprite->GetTextureWidth() / F_pixelsPerGridSpace, sprite->GetTextureHeight() / F_pixelsPerGridSpace);
-			bodyProps.dimensions = dimensions;
-		}
-		
-		if (boxBodyPtr != nullptr)
-		{
-			m_components.push_back(boxBodyPtr);
-			boxBodyPtr->SetBodyProps(bodyProps);
-			boxBodyPtr->CreateBody();
-		}	
 
-		return boxBodyPtr;
+		if (bodyPtr != nullptr)
+		{
+			m_components.push_back(bodyPtr);
+			bodyPtr->SetBodyProps(bodyProps);			
+		}
+
+		bodyPtr->CreateBody();
+		bodyPtr->SetActive(b_active);
+
+		return bodyPtr;
 	}
 
-	CircleBody* GameObject::AddCircleBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	Box* GameObject::AddBoxBody(Physics::BodyProps bodyProps, Shape::ShapeProps shapeProps, long ID, bool b_active, bool b_collapsed)
 	{
-		Vector2 position = GetTransform()->GetPosition();		
+		//Vector2 position = GetTransform()->GetPosition();
+		//float rotation = GetTransform()->GetRotation();
+
+		//long nextID = ID;
+		//if (nextID == -1)
+		//{
+		//	if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		//	{
+		//		nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+		//	}
+		//	else if (GetLoadedScene() != nullptr)
+		//	{
+		//		nextID = GetLoadedScene()->GetNextComponentID();
+		//	}
+		//}
+
+		//BoxBody boxBody = BoxBody(nextID, m_ID);				
+		//boxBody.SetActive(b_active);
+		//boxBody.SetCollapsed(b_collapsed);	
+
+		//bodyProps.position = position;
+		//bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
+
+		//BoxBody* boxBodyPtr = nullptr;
+		//if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		//{
+		//	boxBodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBoxBody(boxBody, m_ID);
+		//}
+		//else if (GetLoadedScene() != nullptr)
+		//{
+		//	boxBodyPtr = GetLoadedScene()->AddBoxBody(boxBody, m_ID);
+		//}
+		//
+		//if (HasComponent("Sprite"))
+		//{			 
+		//	Sprite* sprite = GetSprite();
+		//	// Get sprite dimensions in terms of grid squares because that is the unit used by the engine
+		//	Vector2 dimensions = Vector2(sprite->GetTextureWidth() / F_pixelsPerGridSpace, sprite->GetTextureHeight() / F_pixelsPerGridSpace);
+		//	shapeProps.dimensions = dimensions;
+		//}
+		//
+		//if (boxBodyPtr != nullptr)
+		//{
+		//	m_components.push_back(boxBodyPtr);
+		//	boxBodyPtr->SetBodyProps(bodyProps);
+		//	boxBodyPtr->AddBox(shapeProps);
+		//}	
+
+		//return boxBodyPtr;
+		return nullptr;
+	}
+
+	Circle* GameObject::AddCircleBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	{
+		/*Vector2 position = GetTransform()->GetPosition();		
 		float rotation = GetTransform()->GetRotation();
 
 		long nextID = ID;
@@ -621,12 +659,13 @@ namespace FlatEngine
 			circleBodyPtr->CreateBody();
 		}		
 
-		return circleBodyPtr;
+		return circleBodyPtr;*/
+		return nullptr;
 	}
 
-	CapsuleBody* GameObject::AddCapsuleBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	Capsule* GameObject::AddCapsuleBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
-		Vector2 position = GetTransform()->GetPosition();
+		/*Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
 
 		long nextID = ID;
@@ -670,12 +709,13 @@ namespace FlatEngine
 			capsuleBodyPtr->CreateBody();
 		}		
 
-		return capsuleBodyPtr;
+		return capsuleBodyPtr;*/
+		return nullptr;
 	}
 
-	PolygonBody* GameObject::AddPolygonBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	Polygon* GameObject::AddPolygonBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
-		Vector2 position = GetTransform()->GetPosition();
+		/*Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
 
 		long nextID = ID;
@@ -719,12 +759,13 @@ namespace FlatEngine
 			polygonBodyPtr->CreateBody();
 		}		
 
-		return polygonBodyPtr;
+		return polygonBodyPtr;*/
+		return nullptr;
 	}
 
-	ChainBody* GameObject::AddChainBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
+	Chain* GameObject::AddChainBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
-		Vector2 position = GetTransform()->GetPosition();
+		/*Vector2 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
 
 		long nextID = ID;
@@ -768,7 +809,8 @@ namespace FlatEngine
 			chainBodyPtr->CreateBody();
 		}
 
-		return chainBodyPtr;
+		return chainBodyPtr;*/
+		return nullptr;
 	}
 
 	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
@@ -994,97 +1036,13 @@ namespace FlatEngine
 	}
 	Body* GameObject::GetBody()
 	{
-		BoxBody* boxBody = GetBoxBody();
-		CircleBody* circleBody = GetCircleBody();
-		CapsuleBody* capsuleBody = GetCapsuleBody();
-		PolygonBody* polygonBody = GetPolygonBody();
-		ChainBody* chainBody = GetChainBody();
-
-		if (boxBody != nullptr)
-		{
-			return boxBody;
-		}
-		else if (circleBody != nullptr)
-		{
-			return circleBody;
-		}
-		else if (capsuleBody != nullptr)
-		{
-			return capsuleBody;
-		}
-		else if (polygonBody != nullptr)
-		{
-			return polygonBody;
-		}
-		else if (chainBody != nullptr)
-		{
-			return chainBody;
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-	BoxBody* GameObject::GetBoxBody()
-	{
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetBoxBodyByOwner(m_ID);
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetBodyByOwner(m_ID);
 		}
 		else if (GetLoadedScene() != nullptr)
 		{
-			return GetLoadedScene()->GetBoxBodyByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	CircleBody* GameObject::GetCircleBody()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCircleBodyByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCircleBodyByOwner(m_ID);
-		}
-		return nullptr;
-	}
-
-	CapsuleBody* GameObject::GetCapsuleBody()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCapsuleBodyByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCapsuleBodyByOwner(m_ID);
-		}
-		return nullptr;
-	}
-
-	PolygonBody* GameObject::GetPolygonBody()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetPolygonBodyByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetPolygonBodyByOwner(m_ID);
-		}
-		return nullptr;
-	}
-
-	ChainBody* GameObject::GetChainBody()
-	{
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetChainBodyByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetChainBodyByOwner(m_ID);
+			return GetLoadedScene()->GetBodyByOwner(m_ID);
 		}
 		return nullptr;
 	}

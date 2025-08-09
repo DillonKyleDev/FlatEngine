@@ -72,6 +72,7 @@ namespace FlatEngine
 	class TileSet;
 	class Physics;
 	class Body;
+	class Shape;
 
 	enum F_CURSOR_MODE {
 		TRANSLATE,
@@ -192,11 +193,15 @@ namespace FlatEngine
 	extern void HandleEngineEvents(SDL_Event event);
 	extern void HandleContextEvents(MappingContext& context, SDL_Event event, std::vector<std::string>& firedKeys);
 	extern void RemapInputAction(std::string contextName, std::string inputAction, Uint32 timeoutTime = 0);
+	extern Vector2 GetMousePosWorld();
+	extern Vector2 GetMousePosScreen();
 
 	// Lua / Sol
 	enum LuaEventFunction {
 		OnBeginCollision,
 		OnEndCollision,
+		OnBeginSensorTouch,
+		OnEndSensorTouch,
 		OnButtonMouseOver,
 		OnButtonMouseEnter,
 		OnButtonMouseLeave,
@@ -206,6 +211,8 @@ namespace FlatEngine
 	const std::string F_LuaEventNames[11] = {
 		"OnBeginCollision",
 		"OnEndCollision",
+		"OnBeginSensorTouch",
+		"OnEndSensorTouch",
 		"OnButtonMouseOver",
 		"OnButtonMouseEnter",
 		"OnButtonMouseLeave",
@@ -230,6 +237,7 @@ namespace FlatEngine
 	template <class T>
 	extern void CallVoidLuaFunction(std::string functionName);
 	extern void CallLuaCollisionFunction(LuaEventFunction eventFunc, Body* caller, Body* collidedWith, b2Manifold manifold = {});
+	extern void CallLuaSensorFunction(LuaEventFunction eventFunc, Body* caller, Body* touched);
 	extern void CallLuaButtonEventFunction(GameObject* caller, LuaEventFunction eventFunc);
 	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc);
 	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param3 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param4 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param5 = Animation::S_EventFunctionParam());
@@ -391,7 +399,8 @@ namespace FlatEngine
 
 	// Json parsing
 	extern json CreateJsonFromObject(GameObject gameObject);
-	extern void RetrieveBasicBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName);
+	extern void RetrieveBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName);
+	extern void RetrieveShapeProps(Shape::ShapeProps& shapeProps, json componentJson, std::string objectName);
 	extern GameObject* CreateObjectFromJson(json objectJson, Scene* scene);
 	extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName);
 	extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName, std::string& errorMessage);

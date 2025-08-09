@@ -70,14 +70,14 @@ F_Colors = {
 	-- Windows -----------
 	----------------------
 	-- Main
-	paneBg = Vector4:new(0.15, 0.15, 0.16, 1.0),
-	windowBg = Vector4:new(0.0, 0.0, 0.0, 1.0),
-	viewportTitleBg = Vector4:new(0.06, 0.06, 0.07, 1.0),
-	viewportTitleBgActive = Vector4:new(0.09, 0.09, 0.1, 1.0),
-	outerWindow = Vector4:new(0.13, 0.13, 0.15, 1.0),
-	innerWindow = Vector4:new(0.1, 0.1, 0.12, 1.0),
-	singleItem = Vector4:new(0.16, 0.16, 0.17, 1.0),
-	singleItemDark = Vector4:new(0.09, 0.09, 0.13, 1.0),
+	paneBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
+	windowBg = Vector4:new(0.10, 0.10, 0.10, 1.0),
+	viewportTitleBg = Vector4:new(0.26, 0.26, 0.27, 1.0),
+	viewportTitleBgActive = Vector4:new(0.19, 0.19, 0.21, 1.0),
+	outerWindow = Vector4:new(0.33, 0.33, 0.35, 1.0),
+	innerWindow = Vector4:new(0.41, 0.41, 0.42, 1.0),
+	singleItem = Vector4:new(0.26, 0.26, 0.27, 1.0),
+	singleItemDark = Vector4:new(0.19, 0.19, 0.23, 1.0),
 	windowTitleBg = Vector4:new(0.25, 0.25, 0.25, 1.0),
 	--- Scene View ---
 	--------------------

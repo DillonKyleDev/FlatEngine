@@ -109,24 +109,8 @@ namespace FlatEngine
 			return "TileMap";
 			break;
 
-		case T_BoxBody:
-			return "BoxBody";
-			break;
-
-		case T_CircleBody:
-			return "CircleBody";
-			break;
-
-		case T_CapsuleBody:
-			return "CapsuleBody";
-			break;
-
-		case T_PolygonBody:
-			return "PolygonBody";
-			break;
-
-		case T_ChainBody:
-			return "ChainBody";
+		case T_Body:
+			return "Body";
 			break;
 
 		default:

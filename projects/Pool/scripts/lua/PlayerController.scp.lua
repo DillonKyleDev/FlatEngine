@@ -9,8 +9,7 @@ function Awake()
         mappingContext = GetMappingContext("MC_Player"),
         -- characterController = this_object:GetCharacterController(),
         transform = this_object:GetTransform(),
-        -- sprite = this_object:GetSprite(),
-        rigidBody = this_object:GetRigidBody(),
+        -- sprite = this_object:GetSprite(),        
         -- animation = this_object:GetAnimation(),
         -- boxCollider = this_object:GetBoxCollider(),
         -- healthBar = GetObjectByName("CurrentHealth"),
@@ -109,6 +108,10 @@ end
 
 function handleMovement()
     local data = GetInstanceData("PlayerController", my_id)
+
+    if data.mappingContext:Fired("IA_BeginHit") then
+        LogString("Hit began.")
+   end
 
     local b_hasLanded = false
     local b_movingLeft = false

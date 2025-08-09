@@ -23,11 +23,11 @@ namespace FlatEngine
 	class CompositeCollider;
 	class TileMap;
 	class Body;
-	class BoxBody;
-	class CircleBody;
-	class CapsuleBody;
-	class PolygonBody;	
-	class ChainBody;
+	class Box;
+	class Circle;
+	class Capsule;
+	class Polygon;	
+	class Chain;
 
 	class GameObject
 	{
@@ -67,11 +67,12 @@ namespace FlatEngine
 		Animation* AddAnimation(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		BoxBody* AddBoxBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		CircleBody* AddCircleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		CapsuleBody* AddCapsuleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		PolygonBody* AddPolygonBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		ChainBody* AddChainBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Body* AddBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Box* AddBoxBody(Physics::BodyProps bodyProps, Shape::ShapeProps shapeProps, long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Circle* AddCircleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Capsule* AddCapsuleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Polygon* AddPolygonBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Chain* AddChainBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
@@ -100,12 +101,6 @@ namespace FlatEngine
 		Text* GetText();
 		CharacterController* GetCharacterController();
 		Body* GetBody();
-		BoxBody* GetBoxBody();	
-		CircleBody* GetCircleBody();
-		CapsuleBody* GetCapsuleBody();
-		PolygonBody* GetPolygonBody();
-		ChainBody* GetChainBody();
-		//CompositeCollider* GetCompositeCollider();	
 		//TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		
 

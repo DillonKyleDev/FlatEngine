@@ -18,6 +18,8 @@ namespace FlatEngine
 		~Transform();
 		std::string GetData();
 
+		static float ClampRotation(float rotation, float min = -180.0f, float max = 180.0f);
+
 		void SetInitialPosition(Vector2 initialPos);
 		void SetOrigin(Vector2 newOrigin);
 		Vector2 GetOrigin();

@@ -8,7 +8,17 @@ using json = nlohmann::json;
 using namespace nlohmann::literals;
 
 
-namespace FlatEngine {
+namespace FlatEngine 
+{
+	Vector2 InputMapping::GetMouseMotionWorld() 
+	{ 
+		return ConvertScreenToWorld(Vector2((float)event.motion.x, (float)event.motion.y));
+	}
+
+	Vector2 InputMapping::GetMouseMotionScreen() 
+	{
+		return Vector2((float)event.motion.x, (float)event.motion.y); 
+	}
 
 	MappingContext::MappingContext()
 	{
@@ -126,7 +136,7 @@ namespace FlatEngine {
 		}
 
 		if (m_inputsByBinding.count(keyBinding) > 0)
-		{
+		{						
 			m_inputsByBinding.at(keyBinding)->event = event;
 			m_inputsByBinding.at(keyBinding)->b_fired = true;
 			return true;
@@ -199,6 +209,16 @@ namespace FlatEngine {
 		}
 
 		return inputActions;
+	}
+
+	std::shared_ptr<InputMapping> MappingContext::GetInputMapping(std::string actionName)
+	{
+		if (m_inputsByAction.count(actionName) > 0)
+		{
+			return m_inputsByAction.at(actionName);
+		}
+
+		else return nullptr;
 	}
 
 	void MappingContext::SetWaitingForRemap(bool b_waiting)

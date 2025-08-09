@@ -18,11 +18,7 @@ namespace FlatEngine
 		T_RayCast,
 		T_CharacterController,
 		T_TileMap,
-		T_BoxBody,
-		T_CircleBody,
-		T_CapsuleBody,
-		T_PolygonBody,
-		T_ChainBody,
+		T_Body,
 	};
 
 	class GameObject;

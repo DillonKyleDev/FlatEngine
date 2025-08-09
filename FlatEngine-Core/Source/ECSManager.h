@@ -16,11 +16,12 @@ namespace FlatEngine
 	class Audio;
 	class Text;
 	class Camera;
-	class BoxBody;
-	class CircleBody;
-	class CapsuleBody;
-	class PolygonBody;
-	class ChainBody;
+	class Body;
+	class Box;
+	class Circle;
+	class Capsule;
+	class Polygon;
+	class Chain;
 	class Animation;
 	class Button;	
 	class CharacterController;
@@ -40,11 +41,7 @@ namespace FlatEngine
 		Canvas* AddCanvas(Canvas canvas, long ownerID);
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);		
-		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
-		CircleBody* AddCircleBody(CircleBody circleBody, long ownerID);
-		CapsuleBody* AddCapsuleBody(CapsuleBody capsuleBody, long ownerID);
-		PolygonBody* AddPolygonBody(PolygonBody polygonBody, long ownerID);
-		ChainBody* AddChainBody(ChainBody chainBody, long ownerID);
+		Body* AddBody(Body body, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);		
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);	
@@ -58,11 +55,7 @@ namespace FlatEngine
 		bool RemoveCanvas(long ownerID);
 		bool RemoveAudio(long ownerID);
 		bool RemoveText(long ownerID);		
-		bool RemoveBoxBody(long ownerID);
-		bool RemoveCircleBody(long ownerID);
-		bool RemoveCapsuleBody(long ownerID);
-		bool RemovePolygonBody(long ownerID);
-		bool RemoveChainBody(long ownerID);
+		bool RemoveBody(long ownerID);
 		bool RemoveAnimation(long ownerID);
 		bool RemoveButton(long ownerID);
 		bool RemoveCharacterController(long ownerID);
@@ -77,11 +70,7 @@ namespace FlatEngine
 		Text* GetTextByOwner(long ownerID);
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
-		BoxBody* GetBoxBodyByOwner(long ownerID);
-		CircleBody* GetCircleBodyByOwner(long ownerID);
-		CapsuleBody* GetCapsuleBodyByOwner(long ownerID);
-		PolygonBody* GetPolygonBodyByOwner(long ownerID);
-		ChainBody* GetChainBodyByOwner(long ownerID);
+		Body* GetBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
@@ -95,11 +84,7 @@ namespace FlatEngine
 		std::map<long, Animation>& GetAnimations();
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();		
-		std::map<long, BoxBody>& GetBoxBodies();
-		std::map<long, CircleBody>& GetCircleBodies();
-		std::map<long, CapsuleBody>& GetCapsuleBodies();
-		std::map<long, PolygonBody>& GetPolygonBodies();
-		std::map<long, ChainBody>& GetChainBodies();
+		std::map<long, Body>& GetBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		//std::map<long, TileMap>& GetTileMaps();		
 
@@ -114,11 +99,7 @@ namespace FlatEngine
 		std::map<long, Animation> m_Animations;
 		std::map<long, Audio> m_Audios;
 		std::map<long, Text> m_Texts;				
-		std::map<long, BoxBody> m_BoxBodies;
-		std::map<long, CircleBody> m_CircleBodies;
-		std::map<long, CapsuleBody> m_CapsuleBodies;
-		std::map<long, PolygonBody> m_PolygonBodies;
-		std::map<long, ChainBody> m_ChainBodies;
+		std::map<long, Body> m_Bodies;
 		std::map<long, CharacterController> m_CharacterControllers;
 		//std::map<long, TileMap> m_TileMaps;		
 	};

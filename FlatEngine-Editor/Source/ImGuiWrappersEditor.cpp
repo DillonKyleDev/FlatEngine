@@ -15,15 +15,18 @@
 #include "Text.h"
 #include "CharacterController.h"
 #include "Physics.h"
-#include "BoxBody.h"
-#include "CircleBody.h"
-#include "CapsuleBody.h"
-#include "PolygonBody.h"
-#include "ChainBody.h"
+#include "Body.h"
+#include "Shape.h"
+#include "Box.h"
+#include "Circle.h"
+#include "Capsule.h"
+#include "Polygon.h"
+#include "Chain.h"
 #include "Project.h"
 #include "TileMap.h"
 #include "TileSet.h"
 
+#include "box2D.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -189,15 +192,15 @@ namespace FlatGui
 		
 		if (FL::PushTable("##TransformProperties" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##xPosition" + std::to_string(ID), "X Position", xPos, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##xPosition" + std::to_string(ID), "X Position", xPos, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				transform->SetPosition(Vector2(xPos, yPos));
 			}
-			if (FL::RenderFloatDragTableRow("##yPosition" + std::to_string(ID), "Y Position", yPos, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##yPosition" + std::to_string(ID), "Y Position", yPos, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				transform->SetPosition(Vector2(xPos, yPos));
 			}	
-			if (FL::RenderFloatDragTableRow("##rotation" + std::to_string(ID), "Rotation", rotation, 0.01f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##rotation" + std::to_string(ID), "Rotation", rotation, 0.5f, -FLT_MAX, FLT_MAX))
 			{
 				transform->SetRotation(rotation);
 			}
@@ -207,20 +210,12 @@ namespace FlatGui
 				{
 					transform->SetScale(Vector2(xScale, yScale));
 				}
-				else
-				{
-					FL::LogError("Scale must be greater than 0.");
-				}
 			}
 			if (FL::RenderFloatDragTableRow("##yScaleDrag" + std::to_string(ID), "Y Scale", yScale, 0.1f, 0.001f, 1000))
 			{
 				if (yScale > 0)
 				{
 					transform->SetScale(Vector2(xScale, yScale));
-				}
-				else
-				{
-					FL::LogError("Scale must be greater than 0.");
 				}
 			}
 			FL::PopTable();
@@ -289,10 +284,6 @@ namespace FlatGui
 				{
 					sprite->SetScale(Vector2(xScale, yScale));
 				}
-				else
-				{
-					FL::LogError("Scale must be greater than 0.");
-				}
 			}
 			if (FL::RenderFloatDragTableRow("##ySpriteScaleDrag" + std::to_string(ID), "Y Scale", yScale, 0.1f, 0.001f, 1000))
 			{
@@ -300,16 +291,12 @@ namespace FlatGui
 				{
 					sprite->SetScale(Vector2(xScale, yScale));
 				}
-				else
-				{
-					FL::LogError("Scale must be greater than 0.");
-				}
 			}
-			if (FL::RenderFloatDragTableRow("##xSpriteOffsetDrag" + std::to_string(ID), "X Offset", xOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##xSpriteOffsetDrag" + std::to_string(ID), "X Offset", xOffset, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				sprite->SetOffset(Vector2(xOffset, yOffset));
 			}
-			if (FL::RenderFloatDragTableRow("##ySpriteOffsetDrag" + std::to_string(ID), "Y Offset", yOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##ySpriteOffsetDrag" + std::to_string(ID), "Y Offset", yOffset, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				sprite->SetOffset(Vector2(xOffset, yOffset));
 			}
@@ -809,11 +796,11 @@ namespace FlatGui
 			{
 				button->SetActiveDimensions(activeWidth, activeHeight);
 			}
-			if (FL::RenderFloatDragTableRow("##activeoffsetx" + std::to_string(ID), "X Offset", activeOffset.x, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##activeoffsetx" + std::to_string(ID), "X Offset", activeOffset.x, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				button->SetActiveOffset(activeOffset);
 			}
-			if (FL::RenderFloatDragTableRow("##activeoffsety" + std::to_string(ID), "Y Offset", activeOffset.y, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##activeoffsety" + std::to_string(ID), "Y Offset", activeOffset.y, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				button->SetActiveOffset(activeOffset);
 			}
@@ -1454,11 +1441,11 @@ namespace FlatGui
 			{
 				text->SetFontSize(fontSize);
 			}
-			if (FL::RenderFloatDragTableRow("##xTextOffset" + std::to_string(ID), "X offset", xOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##xTextOffset" + std::to_string(ID), "X offset", xOffset, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				text->SetOffset(Vector2(xOffset, yOffset));
 			}
-			if (FL::RenderFloatDragTableRow("##yTextOffset" + std::to_string(ID), "Y offset", yOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##yTextOffset" + std::to_string(ID), "Y offset", yOffset, 0.1f, -FLT_MAX, FLT_MAX))
 			{
 				text->SetOffset(Vector2(xOffset, yOffset));
 			}
@@ -1524,80 +1511,48 @@ namespace FlatGui
 		}
 	}
 
-	void RenderBodyComponentAttributes(Body* body)
-	{
-		std::string shapeString = "";
-		Physics::BodyProps bodyProps = body->GetBodyProps();
+	void RenderBodyComponent(Body* body)
+	{		
+		bool b_isActive = body->IsActive();
+		FL::Physics::BodyProps bodyProps = body->GetBodyProps();
 		long ID = body->GetID();
-
-		// Read only
 		Vector2 linearVelocity = body->GetLinearVelocity();
 		float angularVelocity = body->GetAngularVelocity();
 
-		switch (bodyProps.shape)
+		if (RenderIsActiveCheckbox(b_isActive))
 		{
-		case Physics::BodyShape::BS_Box:
-		{
-			shapeString = "Box";
-			break;
-		}
-		case Physics::BodyShape::BS_Circle:
-		{
-			shapeString = "Circle";
-			break;
-		}
-		case Physics::BodyShape::BS_Capsule:
-		{
-			shapeString = "Capsule";
-			break;
-		}
-		case Physics::BodyShape::BS_Polygon:
-		{
-			shapeString = "Polygon";
-			break;
-		}
-		case Physics::BodyShape::BS_Chain:
-		{
-			shapeString = "Chain";
-			break;
-		}
+			body->SetActive(b_isActive);
 		}
 
-		FL::MoveScreenCursor(0, 5);
-		if (FL::PushTable("##" + shapeString + "BodyPropsMain" + std::to_string(ID), 2))
+		int currentType = bodyProps.type;
+		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
+		std::string comboID = "##BoxBodyTypeCombo";
+		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 100))
 		{
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyGravityScale" + std::to_string(ID), "Gravity Scale", bodyProps.gravityScale, 0.01f, -FLT_MAX, -FLT_MAX))
+			body->SetBodyType((b2BodyType)currentType);
+		}
+
+		if (FL::PushTable("##BodyProps" + std::to_string(ID), 2))
+		{
+			if (FL::RenderFloatDragTableRow("##BodyGravityScale" + std::to_string(ID), "Gravity Scale", bodyProps.gravityScale, 0.01f, -FLT_MAX, FLT_MAX))
 			{
 				body->SetGravityScale(bodyProps.gravityScale);
 			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyDensity" + std::to_string(ID), "Density", bodyProps.density, 0.001f, 0.001f, -FLT_MAX))
-			{
-				body->SetDensity(bodyProps.density);
-			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyFriction" + std::to_string(ID), "Friction", bodyProps.friction, 0.001f, 0.0f, -FLT_MAX))
-			{
-				body->SetFriction(bodyProps.friction);
-			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyRestitution" + std::to_string(ID), "Restitution", bodyProps.restitution, 0.001f, 0.0f, -FLT_MAX))
-			{
-				body->SetRestitution(bodyProps.restitution);
-			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyLinearDamping" + std::to_string(ID), "Linear Damping", bodyProps.linearDamping, 0.001f, 0.0f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##BodyLinearDamping" + std::to_string(ID), "Linear Damping", bodyProps.linearDamping, 0.001f, 0.0f, -FLT_MAX))
 			{
 				body->SetLinearDamping(bodyProps.linearDamping);
 			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "BodyAngularDamping" + std::to_string(ID), "Angular Damping", bodyProps.angularDamping, 0.001f, 0.0f, -FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##BodyAngularDamping" + std::to_string(ID), "Angular Damping", bodyProps.angularDamping, 0.001f, 0.0f, -FLT_MAX))
 			{
 				body->SetAngularDamping(bodyProps.angularDamping);
 			}
 
-			FL::RenderTextTableRow("##" + shapeString + "VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
-			FL::RenderTextTableRow("##" + shapeString + "VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
-			FL::RenderTextTableRow("##" + shapeString + "AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
+			FL::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
+			FL::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
+			FL::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
 			FL::PopTable();
 		}
 
-		FL::MoveScreenCursor(0, 5);
 		if (FL::RenderCheckbox(" Lock Rotation", bodyProps.b_lockedRotation))
 		{
 			body->SetLockedRotation(bodyProps.b_lockedRotation);
@@ -1610,246 +1565,313 @@ namespace FlatGui
 		{
 			body->SetLockedYAxis(bodyProps.b_lockedYAxis);
 		}
+
+
+		FL::RenderButton("Add Shape", Vector2(ImGui::GetContentRegionAvail().x, 0));
+		if (ImGui::BeginPopupContextItem("##AddShape", ImGuiPopupFlags_MouseButtonLeft))
+		{
+			FL::PushMenuStyles();
+
+			if (ImGui::MenuItem("Box"))
+			{
+				body->AddBox();
+				ImGui::CloseCurrentPopup();
+			}
+			
+			if (ImGui::MenuItem("Circle"))
+			{
+				body->AddCircle();
+				ImGui::CloseCurrentPopup();
+			}
+		
+			if (ImGui::MenuItem("Capsule"))
+			{
+				body->AddCapsule();
+				ImGui::CloseCurrentPopup();
+			}
+			
+
+			if (ImGui::MenuItem("Polygon"))
+			{
+				body->AddPolygon();
+				ImGui::CloseCurrentPopup();
+			}
+				
+
+			if (ImGui::MenuItem("Chain"))
+			{
+				body->AddChain();
+				ImGui::CloseCurrentPopup();
+			}			
+
+			FL::PopMenuStyles();
+			ImGui::EndMenu();
+		}
+
+		std::vector<Shape*> shapes = body->GetShapes();
+
+		for (Shape* shape : shapes)
+		{					
+			RenderShapeComponentProps(shape);
+		}
 	}
-
-	void RenderBoxBodyComponent(BoxBody* boxBody)
-	{
-		long ID = boxBody->GetID();
-		bool b_isActive = boxBody->IsActive();
-		FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
-		Vector2 dimensions = bodyProps.dimensions;
-		float cornerRadius = bodyProps.cornerRadius;
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			boxBody->SetActive(b_isActive);
-			boxBody->RecreateLiveBody();
-		}
-
-		int currentType = bodyProps.type;
-		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
-		std::string comboID = "##BoxBodyTypeCombo";
-		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 100))
-		{
-			boxBody->SetBodyType((b2BodyType)currentType);
-		}
-
-		if (FL::PushTable("##BoxBodyProps" + std::to_string(ID), 2))
-		{
-			if (FL::RenderFloatDragTableRow("##BoxBodyWidth" + std::to_string(ID), "Width", dimensions.x, 0.01f, 0.01f, -FLT_MAX))
-			{
-				boxBody->SetDimensions(dimensions);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyHeight" + std::to_string(ID), "Height", dimensions.y, 0.01f, 0.01f, -FLT_MAX))
-			{
-				boxBody->SetDimensions(dimensions);
-			}
-			if (FL::RenderFloatDragTableRow("##BoxBodyCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, -FLT_MAX))
-			{
-				boxBody->SetCornerRadius(cornerRadius);
-			}
-			FL::PopTable();
-		}
-
-		RenderBodyComponentAttributes(boxBody);
-	}
-					
-	void RenderCircleBodyComponent(CircleBody* circleBody)
-	{
-		long ID = circleBody->GetID();
-		bool b_isActive = circleBody->IsActive();
-		FL::Physics::BodyProps bodyProps = circleBody->GetBodyProps();
-		float radius = bodyProps.radius;
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			circleBody->SetActive(b_isActive);
-			circleBody->RecreateLiveBody();
-		}
-
-		int currentType = bodyProps.type;
-		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
-		std::string comboID = "##CircleBodyTypeCombo";
-		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
-		{
-			circleBody->SetBodyType((b2BodyType)currentType);
-		}
-
-		if (FL::PushTable("##CircleBodyProps" + std::to_string(ID), 2))
-		{
-			if (FL::RenderFloatDragTableRow("##CircleBodyWidth" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, -FLT_MAX))
-			{
-				circleBody->SetRadius(radius);
-			}
-			FL::PopTable();
-		}
 	
-		RenderBodyComponentAttributes(circleBody);
-	}
-
-	void RenderCapsuleBodyComponent(CapsuleBody* capsuleBody)
+	void RenderShapeComponentProps(Shape* shape)
 	{
-		long ID = capsuleBody->GetID();
-		bool b_isActive = capsuleBody->IsActive();
-		FL::Physics::BodyProps bodyProps = capsuleBody->GetBodyProps();
-		float length = bodyProps.capsuleLength;
-		float radius = bodyProps.radius;
-		bool b_horizontal = bodyProps.b_horizontal;
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			capsuleBody->SetActive(b_isActive);
-			capsuleBody->RecreateLiveBody();
-		}
-
-		int currentType = bodyProps.type;
-		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
-		std::string comboID = "##CapsuleBodyTypeCombo";
-		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
-		{
-			capsuleBody->SetBodyType((b2BodyType)currentType);
-		}
-
-		if (FL::RenderCheckbox(" Horizontal", b_horizontal))
-		{
-			capsuleBody->SetHorizontal(b_horizontal);
-		}
-
-		FL::MoveScreenCursor(0, 3);
-
-		if (FL::PushTable("##CapsuleBodyProps" + std::to_string(ID), 2))
-		{
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyLength" + std::to_string(ID), "Length", length, 0.01f, 0.01f, -FLT_MAX))
-			{
-				capsuleBody->SetLength(length);
-			}
-			if (FL::RenderFloatDragTableRow("##CapsuleBodyHeight" + std::to_string(ID), "Radii", radius, 0.01f, 0.01f, -FLT_MAX))
-			{
-				capsuleBody->SetRadius(radius);
-			}
-			FL::PopTable();
-		}
-
-		RenderBodyComponentAttributes(capsuleBody);
-	}
-
-	void RenderPolygonBodyComponent(PolygonBody* polygonBody)
-	{
-		long ID = polygonBody->GetID();
-		bool b_isActive = polygonBody->IsActive();
-		FL::Physics::BodyProps bodyProps = polygonBody->GetBodyProps();
-		float cornerRadius = bodyProps.cornerRadius;
-		std::vector<Vector2> points = bodyProps.points;
+		Shape::ShapeProps shapeProps = shape->GetShapeProps();
+		b2ShapeId shapeID = shape->GetShapeID();
+		Shape::ShapeType shapeType = shape->GetShape();
+		int ID = (int)shapeID.index1;
+		std::string shapeString = shape->GetShapeString();
+		bool b_isSensor = shapeProps.b_isSensor;
+		float restitution = shapeProps.restitution;
+		float friction = shapeProps.friction;
+		float density = shapeProps.density;
+		Vector2 dimensions = shapeProps.dimensions;
+		float cornerRadius = shapeProps.cornerRadius;
+		float radius = shapeProps.radius;
+		float capsuleLength = shapeProps.capsuleLength;
+		bool b_horizontal = shapeProps.b_horizontal;
+		std::vector<Vector2> points = shapeProps.points;
 		int pointCount = (int)points.size();
 		static bool b_showPoints = false;
+		bool b_editingPoints = false;
+		bool b_isLoop = shapeProps.b_isLoop;
+		float tangentSpeed = shapeProps.tangentSpeed;
+		float rollingResistance = shapeProps.rollingResistance;
+		bool b_enableSensorEvents = shapeProps.b_enableSensorEvents;
+		bool b_enableContactEvents = shapeProps.b_enableContactEvents;
 
-		if (RenderIsActiveCheckbox(b_isActive))
+		if (shapeType == Shape::ShapeType::BS_Chain)
 		{
-			polygonBody->SetActive(b_isActive);
-			polygonBody->RecreateLiveBody();
+			b_editingPoints = static_cast<Chain*>(shape)->IsEditingPoints();
+		}
+		else if (shapeType == Shape::ShapeType::BS_Polygon)
+		{
+			b_editingPoints = static_cast<FL::Polygon*>(shape)->IsEditingPoints();
 		}
 
-		int currentType = bodyProps.type;
-		std::vector<std::string> types = { "static", "kinematic", "dynamic" };
-		std::string comboID = "##PolygonBodyTypeCombo";
-		if (FL::RenderCombo(comboID, types[bodyProps.type], types, currentType, 85))
-		{
-			polygonBody->SetBodyType((b2BodyType)currentType);
-		}
+		FL::RenderSectionHeader(shapeString);
 
-		if (FL::PushTable("##PolygonBodyProps" + std::to_string(ID), 2))
+		FL::MoveScreenCursor(0, 5);
+		if (FL::PushTable("##" + shapeString + "ShapeProps" + std::to_string(ID), 2))
 		{
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "Density" + std::to_string(ID), "Density", density, 0.001f, 0.001f, FLT_MAX))
+			{
+				shape->SetDensity(density);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "Friction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, FLT_MAX))
+			{
+				shape->SetFriction(friction);
+			}
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "Restitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, FLT_MAX))
+			{
+				shape->SetRestitution(restitution);
+			}
+			if (shapeType != Shape::ShapeType::BS_Polygon && shapeType != Shape::ShapeType::BS_Chain)
+			{
+				Vector2 positionOffset = shapeProps.positionOffset;
+				float rotationOffset = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));				
+
+				if (FL::RenderFloatDragTableRow("##PositionXOffset" + std::to_string(ID), "X Offset", positionOffset.x, 0.01f, -FLT_MAX, FLT_MAX))
+				{
+					shape->SetPositionOffset(positionOffset);
+				}
+				if (FL::RenderFloatDragTableRow("##PositionYOffset" + std::to_string(ID), "Y Offset", positionOffset.y, 0.01f, -FLT_MAX, FLT_MAX))
+				{
+					shape->SetPositionOffset(positionOffset);
+				}
+				if (FL::RenderFloatDragTableRow("##RotationOffset" + std::to_string(ID), "Rotation Offset", rotationOffset, 0.5f, -FLT_MAX, FLT_MAX))
+				{
+					shape->SetRotationOffset(rotationOffset);
+				}
+			}
+			if (shapeType == Shape::ShapeType::BS_Box)
+			{
+				if (FL::RenderFloatDragTableRow("##BoxWidth" + std::to_string(ID), "Width", dimensions.x, 0.01f, 0.01f, FLT_MAX))
+				{
+					static_cast<Box*>(shape)->SetDimensions(dimensions);
+				}
+				if (FL::RenderFloatDragTableRow("##BoxHeight" + std::to_string(ID), "Height", dimensions.y, 0.01f, 0.01f, FLT_MAX))
+				{
+					static_cast<Box*>(shape)->SetDimensions(dimensions);
+				}
+				if (FL::RenderFloatDragTableRow("##ShapeCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
+				{
+					if (cornerRadius >= 0)
+					{
+						static_cast<Box*>(shape)->SetCornerRadius(cornerRadius);
+					}
+					else
+					{
+						cornerRadius = 0;
+					}
+				}
+			}
+			else if (shapeType == Shape::ShapeType::BS_Polygon)
+			{
+				if (FL::RenderFloatDragTableRow("##ShapeCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
+				{
+					if (cornerRadius >= 0)
+					{
+						static_cast<FL::Polygon*>(shape)->SetCornerRadius(cornerRadius);
+					}
+					else
+					{
+						cornerRadius = 0;
+					}
+				}
+			}
+			if (shapeType == Shape::ShapeType::BS_Circle)
+			{
+				if (FL::RenderFloatDragTableRow("##ShapeRadius" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+				{
+					static_cast<Circle*>(shape)->SetRadius(radius);
+				}
+			}
+			if (shapeType == Shape::ShapeType::BS_Capsule)
+			{
+				if (FL::RenderFloatDragTableRow("##ShapeRadius" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+				{
+					static_cast<Capsule*>(shape)->SetRadius(radius);
+				}
+				if (FL::RenderFloatDragTableRow("##CapsuleLength" + std::to_string(ID), "Length", capsuleLength, 0.01f, 0.01f, FLT_MAX))
+				{
+					static_cast<Capsule*>(shape)->SetCapsuleLength(capsuleLength);
+				}
+				if (FL::RenderFloatDragTableRow("##CapsuleHeight" + std::to_string(ID), "Radii", radius, 0.01f, 0.01f, FLT_MAX))
+				{
+					static_cast<Capsule*>(shape)->SetRadius(radius);
+				}
+			}
+			if (shapeType == Shape::ShapeType::BS_Chain)
+			{
+				if (FL::RenderFloatDragTableRow("##ChainTangentSpeed" + std::to_string(ID), "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
+				{
+					static_cast<Chain*>(shape)->SetTangentSpeed(tangentSpeed);
+				}
+				if (FL::RenderFloatDragTableRow("##ChainRollingResistance" + std::to_string(ID), "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
+				{
+					static_cast<Chain*>(shape)->SetRollingResistance(rollingResistance);
+				}
+			}
 			FL::PopTable();
 		}
 
-		if (b_showPoints)
+		if (shapeType != Shape::ShapeType::BS_Chain)
 		{
-			ImGui::Text("Point Positions");
-			if (FL::PushTable("##PolygonBodyPointPositions" + std::to_string(ID), 2))
+			if (FL::RenderCheckbox(" Is Sensor##Chain_" + std::to_string(ID), b_isSensor))
 			{
-				for (int i = 0; i < pointCount; i++)
+				shape->SetIsSensor(b_isSensor);
+			}
+		}
+		if (FL::RenderCheckbox(" Enable Sensor Events##Chain_" + std::to_string(ID), b_enableSensorEvents))
+		{
+			shape->SetEnableSensorEvents(b_enableSensorEvents);
+		}
+		if (FL::RenderCheckbox(" Enable Contact Events##_Chain" + std::to_string(ID), b_enableContactEvents))
+		{
+			shape->SetEnableContactEvents(b_enableContactEvents);
+		}
+
+		if (shapeType == Shape::ShapeType::BS_Capsule)
+		{
+			if (FL::RenderCheckbox(" Horizontal##Capsule_" + std::to_string(ID), b_horizontal))
+			{
+				static_cast<Capsule*>(shape)->SetHorizontal(b_horizontal);
+			}
+		}
+
+		if (shapeType == Shape::ShapeType::BS_Chain)
+		{
+			FL::MoveScreenCursor(0, 3);
+			if (FL::RenderCheckbox(" Loop endpoints##Chain_" + std::to_string(ID), b_isLoop))
+			{
+				static_cast<Chain*>(shape)->SetIsLoop(b_isLoop);
+			}
+
+			FL::MoveScreenCursor(0, 3);
+			FL::RenderCheckbox(" Show points##Chain_" + std::to_string(ID), b_showPoints);
+
+			ImGui::SameLine(0, 10);
+			if (!b_editingPoints)
+			{
+				if (FL::RenderButton("Edit Points##Chain_" + std::to_string(ID)))
 				{
-					if (FL::RenderFloatDragTableRow("##PolygonBodyPointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
-					{
-						polygonBody->SetPoints(points);
-					}
-					if (FL::RenderFloatDragTableRow("##PolygonBodyPointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
-					{
-						polygonBody->SetPoints(points);
-					}
-					if (FL::RenderFloatDragTableRow("##PolygonBodyCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, -FLT_MAX))
-					{
-						polygonBody->SetCornerRadius(cornerRadius);
-					}
+					static_cast<Chain*>(shape)->SetEditingPoints(true);
 				}
-				FL::PopTable();
 			}
-		}
-
-		RenderBodyComponentAttributes(polygonBody);
-	}
-
-	void RenderChainBodyComponent(ChainBody* chainBody)
-	{
-		long ID = chainBody->GetID();
-		bool b_isActive = chainBody->IsActive();		
-		FL::Physics::BodyProps bodyProps = chainBody->GetBodyProps();
-		bool b_isLoop = bodyProps.b_isLoop;
-		float tangentSpeed = bodyProps.tangentSpeed;
-		float rollingResistance = bodyProps.rollingResistance;
-		std::vector<Vector2> points = bodyProps.points;
-		int pointCount = (int)points.size();
-		static bool b_showPoints = false;
-
-		if (RenderIsActiveCheckbox(b_isActive))
-		{
-			chainBody->SetActive(b_isActive);
-			chainBody->RecreateLiveBody();
-		}		
-
-		if (FL::PushTable("##ChainBodyProps" + std::to_string(ID), 2))
-		{
-			if (FL::RenderFloatDragTableRow("##ChainBodyTangentSpeed" + std::to_string(ID), "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
+			else
 			{
-				chainBody->SetTangentSpeed(tangentSpeed);
-			}
-			if (FL::RenderFloatDragTableRow("##ChainBodyRollingResistance" + std::to_string(ID), "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
-			{
-				chainBody->SetRollingResistance(rollingResistance);
-			}
-			FL::PopTable();
-		}
-
-		FL::MoveScreenCursor(0, 3);
-		if (FL::RenderCheckbox(" Loop endpoints", b_isLoop))
-		{
-			chainBody->SetIsLoop(b_isLoop);
-		}
-
-		FL::MoveScreenCursor(0, 3);
-		FL::RenderCheckbox(" Show points", b_showPoints);
-
-		if (b_showPoints)
-		{
-			ImGui::Text("Point Positions");
-			if (FL::PushTable("##ChainBodyPointPositions" + std::to_string(ID), 2))
-			{
-				for (int i = 0; i < pointCount; i++)
+				if (FL::RenderButton("Stop editing##Chain_" + std::to_string(ID)))
 				{
-					if (FL::RenderFloatDragTableRow("##ChainBodyPointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
-					{
-						chainBody->SetPoints(points);
-					}
-					if (FL::RenderFloatDragTableRow("##ChainBodyPointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
-					{
-						chainBody->SetPoints(points);
-					}
+					static_cast<Chain*>(shape)->SetEditingPoints(false);
 				}
-				FL::PopTable();
+			}
+
+			if (b_showPoints)
+			{
+				ImGui::Text("Point Positions");
+				if (FL::PushTable("##ShapePointPositions" + std::to_string(ID), 2))
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (FL::RenderFloatDragTableRow("##ShapePointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							static_cast<Chain*>(shape)->SetPoints(points);
+						}
+						if (FL::RenderFloatDragTableRow("##ShapePointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							static_cast<Chain*>(shape)->SetPoints(points);
+						}
+					}
+					FL::PopTable();
+				}
+			}
+		}
+		else if (shapeType == Shape::ShapeType::BS_Polygon)
+		{
+			FL::MoveScreenCursor(0, 3);
+			FL::RenderCheckbox(" Show points##Polygon_" + std::to_string(ID), b_showPoints);
+
+			ImGui::SameLine(0, 10);
+			if (!b_editingPoints)
+			{
+				if (FL::RenderButton("Edit Points##Polygon_" + std::to_string(ID)))
+				{
+					static_cast<FL::Polygon*>(shape)->SetEditingPoints(true);
+				}
+			}
+			else
+			{
+				if (FL::RenderButton("Stop editing##Polygon_" + std::to_string(ID)))
+				{
+					static_cast<FL::Polygon*>(shape)->SetEditingPoints(false);
+				}
+			}
+
+			if (b_showPoints)
+			{
+				ImGui::Text("Point Positions");
+				if (FL::PushTable("##ShapePointPositions" + std::to_string(ID), 2))
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (FL::RenderFloatDragTableRow("##ShapePointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							static_cast<FL::Polygon*>(shape)->SetPoints(points);
+						}
+						if (FL::RenderFloatDragTableRow("##ShapePointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							static_cast<FL::Polygon*>(shape)->SetPoints(points);
+						}
+					}
+					FL::PopTable();
+				}
 			}
 		}
 
-		RenderBodyComponentAttributes(chainBody);
+		FL::MoveScreenCursor(0, 5);
 	}
 
 	void RenderTileMapComponent(TileMap* tileMap)

@@ -13,8 +13,7 @@ end
 
 function Start()
      -- required to access instance data
-     local data = GetInstanceData("Car", my_id)
-     LogString("Car : Start() called on "..this_object:GetName())
+     local data = GetInstanceData("Car", my_id)     
 end
 
 function Update()
@@ -23,8 +22,7 @@ end
 
 -- each of these functions must be present in each file if they are to be called otherwise other scripts copies will be used with this object instead
 function OnBeginCollision(collidedWith, manifold)
-     local data = GetInstanceData("Car", my_id)
-     LogString(this_object:GetName() .. " collided with " .. collidedWith:GetParent():GetName())
+     local data = GetInstanceData("Car", my_id)     
 
      if (manifold:GetPoints():size() == 2) then          
           for i = 1, manifold:GetPoints():size(), 1 do
@@ -36,6 +34,14 @@ end
 
 function OnEndCollision(collidedWith, manifold)
      local data = GetInstanceData("Car", my_id)     
+end
+
+function OnBeginSensorTouch(touched)
+     LogString("Sensor touched " .. touched:GetParent():GetName())
+end
+
+function OnEndSensorTouch(touched)
+     LogString("Sensor stopped touching " .. touched:GetParent():GetName())
 end
 
 function OnButtonMouseOver()

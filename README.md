@@ -13,44 +13,17 @@ As a note, FlatSpace was made before the implementation of persistant GameObject
 
 ### Building and using FlatEngine2D from source
 
-If you are using the Release build of FlatEngine2D found in Releases you can safely ignore this section.
+If you are using the Release build of FlatEngine2D found in Releases you can safely ignore this section.  There currently is not a stable release for building from source so it is not recommended to do so at this time.  But if you wish to proceed anyway, here's how to get setup:
 
-To build FlatEngine2D yourself and get the benefit of editing the source code directly:
 1. Download the .zip and extract
-2. Go into these three files and change the `targetdir` and `objdir` variables to locations you want FlatEngine2D to be built to (if default location is undesired) and of course be sure to change `<UserName>` to your users name path on your computer:</br>
+2. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
+3. Open the solution file that was created in the root directory. Right click and build each project in the solution, (`Core/FlatEngine-Core`, `FlatEngine-Editor`, and `FlatEngine-Runtime`) in Debug configuration for debugging, and when you're ready for release, do the same in the Release configuration.
 
-   `FlatEngine-Core/Build-Core.lua`</br>
-   `FlatEngine-Editor/Build-Editor.lua`</br>
-   `FlatEngine-Runtime/Build-Runtime.lua`</br>
-   
-Change these to desired output location in each .lua file above.</br>
-
-   `targetdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/" .. OutputDir .. "/%{prj.name}")`</br>
-   `objdir ("C:/Users/<UserName>/Desktop/FlatEngine2D_Build/Intermediates/" .. OutputDir .. "/%{prj.name}")`</br>
-   
-3. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
-4. Open the solution file that was created in the root directory and build it. The default project is set to `FlatEngine-Editor`. After the Editor is built, change the start-up project in the solution properties to `FlatEngine-Runtime` and build again.
-5. After building, move the .dll files from the `DLLFiles` directory to each of these built directories (the ones you see will be based on how you built the project, debug or release):</br>
-
-  `FlatEngine2DBuild/windows-x86_64/Debug/FlatEngine-Editor/`</br>
-  `FlatEngine2DBuild/windows-x86_64/Debug/FlatEngine-Runtime/`</br>
-  `FlatEngine2DBuild/windows-x86_64/Release/FlatEngine-Editor/`</br>
-  `FlatEngine2DBuild/windows-x86_64/Release/FlatEngine-Runtime/`</br>
-
-You're now set up to use the engine and edit it's source code as you wish. To open the Editor, you'll need to change the start-up project back to FlatEngine-Editor in the solution properties. From here, you can edit and debug source code from the solution.  (You can also create and edit entire projects and assets entirely from the source solution's Editor, but if you do so just remember to copy over the `projects/` directory from the solution directory to the build location when you're done and ready to build the final game project, as outlined below.)  building a finished project is slightly different than in the Release version of FlatEngine2D (and more complicated).  When you build a finished project, the FlatEngine-Editor code is not built into the release. You'll notice there are three projects in the solution: Core, Editor, and Runtime.  The Core project is a static library that both the Editor and Runtime use to function.  The Editor project is only code that is used for the display and functionality of the Editor which is not needed once the game logic is hooked up and scenes are made.  The Runtime project just uses the Core library and reads the game project files (scenes, scripts, etc.) to load and run the final game project.  
+You're now set up to use the engine and edit it's source code as you wish.  From here, building a final game project is the same as it is with the main Release.
 
 When you are finished editing the source code, you need to build the Editor project and the Runtime project in Release mode again. If you've made changes to the Core library, the Runtime project needs to know about those changes.
 
-After building, if this is your first time building you'll also need to copy over these directories from the solution directory and put them in the built `Release/` directory:</br>
-
-`engine/`</br>
-`projects/`</br>
-`Vendor/`</br>
-And to carry over the ImGui editor layout, you'll also need to copy the `imgui.ini` file from `FlatEngine-Editor/` in the solution directory to `Release/FlatEngine-Editor/`.</br>
-
-(If it is not your first time building, you don't need to copy any of the above folders or the `imgui.ini` file unless you were making changes to project assets from the solution that you want to keep, in which case you'll just need to copy the `projects/` folder to the built `Release/` directory.)
-
-Now you should be able to go into the build location and open the FlatEngine-Editor.exe with all of your source code changes and project asset changes (if you made any) present in the build.  From here, you can follow the project building guide found in the quick links below to build your project normally.</br>
+Now you should be able to go into the build location and open the FlatEngine-Runtime.exe with all of your source code changes present in the build.</br>
 
 ### Disclaimer
 
@@ -75,7 +48,7 @@ Quick links:
 
 ## About:
 
-FlatEngine2D is a 2D game engine made using SDL2 and ImGui.  It is a passion project and is intended to replace Unity in all my future 2D game development projects.  Maybe you will find it useful as well.  I will also be using the bones of the engine I develop here to create a full 3D game engine in the future.  See the license for details about using the engine and code, but as far as code I have written and assets I've created, you are free to use them as you wish, and you are also free to credit me if you would like to but it is not required.  Additionally, I would love to see any projects you are working on or have used any of the engine code for if you would be willing to share it.
+FlatEngine2D is a 2D game engine made using SDL2, ImGui, and Box2D.  It is a passion project and is intended to replace Unity in all of my future 2D game development projects.  Maybe you will find it useful as well.  I will also be using the bones of the engine I develop here to create a full 3D game engine in the future.  See the license for details about using the engine and code, but as far as code I have written and assets I've created, you are free to use them as you wish.  Additionally, I would love to see any projects you are working on or have used any of the engine code for if you would be willing to share it.
 
 I've spent a lot of time with the Unity game engine and so have found comfort in it's design philosophy.  I will be adopting many of Unity's methods for handling various things within my engine.
 
@@ -88,6 +61,7 @@ I've spent a lot of time with the Unity game engine and so have found comfort in
 |:--------------------|:---------------|
 |SDL_2|The engine is built using SDL_2 as a base, along with several other SDL libraries including SDL_ttf for fonts, SDL_Image, and SDL_Mixer for audio.|
 |ImGui|The entire user interface, including all of the interactions within the scene view, are handled using ImGui_Docking.|
+|Box2D|The physics and collision in FlatEngine2D is handled by Box2D.|
 |nlohmann Json Formatter|nlohmann Json Formatter is used for saving various types of data for later use including Scene data (GameObjects and components), Project data, and Animation data.|
 |Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine2D. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
 
@@ -177,6 +151,7 @@ ________________________________________________________________________________
 
 ### TileSet Editor
 
+Note: This section is currently subject to significant rework as I add Box2D into FlatEngine2D.</br>
 Using the TileSet Editor you can create the TileSets that you'll use inside the TileMap components.  All you have to do is create a new TileSet either in the TileSet Editor or in the File Explorer right-click context menu and drag and drop an image from the File Explorer into the input as your tiling image.  This component is still early in development so it only allows a 16x16 selection for each tile for now.  Once an image is chosen, click on each tile you want to be included in your TileSet and if your TileSet is selected in a TileMap component, you should see them start to appear as available tiles to paint with.
 ____________________________________________________________________________________________________________
 ![tileSetEditor](https://github.com/user-attachments/assets/2319b498-71ee-432c-92af-523a79acfdd6)
@@ -263,7 +238,7 @@ You can set a GameObject to have a specific tag using `GameObject::SetTag("tagNa
 
 --------------------------------------------------------------------------------------
 
-The Tags system is also used by the collision detection system to prevent objects that should not interact from interacting, based on the Tags each GameObject has and is set to Ignore.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar. This is also how you reload any customizations you've made to the color scheme of FlatEngine2D in the `Colors.lua` file or engine icons in `Textures.lua` located in the same directory as `Tags.lua`.  (Your changes will also go into effect upon relaunching the engine)</br></br>
+The Tags system is also used by the collision detection system to know what objects can collide with other objects, based on the Tags each GameObject has and is set to Collide with.  Tags are completely customizeable by opening and editing the `Tags.lua` file found in `/engine/scripts/Tags.lua`.  Here you can freely add and remove available Tags you can choose from for GameObjects and they will appear in the tag list in engine upon either closing and reopening the FlatEngine or by clicking "Reload Tags" in the dropdown menu under `Settings -> Reload Tags` on the main menu bar. This is also how you reload any customizations you've made to the color scheme of FlatEngine2D in the `Colors.lua` file or engine icons in `Textures.lua` located in the same directory as `Tags.lua`.  (Your changes will also go into effect upon relaunching the engine)</br></br>
 ![reloadTags](https://github.com/user-attachments/assets/203d64aa-9d41-4e50-8a6e-e62461c1d266)
 
 --------------------------------------------------------------------------------------
@@ -296,12 +271,13 @@ FlatEngine2D's GameObjects require components be attached for their functionalit
 8. Animation
 9. Audio
 10. Text
-11. BoxCollider
-12. CircleCollider (work in progress -> CircleColliders currently do not support Solid collision and can only be used as triggers)
-13. CompositeCollider (work in progress -> Currently removed from the engine)
-14. RigidBody
-15. CharacterController
-16. TileMap (work in progress)
+11. BoxBody
+12. CircleBody
+13. CapsuleBody
+14. PolygonBody
+15. ChainBody
+16. CharacterController
+17. TileMap (work in progress)
 
 ____________________________________________________________________________________________________________
 ### Transform
@@ -401,33 +377,8 @@ Text|The actual text to be rendered.|
 
 ### Collision Components
 
-The Collision components are not all complete.  The BoxCollider component is complete but it does not take rotation into account.  This is a feature I will be working on in the near future.  The CircleCollider can detect collisions, but it does not yet know how to handle positioning based on collisions.  The CompositeCollider I am waiting until the other Collision components are finished to continue work on it.  As a result, I have disabled the use of Composite colliders from the engine temporarily, and CircleColliders cannot be made solid and can only really function as a trigger because of it.  The BoxCollider uses a simple AABB collision detection approach.  The collision system is connected to the Tags system and will not check collisions between GameObjects that are ignoring each other based on the Tags they pocess.  The BoxCollider component has the following properties:
+Detailed documentation on Box2D implementation coming soon.
 
-| Property        | Description |
-|:--------------------|:---------------|
-|Dimensions|The width and height of the collision box.|
-|Offset|The position relative to the Transforms position|
-|Active Layer|This feature is neglected due to the Tags system being in place, but it will be updated when I do the necessary overhaul of the collision system as a whole.  Colliders should only interact with other colliders on the same layer.|
-|Is Continuous?|Determines how often this collider needs to be checked for collision. Currently it is set to every 10 frames for non continuous colliders, this is subject to change.|
-|Is Static?|If a collider is static it may not need to be checked or updated as often as non static colliders, this saves on performance.|
-|Is Solid?|Determines whether other collisiders should pass through this collider or if it is just a trigger. (isSolid is disabled for CircleColliders at the moment but they can be used as triggers instead.)|
-|Is Composite?|For adding this Collider to the CompositeCollider component on the GameObject (work in progress).|
-|Show Active Radius?|Before the AABB testing occurs, each tested collision is tested using a less expensive radius check, this enables you to see that radius for each particular collider.|
-
-### RigidBody
-
-The RigidBody component is responsible for handling all of the physics that an object can be subjected to.  Using the RigidBody, you can add forces and torques to an object to manipulate its velocity and rotation.  The RigidBody component has the following properties:
-
-| Property        | Description |
-|:--------------------|:---------------|
-|Mass|Determines how difficult it is to change the velocity of the object.|
-|Gravity| Determines how much gravity the GameObject experiences.|
-|Falling Gravity| Falling gravity is used if you would like your GameObject to have a different gravity going down than it has going down.  This is useful for fine tuning the feeling of a jump or could be used to add a glide or hover mechanic.  Both this and regular Gravity Scale can be freely changed.|
-|Terminal Velocity|The maximum speed a GameObject can fall due to gravity.|
-|Wind Resistance|The amount that a GameObject is slowed while not grounded.|
-|Friction|The amount that a GameObejct is slowed while grounded.|
-|Angular Drag|The amount that a GameObject is slowed while rotating.|
-|Equilibrium Force|I believe this will be removed in a future update.  I am unsure if this value should be exposed to the end user.|
 
 ### CharacterController
 
@@ -980,9 +931,8 @@ Returns: `void`<br/>
 |`AddCanvas()`|Action: Adds and returns a Canvas component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Canvas*` or `nullptr`|
 |`AddText()`|Action: Adds and returns a Text component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `Text*` or `nullptr`|
 |`AddCharacterController()`|Action: Adds and returns a CharacterController component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `CharacterController*` or `nullptr`|
-|`AddRigidBody()`|Action: Adds and returns a RigidBody component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `RigidBody*` or `nullptr`|
-|`AddBoxCollider()`|Action: Adds and returns a BoxCollider component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `BoxCollider*` or `nullptr`|
-|`AddCircleCollider()`|Action: Adds and returns a CircleCollider component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `CircleCollider*` or `nullptr`|
+|`AddBoxBody()`|Action: Adds and returns a BoxBody component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `BoxBody*` or `nullptr`|
+|`AddCircleBody()`|Action: Adds and returns a CircleCollider component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `CircleBody*` or `nullptr`|
 |`AddTileMap()`|Action: Adds and returns a TileMap component to the GameObject if one doesn't already exist.</br>Parameters: `none`</br>Returns: `TileMap*` or `nullptr`|
 |`AddChild(long childID)`|Action: Adds specified child to GameObject.</br>Parameters: `long childID`</br>Returns: `void`|
 |`RemoveChild()`|Action: Removes specified child from GameObject.</br>Parameters: `long childID`</br>Returns: `void`|
@@ -1126,7 +1076,11 @@ Returns: `void`<br/>
 |`SetParameters(std::vector<ScriptParameter> parameters)`|Action: Sets the ScriptParameters member variable of the ParameterList.</br>Parameters: `std::vector<ScriptParameter> parameters`</br>Returns: `void`|
 |`AddParameter(ScriptParameter parameters)`|Action: Add a the ScriptParameter to the ParameterList.</br>Parameters: `ScriptParameter parameter`</br>Returns: `void`|
 
+
 ## Class RigidBody
+
+NOTE: RigidBody has been combined with Colliders to form BoxBody, CircleBody, CapsuleBody, PolygonBody, ChainBody, which encapsulate the new Box2D physics and collision implementation.  Documentation coming soon.
+
 |Method|Details|
 |:-----|-------|
 |`GetParent()`|Action: Gets the GameObject that the component is attached to.</br>Parameters: `none`</br>Returns: `GameObject*`|

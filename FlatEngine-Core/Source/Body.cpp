@@ -1,5 +1,9 @@
 #include "Body.h"
-
+#include "Box.h"
+#include "Circle.h"
+#include "Capsule.h"
+#include "Polygon.h"
+#include "Chain.h"
 
 
 namespace FlatEngine
@@ -8,19 +12,97 @@ namespace FlatEngine
 	{
 		SetID(myID);
 		SetParentID(parentID);
+		SetType(T_Body);
 
 		m_bodyID = b2BodyId();
-		m_bodyProps = Physics::BodyProps();
+		m_bodyProps = Physics::BodyProps();		
+		m_boxes = std::vector<Box>();
+		m_circles = std::vector<Circle>();
+		m_capsules = std::vector<Capsule>();
+		m_polygons = std::vector<Polygon>();
+		m_chains = std::vector<Chain>();
+		// Contacts
 		m_beginContactCallback = nullptr;
 		m_b_beginContactCallbackSet = false;
 		m_endContactCallback = nullptr;
 		m_b_endContactCallbackSet = false;
+		// Sensors
+		m_beginSensorTouchCallback = nullptr;
+		m_b_beginSensorTouchCallbackSet = false;
+		m_endSensorTouchCallback = nullptr;
+		m_b_endSensorTouchCallbackSet = false;
 	}
 
 	Body::~Body()
 	{
 	}
 
+	std::string Body::GetData()
+	{
+		json shapesArray = json::array();		
+
+		for (Shape* shape : GetShapes())
+		{
+			shapesArray.push_back(shape->GetShapeData());
+		}
+
+		json jsonData = {
+			{ "type", "Body"},
+			{ "id", GetID() },
+			{ "_isCollapsed", IsCollapsed() },
+			{ "_isActive", IsActive() },
+			{ "bodyType", (int)m_bodyProps.type },
+			{ "_lockedRotation", m_bodyProps.b_lockedRotation },
+			{ "_lockedXAxis", m_bodyProps.b_lockedXAxis },
+			{ "_lockedYAxis", m_bodyProps.b_lockedYAxis },
+			{ "gravityScale", m_bodyProps.gravityScale },
+			{ "linearDamping", m_bodyProps.linearDamping },
+			{ "angularDamping", m_bodyProps.angularDamping },
+			{ "shapes", shapesArray }
+		};
+
+		std::string data = jsonData.dump();
+		// Return dumped json object with required data for saving
+		return data;
+	}
+
+	void Body::SetActive(bool b_isActive)
+	{
+		Component::SetActive(b_isActive);
+
+		if (b2Body_IsValid(m_bodyID))
+		{
+			if (b_isActive)
+			{
+				b2Body_Enable(m_bodyID);
+			}
+			else
+			{
+				b2Body_Disable(m_bodyID);
+			}
+		}
+	}
+
+	// Conversions from local to world space
+	Vector2 Body::ConvertWorldToLocalPoint(Vector2 worldPoint)
+	{
+		return b2Body_GetLocalPoint(m_bodyID, b2Vec2(worldPoint.x, worldPoint.y));
+	}
+
+	Vector2 Body::ConvertLocalToWorldPoint(Vector2 localPoint)
+	{
+		return b2Body_GetWorldPoint(m_bodyID, b2Vec2(localPoint.x, localPoint.y));
+	}
+
+	Vector2 Body::ConvertWorldToLocalVector(Vector2 worldVector)
+	{
+		return b2Body_GetLocalVector(m_bodyID, b2Vec2(worldVector.x, worldVector.y));
+	}
+
+	Vector2 Body::ConvertLocalToWorldVector(Vector2 localVector)
+	{
+		return b2Body_GetWorldVector(m_bodyID, b2Vec2(localVector.x, localVector.y));
+	}
 
 	void Body::SetOnBeginContact(void(*beginContactCallback)(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID))
 	{
@@ -43,7 +125,7 @@ namespace FlatEngine
 
 	Body* Body::GetBodyFromShapeID(b2ShapeId shapeID)
 	{
-		return static_cast<Body*>(b2Shape_GetUserData(shapeID));
+		return static_cast<Shape*>(b2Shape_GetUserData(shapeID))->GetParentBody();
 	}
 
 	void Body::SetOnEndContact(void(*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID))
@@ -65,12 +147,49 @@ namespace FlatEngine
 		CallLuaCollisionFunction(LuaEventFunction::OnEndCollision, caller, collidedWith);
 	}
 
+	void Body::SetOnSensorBeginTouch(void (*beginSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID))
+	{
+		m_beginSensorTouchCallback = beginSensorTouchCallback;
+		m_b_beginSensorTouchCallbackSet = true;
+	}
+
+	void Body::OnSensorBeginTouch(b2ShapeId myID, b2ShapeId touchedID)
+	{
+		// C++ scripts
+		if (m_b_beginSensorTouchCallbackSet)
+		{
+			m_beginSensorTouchCallback(myID, touchedID);
+		}
+		// Lua scripts
+		Body* caller = GetBodyFromShapeID(myID);
+		Body* touched = GetBodyFromShapeID(touchedID);
+		CallLuaSensorFunction(LuaEventFunction::OnBeginSensorTouch, caller, touched);
+	}
+
+	void Body::SetOnSensorEndTouch(void (*endSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID))
+	{
+		m_endSensorTouchCallback = endSensorTouchCallback;
+		m_b_endSensorTouchCallbackSet = true;
+	}
+
+	void Body::OnSensorEndTouch(b2ShapeId myID, b2ShapeId touchedID)
+	{
+		// C++ scripts
+		if (m_b_endSensorTouchCallbackSet)
+		{
+			m_endSensorTouchCallback(myID, touchedID);
+		}
+		// Lua scripts
+		Body* caller = GetBodyFromShapeID(myID);
+		Body* touched = GetBodyFromShapeID(touchedID);
+		CallLuaSensorFunction(LuaEventFunction::OnEndSensorTouch, caller, touched);
+	}
+
+
 	Physics::BodyProps Body::GetLiveProps()
 	{
-		Physics::BodyProps liveProps;		
-		liveProps.b_isEnabled = IsActive();
-		liveProps.shape = m_bodyProps.shape;
-		liveProps.type = m_bodyProps.type;
+		Physics::BodyProps liveProps;				
+		liveProps.type = m_bodyProps.type;		
 		liveProps.position = GetPosition();
 		liveProps.rotation = GetB2Rotation();
 		liveProps.b_lockedRotation = m_bodyProps.b_lockedRotation;
@@ -79,18 +198,6 @@ namespace FlatEngine
 		liveProps.gravityScale = m_bodyProps.gravityScale;
 		liveProps.linearDamping = m_bodyProps.linearDamping;
 		liveProps.angularDamping = m_bodyProps.angularDamping;
-		liveProps.restitution = m_bodyProps.restitution;
-		liveProps.density = m_bodyProps.density;
-		liveProps.friction = m_bodyProps.friction;
-		liveProps.dimensions = m_bodyProps.dimensions;
-		liveProps.radius = m_bodyProps.radius;
-		liveProps.capsuleLength = m_bodyProps.capsuleLength;
-		liveProps.b_horizontal = m_bodyProps.b_horizontal;
-		liveProps.cornerRadius = m_bodyProps.cornerRadius;
-		liveProps.points = m_bodyProps.points;	
-		liveProps.b_isLoop = m_bodyProps.b_isLoop;
-		liveProps.tangentSpeed = m_bodyProps.tangentSpeed;
-		liveProps.rollingResistance = m_bodyProps.rollingResistance;
 
 		return liveProps;
 	}
@@ -184,13 +291,6 @@ namespace FlatEngine
 		RecreateBody();
 	}
 
-	void Body::SetRestitution(float restitution)
-	{
-		m_bodyProps = GetLiveProps();
-		m_bodyProps.restitution = restitution;
-		RecreateBody();
-	}
-
 	void Body::SetBodyType(b2BodyType type)
 	{
 		m_bodyProps = GetLiveProps();
@@ -204,19 +304,6 @@ namespace FlatEngine
 		// b2Body_SetTargetTransform(m_bodyID, target, timeStep);
 	}
 
-	void Body::SetDensity(float density)
-	{
-		m_bodyProps = GetLiveProps();
-		m_bodyProps.density = density;
-		RecreateBody();
-	}
-
-	void Body::SetFriction(float friction)
-	{
-		m_bodyProps = GetLiveProps();
-		m_bodyProps.friction = friction;
-		RecreateBody();
-	}
 
 	void Body::CreateBody()
 	{
@@ -234,11 +321,14 @@ namespace FlatEngine
 		RecreateBody();
 	}
 
-	// Conversions from local to world space:
-	// b2Vec2 worldPoint = b2Body_GetWorldPoint(m_bodyID, localPoint);
-	// b2Vec2 worldVector = b2Body_GetWorldVector(m_bodyID, localVector);
-	// b2Vec2 localPoint = b2Body_GetLocalPoint(m_bodyID, worldPoint);
-	// b2Vec2 localVector = b2Body_GetLocalVector(m_bodyID, worldVector);
+	void Body::RecreateShapes()
+	{
+		for (Shape* shape : GetShapes())
+		{
+			shape->CreateShape();
+		}
+	}
+
 	void Body::ApplyForce(Vector2 force, Vector2 worldPoint)
 	{
 		bool b_wake = true;
@@ -300,25 +390,122 @@ namespace FlatEngine
 		return m_bodyID;
 	}
 
-	std::vector<b2ShapeId> Body::GetShapeIDs()
+	std::vector<Shape*> Body::GetShapes()
 	{
-		return m_shapeIDs;
+		std::vector<Shape*> shapes = std::vector<Shape*>();
+		
+		for (Box& shape : m_boxes)
+		{
+			shapes.push_back(&shape);
+		}
+		for (Circle& shape : m_circles)
+		{
+			shapes.push_back(&shape);
+		}
+		for (Capsule& shape : m_capsules)
+		{
+			shapes.push_back(&shape);
+		}
+		for (Polygon& shape : m_polygons)
+		{
+			shapes.push_back(&shape);
+		}
+		for (Chain& shape : m_chains)
+		{
+			shapes.push_back(&shape);
+		}
+
+		return shapes;
 	}
 
-	void Body::SetChainID(b2ChainId chainID)
+	std::vector<Box>& Body::GetBoxes()
 	{
-		m_chainID = chainID;
+		return m_boxes;
 	}
 
-	void Body::AddShapeID(b2ShapeId shapeID)
+	std::vector<Circle>& Body::GetCircles()
 	{
-		m_shapeIDs.push_back(shapeID);
+		return m_circles;
 	}
 
-	void Body::CleanupIDs()
+	std::vector<Capsule>& Body::GetCapsules()
 	{
+		return m_capsules;
+	}
+
+	std::vector<Polygon>& Body::GetPolygons()
+	{
+		return m_polygons;
+	}
+
+	std::vector<Chain>& Body::GetChains()
+	{
+		return m_chains;
+	}
+
+	void Body::Cleanup()
+	{
+		for (Shape* shape : GetShapes())
+		{
+			shape->DestroyShape();
+		}
+
+		F_Physics->DestroyBody(m_bodyID);
 		m_bodyID = b2_nullBodyId;
-		m_shapeIDs.clear();
-		m_chainID = b2_nullChainId;
+	}
+
+	void Body::AddBox(Shape::ShapeProps shapeProps)
+	{
+		Box box = Box(this);
+		if (shapeProps.shape != Shape::BS_None)
+		{
+			box.SetProps(shapeProps);
+		}
+		m_boxes.push_back(box);
+		m_boxes.back().CreateShape();
+	}
+
+	void Body::AddCircle(Shape::ShapeProps shapeProps)
+	{
+		Circle circle = Circle(this);
+		if (shapeProps.shape != Shape::BS_None)
+		{
+			circle.SetProps(shapeProps);
+		}
+		m_circles.push_back(circle);
+		m_circles.back().CreateShape();
+	}
+
+	void Body::AddCapsule(Shape::ShapeProps shapeProps)
+	{
+		Capsule capsule = Capsule(this);
+		if (shapeProps.shape != Shape::BS_None)
+		{
+			capsule.SetProps(shapeProps);
+		}
+		m_capsules.push_back(capsule);
+		m_capsules.back().CreateShape();
+	}
+
+	void Body::AddPolygon(Shape::ShapeProps shapeProps)
+	{
+		Polygon polygon = Polygon(this);
+		if (shapeProps.shape != Shape::BS_None)
+		{
+			polygon.SetProps(shapeProps);
+		}
+		m_polygons.push_back(polygon);
+		m_polygons.back().CreateShape();
+	}
+
+	void Body::AddChain(Shape::ShapeProps shapeProps)
+	{
+		Chain chain = Chain(this);
+		if (shapeProps.shape != Shape::BS_None)
+		{
+			chain.SetProps(shapeProps);
+		}
+		m_chains.push_back(chain);
+		m_chains.back().CreateShape();
 	}
 }

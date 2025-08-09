@@ -11,11 +11,12 @@
 #include "Animation.h"
 #include "Audio.h"
 #include "Text.h"
-#include "BoxBody.h"
-#include "CircleBody.h"
-#include "CapsuleBody.h"
-#include "PolygonBody.h"
-#include "ChainBody.h"
+#include "Body.h"
+#include "Box.h"
+#include "Circle.h"
+#include "Capsule.h"
+#include "Polygon.h"
+#include "Chain.h"
 #include "CharacterController.h"
 #include "FlatEngine.h"
 
@@ -36,11 +37,7 @@ namespace FlatEngine
 		m_Animations = std::map<long, Animation>();
 		m_Audios = std::map<long, Audio>();
 		m_Texts = std::map<long, Text>();		
-		m_BoxBodies = std::map<long, BoxBody>();
-		m_CircleBodies = std::map<long, CircleBody>();
-		m_CapsuleBodies = std::map<long, CapsuleBody>();
-		m_PolygonBodies = std::map<long, PolygonBody>();
-		m_ChainBodies = std::map<long, ChainBody>();
+		m_Bodies = std::map<long, Body>();
 		m_CharacterControllers = std::map<long, CharacterController>();		
 		//m_TileMaps = std::map<long, TileMap>();
 	}
@@ -64,31 +61,11 @@ namespace FlatEngine
 		m_CharacterControllers.clear();		
 		//m_TileMaps.clear();
 
-		for (std::map<long, BoxBody>::iterator iterator = m_BoxBodies.begin(); iterator != m_BoxBodies.end(); iterator++)
+		for (std::map<long, Body>::iterator iterator = m_Bodies.begin(); iterator != m_Bodies.end(); iterator++)
 		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
+			iterator->second.Cleanup();
 		}
-		m_BoxBodies.clear();
-		for (std::map<long, CircleBody>::iterator iterator = m_CircleBodies.begin(); iterator != m_CircleBodies.end(); iterator++)
-		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
-		}
-		m_CircleBodies.clear();
-		for (std::map<long, CapsuleBody>::iterator iterator = m_CapsuleBodies.begin(); iterator != m_CapsuleBodies.end(); iterator++)
-		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
-		}
-		m_CapsuleBodies.clear();
-		for (std::map<long, PolygonBody>::iterator iterator = m_PolygonBodies.begin(); iterator != m_PolygonBodies.end(); iterator++)
-		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
-		}
-		m_PolygonBodies.clear();
-		for (std::map<long, ChainBody>::iterator iterator = m_ChainBodies.begin(); iterator != m_ChainBodies.end(); iterator++)
-		{
-			F_Physics->DestroyBody(iterator->second.GetBodyID());
-		}
-		m_ChainBodies.clear();
+		m_Bodies.clear();
 	}
 
 	Transform* ECSManager::AddTransform(Transform transform, long ownerID)
@@ -145,34 +122,10 @@ namespace FlatEngine
 		return &m_Texts.at(ownerID);
 	}
 
-	BoxBody* ECSManager::AddBoxBody(BoxBody boxBody, long ownerID)
+	Body* ECSManager::AddBody(Body body, long ownerID)
 	{
-		m_BoxBodies.emplace(ownerID, boxBody);
-		return &m_BoxBodies.at(ownerID);
-	}
-
-	CircleBody* ECSManager::AddCircleBody(CircleBody circleBody, long ownerID)
-	{
-		m_CircleBodies.emplace(ownerID, circleBody);
-		return &m_CircleBodies.at(ownerID);
-	}
-
-	CapsuleBody* ECSManager::AddCapsuleBody(CapsuleBody capsuleBody, long ownerID)
-	{
-		m_CapsuleBodies.emplace(ownerID, capsuleBody);
-		return &m_CapsuleBodies.at(ownerID);
-	}
-
-	PolygonBody* ECSManager::AddPolygonBody(PolygonBody polygonBody, long ownerID)
-	{
-		m_PolygonBodies.emplace(ownerID, polygonBody);
-		return &m_PolygonBodies.at(ownerID);
-	}
-
-	ChainBody* ECSManager::AddChainBody(ChainBody chainBody, long ownerID)
-	{
-		m_ChainBodies.emplace(ownerID, chainBody);
-		return &m_ChainBodies.at(ownerID);
+		m_Bodies.emplace(ownerID, body);
+		return &m_Bodies.at(ownerID);
 	}
 
 	Animation* ECSManager::AddAnimation(Animation animation, long ownerID)
@@ -311,59 +264,11 @@ namespace FlatEngine
 		}
 	}
 
-	BoxBody* ECSManager::GetBoxBodyByOwner(long ownerID)
+	Body* ECSManager::GetBodyByOwner(long ownerID)
 	{
-		if (m_BoxBodies.count(ownerID))
+		if (m_Bodies.count(ownerID))
 		{
-			return &m_BoxBodies.at(ownerID);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
-	CircleBody* ECSManager::GetCircleBodyByOwner(long ownerID)
-	{
-		if (m_CircleBodies.count(ownerID))
-		{
-			return &m_CircleBodies.at(ownerID);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
-	CapsuleBody* ECSManager::GetCapsuleBodyByOwner(long ownerID)
-	{
-		if (m_CapsuleBodies.count(ownerID))
-		{
-			return &m_CapsuleBodies.at(ownerID);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
-	PolygonBody* ECSManager::GetPolygonBodyByOwner(long ownerID)
-	{
-		if (m_PolygonBodies.count(ownerID))
-		{
-			return &m_PolygonBodies.at(ownerID);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}
-
-	ChainBody* ECSManager::GetChainBodyByOwner(long ownerID)
-	{
-		if (m_ChainBodies.count(ownerID))
-		{
-			return &m_ChainBodies.at(ownerID);
+			return &m_Bodies.at(ownerID);
 		}
 		else
 		{
@@ -446,25 +351,9 @@ namespace FlatEngine
 		{
 			return RemoveAnimation(ownerID);
 		}
-		else if (component->GetTypeString() == "BoxBody")
+		else if (component->GetTypeString() == "Body")
 		{
-			return RemoveBoxBody(ownerID);
-		}
-		else if (component->GetTypeString() == "CircleBody")
-		{
-			return RemoveCircleBody(ownerID);
-		}
-		else if (component->GetTypeString() == "CapsuleBody")
-		{
-			return RemoveCapsuleBody(ownerID);
-		}
-		else if (component->GetTypeString() == "PolygonBody")
-		{
-			return RemovePolygonBody(ownerID);
-		}
-		else if (component->GetTypeString() == "ChainBody")
-		{
-			return RemoveChainBody(ownerID);
+			return RemoveBody(ownerID);
 		}
 		else if (component->GetTypeString() == "CharacterController")
 		{
@@ -576,62 +465,14 @@ namespace FlatEngine
 		return b_success;
 	}
 
-	bool ECSManager::RemoveBoxBody(long ownerID)
+	bool ECSManager::RemoveBody(long ownerID)
 	{
 		bool b_success = false;
-		if (m_BoxBodies.count(ownerID))
+		if (m_Bodies.count(ownerID))
 		{
-			F_Physics->DestroyBody(m_BoxBodies.at(ownerID).GetBodyID());
-			m_BoxBodies.erase(ownerID);
+			m_Bodies.at(ownerID).Cleanup();
+			m_Bodies.erase(ownerID);
 			b_success = true;							
-		}
-		return b_success;
-	}
-
-	bool ECSManager::RemoveCircleBody(long ownerID)
-	{
-		bool b_success = false;
-		if (m_CircleBodies.count(ownerID))
-		{
-			F_Physics->DestroyBody(m_CircleBodies.at(ownerID).GetBodyID());
-			m_CircleBodies.erase(ownerID);
-			b_success = true;
-		}
-		return b_success;
-	}
-
-	bool ECSManager::RemoveCapsuleBody(long ownerID)
-	{
-		bool b_success = false;
-		if (m_CapsuleBodies.count(ownerID))
-		{
-			F_Physics->DestroyBody(m_CapsuleBodies.at(ownerID).GetBodyID());
-			m_CapsuleBodies.erase(ownerID);
-			b_success = true;
-		}
-		return b_success;
-	}
-
-	bool ECSManager::RemovePolygonBody(long ownerID)
-	{
-		bool b_success = false;
-		if (m_PolygonBodies.count(ownerID))
-		{
-			F_Physics->DestroyBody(m_PolygonBodies.at(ownerID).GetBodyID());
-			m_PolygonBodies.erase(ownerID);
-			b_success = true;
-		}
-		return b_success;
-	}
-
-	bool ECSManager::RemoveChainBody(long ownerID)
-	{
-		bool b_success = false;
-		if (m_ChainBodies.count(ownerID))
-		{
-			F_Physics->DestroyBody(m_ChainBodies.at(ownerID).GetBodyID());
-			m_ChainBodies.erase(ownerID);
-			b_success = true;
 		}
 		return b_success;
 	}
@@ -720,25 +561,9 @@ namespace FlatEngine
 	{
 		return m_Texts;
 	}
-	std::map<long, BoxBody>& ECSManager::GetBoxBodies()
+	std::map<long, Body>& ECSManager::GetBodies()
 	{
-		return m_BoxBodies;
-	}
-	std::map<long, CircleBody>& ECSManager::GetCircleBodies()
-	{
-		return m_CircleBodies;
-	}
-	std::map<long, CapsuleBody>& ECSManager::GetCapsuleBodies()
-	{
-		return m_CapsuleBodies;
-	}
-	std::map<long, PolygonBody>& ECSManager::GetPolygonBodies()
-	{
-		return m_PolygonBodies;
-	}
-	std::map<long, ChainBody>& ECSManager::GetChainBodies()
-	{
-		return m_ChainBodies;
+		return m_Bodies;
 	}
 	std::map<long, CharacterController> &ECSManager::GetCharacterControllers()
 	{

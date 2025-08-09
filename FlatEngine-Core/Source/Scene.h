@@ -11,11 +11,12 @@
 #include "Audio.h"
 #include "Text.h"
 #include "CharacterController.h"
-#include "BoxBody.h"
-#include "CircleBody.h"
-#include "CapsuleBody.h"
-#include "PolygonBody.h"
-#include "ChainBody.h"
+#include "Body.h"
+#include "Box.h"
+#include "Circle.h"
+#include "Capsule.h"
+#include "Polygon.h"
+#include "Chain.h"
 
 #include <vector>
 #include <map>
@@ -66,11 +67,12 @@ namespace FlatEngine
 		Canvas* AddCanvas(Canvas canvas, long ownerID);
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);		
-		BoxBody* AddBoxBody(BoxBody boxBody, long ownerID);
-		CircleBody* AddCircleBody(CircleBody circleBody, long ownerID);
-		CapsuleBody* AddCapsuleBody(CapsuleBody capsuleBody, long ownerID);
-		PolygonBody* AddPolygonBody(PolygonBody polygonBody, long ownerID);
-		ChainBody* AddChainBody(ChainBody chainBody, long ownerID);
+		Body* AddBody(Body boxBody, long ownerID);
+		Box* AddBoxBody(Body boxBody, long ownerID);
+		Circle* AddCircleBody(Circle circle, long ownerID);
+		Capsule* AddCapsuleBody(Capsule capsule, long ownerID);
+		Polygon* AddPolygonBody(Polygon polygon, long ownerID);
+		Chain* AddChainBody(Chain chain, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
@@ -87,11 +89,7 @@ namespace FlatEngine
 		Text* GetTextByOwner(long ownerID);
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
-		BoxBody* GetBoxBodyByOwner(long ownerID);
-		CircleBody* GetCircleBodyByOwner(long ownerID);
-		CapsuleBody* GetCapsuleBodyByOwner(long ownerID);
-		PolygonBody* GetPolygonBodyByOwner(long ownerID);
-		ChainBody* GetChainBodyByOwner(long ownerID);
+		Body* GetBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		//TileMap* GetTileMapByOwner(long ownerID);
 
@@ -105,10 +103,7 @@ namespace FlatEngine
 		std::map<long, Animation>& GetAnimations();
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
-		std::map<long, BoxBody>& GetBoxBodies();
-		std::map<long, CircleBody>& GetCircleBodies();
-		std::map<long, CapsuleBody>& GetCapsuleBodies();
-		std::map<long, PolygonBody>& GetPolygonBodies();
+		std::map<long, Body>& GetBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		//std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);

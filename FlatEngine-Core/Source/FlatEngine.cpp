@@ -14,6 +14,8 @@
 #include "CPPScript.h"
 #include "RayCast.h"
 #include "Physics.h"
+#include "Body.h"
+#include "Shape.h"
 
 #include <fstream>
 #include <string>
@@ -26,6 +28,7 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include "SDL.h"
 
 
 
@@ -1027,6 +1030,10 @@ namespace FlatEngine
 		F_MappingContexts.clear();
 
 		// Get available input keycodes from MappingContext.h
+		for (std::pair<long, std::string> inputKeycode : F_MappedMouseCodes)
+		{
+			F_KeyBindingsAvailable.push_back(inputKeycode.second);
+		}
 		for (std::pair<long, std::string> inputKeycode : F_MappedKeyboardCodes)
 		{
 			F_KeyBindingsAvailable.push_back(inputKeycode.second);
@@ -1193,6 +1200,40 @@ namespace FlatEngine
 
 	void HandleContextEvents(MappingContext& context, SDL_Event event, std::vector<std::string> &firedKeys)
 	{
+		// Mouse Events
+		if (event.type == SDL_MOUSEMOTION)
+		{
+			if (F_MappedMouseCodes.count(Mouse_motion))
+			{								
+				std::string key = F_MappedMouseCodes.at(Mouse_motion);
+				if (context.FireEvent(key, event))
+				{
+					firedKeys.push_back(key);
+				}
+			}
+		}
+		if (event.type == SDL_MOUSEBUTTONDOWN)
+		{		
+			if (F_MappedMouseCodes.count(event.button.button))
+			{
+				std::string key = F_MappedMouseCodes.at(event.button.button);
+				if (context.FireEvent(key, event))
+				{
+					firedKeys.push_back(key);
+				}
+			}
+		}
+		if (event.type == SDL_MOUSEBUTTONUP)
+		{
+			if (F_MappedMouseCodes.count(event.key.keysym.sym))
+			{
+				std::string key = F_MappedMouseCodes.at(event.button.button);
+				if (context.FireEvent(key, event))
+				{
+					context.ClearInputActionEvent(key);
+				}
+			}
+		}
 		// Keyboard Keys Down
 		if (event.type == SDL_KEYDOWN)
 		{
@@ -1275,6 +1316,20 @@ namespace FlatEngine
 				context.SetRemapTimeoutTime(timeoutTime);
 			}
 		}
+	}
+
+	Vector2 GetMousePosWorld()
+	{
+		int x, y;
+		Uint32 buttons = SDL_GetMouseState(&x, &y);
+		return ConvertScreenToWorld(Vector2((float)x, (float)y));
+	}
+
+	Vector2 GetMousePosScreen()
+	{
+		int x, y;
+		Uint32 buttons = SDL_GetMouseState(&x, &y);
+		return Vector2((float)x, (float)y);
 	}
 
 	// TileSet / TileMap Management
@@ -2493,8 +2548,7 @@ namespace FlatEngine
 		fileObject.close();
 	}
 
-
-	//Vector4 objectA(top, right, bottom, left), Vector4 objectB(top, right, bottom, left)
+	//For Mouse button collisions - Vector4 objectA(top, right, bottom, left), Vector4 objectB(top, right, bottom, left)
 	bool AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB)
 	{
 		float A_TopEdge = ObjectA.z;
@@ -2948,7 +3002,7 @@ namespace FlatEngine
 		return value;
 	}
 
-	void RetrieveBasicBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName)
+	void RetrieveBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName)
 	{
 		bodyProps.type = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
 		bodyProps.b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
@@ -2957,9 +3011,45 @@ namespace FlatEngine
 		bodyProps.gravityScale = CheckJsonFloat(componentJson, "gravityScale", objectName);
 		bodyProps.linearDamping = CheckJsonFloat(componentJson, "linearDamping", objectName);
 		bodyProps.angularDamping = CheckJsonFloat(componentJson, "angularDamping", objectName);
-		bodyProps.restitution = CheckJsonFloat(componentJson, "restitution", objectName);
-		bodyProps.density = CheckJsonFloat(componentJson, "density", objectName);
-		bodyProps.friction = CheckJsonFloat(componentJson, "friction", objectName);
+	}
+
+	void RetrieveShapeProps(Shape::ShapeProps& shapeProps, json componentJson, std::string objectName)
+	{
+		shapeProps.shape = (Shape::ShapeType)(CheckJsonInt(componentJson, "shape", objectName));
+		shapeProps.b_enableContactEvents = CheckJsonBool(componentJson, "_enableContactEvents", objectName);
+		shapeProps.b_enableSensorEvents = CheckJsonBool(componentJson, "_enableSensorEvents", objectName);
+		shapeProps.b_isSensor = CheckJsonBool(componentJson, "_isSensor", objectName);
+		shapeProps.positionOffset = Vector2(CheckJsonFloat(componentJson, "xOffset", objectName), CheckJsonFloat(componentJson, "yOffset", objectName));
+		shapeProps.rotationOffset.c = CheckJsonFloat(componentJson, "rotationOffsetCos", objectName);
+		shapeProps.rotationOffset.s = CheckJsonFloat(componentJson, "rotationOffsetSin", objectName);
+		shapeProps.restitution = CheckJsonFloat(componentJson, "restitution", objectName);
+		shapeProps.density = CheckJsonFloat(componentJson, "density", objectName);
+		shapeProps.friction = CheckJsonFloat(componentJson, "friction", objectName);
+		shapeProps.dimensions = Vector2(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
+		shapeProps.cornerRadius = CheckJsonFloat(componentJson, "cornerRadius", objectName);
+		shapeProps.radius = CheckJsonFloat(componentJson, "radius", objectName);
+		shapeProps.capsuleLength = CheckJsonFloat(componentJson, "capsuleLength", objectName);
+		shapeProps.b_horizontal = CheckJsonBool(componentJson, "_horizontal", objectName);
+		shapeProps.b_isLoop = CheckJsonBool(componentJson, "_isLoop", objectName);
+		shapeProps.tangentSpeed = CheckJsonFloat(componentJson, "tangentSpeed", objectName);
+		shapeProps.rollingResistance = CheckJsonFloat(componentJson, "rollingResistance", objectName);
+		std::vector<Vector2> points = std::vector<Vector2>();
+
+		for (int i = 0; i < componentJson.at("points").size(); i++)
+		{
+			try
+			{
+				json pointsJson = componentJson.at("points").at(i);
+				Vector2 point = Vector2(CheckJsonFloat(pointsJson, "xPos", objectName), CheckJsonFloat(pointsJson, "yPos", objectName));
+				points.push_back(point);
+			}
+			catch (const json::out_of_range& e)
+			{
+				LogError(e.what());
+			}
+		}
+
+		shapeProps.points = points;
 	}
 
 	GameObject *CreateObjectFromJson(json objectJson, Scene* scene)
@@ -3254,74 +3344,49 @@ namespace FlatEngine
 								newCharacterController->SetAirControl(CheckJsonFloat(componentJson, "airControl", objectName));
 							}
 							else if (type == "Body")
-							{
-								//Body* newBody = loadedObject->AddBody(id, b_isActive, b_isCollapsed);
-								//L_RetrieveBasicBodyProps(newBody, componentJson, objectName);
+							{	
+								Vector2 position = Vector2(0, 0);
+								b2Rot rotation = b2MakeRot(0);
+
+								Physics::BodyProps bodyProps;
+								RetrieveBodyProps(bodyProps, componentJson, objectName);
+								Body* newBody = loadedObject->AddBody(bodyProps, id, b_isActive, b_isCollapsed);
 								
-								// Other Body props here
-							}
-							else if (type == "BoxBody")
-							{	
-								Physics::BodyProps bodyProps;
-								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
-								bodyProps.shape = Physics::BodyShape::BS_Box;
-								Vector2 dimensions = Vector2(CheckJsonFloat(componentJson, "width", objectName), CheckJsonFloat(componentJson, "height", objectName));
-								bodyProps.dimensions = dimensions;
-								loadedObject->AddBoxBody(bodyProps, id, b_isActive, b_isCollapsed);							
-							}
-							else if (type == "CircleBody")
-							{		
-								Physics::BodyProps bodyProps;															
-								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
-								bodyProps.shape = Physics::BodyShape::BS_Circle;
-								bodyProps.radius = CheckJsonFloat(componentJson, "radius", objectName);		
-								loadedObject->AddCircleBody(bodyProps, id, b_isActive, b_isCollapsed);
-							}
-							else if (type == "CapsuleBody")
-							{		
-								Physics::BodyProps bodyProps;																
-								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
-								bodyProps.shape = Physics::BodyShape::BS_Capsule;
-								bodyProps.radius = CheckJsonFloat(componentJson, "radius", objectName);
-								bodyProps.capsuleLength = CheckJsonFloat(componentJson, "capsuleLength", objectName);
-								bodyProps.b_horizontal = CheckJsonBool(componentJson, "_horizontal", objectName);
-								loadedObject->AddCapsuleBody(bodyProps, id, b_isActive, b_isCollapsed);
-							}
-							else if (type == "PolygonBody")
-							{	
-								Physics::BodyProps bodyProps;																
-								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
-								bodyProps.shape = Physics::BodyShape::BS_Polygon;
-								loadedObject->AddPolygonBody(bodyProps, id, b_isActive, b_isCollapsed);
-
-								// Other PolygonBody props here
-							}
-							else if (type == "ChainBody")
-							{
-								Physics::BodyProps bodyProps;
-								RetrieveBasicBodyProps(bodyProps, componentJson, objectName);
-								bodyProps.shape = Physics::BodyShape::BS_Chain;
-								std::vector<Vector2> points = std::vector<Vector2>();
-
-								for (int i = 0; i < componentJson.at("points").size(); i++)
+								if (JsonContains(componentJson, "shapes", objectName))
 								{
-									try
+									for (int i = 0; i < componentJson.at("shapes").size(); i++)
 									{
-										json pointsJson = componentJson.at("points").at(i);
-										Vector2 point = Vector2(CheckJsonFloat(pointsJson, "xPos", objectName), CheckJsonFloat(pointsJson, "yPos", objectName));										
-										points.push_back(point);
-									}
-									catch (const json::out_of_range& e)
-									{
-										LogError(e.what());
-									}
-								}
+										try
+										{
+											json shapeJson = componentJson.at("shapes").at(i);
+											Shape::ShapeProps shapeProps;
+											RetrieveShapeProps(shapeProps, shapeJson, objectName);
 
-								bodyProps.points = points;
-								bodyProps.b_isLoop = CheckJsonBool(componentJson, "_isLoop", objectName);
-								bodyProps.tangentSpeed = CheckJsonFloat(componentJson, "tangentSpeed", objectName);
-								bodyProps.rollingResistance = CheckJsonFloat(componentJson, "rollingResistance", objectName);
-								loadedObject->AddChainBody(bodyProps, id, b_isActive, b_isCollapsed);								
+											switch (shapeProps.shape)
+											{
+											case Shape::BS_Box:
+												newBody->AddBox(shapeProps);
+												break;
+											case Shape::BS_Circle:
+												newBody->AddCircle(shapeProps);
+												break;
+											case Shape::BS_Capsule:
+												newBody->AddCapsule(shapeProps);
+												break;
+											case Shape::BS_Polygon:
+												newBody->AddPolygon(shapeProps);
+												break;
+											case Shape::BS_Chain:
+												newBody->AddChain(shapeProps);
+												break;
+											}
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}											
 							}
 							else if (type == "TileMap")
 							{

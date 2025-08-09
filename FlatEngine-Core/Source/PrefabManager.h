@@ -5,7 +5,9 @@
 #include "Audio.h"    // SoundData
 #include "TileMap.h"  // Tile
 #include "Scene.h"
+#include "Shape.h"
 
+#include "box2d.h"
 #include <string>
 #include <memory>
 #include <map>
@@ -92,62 +94,35 @@ namespace FlatEngine
 		Vector2 offset = Vector2();
 		int renderOrder = 0;
 	};
-	struct BoxBodyPrefabData : public ComponentPrefabData {	
-		b2BodyType bodyType = b2_dynamicBody;
-		//bool b_isEnabled = true;
-		bool b_lockedRotation;
-		bool b_lockedXAxis;
-		bool b_lockedYAxis;
-		float gravityScale;
-		float linearDamping;
-		float angularDamping;
-		float restitution;
-		float density;
-		float friction;		
-		Vector2 dimensions;
-	};
-	struct CircleBodyPrefabData : public ComponentPrefabData {
-		b2BodyType bodyType = b2_dynamicBody;
-		//bool b_isEnabled = true;
-		bool b_lockedRotation = false;
-		bool b_lockedXAxis = false;
-		bool b_lockedYAxis = false;
-		float gravityScale = 1.0f;
-		float linearDamping = 0.0f;
-		float angularDamping = 0.0f;
+	struct ShapePrefabData : public ComponentPrefabData {
+		bool b_enableContactEvents = true;
+		bool b_enableSensorEvents = true;
+		bool b_isSensor = false;
+		Shape::ShapeType shape = Shape::ShapeType::BS_None;
+		Vector2 positionOffset = Vector2(0, 0);
+		b2Rot rotationOffset = b2MakeRot(0);
 		float restitution = 0.3f;
 		float density = 1.0f;
 		float friction = 0.3f;
+		Vector2 dimensions = Vector2(1.0f, 1.0f);
 		float radius = 1.0f;
+		float capsuleLength = 4.0f;
+		bool b_horizontal = false;
+		float cornerRadius = 0.0f;
+		std::vector<Vector2> points = std::vector<Vector2>();
+		bool b_isLoop = false;
+		float tangentSpeed = 0.0f;
+		float rollingResistance = 0.0f;
 	};
-	struct CapsuleBodyPrefabData : public ComponentPrefabData {
-		b2BodyType bodyType = b2_dynamicBody;
-		//bool b_isEnabled = true;
+	struct BodyPrefabData : public ComponentPrefabData {	
+		b2BodyType bodyType = b2_dynamicBody;		
 		bool b_lockedRotation = false;
 		bool b_lockedXAxis = false;
 		bool b_lockedYAxis = false;
 		float gravityScale = 1.0f;
 		float linearDamping = 0.0f;
-		float angularDamping = 0.0f;
-		float restitution = 0.3f;
-		float density = 1.0f;
-		float friction = 0.3f;
-		float radius = 1.0f;
-		float capsuleLength;
-		bool b_horizontal;
-	};
-	struct PolygonBodyPrefabData : public ComponentPrefabData {
-		b2BodyType bodyType = b2_dynamicBody;
-		//bool b_isEnabled = true;
-		bool b_lockedRotation = false;
-		bool b_lockedXAxis = false;
-		bool b_lockedYAxis = false;
-		float gravityScale = 1.0f;
-		float linearDamping = 0.0f;
-		float angularDamping = 0.0f;
-		float restitution = 0.3f;
-		float density = 1.0f;
-		float friction = 0.3f;
+		float angularDamping = 0.0f;	
+		std::vector<std::shared_ptr<ShapePrefabData>> shapes = std::vector<std::shared_ptr<ShapePrefabData>>();
 	};
 	struct CharacterControllerPrefabData : public ComponentPrefabData {
 		float maxAcceleration = 10.0f;

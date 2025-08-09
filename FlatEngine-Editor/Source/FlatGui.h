@@ -44,12 +44,13 @@ namespace FlatEngine
 	class Text;
 	class CharacterController;	
 	class Physics;
-	class Body;
-	class BoxBody;
-	class CircleBody;
-	class CapsuleBody;
-	class PolygonBody;
-	class ChainBody;
+	class Body;	
+	class Shape;
+	class Box;
+	class Circle;
+	class Capsule;
+	class Polygon;
+	class Chain;
 	class TileMap;
 	class TileSet;
 }
@@ -77,11 +78,11 @@ using Text = FL::Text;
 using CharacterController = FL::CharacterController;
 using Physics = FL::Physics;
 using Body = FL::Body;
-using BoxBody = FL::BoxBody;
-using CircleBody = FL::CircleBody;
-using CapsuleBody = FL::CapsuleBody;
-using PolygonBody = FL::PolygonBody;
-using ChainBody = FL::ChainBody;
+using Shape = FL::Shape;
+using Box = FL::Box;
+using Circle = FL::Circle;
+using Capsule = FL::Capsule;
+using Chain = FL::Chain;
 using TileMap = FL::TileMap;
 using TileSet = FL::TileSet;
 
@@ -188,8 +189,8 @@ namespace FlatGui
 	extern void RenderGridView(Vector2& centerPoint, Vector2& scrolling, bool b_weightedScroll, Vector2 canvasP0, Vector2 canvasP1, Vector2 canvasSize, Vector2& gridStep, Vector2 centerOffset, bool b_showAxis = true);
 	extern void RenderViewObjects(std::map<long, GameObject>& objects, Vector2 centerPoint, Vector2 canvasP0, Vector2 canvasSize, float gridStep);
 	extern void RenderViewObject(GameObject& self, Vector2 scrolling, Vector2 canvasP0, Vector2 canvasSize, float gridStep, ImDrawList* drawList, ImDrawListSplitter* drawSplitter);
-	extern bool RenderAddPointWidget(Body* body, Vector2 point, int startIndex);
-	extern bool RenderPointWidget(Body* body, Vector2& point, int index);
+	extern bool RenderAddPointWidget(Body* body, Shape* shape, Vector2 point, int startIndex);
+	extern bool RenderPointWidget(Body* body, Shape* shape, Vector2& point, int index, int minShapeVerticies);
 	extern void RenderTransformArrowWidget();
 	extern void RenderFileExplorer();
 	extern void RenderFilesTopBar();
@@ -222,12 +223,8 @@ namespace FlatGui
 	extern void RenderAudioComponent(Audio* audio);
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
-	extern void RenderBodyComponentAttributes(Body* body);
-	extern void RenderBoxBodyComponent(BoxBody* boxBody);
-	extern void RenderCircleBodyComponent(CircleBody* circleBody);
-	extern void RenderCapsuleBodyComponent(CapsuleBody* capsuleBody);
-	extern void RenderPolygonBodyComponent(PolygonBody* polygonBody);	
-	extern void RenderChainBodyComponent(ChainBody* chainBody);
+	extern void RenderBodyComponent(Body* body);	
+	extern void RenderShapeComponentProps(Shape* shape);
 	extern void RenderTileMapComponent(TileMap* tileMap);
 
 	// SceneView

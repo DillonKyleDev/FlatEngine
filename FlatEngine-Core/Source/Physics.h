@@ -1,6 +1,7 @@
 #pragma once
 #include "box2d.h"
 #include "Vector2.h"
+#include "Shape.h"
 
 #include <vector>
 
@@ -9,23 +10,13 @@ namespace FlatEngine
 {
 	class GameObject;
 	class Body;
+	class Shape;
 
 	class Physics
 	{
 	public:
 
-		enum BodyShape {
-			BS_None,
-			BS_Box,
-			BS_Circle,
-			BS_Capsule,
-			BS_Polygon,
-			BS_Chain
-		};
 		struct BodyProps {
-			bool b_isEnabled = true;
-			bool b_enableContactEvents = true;			
-			BodyShape shape = BS_None;
 			b2BodyType type = b2_dynamicBody;
 			Vector2 position = Vector2(0,0);	
 			b2Rot rotation = b2MakeRot(0);
@@ -35,18 +26,6 @@ namespace FlatEngine
 			float gravityScale = 1.0f;
 			float linearDamping = 0.0f;
 			float angularDamping = 0.0f;
-			float restitution = 0.3f;
-			float density = 1.0f;
-			float friction = 0.3f;
-			Vector2 dimensions = Vector2(1.0f, 1.0f);
-			float radius = 1.0f;			
-			float capsuleLength = 4.0f;
-			bool b_horizontal = false;
-			float cornerRadius = 0.0f;
-			std::vector<Vector2> points = std::vector<Vector2>();			
-			bool b_isLoop = false;
-			float tangentSpeed = 0.0f;
-			float rollingResistance = 0.0f;
 		};
 
 		Physics();
@@ -60,6 +39,10 @@ namespace FlatEngine
 		void CreateBody(Body* parentBody);
 		void DestroyBody(b2BodyId bodyID);
 		void RecreateBody(Body* parentBody);
+
+		void CreateShape(Body* parentBody, Shape* shape);
+		void DestroyShape(b2ShapeId shapeID);
+		void RecreateShape(Shape* shape);
 
 	private:
 		b2WorldId m_worldID{};

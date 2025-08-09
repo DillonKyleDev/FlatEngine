@@ -350,34 +350,10 @@ namespace FlatEngine
 		return m_ECSManager.AddText(text, ownerID);
 	}
 
-	BoxBody* Scene::AddBoxBody(BoxBody boxBody, long ownerID)
+	Body* Scene::AddBody(Body body, long ownerID)
 	{
-		KeepNextComponentIDUpToDate(boxBody.GetID());
-		return m_ECSManager.AddBoxBody(boxBody, ownerID);
-	}
-
-	CircleBody* Scene::AddCircleBody(CircleBody circleBody, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(circleBody.GetID());
-		return m_ECSManager.AddCircleBody(circleBody, ownerID);
-	}
-
-	CapsuleBody* Scene::AddCapsuleBody(CapsuleBody capsuleBody, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(capsuleBody.GetID());
-		return m_ECSManager.AddCapsuleBody(capsuleBody, ownerID);
-	}
-
-	PolygonBody* Scene::AddPolygonBody(PolygonBody polygonBody, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(polygonBody.GetID());
-		return m_ECSManager.AddPolygonBody(polygonBody, ownerID);
-	}
-
-	ChainBody* Scene::AddChainBody(ChainBody chainBody, long ownerID)
-	{
-		KeepNextComponentIDUpToDate(chainBody.GetID());
-		return m_ECSManager.AddChainBody(chainBody, ownerID);
+		KeepNextComponentIDUpToDate(body.GetID());
+		return m_ECSManager.AddBody(body, ownerID);
 	}
 
 	Animation* Scene::AddAnimation(Animation animation, long ownerID)
@@ -451,16 +427,6 @@ namespace FlatEngine
 		return m_ECSManager.GetTextByOwner(ownerID);
 	}
 
-	//std::vector<BoxCollider*> Scene::GetBoxCollidersByOwner(long ownerID)
-	//{
-	//	return m_ECSManager.GetBoxCollidersByOwner(ownerID);
-	//}
-
-	//std::vector<CircleCollider*> Scene::GetCircleCollidersByOwner(long ownerID)
-	//{
-	//	return m_ECSManager.GetCircleCollidersByOwner(ownerID);
-	//}
-
 	Animation* Scene::GetAnimationByOwner(long ownerID)
 	{
 		return m_ECSManager.GetAnimationByOwner(ownerID);
@@ -471,29 +437,9 @@ namespace FlatEngine
 		return m_ECSManager.GetButtonByOwner(ownerID);
 	}
 
-	BoxBody* Scene::GetBoxBodyByOwner(long ownerID)
+	Body* Scene::GetBodyByOwner(long ownerID)
 	{
-		return m_ECSManager.GetBoxBodyByOwner(ownerID);
-	}
-
-	CircleBody* Scene::GetCircleBodyByOwner(long ownerID)
-	{
-		return m_ECSManager.GetCircleBodyByOwner(ownerID);
-	}
-
-	CapsuleBody* Scene::GetCapsuleBodyByOwner(long ownerID)
-	{
-		return m_ECSManager.GetCapsuleBodyByOwner(ownerID);
-	}
-
-	PolygonBody* Scene::GetPolygonBodyByOwner(long ownerID)
-	{
-		return m_ECSManager.GetPolygonBodyByOwner(ownerID);
-	}
-
-	ChainBody* Scene::GetChainBodyByOwner(long ownerID)
-	{
-		return m_ECSManager.GetChainBodyByOwner(ownerID);
+		return m_ECSManager.GetBodyByOwner(ownerID);
 	}
 
 	CharacterController* Scene::GetCharacterControllerByOwner(long ownerID)
@@ -546,21 +492,9 @@ namespace FlatEngine
 	{
 		return m_ECSManager.GetTexts();
 	}
-	std::map<long, BoxBody>& Scene::GetBoxBodies()
+	std::map<long, Body>& Scene::GetBodies()
 	{
-		return m_ECSManager.GetBoxBodies();
-	}
-	std::map<long, CircleBody>& Scene::GetCircleBodies()
-	{
-		return m_ECSManager.GetCircleBodies();
-	}
-	std::map<long, CapsuleBody>& Scene::GetCapsuleBodies()
-	{
-		return m_ECSManager.GetCapsuleBodies();
-	}
-	std::map<long, PolygonBody>& Scene::GetPolygonBodies()
-	{
-		return m_ECSManager.GetPolygonBodies();
+		return m_ECSManager.GetBodies();
 	}
 	std::map<long, CharacterController>& Scene::GetCharacterControllers()
 	{

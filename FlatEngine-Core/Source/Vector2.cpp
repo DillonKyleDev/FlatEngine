@@ -102,6 +102,11 @@ namespace FlatEngine
 		return rotationMatrix.LMultiply(vec);
 	}
 
+	b2Vec2 Vector2::GetB2Vev2(Vector2 vec)
+	{
+		return b2Vec2(vec.x, vec.y);
+	}
+
 	float Vector2::GetX()
 	{
 		return x;

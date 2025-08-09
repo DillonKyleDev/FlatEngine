@@ -15,7 +15,6 @@
 #include "CharacterController.h"
 #include "Component.h"
 #include "TileMap.h"
-#include "BoxBody.h"	
 
 #include "imgui.h"
 
@@ -123,11 +122,20 @@ namespace FlatGui
 
 					if (focusedObject->GetBody() == nullptr)
 					{
+						if (!focusedObject->HasComponent("Body"))
+						{
+							if (ImGui::MenuItem("Body"))
+							{
+								focusedObject->AddBody();
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
 						if (!focusedObject->HasComponent("BoxBody"))
 						{
 							if (ImGui::MenuItem("BoxBody"))
 							{
-								focusedObject->AddBoxBody();
+								//focusedObject->AddBoxBody();
 								ImGui::CloseCurrentPopup();
 							}
 						}
@@ -414,60 +422,16 @@ namespace FlatGui
 							EndComponent(characterController);
 						}
 						
-						BoxBody* boxBody = focusedObject->GetBoxBody();
-						if (boxBody != nullptr)
+						Body* body = focusedObject->GetBody();
+						if (body != nullptr)
 						{
-							BeginComponent(boxBody, queuedForDelete);
-							if (!boxBody->IsCollapsed())
+							BeginComponent(body, queuedForDelete);
+							if (!body->IsCollapsed())
 							{
-								RenderBoxBodyComponent(boxBody);
+								RenderBodyComponent(body);
 							}
-							EndComponent(boxBody);
+							EndComponent(body);
 						}	
-
-						CircleBody* circleBody = focusedObject->GetCircleBody();
-						if (circleBody != nullptr)
-						{
-							BeginComponent(circleBody, queuedForDelete);
-							if (!circleBody->IsCollapsed())
-							{
-								RenderCircleBodyComponent(circleBody);
-							}
-							EndComponent(circleBody);
-						}
-
-						CapsuleBody* capsuleBody = focusedObject->GetCapsuleBody();
-						if (capsuleBody != nullptr)
-						{
-							BeginComponent(capsuleBody, queuedForDelete);
-							if (!capsuleBody->IsCollapsed())
-							{
-								RenderCapsuleBodyComponent(capsuleBody);
-							}
-							EndComponent(capsuleBody);
-						}
-
-						PolygonBody* polygonBody = focusedObject->GetPolygonBody();
-						if (polygonBody != nullptr)
-						{
-							BeginComponent(polygonBody, queuedForDelete);
-							if (!polygonBody->IsCollapsed())
-							{
-								RenderPolygonBodyComponent(polygonBody);
-							}
-							EndComponent(polygonBody);
-						}
-
-						ChainBody* chainBody = focusedObject->GetChainBody();
-						if (chainBody != nullptr)
-						{
-							BeginComponent(chainBody, queuedForDelete);
-							if (!chainBody->IsCollapsed())
-							{
-								RenderChainBodyComponent(chainBody);
-							}
-							EndComponent(chainBody);
-						}
 						
 						//TileMap* tileMap = focusedObject->GetTileMap();
 						//if (tileMap != nullptr)

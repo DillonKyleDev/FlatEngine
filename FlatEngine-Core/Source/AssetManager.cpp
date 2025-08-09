@@ -79,7 +79,6 @@ namespace FlatEngine
 		if (!b_rootFound)
 		{
 			m_rootPath = "../";
-			LogError("Timeout: could not find directory FlatEngine2D.");
 		}
 	}
 

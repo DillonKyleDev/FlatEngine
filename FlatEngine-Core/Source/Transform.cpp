@@ -2,10 +2,7 @@
 #include "FlatEngine.h"
 #include "GameObject.h"
 #include "Button.h"
-#include "BoxBody.h"
-#include "CircleBody.h"
-#include "CapsuleBody.h"
-#include "PolygonBody.h"
+#include "Body.h"
 
 
 namespace FlatEngine
@@ -46,6 +43,20 @@ namespace FlatEngine
 		std::string data = jsonData.dump();
 		// Return dumped json object with required data for saving
 		return data;
+	}
+
+	float Transform::ClampRotation(float rotation, float min, float max)
+	{
+		if (rotation < min)
+		{
+			rotation = max - 0.01f;
+		}
+		else if (rotation > max)
+		{
+			rotation = min + 0.01f;
+		}
+
+		return rotation;
 	}
 
 	void Transform::SetInitialPosition(Vector2 initialPos)
@@ -168,18 +179,7 @@ namespace FlatEngine
 
 	void Transform::SetRotation(float newRotation)
 	{
-		if (newRotation < -179.99f)
-		{
-			m_rotation = 179.99f;
-		}
-		else if (newRotation > 179.99f)
-		{
-			m_rotation = -179.99f;
-		}
-		else
-		{
-			m_rotation = newRotation;
-		}
+		m_rotation = ClampRotation(newRotation);
 		
 		if (GetParent()->GetBody() != nullptr)
 		{

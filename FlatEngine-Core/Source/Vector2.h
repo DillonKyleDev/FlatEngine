@@ -19,6 +19,7 @@ namespace FlatEngine
 		static float GetAngleBetween(Vector2 vec1, Vector2 vec2);
 		static Vector2 Normalize(Vector2 vec);
 		static Vector2 Rotate(Vector2 vec, float degrees);
+		static b2Vec2 GetB2Vev2(Vector2 vec);
 
 		float GetX();
 		float GetY();

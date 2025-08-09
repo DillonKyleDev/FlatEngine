@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "FlatEngine.h"
 #include "Physics.h"
+#include "Shape.h"
 #include "Vector2.h"
 
 #include <vector>
@@ -20,21 +21,39 @@ namespace FlatEngine
 	public:
 		Body(long myID = -1, long parentID = -1);
 		~Body();
+		std::string GetData();
+		void SetActive(bool b_isActive);
+
+		Vector2 ConvertWorldToLocalPoint(Vector2 worldPoint);
+		Vector2 ConvertLocalToWorldPoint(Vector2 localPoint);
+		Vector2 ConvertWorldToLocalVector(Vector2 worldVector);
+		Vector2 ConvertLocalToWorldVector(Vector2 localVector);
 		
+		static Body* GetBodyFromShapeID(b2ShapeId shapeID);
+
+		// Contacts
 		void SetOnBeginContact(void (*beginContactCallback)(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID));
 		void OnBeginContact(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID);
-		static Body* GetBodyFromShapeID(b2ShapeId shapeID);
 		void SetOnEndContact(void (*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID));
 		void OnEndContact(b2ShapeId myID, b2ShapeId collidedWithID);
-
+		// Sensors
+		void SetOnSensorBeginTouch(void (*beginSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID));
+		void OnSensorBeginTouch(b2ShapeId myID, b2ShapeId touchedID);
+		void SetOnSensorEndTouch(void (*endSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID));
+		void OnSensorEndTouch(b2ShapeId myID, b2ShapeId touchedID);
+	
 		void SetBodyProps(Physics::BodyProps bodyProps);
 		Physics::BodyProps& GetBodyProps();
 		Physics::BodyProps GetLiveProps();
 		void SetBodyID(b2BodyId bodyID);
 		b2BodyId GetBodyID();
-		std::vector<b2ShapeId> GetShapeIDs();
-		void SetChainID(b2ChainId chainID);
-		void AddShapeID(b2ShapeId shapeID);		
+		std::vector<Shape*> GetShapes();
+		void AddShape(Shape* shape);	
+		std::vector<Box>& GetBoxes();
+		std::vector<Circle>& GetCircles();
+		std::vector<Capsule>& GetCapsules();
+		std::vector<Polygon>& GetPolygons();
+		std::vector<Chain>& GetChains();
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);
 		Vector2 GetPosition();
@@ -48,12 +67,10 @@ namespace FlatEngine
 		void SetGravityScale(float gravityScale);
 		void SetLinearDamping(float linearDamping);	
 		void SetAngularDamping(float angularDamping);
-		void SetRestitution(float restitution);
-		void SetDensity(float mass);
-		void SetFriction(float friction);
 		void CreateBody();
 		void RecreateBody();
 		void RecreateLiveBody();
+		void RecreateShapes();
 		void ApplyForce(Vector2 force, Vector2 worldPoint);
 		void ApplyLinearInpulse(Vector2 impulse, Vector2 worldPoint);
 		void ApplyForceToCenter(Vector2 force);
@@ -63,20 +80,31 @@ namespace FlatEngine
 		Vector2 GetLinearVelocity();
 		float GetAngularVelocity();
 
-		// for PolygonBody and ChainBody
-		virtual void SetPoints(std::vector<Vector2> points) {};
-		virtual void UpdatePoints() {};
+		void AddBox(Shape::ShapeProps shapeProps = Shape::ShapeProps());
+		void AddCircle(Shape::ShapeProps shapeProps = Shape::ShapeProps());
+		void AddCapsule(Shape::ShapeProps shapeProps = Shape::ShapeProps());
+		void AddPolygon(Shape::ShapeProps shapeProps = Shape::ShapeProps());
+		void AddChain(Shape::ShapeProps shapeProps = Shape::ShapeProps());
 
-		void CleanupIDs();
+		void Cleanup();
 
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
-		std::vector<b2ShapeId> m_shapeIDs;
-		b2ChainId m_chainID = b2_nullChainId;
-		Physics::BodyProps m_bodyProps;		
+		std::vector<Box> m_boxes;
+		std::vector<Circle> m_circles;
+		std::vector<Capsule> m_capsules;
+		std::vector<Polygon> m_polygons;
+		std::vector<Chain> m_chains;
+		Physics::BodyProps m_bodyProps;			
+		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);
 		bool m_b_beginContactCallbackSet;
 		void (*m_endContactCallback)(b2ShapeId, b2ShapeId);
 		bool m_b_endContactCallbackSet;
+		// Sensors
+		void (*m_beginSensorTouchCallback)(b2ShapeId, b2ShapeId);
+		bool m_b_beginSensorTouchCallbackSet;
+		void (*m_endSensorTouchCallback)(b2ShapeId, b2ShapeId);
+		bool m_b_endSensorTouchCallbackSet;
 	};
 }

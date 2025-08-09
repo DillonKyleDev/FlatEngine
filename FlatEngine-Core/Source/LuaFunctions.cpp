@@ -15,10 +15,6 @@
 #include "MappingContext.h"
 #include "Project.h"
 #include "Body.h"
-#include "BoxBody.h"
-#include "CircleBody.h"
-#include "CapsuleBody.h"
-#include "PolygonBody.h"
 
 #include "box2d.h"
 #include <fstream>
@@ -366,7 +362,7 @@ namespace FlatEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
 			PushWindowStyles();
-			ImGui::Begin("Scene View", 0, 16 | 8);
+			ImGui::Begin("Game View", 0, 16 | 8);
 			PopWindowStyles();
 			// {
 
@@ -400,6 +396,14 @@ namespace FlatEngine
 		F_Lua["Remap"] = [](std::string contextName, std::string inputAction, int timeoutTime)
 		{
 			RemapInputAction(contextName, inputAction, Uint32(timeoutTime));
+		};
+		F_Lua["GetMousePosWorld"] = [](std::string color)
+		{
+			return GetMousePosWorld();
+		};
+		F_Lua["GetMousePosScreen"] = [](std::string color)
+		{
+			return GetMousePosScreen();
 		};
 	}
 
@@ -455,10 +459,7 @@ namespace FlatEngine
 			"GetButton", &GameObject::GetButton,
 			"GetCanvas", &GameObject::GetCanvas,
 			"GetText", &GameObject::GetText,
-			"GetBoxBody", &GameObject::GetBoxBody,
-			"GetCircleBody", &GameObject::GetCircleBody,
-			"GetCapsuleBody", &GameObject::GetCapsuleBody,
-			"GetPolygonBody", &GameObject::GetPolygonBody,
+			"GetBody", &GameObject::GetBody,
 			"GetCharacterController", &GameObject::GetCharacterController,		
 			//"GetTileMap", &GameObject::GetTileMap,
 			
@@ -644,9 +645,7 @@ namespace FlatEngine
 			"GetParentID", &Body::GetParentID,
 			"GetID", &Body::GetID,
 			"GetBodyProps", &Body::GetBodyProps,
-			"SetDensity", &Body::SetDensity,
 			"SetGravity", &Body::SetGravityScale,			
-			"SetFriction", &Body::SetFriction,
 			"SetLinearDamping", &Body::SetLinearDamping,
 			"SetAngularDamping", &Body::SetAngularDamping,
 			"AddForce", &Body::ApplyForce,
@@ -669,6 +668,8 @@ namespace FlatEngine
 		);
 
 		F_Lua.new_usertype<InputMapping>("InputMapping",
+			"GetMouseMotionWorld", &InputMapping::GetMouseMotionWorld,
+			"GetMouseMotionScreen", &InputMapping::GetMouseMotionScreen,
 			"KeyCode", &InputMapping::GetKeyCode,
 			"InputActionName", &InputMapping::GetActionName
 		);
@@ -677,7 +678,8 @@ namespace FlatEngine
 			"Fired", &MappingContext::Fired,
 			"ActionPressed", &MappingContext::ActionPressed,
 			"GetName", &MappingContext::GetName,
-			"GetInputMappings", &MappingContext::GetInputMappingsLua
+			"GetInputMappings", &MappingContext::GetInputMappingsLua,
+			"GetInputMapping", &MappingContext::GetInputMapping
 		);
 	}
 
@@ -902,6 +904,14 @@ namespace FlatEngine
 			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
 			"end\n\n" +
 
+			"function OnBeginSensorTouch(touched)\n" +
+			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
+			"end\n\n" +
+
+			"function OnEndSensorTouch(touched)\n" +
+			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
+			"end\n\n" +
+
 			"function OnButtonMouseOver()\n" +
 			"end\n\n" +
 
@@ -1102,6 +1112,46 @@ namespace FlatEngine
 						if (protectedFunc)
 						{
 							auto result = protectedFunc(collidedWith, manifold);
+							if (!result.valid())
+							{
+								sol::error err = result;
+								LogError("Something went wrong in Lua function: " + functionName + "()");
+								LogError(err.what());
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Sensor Events Passed to Lua
+	void CallLuaSensorFunction(LuaEventFunction eventFunc, Body* caller, Body* touched)
+	{
+		GameObject* callingObject = caller->GetParent();
+
+		if (callingObject->HasComponent("Script"))
+		{
+			for (Script* script : callingObject->GetScripts())
+			{
+				if (script->IsActive())
+				{
+					std::string attachedScript = script->GetAttachedScript();
+
+					if (F_LuaScriptsMap.count(attachedScript) > 0)
+					{
+						std::string functionName = F_LuaEventNames[eventFunc];
+						std::string message = "";
+						if (!ReadyScriptFile(attachedScript, message))
+						{
+							LogError("Could not invoke script file " + attachedScript + " on " + script->GetParent()->GetName() + "\n" + message);
+						}
+						LoadLuaGameObject(callingObject, attachedScript);
+
+						sol::protected_function protectedFunc = F_Lua[functionName];
+						if (protectedFunc)
+						{
+							auto result = protectedFunc(touched);
 							if (!result.valid())
 							{
 								sol::error err = result;

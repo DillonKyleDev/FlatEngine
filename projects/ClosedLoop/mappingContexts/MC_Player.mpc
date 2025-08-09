@@ -8,6 +8,7 @@
             "Keyboard_s": "IA_MoveBackward",
             "Keyboard_space": "IA_Shoot",
             "Keyboard_w": "IA_MoveForward",
+            "Mouse_leftClick": "IA_BeginHit",
             "name": "MC_Player"
         }
     ]

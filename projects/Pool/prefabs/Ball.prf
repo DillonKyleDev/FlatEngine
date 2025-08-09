@@ -6,69 +6,10 @@
             "_isPersistant": false,
             "_isPrefab": false,
             "children": [],
-            "components": [
+            "collidesTags": [
                 {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 59,
-                    "rotation": 0.00015192976570688188,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -2.5240249633789063,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": 0.03437614440917969,
-                    "yScale": 1.0
+                    "Ball": true
                 },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 60,
-                    "path": "..\\projects\\Pool\\images\\ball.png",
-                    "pivotPoint": "PivotCenter",
-                    "renderOrder": 27,
-                    "tintColorW": 1.0,
-                    "tintColorX": 0.875,
-                    "tintColorY": 0.875,
-                    "tintColorZ": 0.875,
-                    "type": "Sprite",
-                    "xOffset": 250.0,
-                    "xScale": 0.012500000186264515,
-                    "yOffset": 250.0,
-                    "yScale": 0.013000000268220901
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isContinuous": true,
-                    "_isSolid": true,
-                    "_showActiveRadius": false,
-                    "activeLayer": 0,
-                    "activeOffsetX": 0.0,
-                    "activeOffsetY": 0.0,
-                    "activeRadius": 0.4000000059604645,
-                    "id": 61,
-                    "type": "CircleCollider"
-                },
-                {
-                    "_allowTorques": true,
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_isStatic": false,
-                    "angularDrag": 0.9800000190734863,
-                    "equilibriumForce": 2.0,
-                    "fallingGravity": 0.0,
-                    "friction": 0.0010000000474974513,
-                    "gravity": 0.0,
-                    "id": 62,
-                    "mass": 10.0,
-                    "terminalVelocity": 1.0,
-                    "type": "RigidBody",
-                    "windResistance": 1.0
-                }
-            ],
-            "id": 14,
-            "ignoreTags": [
                 {
                     "Collectable": false
                 },
@@ -112,12 +53,65 @@
                     "Terrain": false
                 }
             ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 228,
+                    "rotation": 0.00016056204913184047,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -2.6878089904785156,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 4.28156042098999,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 229,
+                    "path": "..\\projects\\Pool\\images\\ball.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 269.0,
+                    "xScale": 0.014999999664723873,
+                    "yOffset": 270.79998779296875,
+                    "yScale": 0.014999999664723873
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.0,
+                    "bodyType": 2,
+                    "density": 1.0,
+                    "friction": 0.30000001192092896,
+                    "gravityScale": 0.0,
+                    "id": 230,
+                    "linearDamping": 0.0,
+                    "radius": 0.5,
+                    "restitution": 0.30000001192092896,
+                    "type": "CircleBody"
+                }
+            ],
+            "id": 50,
             "name": "Ball",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -2.5240249633789063,
-            "spawnLocationY": 0.03437614440917969,
+            "spawnLocationX": -2.6878089904785156,
+            "spawnLocationY": 4.28156042098999,
             "tags": [
+                {
+                    "Ball": true
+                },
                 {
                     "Collectable": false
                 },

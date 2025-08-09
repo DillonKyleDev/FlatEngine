@@ -20,7 +20,7 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "",
-            "currentFileDirectory": "..\\projects\\Pool\\scenes",
+            "currentFileDirectory": "..\\projects\\Pool\\mappingContexts",
             "effectsVolume": 10,
             "focusedGameObjectID": 12,
             "loadedAnimationPath": "",
@@ -31,10 +31,10 @@
             "resolutionHeight": 1080.0,
             "resolutionWidth": 1920.0,
             "sceneToLoadAtRuntime": "",
-            "sceneViewGridStepX": 25.0,
-            "sceneViewGridStepY": 25.0,
-            "sceneViewScrollingX": 416.93115234375,
-            "sceneViewScrollingY": 291.3203125
+            "sceneViewGridStepX": 22.0,
+            "sceneViewGridStepY": 22.0,
+            "sceneViewScrollingX": 446.93115234375,
+            "sceneViewScrollingY": 205.3203125
         }
     ]
 }

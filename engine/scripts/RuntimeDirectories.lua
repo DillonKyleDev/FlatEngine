@@ -3,7 +3,7 @@
 ----------------------------------------
 
 F_Paths = {
-	colors = "..\\engine\\scripts\\Colors.lua",
+	colors = "..\\engine\\scripts\\ColorsLight.lua",
 	textures = "..\\engine\\scripts\\Textures.lua",
 	cinzelBlack = "..\\engine\\fonts\\Cinzel\\Cinzel-Black.ttf",
 }

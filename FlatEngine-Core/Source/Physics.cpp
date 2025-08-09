@@ -3,6 +3,7 @@
 #include "TagList.h"
 #include "FlatEngine.h"
 #include "Body.h"
+#include "Shape.h"
 
 #include <memory>
 #include <string>
@@ -46,25 +47,44 @@ namespace FlatEngine
 	void Physics::HandleCollisions()
 	{
 		b2ContactEvents contactEvents = b2World_GetContactEvents(m_worldID);
+		b2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldID);
 
+		// Contacts
 		for (int i = 0; i < contactEvents.beginCount; ++i)
 		{
 			b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
 			b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;			
-			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdA))->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
-			static_cast<Body*>(b2Shape_GetUserData(beginEvent->shapeIdB))->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);		
+			Body::GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
+			Body::GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
 		}
-
 		for (int i = 0; i < contactEvents.endCount; ++i)
 		{
 			b2ContactEndTouchEvent* endEvent = contactEvents.endEvents + i;
 			if (b2Shape_IsValid(endEvent->shapeIdA) && b2Shape_IsValid(endEvent->shapeIdB))
 			{
-				static_cast<Body*>(b2Shape_GetUserData(endEvent->shapeIdA))->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
-				static_cast<Body*>(b2Shape_GetUserData(endEvent->shapeIdB))->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
+				Body::GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
+				Body::GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
 			}
 		}
 
+		// Sensors
+		for (int i = 0; i < sensorEvents.beginCount; ++i)
+		{
+			b2SensorBeginTouchEvent* beginTouch = sensorEvents.beginEvents + i;
+			Body::GetBodyFromShapeID(beginTouch->sensorShapeId)->OnSensorBeginTouch(beginTouch->sensorShapeId, beginTouch->visitorShapeId);
+			Body::GetBodyFromShapeID(beginTouch->visitorShapeId)->OnSensorBeginTouch(beginTouch->visitorShapeId, beginTouch->sensorShapeId);
+		}
+		for (int i = 0; i < sensorEvents.endCount; ++i)
+		{
+			b2SensorEndTouchEvent* endTouch = sensorEvents.endEvents + i;
+			if (b2Shape_IsValid(endTouch->visitorShapeId))
+			{
+				Body::GetBodyFromShapeID(endTouch->sensorShapeId)->OnSensorEndTouch(endTouch->sensorShapeId, endTouch->visitorShapeId);
+				Body::GetBodyFromShapeID(endTouch->visitorShapeId)->OnSensorEndTouch(endTouch->visitorShapeId, endTouch->sensorShapeId);
+			}
+		}
+
+		// Hit events
 		for (int i = 0; i < contactEvents.hitCount; ++i)
 		{
 			float hitSpeedForSound = 10.0f;
@@ -83,6 +103,8 @@ namespace FlatEngine
 		b2BodyDef bodyDef = b2DefaultBodyDef();
 		b2Vec2 position = b2Vec2(bodyProps.position.x, bodyProps.position.y);
 		bodyDef.isEnabled = parentBody->IsActive();
+		bodyDef.isAwake = true;
+		bodyDef.enableSleep = true;
 		bodyDef.userData = parentBody;
 		bodyDef.position = position;
 		bodyDef.rotation = bodyProps.rotation;
@@ -97,19 +119,26 @@ namespace FlatEngine
 		bodyDef.type = bodyProps.type;		
 		b2BodyId bodyID = b2CreateBody(m_worldID, &bodyDef);
 		parentBody->SetBodyID(bodyID);
+	}
 
+	void Physics::CreateShape(Body* parentBody, Shape* shape)
+	{
+		b2BodyId bodyID = parentBody->GetBodyID();			
+		Shape::ShapeProps shapeProps = shape->GetShapeProps();
 		b2ShapeDef shapeDef = b2DefaultShapeDef();
-		shapeDef.userData = parentBody;
-		shapeDef.enableContactEvents = bodyProps.b_enableContactEvents;
-		shapeDef.density = bodyProps.density;
-		shapeDef.material.friction = bodyProps.friction;
-		shapeDef.material.restitution = bodyProps.restitution;
+		shapeDef.userData = shape;
+		shapeDef.enableContactEvents = shapeProps.b_enableContactEvents;
+		shapeDef.enableSensorEvents = shapeProps.b_enableSensorEvents;
+		shapeDef.isSensor = shapeProps.b_isSensor;
+		shapeDef.density = shapeProps.density;
+		shapeDef.material.friction = shapeProps.friction;
+		shapeDef.material.restitution = shapeProps.restitution;		
 
 		b2Filter filter = b2DefaultFilter();
 		filter.categoryBits = 0;
 		filter.maskBits = 0;
 
-		TagList tagList = static_cast<Body*>(bodyDef.userData)->GetParent()->GetTagList();
+		TagList tagList = parentBody->GetParent()->GetTagList();
 		// Category tags
 		std::map<std::string, bool> hasTags = tagList.GetTagsMap();
 		for (std::map<std::string, bool>::iterator iterator = hasTags.begin(); iterator != hasTags.end(); iterator++)
@@ -156,44 +185,39 @@ namespace FlatEngine
 		shapeDef.filter = filter;
 
 		b2ShapeId shapeID = b2ShapeId();
+		b2Vec2 center = b2Vec2(shapeProps.positionOffset.x, shapeProps.positionOffset.y);
+		b2Rot rotationOffset = shapeProps.rotationOffset;
+		float cornerRadius = shapeProps.cornerRadius;
 
-		switch (bodyProps.shape)
+		switch (shapeProps.shape)
 		{
-		case Physics::BodyShape::BS_Box:
-		{
-			float cornerRadius = bodyProps.cornerRadius;
+		case Shape::ShapeType::BS_Box:
+		{			
 			b2Polygon box;
-			
-			if (cornerRadius == 0.0f)
-			{
-				box = b2MakeBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2);
-			}
-			else
-			{
-				box = b2MakeRoundedBox(bodyProps.dimensions.x / 2, bodyProps.dimensions.y / 2, cornerRadius);
-			}
 
-			shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &box);			
+			box = b2MakeOffsetRoundedBox(shapeProps.dimensions.x / 2, shapeProps.dimensions.y / 2, center, rotationOffset, cornerRadius);
+			shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &box);
+
 			break;
 		}
-		case Physics::BodyShape::BS_Circle:
+		case Shape::ShapeType::BS_Circle:
 		{
 			b2Circle circle;
-			circle.center = b2Vec2(0,0);
-			circle.radius = bodyProps.radius;
+			circle.center = center;
+			circle.radius = shapeProps.radius;
 			shapeID = b2CreateCircleShape(bodyID, &shapeDef, &circle);
 			break;
 		}
-		case Physics::BodyShape::BS_Capsule:
+		case Shape::ShapeType::BS_Capsule:
 		{
-			b2Capsule capsule;		
-			float center1Value = ((bodyProps.capsuleLength / 2) - bodyProps.radius) * -1;
-			float center2Value = (bodyProps.capsuleLength / 2) - bodyProps.radius;
-			b2Vec2 center1 = b2Vec2(0,0);
-			b2Vec2 center2 = b2Vec2(0,0);
+			b2Capsule capsule;
+			float center1Value = ((shapeProps.capsuleLength / 2) - shapeProps.radius) * -1;
+			float center2Value = (shapeProps.capsuleLength / 2) - shapeProps.radius;
+			b2Vec2 center1 = b2Vec2(0, 0);
+			b2Vec2 center2 = b2Vec2(0, 0);
 
-			if (bodyProps.b_horizontal)
-			{				
+			if (shapeProps.b_horizontal)
+			{
 				center1.x = center1Value;
 				center2.x = center2Value;
 			}
@@ -201,79 +225,82 @@ namespace FlatEngine
 			{
 				center1.y = center1Value;
 				center2.y = center2Value;
-			}		
+			}
 
-			capsule.center1 = center1;
-			capsule.center2 = center2;
-			capsule.radius = bodyProps.radius;
+			capsule.center1 = center1 + center;
+			capsule.center2 = center2 + center;
+			capsule.radius = shapeProps.radius;
 			shapeID = b2CreateCapsuleShape(bodyID, &shapeDef, &capsule);
 			break;
 		}
-		case Physics::BodyShape::BS_Polygon:
+		case Shape::ShapeType::BS_Polygon:
 		{
 			std::vector<b2Vec2> points;
-			float cornerRadius = bodyProps.cornerRadius;
+			float cornerRadius = shapeProps.cornerRadius;
 
-			for (Vector2 point : bodyProps.points)
+			for (Vector2 point : shapeProps.points)
 			{
 				points.push_back(b2Vec2(point.x, point.y));
 			}
 
-			b2Hull hull = b2ComputeHull(&points[0], (int)points.size());
-			
-			if (hull.count == 0)
+			if (points.size() > 0)
 			{
-				LogError("Hull not successfully created.");
-			}
-			else
-			{
-				b2Polygon polygon = b2MakePolygon(&hull, cornerRadius);
-				shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
+				b2Hull hull = b2ComputeHull(&points[0], (int)points.size());
+
+				if (hull.count == 0)
+				{
+					LogError("Hull not successfully created.");
+				}
+				else
+				{
+					b2Polygon polygon = b2MakePolygon(&hull, cornerRadius);
+					shapeID = b2CreatePolygonShape(bodyID, &shapeDef, &polygon);
+				}
 			}
 
 			break;
 		}
-		case Physics::BodyShape::BS_Chain:
-		{												
-			b2ChainDef chainDef = b2DefaultChainDef();
-			chainDef.userData = parentBody;
-			chainDef.filter = filter;
-			chainDef.isLoop = bodyProps.b_isLoop;
-
+		case Shape::ShapeType::BS_Chain:
+		{
 			b2SurfaceMaterial material = b2DefaultSurfaceMaterial();
-			material.friction = bodyProps.friction;
-			material.restitution = bodyProps.restitution;
-			material.rollingResistance = bodyProps.rollingResistance;
-			material.tangentSpeed = bodyProps.tangentSpeed;
+			material.friction = shapeProps.friction;
+			material.restitution = shapeProps.restitution;
+			material.rollingResistance = shapeProps.rollingResistance;
+			material.tangentSpeed = shapeProps.tangentSpeed;
+
+			b2ChainDef chainDef = b2DefaultChainDef();
+			chainDef.userData = shape;
+			chainDef.filter = filter;
+			chainDef.enableSensorEvents = shapeProps.b_enableSensorEvents;
+			chainDef.isLoop = shapeProps.b_isLoop;
 			chainDef.materialCount = 1;
 			chainDef.materials = &material;
 
 			std::vector<b2Vec2> points;
 
-			for (Vector2 point : bodyProps.points)
+			for (Vector2 point : shapeProps.points)
 			{
 				points.push_back(b2Vec2(point.x, point.y));
 			}
-			
+
 			chainDef.points = &points[0];
 			chainDef.count = (int)points.size();
 
 			b2ChainId chainID = b2CreateChain(bodyID, &chainDef);
 			if (b2Chain_IsValid(chainID))
-			{
-				parentBody->SetChainID(chainID);
+			{				
+				shape->SetChainID(chainID);
 			}
-			
+
 			break;
 		}
-		default:		
+		default:
 			break;
 		}
 
 		if (b2Shape_IsValid(shapeID))
-		{
-			b2Shape_SetUserData(shapeID, parentBody);			
-			parentBody->AddShapeID(shapeID);
+		{						
+			shape->SetShapeID(shapeID);
 		}
 	}
 
@@ -285,7 +312,19 @@ namespace FlatEngine
 	void Physics::RecreateBody(Body* parentBody)
 	{
 		DestroyBody(parentBody->GetBodyID());
-		parentBody->CleanupIDs();
 		CreateBody(parentBody);
+		parentBody->RecreateShapes();
+		
+	}
+
+	void Physics::DestroyShape(b2ShapeId shapeID)
+	{
+		b2DestroyShape(shapeID, true);
+	}
+
+	void Physics::RecreateShape(Shape* shape)
+	{
+		DestroyShape(shape->GetShapeID());
+		CreateShape(shape->GetParentBody(), shape);
 	}
 }

@@ -1,18 +1,21 @@
 #pragma once
-#include "Body.h"
+#include "Shape.h"
 
 #include <vector>
 
 
 namespace FlatEngine
 {
-    class ChainBody : public Body
+    class Body;
+
+    class Chain : public Shape
     {
     public:
-        ChainBody(long myID = -1, long parentID = -1);
-        ~ChainBody();
-        std::string GetData();
+        Chain(Body* parentBody);
+        ~Chain();        
 
+        void SetEditingPoints(bool b_editingPoints);
+        bool IsEditingPoints();
         void SetPoints(std::vector<Vector2> points);
         void UpdatePoints();
         void SetIsLoop(bool b_isLoop);
@@ -20,7 +23,7 @@ namespace FlatEngine
         void SetRollingResistance(float rollingResistance);
 
     private:
-
+        bool m_b_editingPoints;
     };
 }
 

@@ -18,6 +18,6 @@ namespace FlatEngine
 
 	private:
 		MappingContext* m_context;
-		CapsuleBody* m_capsule;
+		Body* m_body;
 	};
 }

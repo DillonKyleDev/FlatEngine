@@ -20,9 +20,9 @@
             "_showTileSetEditor": false,
             "_vsyncEnabled": true,
             "buildPath": "C:\\Users\\Dillon\\Desktop\\FlatEngine2D",
-            "currentFileDirectory": "..\\projects\\ClosedLoop\\scenes",
+            "currentFileDirectory": "..\\projects\\ClosedLoop\\mappingContexts",
             "effectsVolume": 10,
-            "focusedGameObjectID": 0,
+            "focusedGameObjectID": 3,
             "loadedAnimationPath": "",
             "loadedScenePath": "..\\projects\\ClosedLoop\\scenes\\Collisions.scn",
             "musicVolume": 10,
@@ -33,8 +33,8 @@
             "sceneToLoadAtRuntime": "../projects/ClosedLoop/scenes/Collisions.scn",
             "sceneViewGridStepX": 20.0,
             "sceneViewGridStepY": 20.0,
-            "sceneViewScrollingX": 433.3470458984375,
-            "sceneViewScrollingY": 333.5
+            "sceneViewScrollingX": 458.3470458984375,
+            "sceneViewScrollingY": 330.5
         }
     ]
 }

@@ -199,7 +199,7 @@ namespace FlatGui
 	{
 		for (const auto& entry : std::filesystem::directory_iterator(dir))
 		{
-			bool b_isDirectory = std::filesystem::is_directory(entry.path().string());
+			bool b_isDirectory = std::filesystem::is_directory(entry.path());
 			if (b_isDirectory)
 			{
 				RenderDirNode(entry.path());
@@ -393,7 +393,7 @@ namespace FlatGui
 		std::string openIn = "";
 		std::filesystem::path stem = fs_filepath.stem();
 		
-		if (std::filesystem::is_directory(fs_filepath.string()))
+		if (std::filesystem::is_directory(fs_filepath))
 		{
 			icon = "folderFile";
 		}
@@ -589,7 +589,7 @@ namespace FlatGui
 			}
 		}
 
-		if (std::filesystem::is_directory(fs_filepath.string()) && b_doubleClicked)
+		if (std::filesystem::is_directory(fs_filepath) && b_doubleClicked)
 		{
 			// save last location
 			if (lastExplorerLocations.size() >= maxStoredLocations)

@@ -82,27 +82,32 @@ namespace FlatEngine
 		//Vector2 pos = Vector2(b2Body_GetPosition(id).x, b2Body_GetPosition(id).y);
 		//LogVector2(pos, "Pos: ");
 
-		std::map<long, BoxBody> boxBodies = GetLoadedScene()->GetBoxBodies();
-		for (std::map<long, BoxBody>::iterator iterator = boxBodies.begin(); iterator != boxBodies.end(); iterator++)
+		std::map<long, Body> bodies = GetLoadedScene()->GetBodies();
+		for (std::map<long, Body>::iterator iterator = bodies.begin(); iterator != bodies.end(); iterator++)
 		{
+			//LogVector2(iterator->second.GetPosition(), "Pos: ");
+			for (Box box : iterator->second.GetBoxes())
+			{
+
+			}
 			//LogInt((int)iterator->second.GetBodyProps().type);
 			//LogVector2(iterator->second.GetBodyProps().position, iterator->second.GetParent()->GetName() + " Props Pos: ");	
-			//LogVector2(iterator->second.GetPosition(), "Pos: ");
+			
 			//LogVector2(iterator->second.GetBodyProps().dimensions);
 		}
-		std::map<long, CircleBody> circleBodies = GetLoadedScene()->GetCircleBodies();
-		for (std::map<long, CircleBody>::iterator iterator = circleBodies.begin(); iterator != circleBodies.end(); iterator++)
-		{
-			//LogVector2(iterator->second.GetPosition(), "Pos: ");
-		}
-		std::map<long, CapsuleBody> capsuleBodies = GetLoadedScene()->GetCapsuleBodies();
-		for (std::map<long, CapsuleBody>::iterator iterator = capsuleBodies.begin(); iterator != capsuleBodies.end(); iterator++)
-		{
-			b2ShapeId id = iterator->second.GetShapeIDs().back();
-			b2Capsule capsule = b2Shape_GetCapsule(id);
-			//LogVector2(capsule.center1, "Center1: ");
-			//LogVector2(capsule.center2, "Center2: ");
-		}
+		//std::map<long, CircleBody> circleBodies = GetLoadedScene()->GetCircleBodies();
+		//for (std::map<long, CircleBody>::iterator iterator = circleBodies.begin(); iterator != circleBodies.end(); iterator++)
+		//{
+		//	//LogVector2(iterator->second.GetPosition(), "Pos: ");
+		//}
+		//std::map<long, CapsuleBody> capsuleBodies = GetLoadedScene()->GetCapsuleBodies();
+		//for (std::map<long, CapsuleBody>::iterator iterator = capsuleBodies.begin(); iterator != capsuleBodies.end(); iterator++)
+		//{
+		//	b2ShapeId id = iterator->second.GetShapeIDs().back();
+		//	b2Capsule capsule = b2Shape_GetCapsule(id);
+		//	//LogVector2(capsule.center1, "Center1: ");
+		//	//LogVector2(capsule.center2, "Center2: ");
+		//}
 	}
 
 	void GameLoop::Stop()

@@ -304,7 +304,7 @@ namespace FlatGui
 					if (ImGui::MenuItem("BoxBody"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);						
-						newObject->AddBoxBody();
+						newObject->AddBoxBody(Physics::BodyProps(), Shape::ShapeProps());
 						newObject->SetName("BoxBody_" + std::to_string(newObject->GetID()));
 						SetFocusedGameObjectID(newObject->GetID());
 					}

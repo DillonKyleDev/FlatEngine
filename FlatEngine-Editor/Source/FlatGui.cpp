@@ -36,10 +36,6 @@ using Camera = FL::Camera;
 using Canvas = FL::Canvas;
 using Text = FL::Text;
 using Body = FL::Body;
-using BoxBody = FL::BoxBody;
-using CircleBody = FL::CircleBody;
-using CapsuleBody = FL::CapsuleBody;
-using PolygonBody = FL::PolygonBody;
 using Sound = FL::Sound;
 using TileMap = FL::TileMap;
 
@@ -700,11 +696,7 @@ namespace FlatGui
 		Button* button = self.GetButton();
 		Canvas* canvas = self.GetCanvas();
 		Text* text = self.GetText();
-		BoxBody* boxBody = self.GetBoxBody();
-		CircleBody* circleBody = self.GetCircleBody();
-		CapsuleBody* capsuleBody = self.GetCapsuleBody();
-		PolygonBody* polygonBody = self.GetPolygonBody();
-		ChainBody* chainBody = self.GetChainBody();
+		Body* body = self.GetBody();
 		//TileMap* tileMap = self.GetTileMap();
 
 		bool b_spriteButtonAdded = false;
@@ -715,10 +707,6 @@ namespace FlatGui
 			long focusedObjectID = GetFocusedGameObjectID();
 			Vector2 position = transform->GetTruePosition();
 			float rotation = transform->GetRotation();
-			BoxBody* boxBody = self.GetBoxBody();
-			CircleBody* circleBody = self.GetCircleBody();
-			CapsuleBody* capsuleBody = self.GetCapsuleBody();
-			PolygonBody* polygonBody = self.GetPolygonBody();
 			Vector2 relativePosition = transform->GetPosition();
 			Vector2 origin = transform->GetOrigin();
 			Vector2 transformScale = transform->GetScale();		
@@ -929,223 +917,316 @@ namespace FlatGui
 				}
 			}
 
-			if (boxBody != nullptr)
-			{				
-				b2BodyId boxBodyID = boxBody->GetBodyID();
-				bool b_isActive = boxBody->IsActive();
-				FL::Physics::BodyProps bodyProps = boxBody->GetBodyProps();
-				Vector2 dimensions = bodyProps.dimensions;
-				Vector2 center = ConvertWorldToScreen(position);
-				boxBody->UpdateCorners();
-				std::vector<Vector2> cornersVec = boxBody->GetCornersScreen();
-				Vector2 corners[4] = {
-					cornersVec[0],
-					cornersVec[1],
-					cornersVec[2],
-					cornersVec[3]
-				};
-				bool b_isColliding = false;
-
-				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
-
-				if (b_isActive && !b_isColliding)
-				{
-					FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderActive"), 1.0f, drawList);
-				}
-				else
-				{
-					FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderInactive"), 1.0f, drawList);
-				}
-			}
-
-			if (circleBody != nullptr)
-			{								
-				b2BodyId circleBodyID = circleBody->GetBodyID();
-				bool b_isActive = circleBody->IsActive();
-				FL::Physics::BodyProps bodyProps = circleBody->GetBodyProps();				
-				float radius = bodyProps.radius * FG_sceneViewGridStep.x;
-				Vector2 center = ConvertWorldToScreen(position);
-
-				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
-
-				if (b_isActive)
-				{
-					FL::DrawCircle(center, radius, FL::GetColor("circleColliderActive"), drawList);
-				}
-				else
-				{
-					FL::DrawCircle(center, radius, FL::GetColor("circleColliderInactive"), drawList);
-				}
-			}
-
-			if (capsuleBody != nullptr)
+			if (body != nullptr)
 			{
-				b2BodyId capsuleBodyID = capsuleBody->GetBodyID();
-				bool b_isActive = capsuleBody->IsActive();
-				FL::Physics::BodyProps bodyProps = capsuleBody->GetBodyProps();
-				b2Capsule capsule = b2Shape_GetCapsule(capsuleBody->GetShapeIDs().back());
-				float length = bodyProps.capsuleLength;
-				float radius = bodyProps.radius;
-				float radiusScreen = radius * FG_sceneViewGridStep.x;	
-				Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center1)));
-				Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(capsuleBodyID, capsule.center2)));								
-				Vector2 difference = center2 - center1;
-				Vector2 diffN = Vector2::Normalize(difference);
-				Vector2 diffNR = diffN * radiusScreen;
-				Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
-				Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
+				std::vector<Box>& boxes = body->GetBoxes();
+				std::vector<Circle>& circles = body->GetCircles();
+				std::vector<Capsule>& capsules = body->GetCapsules();
+				std::vector<FL::Polygon>& polygons = body->GetPolygons();
+				std::vector<Chain>& chains = body->GetChains();
 
-				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
-
-				if (b_isActive)
+				for (Box& box : boxes)
 				{
-					FL::DrawCircle(center1, radiusScreen, FL::GetColor("capsuleColliderActive"), drawList);
-					FL::DrawCircle(center2, radiusScreen, FL::GetColor("capsuleColliderActive"), drawList);
-					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
-					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("capsuleColliderActiveLight"), 1, drawList);
-					// Sides
-					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("capsuleColliderActive"), 1, drawList);
-					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("capsuleColliderActive"), 1, drawList);
-				}
-				else
-				{
-					FL::DrawCircle(center1, radiusScreen, FL::GetColor("capsuleColliderInactive"), drawList);
-					FL::DrawCircle(center2, radiusScreen, FL::GetColor("capsuleColliderInactive"), drawList);
-					FL::DrawLine(center1 - diffNR, center1 + diffNR, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffNR, center2 + diffNR, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
-					// Sides
-					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
-					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, FL::GetColor("capsuleColliderInactiveLight"), 1, drawList);
-				}
-			}
+					bool b_isActive = body->IsActive();
+					FL::Physics::BodyProps bodyProps = body->GetBodyProps();
+					Shape::ShapeProps shapeProps = box.GetShapeProps();
+					bool b_isSensor = shapeProps.b_isSensor;
+					box.UpdateCorners();
 
-			if (polygonBody != nullptr)
-			{
-				b2BodyId polygonBodyID = polygonBody->GetBodyID();
-				bool b_isActive = polygonBody->IsActive();
-				FL::Physics::BodyProps& bodyProps = polygonBody->GetBodyProps();
-				bool b_isLoop = bodyProps.b_isLoop;
-				std::vector<Vector2>& points = bodyProps.points;
-				int pointCount = (int)points.size();
+					std::vector<Vector2> cornersVec = box.GetCornersScreen();
+					Vector2 corners[4] = {
+						cornersVec[0],
+						cornersVec[1],
+						cornersVec[2],
+						cornersVec[3]
+					};
 
-				if (b_isActive)
-				{
-					for (int i = 0; i < pointCount; i++)
+					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+					if (b_isActive)
 					{
-						Vector2 start = FL::ConvertWorldToScreen(position + points[i]);
-						Vector2 end = FL::ConvertWorldToScreen(position + points[FL::Fmod(i + 1, pointCount)]);
-						FL::DrawLine(start, end, FL::GetColor("polygonColliderActive"), 1, drawList);						
-					}
-				}
-				else
-				{
-					for (int i = 0; i < pointCount; i++)
-					{
-						Vector2 start = FL::ConvertWorldToScreen(points[i]);
-						Vector2 end = FL::ConvertWorldToScreen(points[FL::Fmod(i + 1, pointCount)]);
-						FL::DrawLine(start, end, FL::GetColor("polygonColliderInactive"), 1, drawList);
-					}
-				}
-
-				ImGuiIO& inputOutput = ImGui::GetIO();
-				static Vector2 cursorPosAtClick = Vector2();
-				bool b_pointDeleted = false;
-
-				for (int i = 0; i < pointCount; i++)
-				{
-					b_pointDeleted = RenderPointWidget(polygonBody, points[i], i);
-
-					if (b_pointDeleted)
-					{
-						break;
-					}
-				}
-
-				if (!b_pointDeleted)
-				{
-					for (int i = 0; i < pointCount; i++)
-					{
-						if (i != 0 && i < pointCount - 2)
+						if (b_isSensor)
 						{
-							Vector2 midPoint = points[i] + ((points[i + 1] - points[i]) * 0.5f);
+							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorActive"), 1.0f, drawList);
+						}
+						else
+						{
+							FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderActive"), 1.0f, drawList);
+						}
+					}
+					else
+					{
+						if (b_isSensor)
+						{
+							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorInactive"), 1.0f, drawList);
+						}
+						else
+						{
+							FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderInactive"), 1.0f, drawList);
+						}
+					}
+				}
 
-							if (RenderAddPointWidget(polygonBody, midPoint, i))
+				for (Circle& circle : circles)
+				{
+					//bool b_isActive = circleBody->IsActive();
+					bool b_isActive = true;
+					FL::Physics::BodyProps bodyProps = body->GetBodyProps();
+					Shape::ShapeProps shapeProps = circle.GetShapeProps();
+					bool b_isSensor = shapeProps.b_isSensor;
+					float radius = shapeProps.radius * FG_sceneViewGridStep.x;
+					Vector2 offset = shapeProps.positionOffset;
+					Vector2 center = ConvertWorldToScreen(position + Vector2::Rotate(offset, rotation));
+
+					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+					if (b_isActive)
+					{
+						if (b_isSensor)
+						{
+							FL::DrawCircle(center, radius, FL::GetColor("sensorActive"), drawList);
+						}
+						else
+						{
+							FL::DrawCircle(center, radius, FL::GetColor("circleColliderActive"), drawList);
+						}
+					}
+					else
+					{
+						if (b_isSensor)
+						{
+							FL::DrawCircle(center, radius, FL::GetColor("sensorInactive"), drawList);
+						}
+						else
+						{
+							FL::DrawCircle(center, radius, FL::GetColor("circleColliderInactive"), drawList);
+						}
+					}
+				}
+
+				for (Capsule& capsule : capsules)
+				{
+					bool b_isActive = body->IsActive();
+					FL::Physics::BodyProps bodyProps = body->GetBodyProps();
+					Shape::ShapeProps shapeProps = capsule.GetShapeProps();
+					bool b_isSensor = shapeProps.b_isSensor;
+					b2Capsule capsuleShape = b2Shape_GetCapsule(capsule.GetShapeID());
+					float length = shapeProps.capsuleLength;
+					float radius = shapeProps.radius;
+					float radiusScreen = radius * FG_sceneViewGridStep.x;
+					Vector2 offset = shapeProps.positionOffset;
+					float rotation = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));
+
+					Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center1)));
+					Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center2)));
+					Vector2 difference = center2 - center1;
+					Vector2 diffN = Vector2::Normalize(difference);
+					Vector2 diffNR = diffN * radiusScreen;
+					Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
+					Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
+
+					Vector4 color;
+					Vector4 colorLight;
+
+					if (b_isActive)
+					{
+						if (b_isSensor)
+						{
+							color = FL::GetColor("sensorActive");
+							colorLight = FL::GetColor("sensorActiveLight");
+						}
+						else
+						{
+							color = FL::GetColor("capsuleColliderActive");
+							colorLight = FL::GetColor("capsuleColliderActiveLight");
+						}
+					}
+					else
+					{
+						if (b_isSensor)
+						{
+							color = FL::GetColor("sensorInactive");
+							colorLight = FL::GetColor("sensorInactiveLight");
+						}
+						else
+						{
+							color = FL::GetColor("capsuleColliderInactive");
+							colorLight = FL::GetColor("capsuleColliderInactiveLight");
+						}
+					}
+
+
+					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+					FL::DrawCircle(center1, radiusScreen, color, drawList);
+					FL::DrawCircle(center2, radiusScreen, color, drawList);
+					FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, 1, drawList);
+					FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, 1, drawList);
+					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, 1, drawList);
+					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, 1, drawList);
+					// Sides
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, 1, drawList);
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, 1, drawList);
+				}
+
+				for (FL::Polygon& polygon : polygons)
+				{
+					b2BodyId polygonBodyID = body->GetBodyID();
+					bool b_isActive = body->IsActive();
+					FL::Physics::BodyProps& bodyProps = body->GetBodyProps();
+					Shape::ShapeProps& shapeProps = polygon.GetShapeProps();
+					bool b_isSensor = shapeProps.b_isSensor;
+					bool b_isLoop = shapeProps.b_isLoop;
+					std::vector<Vector2>& points = shapeProps.points;
+					int pointCount = (int)points.size();
+					float cornerRadius = shapeProps.cornerRadius;
+					int minPolygonBodyVertices = 3;
+					int maxPolygonBodyVertices = 8;
+					bool b_editingPoints = polygon.IsEditingPoints();
+
+					Vector4 color;
+
+					if (b_isActive)
+					{
+						if (b_isSensor)
+						{
+							color = FL::GetColor("sensorActive");
+						}
+						else
+						{
+							color = FL::GetColor("polygonColliderActive");
+						}
+					}
+					else
+					{
+						if (b_isSensor)
+						{
+							color = FL::GetColor("sensorInactive");
+						}
+						else
+						{
+							color = FL::GetColor("polygonColliderInactive");
+						}
+					}
+
+					for (int i = 0; i < pointCount; i++)
+					{
+						Vector2 rPerpStart = points[i] + Vector2::Rotate(Vector2::Normalize(points[FL::Fmod(i + 1, pointCount)] - points[i]) * cornerRadius, -90);
+						Vector2 rPerpEnd = rPerpStart + (points[FL::Fmod(i + 1, pointCount)] - points[i]);
+						Vector2 rotatedStart = Vector2::Rotate(rPerpStart, rotation);
+						Vector2 rotatedEnd = Vector2::Rotate(rPerpEnd, rotation);
+						Vector2 lineStart = FL::ConvertWorldToScreen(position + rotatedStart);
+						Vector2 lineEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
+
+						FL::DrawLine(lineStart, lineEnd, color, 1, drawList);
+
+						if (cornerRadius > 0)
+						{
+							Vector2 rotatedCircleStart = Vector2::Rotate(points[i], rotation);
+							Vector2 rotatedCircleEnd = Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation);
+							Vector2 circleStart = FL::ConvertWorldToScreen(position + rotatedStart);
+							Vector2 circleEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
+
+							FL::DrawCircle(circleStart, cornerRadius * FG_sceneViewGridStep.x, color, drawList);
+							FL::DrawLine(circleStart, circleEnd, color, 1, drawList);
+						}
+					}
+
+					if (b_editingPoints)
+					{
+						bool b_pointDeleted = false;
+
+						for (int i = 0; i < pointCount; i++)
+						{
+							b_pointDeleted = RenderPointWidget(body, &polygon, points[i], i, minPolygonBodyVertices);
+
+							if (b_pointDeleted)
 							{
 								break;
 							}
 						}
+
+						if (!b_pointDeleted && pointCount < maxPolygonBodyVertices)
+						{
+							for (int i = 0; i < pointCount; i++)
+							{
+								Vector2 midPoint = points[i] + ((points[FL::Fmod(i + 1, pointCount)] - points[i]) * 0.5f);
+
+								if (RenderAddPointWidget(body, &polygon, midPoint, i))
+								{
+									break;
+								}
+							}
+						}
 					}
 				}
-			}
 
-			if (chainBody != nullptr)
-			{
-				b2BodyId chainBodyID = chainBody->GetBodyID();
-				bool b_isActive = chainBody->IsActive();
-				FL::Physics::BodyProps& bodyProps = chainBody->GetBodyProps();
-				bool b_isLoop = bodyProps.b_isLoop;
-				std::vector<Vector2>& points = bodyProps.points;
-				int pointCount = (int)points.size();
-
-				if (b_isActive)
+				for (Chain& chain : chains)
 				{
+					FL::Physics::BodyProps& bodyProps = body->GetBodyProps();
+					Shape::ShapeProps& shapeProps = chain.GetShapeProps();
+					bool b_isActive = body->IsActive();
+					bool b_isLoop = shapeProps.b_isLoop;
+					std::vector<Vector2>& points = shapeProps.points;
+					int pointCount = (int)points.size();
+					int minChainBodyVertices = 4;
+					bool b_editingPoints = chain.IsEditingPoints();
+
+					Vector4 mainColor = FL::GetColor("chainColliderInactive");
+					Vector4 endColor = FL::GetColor("chainColliderEndSegmentsInactive");
+
+					if (b_isActive)
+					{
+						mainColor = FL::GetColor("chainColliderActive");
+						endColor = FL::GetColor("chainColliderEndSegmentsActive");
+					}
+
 					for (int i = 0; i < pointCount; i++)
 					{
 						if (i < pointCount - 1 || b_isLoop)
 						{
-							Vector2 start = FL::ConvertWorldToScreen(position + points[i]);
-							Vector2 end = FL::ConvertWorldToScreen(position + points[FL::Fmod(i + 1, pointCount)]);
+							Vector2 start = FL::ConvertWorldToScreen(position + Vector2::Rotate(points[i], rotation));
+							Vector2 end = FL::ConvertWorldToScreen(position + Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation));
 
 							if (b_isLoop || (i > 0 && i < pointCount - 2))
 							{
-								FL::DrawLine(start, end, FL::GetColor("chainColliderActive"), 1, drawList);
+								FL::DrawLine(start, end, mainColor, 1, drawList);
 							}
 							else
 							{
-								FL::DrawLine(start, end, FL::GetColor("chainColliderEndSegments"), 1, drawList);
+								FL::DrawLine(start, end, endColor, 1, drawList);
 							}
 						}
 					}
-				}
-				else
-				{
-					for (int i = 0; i < pointCount; i++)
+
+
+					if (b_editingPoints)
 					{
-						Vector2 start = FL::ConvertWorldToScreen(points[i]);
-						Vector2 end = FL::ConvertWorldToScreen(points[FL::Fmod(i + 1, pointCount)]);
-						FL::DrawLine(start, end, FL::GetColor("chainColliderInactive"), 1, drawList);
-					}
-				}		
+						bool b_pointDeleted = false;
 
-				ImGuiIO& inputOutput = ImGui::GetIO();				
-				static Vector2 cursorPosAtClick = Vector2();
-				bool b_pointDeleted = false;
-
-				for (int i = 0; i < pointCount; i++)
-				{
-					b_pointDeleted = RenderPointWidget(chainBody, points[i], i);
-
-					if (b_pointDeleted)
-					{
-						break;
-					}
-				}
-
-				if (!b_pointDeleted)
-				{
-					for (int i = 0; i < pointCount; i++)
-					{
-						if (i != 0 && i < pointCount - 2)
+						for (int i = 0; i < pointCount; i++)
 						{
-							Vector2 midPoint = points[i] + ((points[i + 1] - points[i]) * 0.5f);
+							b_pointDeleted = RenderPointWidget(body, &chain, points[i], i, minChainBodyVertices);
 
-							if (RenderAddPointWidget(chainBody, midPoint, i))
+							if (b_pointDeleted)
 							{
 								break;
+							}
+						}
+
+						if (!b_pointDeleted)
+						{
+							for (int i = 0; i < pointCount; i++)
+							{
+								if (i != 0 && i < pointCount - 2)
+								{
+									Vector2 midPoint = points[i] + ((points[i + 1] - points[i]) * 0.5f);
+
+									if (RenderAddPointWidget(body, &chain, midPoint, i))
+									{
+										break;
+									}
+								}
 							}
 						}
 					}
@@ -1154,7 +1235,6 @@ namespace FlatGui
 
 			// TileMap
 			{
-
 				//if (tileMap != nullptr && tileMap->IsActive())
 				//{
 				//	long id = tileMap->GetID();				
@@ -1579,17 +1659,18 @@ namespace FlatGui
 		}
 	}
 
-	bool RenderAddPointWidget(Body* body, Vector2 midPoint, int startIndex)
+	bool RenderAddPointWidget(Body* body, Shape* shape, Vector2 midPoint, int startIndex)
 	{
 		bool b_pointAdded = false;
+		Vector2 position = body->GetPosition();
+		float rotation = body->GetRotation();		
 
-		std::vector<Vector2> points = body->GetBodyProps().points;
-		Vector2 position = body->GetBodyProps().position;
+		std::vector<Vector2> points = shape->GetShapeProps().points;			
 		SDL_Texture* chainAddJointTexture = FL::GetTexture("addJoint");		
 		float textureWidth = (float)FL::GetTextureObject("addJoint")->GetWidth();
 		float textureHeight = (float)FL::GetTextureObject("addJoint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
-		Vector2 adjustedPoint = midPoint + position;
+		Vector2 adjustedPoint = position + Vector2::Rotate(midPoint, rotation);
 		ImGuiIO& inputOutput = ImGui::GetIO();
 		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);		
 		jointScreenPos = jointScreenPos - jointOffset;
@@ -1619,7 +1700,7 @@ namespace FlatGui
 				}
 			}			
 
-			body->SetPoints(newPoints);
+			shape->SetPoints(newPoints);
 			b_pointAdded = true;
 		}
 
@@ -1631,17 +1712,18 @@ namespace FlatGui
 		return b_pointAdded;
 	}
 
-	bool RenderPointWidget(Body* body, Vector2& point, int index)
+	bool RenderPointWidget(Body* body, Shape* shape, Vector2& point, int index, int minShapeVerticies)
 	{
 		bool b_pointDeleted = false;
+		float rotation = body->GetRotation();
+		Vector2 position = body->GetPosition();
 
-		std::vector<Vector2> points = body->GetBodyProps().points;
+		std::vector<Vector2> points = shape->GetShapeProps().points;		
 		SDL_Texture* chainJointTexture = FL::GetTexture("joint");		
 		float textureWidth = (float)FL::GetTextureObject("joint")->GetWidth();
 		float textureHeight = (float)FL::GetTextureObject("joint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
-		Vector2 adjustedPoint = point + body->GetBodyProps().position;
-		ImGuiIO& inputOutput = ImGui::GetIO();
+		Vector2 adjustedPoint = position + Vector2::Rotate(point, rotation);		
 		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);
 		jointScreenPos = jointScreenPos - jointOffset;		
 		std::string invisibleButtonID = "##bodyJoint_" + std::to_string(body->GetID()) + "_" + std::to_string(index);
@@ -1651,7 +1733,7 @@ namespace FlatGui
 		const bool b_jointActive = ImGui::IsItemActive();
 		const bool b_jointRightClicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);		
 
-		if (points.size() > 4 && ImGui::BeginPopupContextItem(invisibleButtonID.c_str(), ImGuiPopupFlags_MouseButtonRight))
+		if (points.size() > minShapeVerticies && ImGui::BeginPopupContextItem(invisibleButtonID.c_str(), ImGuiPopupFlags_MouseButtonRight))
 		{
 			FL::PushMenuStyles();
 
@@ -1667,7 +1749,7 @@ namespace FlatGui
 					}
 				}
 
-				body->SetPoints(newPoints);					
+				shape->SetPoints(newPoints);					
 				b_pointDeleted = true;
 			}
 
@@ -1685,9 +1767,9 @@ namespace FlatGui
 
 		if (b_jointActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 		{
-			Vector2 mousePosInGrid = FL::ConvertScreenToWorld(inputOutput.MousePos);
-			point = mousePosInGrid - body->GetBodyProps().position;
-			body->UpdatePoints();
+			Vector2 mousePosInGrid = FL::GetMousePosWorld();
+			point = Vector2(b2Body_GetLocalPoint(body->GetBodyID(), b2Vec2(mousePosInGrid.x, mousePosInGrid.y)));			
+			shape->UpdatePoints();
 		}
 		
 		Vector2 jointScale = { 1, 1 };
@@ -1708,10 +1790,6 @@ namespace FlatGui
 			Transform* transform = focusedObject->GetTransform();
 			Vector2 position = Vector2(0, 0);
 			Body* body = focusedObject->GetBody();
-			BoxBody* boxBody = focusedObject->GetBoxBody();
-			CircleBody* circleBody = focusedObject->GetCircleBody();
-			CapsuleBody* capsuleBody = focusedObject->GetCapsuleBody();
-			PolygonBody* polygonBody = focusedObject->GetPolygonBody();
 
 			if (transform != nullptr)
 			{
@@ -1773,36 +1851,27 @@ namespace FlatGui
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			}
 
-			static Vector2 transformScreenPos = Vector2(0, 0);
-			static Vector2 cursorPosAtClick = inputOutput.MousePos;
-			Vector2 relativePosition = transform->GetPosition();
-
-			if (body != nullptr)
-			{
-				relativePosition = position;
-			}
-
+			static Vector2 transformOffsetFromMouse;
+			
 			if (b_baseClicked || b_xClicked || b_yClicked)
 			{
-				cursorPosAtClick = inputOutput.MousePos;
-				transformScreenPos = Vector2(position.x + (relativePosition.x * FG_sceneViewGridStep.x), position.y - (relativePosition.y * FG_sceneViewGridStep.x));
+				transformOffsetFromMouse = position - FL::GetMousePosWorld();
 			}
 
-			Vector2 transformPosOffsetFromMouse = Vector2((cursorPosAtClick.x - transformScreenPos.x) / FG_sceneViewGridStep.x, (cursorPosAtClick.y - transformScreenPos.y) / FG_sceneViewGridStep.x);
-			Vector2 mousePosInGrid = Vector2((inputOutput.MousePos.x - position.x) / FG_sceneViewGridStep.x, (position.y - inputOutput.MousePos.y) / FG_sceneViewGridStep.x);
-			Vector2 newTransformPos = Vector2(mousePosInGrid.x - transformPosOffsetFromMouse.x, mousePosInGrid.y + transformPosOffsetFromMouse.y);
-
 			if (b_baseActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-			{
-				transform->SetPosition(newTransformPos);
+			{			
+				Vector2 newPosition = FL::GetMousePosWorld() + transformOffsetFromMouse;
+				transform->SetPosition(newPosition);
 			}
 			else if (b_xActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 			{
-				transform->SetPosition(Vector2(newTransformPos.x, relativePosition.y));
+				Vector2 newPosition = FL::GetMousePosWorld() + transformOffsetFromMouse;
+				transform->SetPosition(Vector2(newPosition.x, position.y));
 			}
 			else if (b_yActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 			{
-				transform->SetPosition(Vector2(relativePosition.x, newTransformPos.y));
+				Vector2 newPosition = FL::GetMousePosWorld() + transformOffsetFromMouse;
+				transform->SetPosition(Vector2(position.x, newPosition.y));
 			}
 
 

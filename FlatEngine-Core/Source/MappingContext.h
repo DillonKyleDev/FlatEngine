@@ -1,4 +1,6 @@
 #pragma once
+#include "Vector2.h"
+
 #include <map>
 #include <string>
 #include "SDL.h"
@@ -8,7 +10,17 @@
 
 namespace FlatEngine 
 {
+	enum FMouseKeys {
+		Mouse_leftClick = SDL_BUTTON_LEFT,
+		Mouse_middleClick = SDL_BUTTON_MIDDLE,
+		Mouse_rightClick = SDL_BUTTON_RIGHT,
+		Mouse_x1 = SDL_BUTTON_X1,
+		Mouse_x2 = SDL_BUTTON_X2,
+		Mouse_motion = 6
+	};
+
 	enum FKeyboardKeys {
+
 		Keyboard_up = SDLK_UP,
 		Keyboard_down = SDLK_DOWN,
 		Keyboard_left = SDLK_LEFT,
@@ -128,127 +140,137 @@ namespace FlatEngine
 		RT
 	};
 
+	const std::map<long, std::string> F_MappedMouseCodes =
+	{
+		{ Mouse_leftClick, "Mouse: Left Click" },
+		{ Mouse_rightClick, "Mouse: Right Click" },
+		{ Mouse_middleClick, "Mouse: Middle Click" },
+		{ Mouse_x1, "Mouse: X1" },
+		{ Mouse_x2, "Mouse: X2" },
+		{ Mouse_motion, "Mouse: Motion" },
+	};
+
 	const std::map<long, std::string> F_MappedKeyboardCodes =
 	{
-		{ Keyboard_up, "Keyboard_up" },
-		{ Keyboard_down, "Keyboard_down" },
-		{ Keyboard_left, "Keyboard_left" },
-		{ Keyboard_right, "Keyboard_right" },
-		{ Keyboard_space, "Keyboard_space" },
-		{ Keyboard_leftCtrl, "Keyboard_leftCtrl" },
-		{ Keyboard_leftShift, "Keyboard_leftShift" },
-		{ Keyboard_leftAlt, "Keyboard_leftAlt" },
-		{ Keyboard_rightCtrl, "Keyboard_rightCtrl" },
-		{ Keyboard_rightShift, "Keyboard_rightShift" },
-		{ Keyboard_rightAlt, "Keyboard_rightAlt" },
-		{ Keyboard_capsLock, "Keyboard_capsLock" },
-		{ Keyboard_numLock, "Keyboard_numLock" },
-		{ Keyboard_backspace, "Keyboard_backspace" },
-		{ Keyboard_escape, "Keyboard_escape" },
-		{ Keyboard_tab, "Keyboard_tab" },
+		{ Keyboard_up, "Keyboard: Arrow Up" },
+		{ Keyboard_down, "Keyboard: Arrow Down" },
+		{ Keyboard_left, "Keyboard: Arrow Left" },
+		{ Keyboard_right, "Keyboard: Arrow Right" },
+		{ Keyboard_space, "Keyboard: Space" },
+		{ Keyboard_leftCtrl, "Keyboard: Left Ctrl" },
+		{ Keyboard_leftShift, "Keyboard: Left Shift" },
+		{ Keyboard_leftAlt, "Keyboard: Left Alt" },
+		{ Keyboard_rightCtrl, "Keyboard: Right Ctrl" },
+		{ Keyboard_rightShift, "Keyboard: Right Shift" },
+		{ Keyboard_rightAlt, "Keyboard: Right Alt" },
+		{ Keyboard_capsLock, "Keyboard: Caps Lock" },
+		{ Keyboard_numLock, "Keyboard: Num Lock" },
+		{ Keyboard_backspace, "Keyboard: Backspace" },
+		{ Keyboard_escape, "Keyboard: Escape" },
+		{ Keyboard_tab, "Keyboard: Tab" },
 
-		{ Keyboard_printScreen, "Keyboard_printScreen" },
-		{ Keyboard_insert, "Keyboard_insert" },
-		{ Keyboard_home, "Keyboard_home" },
-		{ Keyboard_pageUp, "Keyboard_pageUp" },
-		{ Keyboard_pageDown, "Keyboard_pageDown" },
-		{ Keyboard_delete, "Keyboard_delete" },
+		{ Keyboard_printScreen, "Keyboard Print Screen" },
+		{ Keyboard_insert, "Keyboard: Insert" },
+		{ Keyboard_home, "Keyboard: Home" },
+		{ Keyboard_pageUp, "Keyboard: Page Up" },
+		{ Keyboard_pageDown, "Keyboard: Page Down" },
+		{ Keyboard_delete, "Keyboard: Delete" },
 
-		{ Keyboard_backSlash, "Keyboard_backSlash" },
-		{ Keyboard_forwardSlash, "Keyboard_forwardSlash" },
-		{ Keyboard_semicolin, "Keyboard_semicolin" },
-		{ Keyboard_apostrophe, "Keyboard_apostrophe" },
-		{ Keyboard_rightBracket, "Keyboard_rightBracket" },
-		{ Keyboard_leftBracket, "Keyboard_leftBracket" },
-		{ Keyboard_less, "Keyboard_less" },
-		{ Keyboard_greater, "Keyboard_greater" },
-		{ Keyboard_graveAccent, "Keyboard_graveAccent" },
-		{ Keyboard_asterisk, "Keyboard_asterisk" },
-		{ Keyboard_period, "Keyboard_period" },
-		{ Keyboard_enter, "Keyboard_enter" },
-		{ Keyboard_0, "Keyboard_0" },
-		{ Keyboard_1, "Keyboard_1" },
-		{ Keyboard_2, "Keyboard_2" },
-		{ Keyboard_3, "Keyboard_3" },
-		{ Keyboard_4, "Keyboard_4" },
-		{ Keyboard_5, "Keyboard_5" },
-		{ Keyboard_6, "Keyboard_6" },
-		{ Keyboard_7, "Keyboard_7" },
-		{ Keyboard_8, "Keyboard_8" },
-		{ Keyboard_9, "Keyboard_9" },
-		{ Keyboard_minus, "Keyboard_minus" },
-		{ Keyboard_plus, "Keyboard_plus" },
+		{ Keyboard_backSlash, "Keyboard: \\" },
+		{ Keyboard_forwardSlash, "Keyboard: /" },
+		{ Keyboard_semicolin, "Keyboard: ;" },
+		{ Keyboard_apostrophe, "Keyboard: '" },
+		{ Keyboard_rightBracket, "Keyboard: ]" },
+		{ Keyboard_leftBracket, "Keyboard: [" },
+		{ Keyboard_less, "Keyboard: <" },
+		{ Keyboard_greater, "Keyboard: >" },
+		{ Keyboard_graveAccent, "Keyboard: `" },
+		{ Keyboard_asterisk, "Keyboard: *" },
+		{ Keyboard_period, "Keyboard: ." },
+		{ Keyboard_enter, "Keyboard: Enter" },
+		{ Keyboard_0, "Keyboard: 0" },
+		{ Keyboard_1, "Keyboard: 1" },
+		{ Keyboard_2, "Keyboard: 2" },
+		{ Keyboard_3, "Keyboard: 3" },
+		{ Keyboard_4, "Keyboard: 4" },
+		{ Keyboard_5, "Keyboard: 5" },
+		{ Keyboard_6, "Keyboard: 6" },
+		{ Keyboard_7, "Keyboard: 7" },
+		{ Keyboard_8, "Keyboard: 8" },
+		{ Keyboard_9, "Keyboard: 9" },
+		{ Keyboard_minus, "Keyboard: -" },
+		{ Keyboard_plus, "Keyboard: +" },
 
-		{ Keyboard_f1, "Keyboard_f1" },
-		{ Keyboard_f2, "Keyboard_f2" },
-		{ Keyboard_f3, "Keyboard_f3" },
-		{ Keyboard_f4, "Keyboard_f4" },
-		{ Keyboard_f5, "Keyboard_f5" },
-		{ Keyboard_f6, "Keyboard_f6" },
-		{ Keyboard_f7, "Keyboard_f7" },
-		{ Keyboard_f8, "Keyboard_f8" },
-		{ Keyboard_f9, "Keyboard_f9" },
-		{ Keyboard_f10, "Keyboard_f10" },
-		{ Keyboard_f11, "Keyboard_f11" },
-		{ Keyboard_f12, "Keyboard_f12" },
+		{ Keyboard_f1, "Keyboard: F1" },
+		{ Keyboard_f2, "Keyboard: F2" },
+		{ Keyboard_f3, "Keyboard: F3" },
+		{ Keyboard_f4, "Keyboard: F4" },
+		{ Keyboard_f5, "Keyboard: F5" },
+		{ Keyboard_f6, "Keyboard: F6" },
+		{ Keyboard_f7, "Keyboard: F7" },
+		{ Keyboard_f8, "Keyboard: F8" },
+		{ Keyboard_f9, "Keyboard: F9" },
+		{ Keyboard_f10, "Keyboard: F10" },
+		{ Keyboard_f11, "Keyboard: F11" },
+		{ Keyboard_f12, "Keyboard: F12" },
 
-		{ Keyboard_a, "Keyboard_a" },
-		{ Keyboard_b, "Keyboard_b" },
-		{ Keyboard_c, "Keyboard_c" },
-		{ Keyboard_d, "Keyboard_d" },
-		{ Keyboard_e, "Keyboard_e" },
-		{ Keyboard_f, "Keyboard_f" },
-		{ Keyboard_g, "Keyboard_g" },
-		{ Keyboard_h, "Keyboard_h" },
-		{ Keyboard_i, "Keyboard_i" },
-		{ Keyboard_j, "Keyboard_j" },
-		{ Keyboard_k, "Keyboard_k" },
-		{ Keyboard_l, "Keyboard_l" },
-		{ Keyboard_m, "Keyboard_m" },
-		{ Keyboard_n, "Keyboard_n" },
-		{ Keyboard_o, "Keyboard_o" },
-		{ Keyboard_p, "Keyboard_p" },
-		{ Keyboard_q, "Keyboard_q" },
-		{ Keyboard_r, "Keyboard_r" },
-		{ Keyboard_s, "Keyboard_s" },
-		{ Keyboard_t, "Keyboard_t" },
-		{ Keyboard_u, "Keyboard_u" },
-		{ Keyboard_v, "Keyboard_v" },
-		{ Keyboard_w, "Keyboard_w" },
-		{ Keyboard_x, "Keyboard_x" },
-		{ Keyboard_y, "Keyboard_y" },
-		{ Keyboard_z, "Keyboard_z" },
+		{ Keyboard_a, "Keyboard: a" },
+		{ Keyboard_b, "Keyboard: b" },
+		{ Keyboard_c, "Keyboard: c" },
+		{ Keyboard_d, "Keyboard: d" },
+		{ Keyboard_e, "Keyboard: e" },
+		{ Keyboard_f, "Keyboard: f" },
+		{ Keyboard_g, "Keyboard: g" },
+		{ Keyboard_h, "Keyboard: h" },
+		{ Keyboard_i, "Keyboard: i" },
+		{ Keyboard_j, "Keyboard: j" },
+		{ Keyboard_k, "Keyboard: k" },
+		{ Keyboard_l, "Keyboard: l" },
+		{ Keyboard_m, "Keyboard: m" },
+		{ Keyboard_n, "Keyboard: n" },
+		{ Keyboard_o, "Keyboard: o" },
+		{ Keyboard_p, "Keyboard: p" },
+		{ Keyboard_q, "Keyboard: q" },
+		{ Keyboard_r, "Keyboard: r" },
+		{ Keyboard_s, "Keyboard: s" },
+		{ Keyboard_t, "Keyboard: t" },
+		{ Keyboard_u, "Keyboard: u" },
+		{ Keyboard_v, "Keyboard: v" },
+		{ Keyboard_w, "Keyboard: w" },
+		{ Keyboard_x, "Keyboard: x" },
+		{ Keyboard_y, "Keyboard: y" },
+		{ Keyboard_z, "Keyboard: z" },
 	};
 	const std::map<long, std::string> F_MappedXInputButtonCodes =
 	{
-		{ A, "XInput_A" },
-		{ B, "XInput_B" },
-		{ X, "XInput_X" },
-		{ Y, "XInput_Y" },
-		{ LB, "XInput_LB" },
-		{ RB, "XInput_RB" },
-		{ ScreenShot, "XInput_ScreenShot" },
-		{ Start, "XInput_Start" },
-		{ LS, "XInput_LS" },
-		{ RS, "XInput_RS" },
-		{ Home, "XInput_Home" },
-		{ Tray, "XInput_Tray" },
+		{ A, "XInput: A" },
+		{ B, "XInput: B" },
+		{ X, "XInput: X" },
+		{ Y, "XInput: Y" },
+		{ LB, "XInput: Left Bumper" },
+		{ RB, "XInput: Right Bumper" },
+		{ ScreenShot, "XInput: Screenshot" },
+		{ Start, "XInput: Start" },
+		{ LS, "XInput: Left Stick Click" },
+		{ RS, "XInput: Right Stick Click" },
+		{ Home, "XInput: Home" },
+		{ Tray, "XInput: Tray" },
 	};
 	const std::map<long, std::string> F_MappedXInputDPadCodes =
 	{
-		{ Hat_Up, "XInput_DPadUp" },
-		{ Hat_Down, "XInput_DPadDown" },
-		{ Hat_Left, "XInput_DPadLeft" },
-		{ Hat_Right, "XInput_DPadRight" }
+		{ Hat_Up, "XInput: D-Pad Up" },
+		{ Hat_Down, "XInput: D-Pad Down" },
+		{ Hat_Left, "XInput: D-Pad Left" },
+		{ Hat_Right, "XInput: D-Pad Right" }
 	};
 	const std::map<long, std::string> F_MappedXInputAnalogCodes =
 	{
-		{ LeftXAxis, "XInput_LeftJoystickX" },
-		{ LeftYAxis, "XInput_LeftJoystickY" },
-		{ RightXAxis, "XInput_RightJoystickX" },
-		{ RightYAxis, "XInput_RightJoystickY" },
-		{ LT, "XInput_LT" },
-		{ RT, "XInput_RT" }
+		{ LeftXAxis, "XInput: Left Joystick x-axis" },
+		{ LeftYAxis, "XInput: Left Joystick y-axis" },
+		{ RightXAxis, "XInput: Right Joystick x-axis" },
+		{ RightYAxis, "XInput: Right Joystick y-axis" },
+		{ LT, "XInput: Left Trigger" },
+		{ RT, "XInput: Right Trigger" }
 	};
 
 	struct InputMapping {
@@ -256,6 +278,8 @@ namespace FlatEngine
 		std::string keyCode = "";
 		std::string actionName = "";
 		bool b_fired = false;
+		Vector2 GetMouseMotionWorld();
+		Vector2 GetMouseMotionScreen();
 		std::string GetKeyCode() { return keyCode; };
 		std::string GetActionName() { return actionName; };
 	};
@@ -280,6 +304,7 @@ namespace FlatEngine
 		bool ActionPressed(std::string actionName);		
 		std::map<std::string, std::shared_ptr<InputMapping>> GetInputActions();
 		std::vector<std::shared_ptr<InputMapping>> GetInputMappingsLua();
+		std::shared_ptr<InputMapping> GetInputMapping(std::string actionName);
 		void SetWaitingForRemap(bool b_waiting);
 		bool WaitingForRemap();
 		void SetActionToRemap(std::string actionToRemap);

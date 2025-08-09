@@ -61,7 +61,9 @@ namespace FlatEngine
 	void BeginWindow(std::string name, Vector4 bgColor)
 	{
 		PushWindowStyles(bgColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
 		ImGui::Begin(name.c_str());
+		ImGui::PopStyleVar();
 		PopWindowStyles();
 
 		BeginWindowChild(name);
@@ -112,6 +114,7 @@ namespace FlatEngine
 
 	void PushWindowStyles(Vector4 bgColor)
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1,1));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, GetColor("frameBg"));
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GetColor("frameBgActive"));
@@ -162,6 +165,7 @@ namespace FlatEngine
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 	}
 
 	void PushComboStyles()

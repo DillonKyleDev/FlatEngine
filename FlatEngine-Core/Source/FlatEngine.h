@@ -427,8 +427,8 @@ namespace FlatEngine
 	extern void BeginWindow(std::string name, bool& b_isOpen, Vector4 bgColor = GetColor("windowBg"));
 	extern void BeginWindow(std::string name, bool& b_isOpen, ImGuiWindowFlags flags, Vector4 bgColor = GetColor("windowBg"));
 	extern void EndWindow();
-	extern void BeginWindowChild(std::string title, Vector4 bgColor = GetColor("outerWindow"), ImGuiWindowFlags flags = 0);
-	extern void BeginResizeWindowChild(std::string title, Vector4 bgColor = GetColor("outerWindow"), ImGuiWindowFlags flags = 0);
+	extern void BeginWindowChild(std::string title, Vector4 bgColor = GetColor("outerWindow"), ImGuiWindowFlags flags = 0, Vector2 padding = Vector2(1, 1));
+	extern void BeginResizeWindowChild(std::string title, Vector4 bgColor = GetColor("outerWindow"), ImGuiWindowFlags flags = 0, Vector2 padding = Vector2(1, 1));
 	extern void EndWindowChild();
 	extern void PushWindowStyles(Vector4 bgColor = GetColor("windowBg"));
 	extern void PopWindowStyles();

@@ -54,7 +54,9 @@ namespace FlatGui
 					ImGui::TableSetupColumn("##Directory", 0, ImGui::GetContentRegionAvail().x);
 
 					if (b_isDirectory)
+					{
 						RenderDirNodes(rootDirPath);
+					}
 
 					ImGui::EndTable();
 				}
@@ -516,6 +518,11 @@ namespace FlatGui
 		{
 			ImGui::GetWindowDrawList()->AddRectFilled(currentPos, Vector2(currentPos.x + iconButtonSize.x, currentPos.y + iconButtonSize.y), FL::GetColor32("selectedFileBg"), 2);
 			ImGui::GetWindowDrawList()->AddRect(currentPos, Vector2(currentPos.x + iconButtonSize.x, currentPos.y + iconButtonSize.y), FL::GetColor32("selectedFileOutline"), 2);
+		}
+		else
+		{
+			ImGui::GetWindowDrawList()->AddRectFilled(currentPos, Vector2(currentPos.x + iconButtonSize.x, currentPos.y + iconButtonSize.y), FL::GetColor32("normalFileBg"), 2);
+			ImGui::GetWindowDrawList()->AddRect(currentPos, Vector2(currentPos.x + iconButtonSize.x, currentPos.y + iconButtonSize.y), FL::GetColor32("normalFileOutline"), 2);
 		}
 
 		FL::RenderInvisibleButton(buttonID.c_str(), currentPos, iconButtonSize, true, false, ImGuiButtonFlags_MouseButtonLeft);

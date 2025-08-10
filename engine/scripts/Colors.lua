@@ -32,31 +32,39 @@ F_Colors = {
 	-- Colliders --
 	sensorActive = Vector4:new(1.0, 1.0, 0.27, 1.0),
 	sensorInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
-	sensorActiveLight =  Vector4:new(1.0, 1.0, 0.27, 0.35),
+	sensorActiveLight =  Vector4:new(1.0, 1.0, 0.27, 0.25),
+	sensorInactiveLight =  Vector4:new(1.0, 0.0, 0.0, 0.25),
 	colliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	colliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.35),
+	colliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
 	colliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
-	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
+	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),
 	-- Box
 	boxColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
 	boxColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.3),
 	boxColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),	
+	boxColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),	
 	-- Circle	
 	circleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	circleColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
 	circleColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
+	circleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),
 	-- Capsule
 	capsuleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
 	capsuleColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
-	capsuleColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.35),
-	capsuleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
+	capsuleColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
+	capsuleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),
 	-- Polygon
 	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	polygonColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
 	polygonColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
+	polygonColliderInactiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
 	-- Chain
 	chainColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
+	chainColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
 	chainColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
+	chainColliderInactiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
 	chainColliderEndSegmentsActive = Vector4:new(1.0, 0.0, 0.0, 1.0),
-	chainColliderEndSegmentsInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
+	chainColliderEndSegmentsActiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
 
 	rayCast = Vector4:new(0.76, 0.42, 0.0, 1.0),
 	-- Button Components
@@ -101,10 +109,10 @@ F_Colors = {
 	projectHubTableOutline = Vector4:new(0.36, 0.36, 0.37, 1.0),
 	-- Log
 	logText = Vector4:new(0.75, 0.75, 0.75, 1.0),
-	logBg = Vector4:new(0.2, 0.2, 0.21, 1.0),
+	logBg =Vector4:new(0.23, 0.23, 0.26, 1.0),
 	logOutline = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	-- File Explorer
-	explorerFilesPanelBg = Vector4:new(0.2, 0.2, 0.22, 1.0),
+	explorerFilesPanelBg =  Vector4:new(0.2, 0.2, 0.23, 1.0),
 	panelTitleBg =  Vector4:new(0.14, 0.14, 0.14, 1.0),
 	filePanelTopBar = Vector4:new(0.2, 0.2, 0.22, 0.0),
 	filesTopBarButtonBg = Vector4:new(0.25, 0.25, 0.27, 1.0),
@@ -112,6 +120,8 @@ F_Colors = {
 	filesPanelOutline = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	selectedFileBg =  Vector4:new(0.75, 0.75, 0.75, 0.11),
 	selectedFileOutline =  Vector4:new(0.75, 0.75, 0.75, 0.45),
+	normalFileBg =  Vector4:new(0.75, 0.75, 0.75, 0.03),
+	normalFileOutline =  Vector4:new(0.75, 0.75, 0.75, 0.15),
 	hoveredFileBg =  Vector4:new(0.75, 0.75, 0.75, 0.05),
 	hoveredFileOutline =  Vector4:new(0.75, 0.75, 0.75, 0.05),
 	-- TileSet Editing

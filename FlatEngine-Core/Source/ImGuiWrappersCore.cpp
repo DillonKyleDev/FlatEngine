@@ -92,19 +92,19 @@ namespace FlatEngine
 		ImGui::End();
 	}
 
-	void BeginWindowChild(std::string title, Vector4 bgColor, ImGuiWindowFlags flags)
+	void BeginWindowChild(std::string title, Vector4 bgColor, ImGuiWindowFlags flags, Vector2 padding)
 	{
 		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_ChildBg, bgColor);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(padding.x, padding.y));
 		ImGui::BeginChild(title.c_str(), Vector2(0, 0), F_childFlags, flags);
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();		
 	}
 
-	void BeginResizeWindowChild(std::string title, Vector4 bgColor, ImGuiWindowFlags flags)
+	void BeginResizeWindowChild(std::string title, Vector4 bgColor, ImGuiWindowFlags flags, Vector2 padding)
 	{
 		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_ChildBg, bgColor);
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1,1));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(padding.x, padding.y));
 		ImGui::BeginChild(title.c_str(), Vector2(0, 0), F_resizeChildFlags, flags);
 		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();

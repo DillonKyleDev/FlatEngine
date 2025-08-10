@@ -947,7 +947,8 @@ namespace FlatGui
 					{
 						if (b_isSensor)
 						{
-							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorActive"), 1.0f, drawList);
+							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorActiveLight"), 2.0f, drawList);
+							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorActive"), 1.0f, drawList);					
 						}
 						else
 						{
@@ -959,10 +960,12 @@ namespace FlatGui
 					{
 						if (b_isSensor)
 						{
-							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorInactive"), 1.0f, drawList);
+							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorInactiveLight"), 2.0f, drawList);
+							FL::DrawRectangleFromLines(corners, FL::GetColor("sensorInactive"), 1.0f, drawList);							
 						}
 						else
 						{
+							FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderInactiveLight"), 2.0f, drawList);
 							FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderInactive"), 1.0f, drawList);
 						}
 					}
@@ -985,21 +988,25 @@ namespace FlatGui
 					{
 						if (b_isSensor)
 						{
+							FL::DrawCircle(center, radius, FL::GetColor("sensorActiveLight"), drawList, 2.0f);
 							FL::DrawCircle(center, radius, FL::GetColor("sensorActive"), drawList);
 						}
 						else
 						{
-							FL::DrawCircle(center, radius, FL::GetColor("circleColliderActive"), drawList);
+							FL::DrawCircle(center, radius, FL::GetColor("circleColliderActiveLight"), drawList, 2.0f);
+							FL::DrawCircle(center, radius, FL::GetColor("circleColliderActive"), drawList);							
 						}
 					}
 					else
 					{
 						if (b_isSensor)
 						{
+							FL::DrawCircle(center, radius, FL::GetColor("sensorInactiveLight"), drawList, 2.0f);
 							FL::DrawCircle(center, radius, FL::GetColor("sensorInactive"), drawList);
 						}
 						else
 						{
+							FL::DrawCircle(center, radius, FL::GetColor("circleColliderInactiveLight"), drawList, 2.0f);
 							FL::DrawCircle(center, radius, FL::GetColor("circleColliderInactive"), drawList);
 						}
 					}
@@ -1059,15 +1066,23 @@ namespace FlatGui
 
 					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
+					FL::DrawCircle(center1, radiusScreen, colorLight, drawList, 2.0f);
 					FL::DrawCircle(center1, radiusScreen, color, drawList);
+
+					FL::DrawCircle(center2, radiusScreen, colorLight, drawList, 2.0f);
 					FL::DrawCircle(center2, radiusScreen, color, drawList);
-					FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, 1, drawList);
-					FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, 1, drawList);
-					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, 1, drawList);
-					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, 1, drawList);
+
+					FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, 2.0f, drawList);
+					FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, 2.0f, drawList);
+					FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, 2.0f, drawList);
+					FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, 2.0f, drawList);
+
 					// Sides
-					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, 1, drawList);
-					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, 1, drawList);
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, colorLight, 2.0f, drawList);
+					FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, 1.0f, drawList);
+
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, colorLight, 2.0f, drawList);
+					FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, 1.0f, drawList);
 				}
 
 				for (FL::Polygon& polygon : polygons)
@@ -1086,16 +1101,19 @@ namespace FlatGui
 					bool b_editingPoints = polygon.IsEditingPoints();
 
 					Vector4 color;
+					Vector4 colorLight;
 
 					if (b_isActive)
 					{
 						if (b_isSensor)
 						{
 							color = FL::GetColor("sensorActive");
+							colorLight = FL::GetColor("sensorActiveLight");
 						}
 						else
 						{
 							color = FL::GetColor("polygonColliderActive");
+							colorLight = FL::GetColor("polygonColliderActiveLight");
 						}
 					}
 					else
@@ -1103,10 +1121,12 @@ namespace FlatGui
 						if (b_isSensor)
 						{
 							color = FL::GetColor("sensorInactive");
+							colorLight = FL::GetColor("sensorInactiveLight");
 						}
 						else
 						{
 							color = FL::GetColor("polygonColliderInactive");
+							colorLight = FL::GetColor("polygonColliderInactiveLight");
 						}
 					}
 
@@ -1119,7 +1139,8 @@ namespace FlatGui
 						Vector2 lineStart = FL::ConvertWorldToScreen(position + rotatedStart);
 						Vector2 lineEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
 
-						FL::DrawLine(lineStart, lineEnd, color, 1, drawList);
+						FL::DrawLine(lineStart, lineEnd, colorLight, 2.0f, drawList);
+						FL::DrawLine(lineStart, lineEnd, color, 1.0f, drawList);
 
 						if (cornerRadius > 0)
 						{
@@ -1128,8 +1149,11 @@ namespace FlatGui
 							Vector2 circleStart = FL::ConvertWorldToScreen(position + rotatedStart);
 							Vector2 circleEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
 
+							FL::DrawCircle(circleStart, cornerRadius* FG_sceneViewGridStep.x, colorLight, drawList, 2.0f);
 							FL::DrawCircle(circleStart, cornerRadius * FG_sceneViewGridStep.x, color, drawList);
-							FL::DrawLine(circleStart, circleEnd, color, 1, drawList);
+
+							FL::DrawLine(circleStart, circleEnd, colorLight, 2.0f, drawList);
+							FL::DrawLine(circleStart, circleEnd, color, 1.0f, drawList);
 						}
 					}
 
@@ -1174,12 +1198,14 @@ namespace FlatGui
 					bool b_editingPoints = chain.IsEditingPoints();
 
 					Vector4 mainColor = FL::GetColor("chainColliderInactive");
+					Vector4 mainColorLight = FL::GetColor("chainColliderInactiveLight");
 					Vector4 endColor = FL::GetColor("chainColliderEndSegmentsInactive");
 
 					if (b_isActive)
 					{
 						mainColor = FL::GetColor("chainColliderActive");
-						endColor = FL::GetColor("chainColliderEndSegmentsActive");
+						mainColorLight = FL::GetColor("chainColliderActiveLight");
+						endColor = FL::GetColor("chainColliderEndSegmentsActive");						
 					}
 
 					for (int i = 0; i < pointCount; i++)
@@ -1191,11 +1217,12 @@ namespace FlatGui
 
 							if (b_isLoop || (i > 0 && i < pointCount - 2))
 							{
-								FL::DrawLine(start, end, mainColor, 1, drawList);
+								FL::DrawLine(start, end, mainColorLight, 2.0f, drawList);
+								FL::DrawLine(start, end, mainColor, 1.0f, drawList);
 							}
 							else
 							{
-								FL::DrawLine(start, end, endColor, 1, drawList);
+								FL::DrawLine(start, end, endColor, 1.0f, drawList);
 							}
 						}
 					}

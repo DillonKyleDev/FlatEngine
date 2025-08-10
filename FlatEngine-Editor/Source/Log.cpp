@@ -22,6 +22,7 @@ namespace FlatGui
 			auto windowSize = ImGui::GetWindowSize();
 			//ImGui::GetWindowDrawList()->AddRect({ windowPos.x + 2, windowPos.y + 2 }, { windowSize.x + windowPos.x - 2, windowPos.y + windowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
 
+			FL::MoveScreenCursor(2, 2);
 			if (FL::RenderCheckbox("Clear every frame", FG_b_clearBufferEveryFrame))
 			{
 				FL::F_Logger.ClearBuffer();
@@ -31,7 +32,7 @@ namespace FlatGui
 			ImGuiTextBuffer log = FL::F_Logger.GetBuffer();
 			static int lines = 0;
 
-			FL::MoveScreenCursor(0, 3);
+			FL::MoveScreenCursor(2, 3);
 
 			if (FL::RenderButton("Clear"))
 			{
@@ -54,7 +55,7 @@ namespace FlatGui
 
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("logBg"));
-			ImGui::BeginChild("Log", Vector2(0, 0), FL::F_childFlags);
+			FL::BeginWindowChild("Log", FL::GetColor("logBg"), FL::F_childFlags);
 			ImGui::PopStyleColor();
 			// {
 
@@ -63,7 +64,7 @@ namespace FlatGui
 				ImGui::PopStyleColor();
 			
 			// }	
-			ImGui::EndChild(); // Log
+			FL::EndWindowChild(); // Log
 
 		// }
 		FL::EndWindow(); // Logger

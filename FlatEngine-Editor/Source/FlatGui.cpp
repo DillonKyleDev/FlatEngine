@@ -951,6 +951,7 @@ namespace FlatGui
 						}
 						else
 						{
+							FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderActiveLight"), 2.0f, drawList);
 							FL::DrawRectangleFromLines(corners, FL::GetColor("boxColliderActive"), 1.0f, drawList);
 						}
 					}

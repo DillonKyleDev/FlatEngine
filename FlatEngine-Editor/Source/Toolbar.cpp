@@ -28,7 +28,7 @@ namespace FlatGui
 			ImGui::PushStyleVar(ImGuiStyleVar_DisabledAlpha, 0.4f);
 
 			float windowWidth = ImGui::GetWindowSize().x;
-			ImGui::SetCursorPosX((windowWidth - 100) * 0.5f);
+			FL::MoveScreenCursor(3, 4);
 			ImGui::BeginDisabled(FL::GameLoopStarted());
 			if (FL::RenderImageButton(playID.c_str(), FL::GetTexture("play")))
 			{
@@ -68,10 +68,14 @@ namespace FlatGui
 			}
 			ImGui::EndDisabled();
 
+			ImGui::SameLine(0, 5); 
+			FL::MoveScreenCursor(0, 4);
+			ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor("logText"));
+			ImGui::Text("Frames to skip: ");
+			ImGui::PopStyleColor();
 			ImGui::SameLine(0, 5);
 			FL::RenderDragInt(framesToSkipDragID.c_str(), 30, framesToSkip, 1, 1, 360);
-			ImGui::SameLine(0, 5);
-			ImGui::Text("Frames to skip");
+		
 
 			ImGui::PopStyleVar();
 

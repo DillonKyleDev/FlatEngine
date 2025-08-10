@@ -104,7 +104,6 @@ namespace FlatGui
 			// {
 
 				long queuedForDelete = -1;
-				FL::MoveScreenCursor(0, 4);
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(0, 0));

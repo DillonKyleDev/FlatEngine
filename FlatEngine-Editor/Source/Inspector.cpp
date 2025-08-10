@@ -300,7 +300,9 @@ namespace FlatGui
 
 				// For scrolling components section with background
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("componentsScrollingBg"));
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 3));
 				ImGui::BeginChild("ComponentsSectionBg", Vector2(0,ImGui::GetContentRegionAvail().y - 30), FL::F_childFlags);
+				ImGui::PopStyleVar();
 				ImGui::PopStyleColor();
 				// {
 				

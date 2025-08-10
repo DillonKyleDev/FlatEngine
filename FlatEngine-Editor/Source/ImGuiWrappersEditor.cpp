@@ -52,7 +52,7 @@ namespace FlatGui
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("innerWindow"));
 		ImGui::PushStyleColor(ImGuiCol_Border, FL::GetColor("componentBorder"));
 		ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 2);
+		ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 1);
 		ImGui::SetNextWindowScroll(Vector2(0, 0));
 		ImGui::BeginChild(componentID.c_str(), Vector2(0, 0), FL::F_autoResizeChildFlags);
 		ImGui::PopStyleVar();
@@ -64,7 +64,7 @@ namespace FlatGui
 			// Border around each component
 			auto componentWindowPos = ImGui::GetWindowPos();
 			auto componentWindowSize = ImGui::GetWindowSize();		
-			ImGui::GetWindowDrawList()->AddRect({ componentWindowPos.x + 2, componentWindowPos.y + 2 }, { componentWindowPos.x + componentWindowSize.x - 2, componentWindowPos.y + componentWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 2);
+			ImGui::GetWindowDrawList()->AddRect({ componentWindowPos.x, componentWindowPos.y + 1 }, { componentWindowPos.x + componentWindowSize.x, componentWindowPos.y + componentWindowSize.y - 1 }, FL::GetColor32("componentBorder"), 2);
 
 			// Tooltip for Component meta data
 			FL::RenderInvisibleButton("ComponentToolTipButton-" + std::to_string(ID), { componentWindowPos.x, componentWindowPos.y }, { componentWindowSize.x, 27 });
@@ -78,7 +78,7 @@ namespace FlatGui
 			ImGui::SetCursorScreenPos({ componentWindowPos.x + 5, componentWindowPos.y + 5 });
 		
 			// Component Name			
-			FL::MoveScreenCursor(5, 5);
+			FL::MoveScreenCursor(4, 5);
 			ImGui::Text(componentType.c_str());
 
 			if (component->GetType() != FL::T_Transform)
@@ -144,11 +144,9 @@ namespace FlatGui
 			ImGui::PopStyleColor();
 			ImGui::PopStyleVar();
 
-			// Add some space to the bottom of each component
 			if (!component->IsCollapsed())
 			{
 				ImGui::PopStyleColor();
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 2);
 				ImGui::EndChild();
 			}
 

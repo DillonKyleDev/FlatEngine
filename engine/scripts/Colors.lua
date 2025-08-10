@@ -39,6 +39,7 @@ F_Colors = {
 	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.35),
 	-- Box
 	boxColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
+	boxColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.3),
 	boxColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),	
 	-- Circle	
 	circleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),

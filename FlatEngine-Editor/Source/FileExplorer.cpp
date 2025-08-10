@@ -40,7 +40,7 @@ namespace FlatGui
 			// Border around object
 			auto directoriesWindowPos = ImGui::GetWindowPos();
 			auto directoriesWindowSize = ImGui::GetWindowSize();  // This is the size of the current box, perfect for getting the exact dimensions for a border
-			ImGui::GetWindowDrawList()->AddRect({ directoriesWindowPos.x + 2, directoriesWindowPos.y + 2 }, { directoriesWindowPos.x + directoriesWindowSize.x - 2, directoriesWindowPos.y + directoriesWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
+			//ImGui::GetWindowDrawList()->AddRect({ directoriesWindowPos.x + 2, directoriesWindowPos.y + 2 }, { directoriesWindowPos.x + directoriesWindowSize.x - 2, directoriesWindowPos.y + directoriesWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
 
 			FL::BeginResizeWindowChild("Directories Panel", FL::GetColor("transparent"));
 			// {

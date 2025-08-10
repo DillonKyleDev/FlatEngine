@@ -61,9 +61,7 @@ namespace FlatEngine
 	void BeginWindow(std::string name, Vector4 bgColor)
 	{
 		PushWindowStyles(bgColor);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 2));
-		ImGui::Begin(name.c_str());
-		ImGui::PopStyleVar();
+		ImGui::Begin(name.c_str());		
 		PopWindowStyles();
 
 		BeginWindowChild(name);
@@ -72,7 +70,8 @@ namespace FlatEngine
 	void BeginWindow(std::string name, bool& b_isOpen, Vector4 bgColor)
 	{
 		PushWindowStyles(bgColor);
-		ImGui::Begin(name.c_str(), &b_isOpen);
+
+		ImGui::Begin(name.c_str(), &b_isOpen);		
 		PopWindowStyles();
 
 		BeginWindowChild(name);
@@ -81,7 +80,7 @@ namespace FlatEngine
 	void BeginWindow(std::string name, bool& b_isOpen, ImGuiWindowFlags flags, Vector4 bgColor)
 	{
 		PushWindowStyles(bgColor);
-		ImGui::Begin(name.c_str(), &b_isOpen, flags);
+		ImGui::Begin(name.c_str(), &b_isOpen, flags);		
 		PopWindowStyles();
 
 		BeginWindowChild(name);
@@ -96,14 +95,18 @@ namespace FlatEngine
 	void BeginWindowChild(std::string title, Vector4 bgColor, ImGuiWindowFlags flags)
 	{
 		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_ChildBg, bgColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1, 1));
 		ImGui::BeginChild(title.c_str(), Vector2(0, 0), F_childFlags, flags);
+		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();		
 	}
 
 	void BeginResizeWindowChild(std::string title, Vector4 bgColor, ImGuiWindowFlags flags)
 	{
 		ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_ChildBg, bgColor);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1,1));
 		ImGui::BeginChild(title.c_str(), Vector2(0, 0), F_resizeChildFlags, flags);
+		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();
 	}
 
@@ -115,6 +118,7 @@ namespace FlatEngine
 	void PushWindowStyles(Vector4 bgColor)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1,1));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1, 3));
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, bgColor);
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, GetColor("frameBg"));
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GetColor("frameBgActive"));
@@ -165,6 +169,7 @@ namespace FlatEngine
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();
 	}
 
@@ -1022,7 +1027,7 @@ namespace FlatEngine
 		ImGui::GetWindowDrawList()->AddRectFilled(screenCursor, Vector2(screenCursor.x + regionAvailable.x, screenCursor.y + 30 + height), ImGui::GetColorU32(GetColor("innerWindow")), 1);
 		MoveScreenCursor(8, 8);
 		ImGui::Text(headerText.c_str());		
-		MoveScreenCursor(0, height + 10);
+		MoveScreenCursor(0, height + 8);
 		ImGui::GetWindowDrawList()->AddRect(Vector2(cursorPos.x, cursorPos.y), Vector2(cursorPos.x + regionAvailable.x, cursorPos.y + height + 30), ImGui::GetColorU32(GetColor("componentBorder")), 1);
 	}
 

@@ -324,7 +324,9 @@ namespace FlatGui
 		// render a leaf
 		else
 		{			
+			ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor32("textLight"));
 			ImGui::TreeNodeEx((void*)(intptr_t)treeID.c_str(), nodeFlags, fs_filepath.filename().string().c_str());
+			ImGui::PopStyleColor();
 		}
 	}
 

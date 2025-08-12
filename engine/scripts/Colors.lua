@@ -17,6 +17,7 @@ F_Colors = {
 	col_9 = Vector4:new(0.9, 0.9, 0.9, 1.0),
 	col_10 = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	red = Vector4:new(1.0, 0.0, 0.0, 1.0),
+	textLight = Vector4:new(0.45, 0.45, 0.45, 1.0),
 	----------------------
 	-- Components --------
 	----------------------
@@ -24,13 +25,13 @@ F_Colors = {
 	componentSubTitleBg = Vector4:new(0.12, 0.12, 0.14, 1.0),
 	componentSectionBorder = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	componentBorder = Vector4:new(0.2, 0.2, 0.2, 1.0),
-	componentBg = Vector4:new(0.16, 0.16, 0.17, 1.0),
+	componentBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
 	pivotSelectionBg = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	openFileButtonBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
 	openFileButtonHovered = Vector4:new(0.3, 0.3, 0.32, 1.0),
 	shapesScrollingBg = Vector4:new(0.1, 0.1, 0.12, 1.0),
-	shapeBg = Vector4:new(0.16, 0.16, 0.17, 1.0),
+	shapeBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
 	-- Colliders --
 	sensorActive = Vector4:new(1.0, 1.0, 0.27, 1.0),
 	sensorInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),

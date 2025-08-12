@@ -175,7 +175,9 @@ namespace FlatEngine
 			std::optional<sol::table> instanceData = F_Lua[scriptName][ID];
 			if (!instanceData.has_value())
 			{
-				LogError("No instance data for " + scriptName + " found using id: " + std::to_string(ID) + ".\n -- Lua Function called by GameObject : " + GetObjectByID(ID)->GetName() + ".\n -- Specific calling Script component : " + F_Lua["calling_script_name"].get_or<std::string>("Script") + ".\n -- Lua Script where called function lives : " + scriptName + ".\n -- The calling Script file may be missing the function called and is using another Script files version instead. Make sure the called function exists in the " + GetObjectByID(ID)->GetName() + " Script file.");
+				std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+				std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+				LogError("No instance data for " + scriptName + " found using id: " + std::to_string(ID) + ".\n -- Lua Function called by GameObject : " + GetObjectByID(ID)->GetName() + ".\n -- Specific calling Script component : " + truncatedName + ".\n -- Lua Script where called function lives : " + scriptName + ".\n -- The calling Script file may be missing the function called and is using another Script files version instead. Make sure the called function exists in the " + GetObjectByID(ID)->GetName() + " Script file.");
 			}
 			return instanceData;
 		};
@@ -217,7 +219,8 @@ namespace FlatEngine
 		F_Lua["GetScriptParam"] = [](std::string paramName, long ID)
 		{
 			GameObject* thisObject = GetObjectByID(ID);
-			std::string scriptName = F_Lua["calling_script_name"];
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
 			Animation::S_EventFunctionParam parameter = Animation::S_EventFunctionParam();
 
 			if (thisObject != nullptr)
@@ -278,47 +281,65 @@ namespace FlatEngine
 		};
 		F_Lua["LogString"] = [](std::string line)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogString(line, prefix);
 		};
 		F_Lua["LogInt"] = [](int value, std::string line)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogInt(value, line, prefix);
 		};
 		F_Lua["LogInt"] = [](int value)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogInt(value, "", prefix);
 		};
 		F_Lua["LogFloat"] = [](float value, std::string line)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogFloat(value, line, prefix);
 		};
 		F_Lua["LogFloat"] = [](float value)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogFloat(value, "", prefix);
 		};
 		F_Lua["LogDouble"] = [](double value, std::string line)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogDouble(value, line, prefix);
 		};
 		F_Lua["LogDouble"] = [](double value)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogDouble(value, "", prefix);
 		};
 		F_Lua["LogLong"] = [](long value, std::string line)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogLong(value, line, prefix);
 		};
 		F_Lua["LogLong"] = [](long value)
 		{
-			std::string prefix = "[LUA] " + F_Lua["calling_script_name"].get_or<std::string>("Script") + " :";
+			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogLong(value, "", prefix);
 		};
 		F_Lua["GetMappingContext"] = [](std::string contextName)
@@ -874,8 +895,8 @@ namespace FlatEngine
 
 		outfile.open(fileNameWExtention, std::ios_base::app);
 		outfile <<
-			"-- " + fileName + ".scp.lua\n\n" +
-			"-- Use \"this_object\" to reference the object that owns this script and \"my_id\" to access its id\n\n\n" +
+			"-- " + fileName + ".scp.lua\n" +
+			"-- use \"this_object\" to reference the object that owns this script and \"my_id\" to access it's id\n\n\n" +
 
 			"function Awake() \n" +
 			"     " + fileName + "[my_id] =\n" +
@@ -888,14 +909,13 @@ namespace FlatEngine
 			"function Start()\n" +
 			"     -- required to access instance data\n" +
 			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
-			"     -- LogString(\"" + fileName + " : Start() called on \"..this_object:GetName())\n" +
 			"end\n\n" +
 
 			"function Update()\n" +
 			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
 			"end\n\n"+
 
-			"-- each of these functions must be present in each file if they are to be called otherwise other scripts copies will be used with this object instead\n" +
+			"-- each of these functions must be present in each Lua script file otherwise other script's implementations will be used with this object instead\n" +
 			"function OnBeginCollision(collidedWith, manifold)\n" +
 			"     local data = GetInstanceData(\"" + fileName + "\", my_id)\n" +
 			"end\n\n" +
@@ -928,9 +948,9 @@ namespace FlatEngine
 			"end\n\n\n" +
 			
 			"--Lua cheatsheet\n\n" +
-			"--Lua if statements:\n--if (test) then\n--elseif\n\n--end\n\n" +
-			"--Lua for loops:\n--for init, min/max value, increment\ndo\n\nend\n" +
-			"--example:\nfor i = 0, 10, 1\ndo\n\nLogInt(i)\nend";
+			"--Lua if statements:\n--if (test) then\n-- <do something>\n--elseif\n-- <do something>\n--end\n\n" +
+			"--Lua for loops:\n--for init, min/max value, increment\n--do\n-- <do something>\n--end\n\n\n" +
+			"--example:\n--for i = 0, 10, 1\n--do\n--LogInt(i)\n--end";
 		outfile.close();
 
 		RetrieveLuaScriptPaths();

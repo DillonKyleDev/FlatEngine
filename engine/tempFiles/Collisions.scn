@@ -57,7 +57,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 2,
-                    "rotation": 38.075035095214844,
+                    "rotation": 38.14848709106445,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 2.0465517044067383,
@@ -187,7 +187,7 @@
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
-                    "attachedScript": "Spin (Lua)",
+                    "attachedScript": "Spinner (Lua)",
                     "id": 15,
                     "scriptParameters": [],
                     "type": "Script"

@@ -18,6 +18,7 @@
 #include "Polygon.h"
 #include "Chain.h"
 #include "CharacterController.h"
+#include "TileMap.h"
 #include "FlatEngine.h"
 
 namespace FL = FlatEngine;
@@ -39,7 +40,7 @@ namespace FlatEngine
 		m_Texts = std::map<long, Text>();		
 		m_Bodies = std::map<long, Body>();
 		m_CharacterControllers = std::map<long, CharacterController>();		
-		//m_TileMaps = std::map<long, TileMap>();
+		m_TileMaps = std::map<long, TileMap>();
 	}
 
 	ECSManager::~ECSManager()
@@ -59,7 +60,7 @@ namespace FlatEngine
 		m_Audios.clear();
 		m_Texts.clear();
 		m_CharacterControllers.clear();		
-		//m_TileMaps.clear();
+		m_TileMaps.clear();
 
 		for (std::map<long, Body>::iterator iterator = m_Bodies.begin(); iterator != m_Bodies.end(); iterator++)
 		{
@@ -148,8 +149,8 @@ namespace FlatEngine
 
 	TileMap* ECSManager::AddTileMap(TileMap tileMap, long ownerID)
 	{
-		//m_TileMaps.emplace(ownerID, tileMap);
-		//return &m_TileMaps.at(ownerID);
+		m_TileMaps.emplace(ownerID, tileMap);
+		return &m_TileMaps.at(ownerID);
 		return nullptr;
 	}
 
@@ -290,11 +291,11 @@ namespace FlatEngine
 
 	TileMap* ECSManager::GetTileMapByOwner(long ownerID)
 	{
-		//if (m_TileMaps.count(ownerID))
+		if (m_TileMaps.count(ownerID))
 		{
-			//return &m_TileMaps.at(ownerID);
+			return &m_TileMaps.at(ownerID);
 		}
-		//else
+		else
 		{
 			return nullptr;
 		}
@@ -361,17 +362,6 @@ namespace FlatEngine
 		}
 		else if (component->GetTypeString() == "TileMap")
 		{
-			TileMap* tileMap = static_cast<TileMap*>(component);
-			if (tileMap->GetCollisionAreas().size() > 0)
-			{
-				for (std::pair<std::string, std::vector<CollisionAreaData>> collisionArea : tileMap->GetCollisionAreas())
-				{
-					for (CollisionAreaData collData : collisionArea.second)
-					{
-						//RemoveBoxCollider(collData.collider->GetID(), ownerID);
-					}
-				}
-			}
 			return RemoveTileMap(ownerID);
 		}
 		else
@@ -513,10 +503,10 @@ namespace FlatEngine
 	bool ECSManager::RemoveTileMap(long ownerID)
 	{
 		bool b_success = false;
-		//if (m_TileMaps.count(ownerID))
+		if (m_TileMaps.count(ownerID))
 		{
-			//m_TileMaps.erase(ownerID);
-			//b_success = true;
+			m_TileMaps.erase(ownerID);
+			b_success = true;
 		}
 		return b_success;
 	}
@@ -569,8 +559,8 @@ namespace FlatEngine
 	{
 		return m_CharacterControllers;
 	}
-	//std::map<long, TileMap>& ECSManager::GetTileMaps()
-	//{
-		//return m_TileMaps;
-	//}
+	std::map<long, TileMap>& ECSManager::GetTileMaps()
+	{
+		return m_TileMaps;
+	}
 }

@@ -64,6 +64,7 @@ namespace FlatEngine
 		ImGui::Begin(name.c_str());		
 		PopWindowStyles();
 
+		PushScrollbarStyles();
 		BeginWindowChild(name);
 	}
 
@@ -74,6 +75,7 @@ namespace FlatEngine
 		ImGui::Begin(name.c_str(), &b_isOpen);		
 		PopWindowStyles();
 
+		PushScrollbarStyles();
 		BeginWindowChild(name);
 	}
 
@@ -83,12 +85,14 @@ namespace FlatEngine
 		ImGui::Begin(name.c_str(), &b_isOpen, flags);		
 		PopWindowStyles();
 
+		PushScrollbarStyles();
 		BeginWindowChild(name);
 	}
 
 	void EndWindow()
 	{
 		EndWindowChild();
+		PopScrollbarStyles();
 		ImGui::End();
 	}
 
@@ -173,6 +177,22 @@ namespace FlatEngine
 		ImGui::PopStyleVar();
 	}
 
+	void PushScrollbarStyles()
+	{
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, GetColor("scrollbarBg"));
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarGrab, GetColor("scrollbarGrab"));
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabActive, GetColor("scrollbarGrabActive"));
+		ImGui::PushStyleColor(ImGuiCol_ScrollbarGrabHovered, GetColor("scrollbarGrabHovered"));
+	}
+
+	void PopScrollbarStyles()
+	{
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+	}
+
 	void PushComboStyles()
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));
@@ -221,7 +241,7 @@ namespace FlatEngine
 
 	void PushTableStyles()
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));		
 		ImGui::PushStyleColor(ImGuiCol_TableRowBg, GetColor("tableCellDark"));
 		ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, GetColor("tableCellLight"));
 	}
@@ -229,21 +249,40 @@ namespace FlatEngine
 	void PopTableStyles()
 	{
 		ImGui::PopStyleColor();
-		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();		
 		ImGui::PopStyleVar();
 	}
 
-	bool PushTable(std::string ID, int columns, ImGuiTableFlags flags)
+	bool PushTable(std::string ID, int columns, ImGuiTableFlags flags, Vector2 outerSize)
 	{
 		PushTableStyles();
-		float columnWidth = ImGui::GetContentRegionAvail().x / columns;
-		bool b_beginTable = ImGui::BeginTable(ID.c_str(), columns, flags);
+
+		bool b_beginTable = false;
+
+		if (outerSize.x == 0 && outerSize.y == 0)
+		{
+			if (ImGui::GetContentRegionAvail().x != 0)
+			{
+				outerSize = Vector2(ImGui::GetContentRegionAvail().x - 1, 0);
+				b_beginTable = ImGui::BeginTable(ID.c_str(), columns, flags, outerSize);
+			}
+			else
+			{
+				b_beginTable = ImGui::BeginTable(ID.c_str(), columns, flags);
+			}
+		}
+		else if (outerSize.x == -1 && outerSize.y == -1)
+		{
+			b_beginTable = ImGui::BeginTable(ID.c_str(), columns, flags);
+		}
+
+		
 		if (b_beginTable)
 		{
 			for (int i = 0; i < columns; i++)
 			{
 				std::string columnLabel = ID + std::to_string(i);
-				ImGui::TableSetupColumn(columnLabel.c_str());
+				ImGui::TableSetupColumn(columnLabel.c_str(), 0);
 			}
 		}
 		else
@@ -465,7 +504,7 @@ namespace FlatEngine
 			ImGui::SameLine(0, -1);
 
 			std::string buttonId = ID + "openFileButton";
-			if (RenderImageButton(buttonId.c_str(), GetTexture("openFile"), Vector2(16), 1, GetColor("openFileButtonBg"), GetColor("imageButtonTint"), GetColor("openFileButtonHovered"), GetColor("imageButtonActive"), Vector2(0), Vector2(1), Vector2(3)))
+			if (RenderImageButton(buttonId.c_str(), GetTexture("openFile"), Vector2(16), 1, Vector2(3), GetColor("openFileButtonBg"), GetColor("imageButtonTint"), GetColor("openFileButtonHovered"), GetColor("imageButtonActive"), Vector2(0), Vector2(1)))
 			{
 				std::string assetPath = FL::OpenLoadFileExplorer();
 				strcpy_s(newPath, assetPath.c_str());
@@ -617,7 +656,7 @@ namespace FlatEngine
 		ImGui::SameLine();
 
 		std::string buttonId = ID + "openFileButton";		
-		if (RenderImageButton(buttonId.c_str(), GetTexture("openFile"), Vector2(16), 1, GetColor("openFileButtonBg"), GetColor("imageButtonTint"), GetColor("openFileButtonHovered"), GetColor("imageButtonActive"), Vector2(0), Vector2(1), Vector2(3)))
+		if (RenderImageButton(buttonId.c_str(), GetTexture("openFile"), Vector2(16), 1, Vector2(3), GetColor("openFileButtonBg"), GetColor("imageButtonTint"), GetColor("openFileButtonHovered"), GetColor("imageButtonActive"), Vector2(0), Vector2(1)))
 		{
 			std::string assetPath = FL::OpenLoadFileExplorer();
 			strcpy_s(newPath, assetPath.c_str());
@@ -827,16 +866,14 @@ namespace FlatEngine
 		return b_isClicked;
 	}
 
-	bool RenderImageButton(std::string ID, SDL_Texture* texture, Vector2 size, float rounding, Vector4 bgColor, Vector4 tint, Vector4 hoverColor, Vector4 activeColor, Vector2 uvStart, Vector2 uvEnd, Vector2 padding)
+	bool RenderImageButton(std::string ID, SDL_Texture* texture, Vector2 size, float rounding, Vector2 padding, Vector4 bgColor, Vector4 tint, Vector4 hoverColor, Vector4 activeColor, Vector2 uvStart, Vector2 uvEnd)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, bgColor);
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, activeColor);		
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, rounding);
-		if (padding.x != -1 && padding.y != -1)
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
-		}
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
+		
 
 		bool b_isClicked = ImGui::ImageButton(ID.c_str(), texture, size, uvStart, uvEnd, GetColor("transparent"), tint);
 
@@ -844,11 +881,8 @@ namespace FlatEngine
 		{
 			ImGui::SetMouseCursor(ImGuiMouseCursor_::ImGuiMouseCursor_Hand);
 		}
-		
-		if (padding.x != -1 && padding.y != -1)
-		{
-			ImGui::PopStyleVar();
-		}
+
+		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();		
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
@@ -1002,6 +1036,7 @@ namespace FlatEngine
 		ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, GetColor("checkboxHovered"));
 		ImGui::PushStyleColor(ImGuiCol_FrameBgActive, GetColor("checkboxActive"));
 		ImGui::PushStyleColor(ImGuiCol_CheckMark, GetColor("checkboxCheck"));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(0));
 
 		bool b_checked = ImGui::Checkbox(text.c_str(), &b_toCheck);
 
@@ -1010,6 +1045,7 @@ namespace FlatEngine
 			ImGui::SetMouseCursor(ImGuiMouseCursor_::ImGuiMouseCursor_Hand);
 		}
 
+		ImGui::PopStyleVar();
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
@@ -1020,15 +1056,14 @@ namespace FlatEngine
 
 	void RenderSectionHeader(std::string headerText, float height)
 	{
-		auto cursorPos = ImGui::GetCursorScreenPos();
-		auto regionAvailable = ImGui::GetContentRegionAvail();
+		Vector2 cursorPos = ImGui::GetCursorScreenPos();
+		Vector2 regionAvailable = ImGui::GetContentRegionAvail();
 
-		Vector2 screenCursor = ImGui::GetCursorScreenPos();
-		ImGui::GetWindowDrawList()->AddRectFilled(screenCursor, Vector2(screenCursor.x + regionAvailable.x, screenCursor.y + 30 + height), ImGui::GetColorU32(GetColor("innerWindow")), 1);
+		ImGui::GetWindowDrawList()->AddRectFilled(cursorPos, Vector2(cursorPos.x + regionAvailable.x, cursorPos.y + 30 + height), ImGui::GetColorU32(GetColor("sectionHeaderBg")));
 		MoveScreenCursor(8, 8);
 		ImGui::Text(headerText.c_str());		
 		MoveScreenCursor(0, height + 8);
-		ImGui::GetWindowDrawList()->AddRect(Vector2(cursorPos.x, cursorPos.y), Vector2(cursorPos.x + regionAvailable.x, cursorPos.y + height + 30), ImGui::GetColorU32(GetColor("componentBorder")), 1);
+		ImGui::GetWindowDrawList()->AddRect(cursorPos, Vector2(cursorPos.x + regionAvailable.x, cursorPos.y + height + 30), ImGui::GetColorU32(GetColor("sectionHeaderBorder")));
 	}
 
 	// *** SECOND VECTOR IS THE SIZE, **NOT*** THE END POSITION. *** Sets CursorScreenPos to the starting point! *** 

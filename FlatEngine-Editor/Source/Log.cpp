@@ -22,30 +22,36 @@ namespace FlatGui
 			auto windowSize = ImGui::GetWindowSize();
 			//ImGui::GetWindowDrawList()->AddRect({ windowPos.x + 2, windowPos.y + 2 }, { windowSize.x + windowPos.x - 2, windowPos.y + windowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
 
+
 			FL::MoveScreenCursor(2, 2);
+
+			ImGuiTextBuffer log = FL::F_Logger.GetBuffer();
+			static int lines = 0;
+			if (FL::RenderButton("Clear"))
+			{
+				FL::F_Logger.ClearBuffer();
+				lines = 0;
+			}
+
+			ImGui::SameLine();
+			FL::MoveScreenCursor(0, 3);
+
 			if (FL::RenderCheckbox("Clear every frame", FG_b_clearBufferEveryFrame))
 			{
 				FL::F_Logger.ClearBuffer();
 				SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 			}
 
-			ImGuiTextBuffer log = FL::F_Logger.GetBuffer();
-			static int lines = 0;
 
-			FL::MoveScreenCursor(2, 3);
 
-			if (FL::RenderButton("Clear"))
-			{
-				FL::F_Logger.ClearBuffer();
-				lines = 0;
-			}
-			ImGui::SameLine();
 
-			ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor("logText"));
-			ImGui::Text("Log buffer contents : % d bytes", log.size());
-			ImGui::PopStyleColor();
 
-			FL::MoveScreenCursor(0, 3);
+
+			//ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor("logText"));
+			//ImGui::Text("Log buffer contents : % d bytes", log.size());
+			//ImGui::PopStyleColor();
+
+			FL::MoveScreenCursor(0, 2);
 
 			Vector2 cursorPos = Vector2(ImGui::GetCursorScreenPos().x - 1, ImGui::GetCursorScreenPos().y - 1);
 			Vector2 availSpace = ImGui::GetContentRegionAvail();

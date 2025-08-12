@@ -1,48 +1,42 @@
--- Car.scp.lua
+-- Spin.scp.lua
 
 -- Use "this_object" to reference the object that owns this script and "my_id" to access its id
 
 
 function Awake() 
-     Car[my_id] =
+     Spin[my_id] =
      {
-          animation = this_object:GetAnimation()
+		body = this_object:GetBody()
      }
-     local data = GetInstanceData("Car", my_id)
+     local data = GetInstanceData("Spin", my_id)
 end
 
 function Start()
      -- required to access instance data
-     local data = GetInstanceData("Car", my_id)     
-     data.animation:Play("explode")
+     local data = GetInstanceData("Spin", my_id)
+     -- LogString("Spin : Start() called on "..this_object:GetName())
+     data.body:ApplyTorque(-10000)
 end
 
 function Update()
-     local data = GetInstanceData("Car", my_id)
+     local data = GetInstanceData("Spin", my_id)
 end
 
 -- each of these functions must be present in each file if they are to be called otherwise other scripts copies will be used with this object instead
 function OnBeginCollision(collidedWith, manifold)
-     local data = GetInstanceData("Car", my_id)     
-
-     if (manifold:GetPoints():size() == 2) then          
-          for i = 1, manifold:GetPoints():size(), 1 do
-               -- LogFloat(manifold:GetPoints()[i].normalVelocity)
-          end          
-     end
-
+     local data = GetInstanceData("Spin", my_id)
 end
 
 function OnEndCollision(collidedWith, manifold)
-     local data = GetInstanceData("Car", my_id)     
+     local data = GetInstanceData("Spin", my_id)
 end
 
 function OnBeginSensorTouch(touched)
-     LogString("Sensor touched " .. touched:GetParent():GetName())
+     local data = GetInstanceData("Spin", my_id)
 end
 
 function OnEndSensorTouch(touched)
-     LogString("Sensor stopped touching " .. touched:GetParent():GetName())
+     local data = GetInstanceData("Spin", my_id)
 end
 
 function OnButtonMouseOver()
@@ -58,4 +52,25 @@ function OnButtonLeftClick()
 end
 
 function OnButtonRightClick()
+end
+
+
+--Lua cheatsheet
+
+--Lua if statements:
+--if (test) then
+--elseif
+
+--end
+
+--Lua for loops:
+--for init, min/max value, increment
+do
+
+end
+--example:
+for i = 0, 10, 1
+do
+
+LogInt(i)
 end

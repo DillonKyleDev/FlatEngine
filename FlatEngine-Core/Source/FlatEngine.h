@@ -423,6 +423,8 @@ namespace FlatEngine
 	extern void MoveScreenCursor(float x, float y);
 	extern void RenderSeparator(float topPadding, float bottomPadding);
 	extern void RenderSubTitle(std::string title);
+	extern void PushScrollbarStyles();
+	extern void PopScrollbarStyles();
 	extern void BeginWindow(std::string name, Vector4 bgColor = GetColor("windowBg"));
 	extern void BeginWindow(std::string name, bool& b_isOpen, Vector4 bgColor = GetColor("windowBg"));
 	extern void BeginWindow(std::string name, bool& b_isOpen, ImGuiWindowFlags flags, Vector4 bgColor = GetColor("windowBg"));
@@ -438,7 +440,7 @@ namespace FlatEngine
 	extern void PopMenuStyles();
 	extern void PushTableStyles();
 	extern void PopTableStyles();
-	extern bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = F_tableFlags);
+	extern bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = F_tableFlags, Vector2 outerSize = Vector2(0,0));
 	extern bool RenderFloatDragTableRow(std::string ID, std::string fieldName, float& value, float increment, float min, float max);
 	extern bool RenderIntSliderTableRow(std::string ID, std::string fieldName, int& value, int increment, int min, int max);
 	extern bool RenderTagListTableRow(std::string ID, std::string fieldName, TagList& tagList);
@@ -452,7 +454,7 @@ namespace FlatEngine
 	extern bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string tooltip = "", float inputWidth = -1);
 	extern bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string tooltip = "", float inputWidth = -1);
 	extern bool RenderButton(std::string text, Vector2 size = Vector2(0, 0), float rounding = 1, Vector4 color = GetColor("button"), Vector4 hoverColor = GetColor("buttonHovered"), Vector4 activeColor = GetColor("buttonActive"));
-	extern bool RenderImageButton(std::string ID, SDL_Texture* texture, Vector2 size = Vector2(16, 16), float rounding = 1, Vector4 bgColor = GetColor("imageButton"), Vector4 tint = GetColor("imageButtonTint"), Vector4 hoverColor = GetColor("imageButtonHovered"), Vector4 activeColor = GetColor("imageButtonActive"), Vector2 uvStart = Vector2(0,0), Vector2 uvEnd = Vector2(1, 1), Vector2 padding = Vector2(-1, -1));
+	extern bool RenderImageButton(std::string ID, SDL_Texture* texture, Vector2 size = Vector2(16, 16), float rounding = 1, Vector2 padding = Vector2(1, 1), Vector4 bgColor = GetColor("imageButton"), Vector4 tint = GetColor("imageButtonTint"), Vector4 hoverColor = GetColor("imageButtonHovered"), Vector4 activeColor = GetColor("imageButtonActive"), Vector2 uvStart = Vector2(0,0), Vector2 uvEnd = Vector2(1, 1));
 	extern bool RenderDragFloat(std::string text, float width, float& value, float increment, float min, float max, ImGuiSliderFlags flags = 0, std::string bgColor = "");
 	extern bool RenderDragInt(std::string text, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags = 0, std::string bgColor = "");
 	extern bool RenderSliderFloat(std::string label, float& value, float increment = 0.1f, float min = 0.0f, float max = 1000, float width = -1, int digitsAfterDecimal = 3);

@@ -72,7 +72,6 @@ using Camera = FL::Camera;
 using Script = FL::Script;
 using Button = FL::Button;
 using Canvas = FL::Canvas;
-using Animation = FL::Animation;
 using Audio = FL::Audio;
 using Text = FL::Text;
 using CharacterController = FL::CharacterController;
@@ -223,7 +222,7 @@ namespace FlatGui
 	extern void RenderAudioComponent(Audio* audio);
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
-	extern void RenderBodyComponent(Body* body);	
+	extern void RenderBodyComponent(Body* body, ImDrawList* drawList);	
 	extern void RenderShapeComponentProps(Shape* shape);
 	extern void RenderTileMapComponent(TileMap* tileMap);
 

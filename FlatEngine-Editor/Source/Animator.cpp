@@ -21,27 +21,19 @@ namespace FlatGui
 {	
 	void RenderAnimator()
 	{
-		FL::PushWindowStyles();
-		// 16 | 8 are flags for noScrollbar and noscrollwithmouse
-		ImGui::Begin("Animator", &FG_b_showAnimator, 16 | 8);
-		FL::PopWindowStyles();
+		FL::BeginWindow("Animator");
 		// {
-
-			FL::BeginResizeWindowChild("Animated Properties");
+			
+			FL::BeginResizeWindowChild("Animated Properties", FL::GetColor("outerWindow"), 0, Vector2(0));			
 			// {
 			
-				// Border around object
-				auto propsAnimatorWindowPos = ImGui::GetWindowPos();
-				auto propsAnimatorWindowSize = ImGui::GetWindowSize();  // This is the size of the current box, perfect for getting the exact dimensions for a border
-				ImGui::GetWindowDrawList()->AddRect({ propsAnimatorWindowPos.x + 2, propsAnimatorWindowPos.y + 2 }, { propsAnimatorWindowPos.x + propsAnimatorWindowSize.x - 2, propsAnimatorWindowPos.y + propsAnimatorWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
-
-				std::string animationName = "-No Animation Selected-";
+				std::string animationName = "- No Animation Selected -";
 				if (GetFocusedAnimation() != nullptr && GetFocusedAnimation()->animationName != "")
 				{
 					animationName = GetFocusedAnimation()->animationName;
 				}
 
-				ImGui::BeginChild("Manage Animation", Vector2(0, 0), FL::F_autoResizeChildFlags);
+				FL::BeginWindowChild("Manage Animation", FL::GetColor("outerWindow"), 0, Vector2(0));
 				// {
 
 					static std::string animationFilePath;
@@ -61,8 +53,8 @@ namespace FlatGui
 					FL::RenderSectionHeader(animationName);
 
 					// Three dots
-					FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 29, -31);
-					FL::RenderImageButton("##AnimatorHamburgerMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, FL::GetColor("transparent"));
+					FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 24, -27);
+					FL::RenderImageButton("##AnimatorHamburgerMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, Vector2(1,1), FL::GetColor("transparent"));
 					FL::PushMenuStyles();
 					if (ImGui::BeginPopupContextItem("##AnimationHamburgerMenu", ImGuiPopupFlags_MouseButtonLeft))
 					{
@@ -91,13 +83,13 @@ namespace FlatGui
 						}
 						ImGui::EndPopup();
 					}
-					FL::PopMenuStyles();
+					FL::PopMenuStyles();					
 
-					FL::RenderSeparator(6, 6);
 
+					FL::MoveScreenCursor(0, 5);
 					std::shared_ptr<Animation::S_AnimationProperties> animProps = GetFocusedAnimation();
 
-					const char* properties[] = { "- select property -", "Event", "Transform", "Sprite", "Camera", "Script", "Button", "Canvas", "Audio", "Text", "BoxCollider", "CircleCollider", "RigidBody", "CharacterController" };
+					const char* properties[] = { "- select property -", "Event", "Transform", "Sprite", "Camera", "Script", "Button", "Canvas", "Audio", "Text", "CharacterController" };
 					static int current_property = 0;
 					static std::string nodeClicked = "";
 
@@ -159,24 +151,6 @@ namespace FlatGui
 							textProperties->name = "Text";
 							animProps->textProps.push_back(textProperties);
 						}
-						else if (property == "BoxCollider")
-						{
-							std::shared_ptr<Animation::S_BoxCollider> boxColliderProperties = std::make_shared<Animation::S_BoxCollider>();
-							boxColliderProperties->name = "BoxCollider";
-							animProps->boxColliderProps.push_back(boxColliderProperties);
-						}
-						else if (property == "CircleCollider")
-						{
-							std::shared_ptr<Animation::S_CircleCollider> circleColliderProperties = std::make_shared<Animation::S_CircleCollider>();
-							circleColliderProperties->name = "CircleCollider";
-							animProps->circleColliderProps.push_back(circleColliderProperties);
-						}
-						else if (property == "RigidBody")
-						{
-							std::shared_ptr<Animation::S_RigidBody> rigidBodyProperties = std::make_shared<Animation::S_RigidBody>();
-							rigidBodyProperties->name = "RigidBody";
-							animProps->rigidBodyProps.push_back(rigidBodyProperties);
-						}
 						else if (property == "CharacterController")
 						{
 							std::shared_ptr<Animation::S_CharacterController> characterControllerProperties = std::make_shared<Animation::S_CharacterController>();
@@ -224,18 +198,6 @@ namespace FlatGui
 							{
 								animProps->textProps.clear();
 							}
-							else if (property == "BoxCollider")
-							{
-								animProps->boxColliderProps.clear();
-							}
-							else if (property == "CircleCollider")
-							{
-								animProps->circleColliderProps.clear();
-							}
-							else if (property == "RigidBody")
-							{
-								animProps->rigidBodyProps.clear();
-							}
 							else if (property == "CharacterController")
 							{
 								animProps->characterControllerProps.clear();
@@ -261,7 +223,7 @@ namespace FlatGui
 
 						static std::string selected_property = "";			
 						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-						ImGui::Text("Add Properties:");
+						ImGui::Text("Add Properties");
 						FL::MoveScreenCursor(0, 3);
 						std::vector<std::string> props = std::vector<std::string>();
 						FL::PushComboStyles();
@@ -279,9 +241,6 @@ namespace FlatGui
 									animProps->canvasProps.size() == 0 && properties[n] == "Canvas" ||
 									animProps->audioProps.size() == 0 && properties[n] == "Audio" ||
 									animProps->textProps.size() == 0 && properties[n] == "Text" ||
-									animProps->boxColliderProps.size() == 0 && properties[n] == "BoxCollider" ||
-									animProps->circleColliderProps.size() == 0 && properties[n] == "CircleCollider" ||
-									animProps->rigidBodyProps.size() == 0 && properties[n] == "RigidBody" ||
 									animProps->characterControllerProps.size() == 0 && properties[n] == "CharacterController"
 									)
 								{
@@ -307,7 +266,7 @@ namespace FlatGui
 							current_property = 0;
 						}
 
-						FL::RenderSeparator(3, 3);
+						//FL::RenderSeparator(3, 3);
 
 						// List properties in this animation
 						ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
@@ -324,9 +283,6 @@ namespace FlatGui
 							animProps->canvasProps.size() > 0 ||
 							animProps->audioProps.size() > 0 ||
 							animProps->textProps.size() > 0 ||
-							animProps->boxColliderProps.size() > 0 ||
-							animProps->circleColliderProps.size() > 0 ||
-							animProps->rigidBodyProps.size() > 0 || 
 							animProps->characterControllerProps.size() > 0)
 						if (ImGui::BeginTable("##AnimationProperties", 1, FL::F_tableFlags))
 						{
@@ -375,9 +331,6 @@ namespace FlatGui
 							RenderPropertyButton("Canvas", (int)animProps->canvasProps.size(), nodeClicked);
 							RenderPropertyButton("Audio", (int)animProps->audioProps.size(), nodeClicked);
 							RenderPropertyButton("Text", (int)animProps->textProps.size(), nodeClicked);
-							RenderPropertyButton("BoxCollider", (int)animProps->boxColliderProps.size(), nodeClicked);
-							RenderPropertyButton("CircleCollider", (int)animProps->circleColliderProps.size(), nodeClicked);
-							RenderPropertyButton("RigidBody", (int)animProps->rigidBodyProps.size(), nodeClicked);
 							RenderPropertyButton("CharacterController", (int)animProps->characterControllerProps.size(), nodeClicked);
 
 			
@@ -389,10 +342,10 @@ namespace FlatGui
 					}
 
 				// }
-				ImGui::EndChild(); // Manage Animation
+				FL::EndWindowChild(); // Manage Animation
 
 			// }
-			ImGui::EndChild(); // Animator Properties
+			FL::EndWindowChild(); // Animator Properties
 
 
 			ImGui::SameLine(0, 5);
@@ -407,14 +360,12 @@ namespace FlatGui
 				// Border Animation Timeline
 				auto propsWindowPos = ImGui::GetWindowPos();
 				auto propsWindowSize = ImGui::GetWindowSize();
-				ImGui::GetWindowDrawList()->AddRect({ propsWindowPos.x + 2, propsWindowPos.y + 2 }, { propsWindowPos.x + propsWindowSize.x - 2, propsWindowPos.y + propsWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
+				//ImGui::GetWindowDrawList()->AddRect({ propsWindowPos.x + 2, propsWindowPos.y + 2 }, { propsWindowPos.x + propsWindowSize.x - 2, propsWindowPos.y + propsWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
 
 				ImGui::BeginChild("Property Header", Vector2(0,0), FL::F_headerFlags);
 				// {
 
-					FL::RenderSectionHeader("Animation Timeline");
-
-					FL::RenderSeparator(1, 6);
+					FL::RenderSectionHeader("Animation Timeline");					
 
 					float availableSpace = ImGui::GetContentRegionAvail().x / 2;
 					ImGui::SetNextItemWidth(availableSpace);
@@ -458,7 +409,7 @@ namespace FlatGui
 
 						// Play Button
 						ImGui::BeginDisabled(b_isPreviewing);
-						if (FL::RenderImageButton(playID.c_str(), FL::GetTexture("play"), Vector2(14, 14), 0, FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
+						if (FL::RenderImageButton(playID.c_str(), FL::GetTexture("play"), Vector2(14, 14), 0, Vector2(1,1), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 						{
 							//if (animation != nullptr)
 							//{
@@ -473,7 +424,7 @@ namespace FlatGui
 
 						// Stop button	
 						ImGui::BeginDisabled(!b_isPreviewing);
-						if (FL::RenderImageButton(stopID.c_str(), FL::GetTexture("stop"), Vector2(14, 14), 0, FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
+						if (FL::RenderImageButton(stopID.c_str(), FL::GetTexture("stop"), Vector2(14, 14), 0, Vector2(1, 1), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 						{
 							//animation->Stop();
 							b_isPreviewing = false;
@@ -811,60 +762,6 @@ namespace FlatGui
 						propertyYPos--;
 						propertyCounter++;
 					}
-					if (animProps->boxColliderProps.size() > 0)
-					{
-						rectColor = Vector4(224, 158, 15, 100);
-						std::vector<float> keyFrameTimes = std::vector<float>();
-						L_RenderPropertyInTimeline("BoxCollider", keyFrameTimes, rectColor);
-
-						for (std::shared_ptr<Animation::S_BoxCollider> frame : animProps->boxColliderProps)
-						{
-							std::string ID = "BoxCollider";					
-							float keyFrameX = frame->time / 1000;
-							Vector2 keyFramePos = Vector2(keyFrameX, propertyYPos);
-							if (zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) + 6 < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) > canvasP0.y)
-								L_RenderAnimationTimelineKeyFrames(frame, IDCounter, keyFramePos, zeroPoint, scrolling, canvasP0, canvasP1, canvasSize, animatorGridgridStep);
-							IDCounter++;
-						}
-						propertyYPos--;
-						propertyCounter++;
-					}
-					if (animProps->circleColliderProps.size() > 0)
-					{
-						rectColor = Vector4(11, 42, 183, 100);
-						std::vector<float> keyFrameTimes = std::vector<float>();
-						L_RenderPropertyInTimeline("CircleCollider", keyFrameTimes, rectColor);
-
-						for (std::shared_ptr<Animation::S_CircleCollider> frame : animProps->circleColliderProps)
-						{
-							std::string ID = "CircleCollider";					
-							float keyFrameX = frame->time / 1000;
-							Vector2 keyFramePos = Vector2(keyFrameX, propertyYPos);
-							if (zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) + 6 < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) > canvasP0.y)
-								L_RenderAnimationTimelineKeyFrames(frame, IDCounter, keyFramePos, zeroPoint, scrolling, canvasP0, canvasP1, canvasSize, animatorGridgridStep);
-							IDCounter++;
-						}
-						propertyYPos--;
-						propertyCounter++;
-					}
-					if (animProps->rigidBodyProps.size() > 0)
-					{
-						rectColor = Vector4(166, 11, 183, 100);
-						std::vector<float> keyFrameTimes = std::vector<float>();
-						L_RenderPropertyInTimeline("RigidBody", keyFrameTimes, rectColor);
-
-						for (std::shared_ptr<Animation::S_RigidBody> frame : animProps->rigidBodyProps)
-						{
-							std::string ID = "RigidBody";					
-							float keyFrameX = frame->time / 1000;
-							Vector2 keyFramePos = Vector2(keyFrameX, propertyYPos);
-							if (zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) + 6 < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) > canvasP0.y)
-								L_RenderAnimationTimelineKeyFrames(frame, IDCounter, keyFramePos, zeroPoint, scrolling, canvasP0, canvasP1, canvasSize, animatorGridgridStep);
-							IDCounter++;
-						}
-						propertyYPos--;
-						propertyCounter++;
-					}
 					if (animProps->characterControllerProps.size() > 0)
 					{
 						rectColor = Vector4(85, 183, 11, 100);
@@ -898,7 +795,7 @@ namespace FlatGui
 			FL::EndWindowChild(); // Animation Timeline
 		
 		// }
-		ImGui::End(); // Animator
+		FL::EndWindow(); // Animator
 	}
 
 	void RenderAnimationPreview()
@@ -1020,7 +917,7 @@ namespace FlatGui
 				// Three dots
 				FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 29, -31);
 				ImGui::BeginDisabled(FG_FocusedAnimation == nullptr || FG_SelectedKeyFrameToEdit == nullptr);
-				FL::RenderImageButton("##KeyframeEditorHamburgerMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, FL::GetColor("transparent"));
+				FL::RenderImageButton("##KeyframeEditorHamburgerMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent"));
 				ImGui::EndDisabled();
 				// Popup context
 				FL::PushMenuStyles();

@@ -29,6 +29,10 @@ namespace FlatGui
 		FL::BeginWindow("Inspector");
 		// {
 
+			// For border around components section
+			Vector2 wPos;
+			Vector2 wSize;
+
 			long focusedObjectID = GetFocusedGameObjectID();
 
 			if (focusedObjectID != -1 && FL::GetObjectByID(focusedObjectID) != nullptr)
@@ -131,60 +135,60 @@ namespace FlatGui
 							}
 						}
 
-						if (!focusedObject->HasComponent("BoxBody"))
-						{
-							if (ImGui::MenuItem("BoxBody"))
-							{
-								//focusedObject->AddBoxBody();
-								ImGui::CloseCurrentPopup();
-							}
-						}
+						//if (!focusedObject->HasComponent("BoxBody"))
+						//{
+						//	if (ImGui::MenuItem("BoxBody"))
+						//	{
+						//		focusedObject->AddBoxBody();
+						//		ImGui::CloseCurrentPopup();
+						//	}
+						//}
 
-						if (!focusedObject->HasComponent("CircleBody"))
-						{
-							if (ImGui::MenuItem("CircleBody"))
-							{
-								focusedObject->AddCircleBody();
-								ImGui::CloseCurrentPopup();
-							}
-						}
+						//if (!focusedObject->HasComponent("CircleBody"))
+						//{
+						//	if (ImGui::MenuItem("CircleBody"))
+						//	{
+						//		focusedObject->AddCircleBody();
+						//		ImGui::CloseCurrentPopup();
+						//	}
+						//}
 
-						if (!focusedObject->HasComponent("CapsuleBody"))
-						{
-							if (ImGui::MenuItem("CapsuleBody"))
-							{
-								focusedObject->AddCapsuleBody();
-								ImGui::CloseCurrentPopup();
-							}
-						}
+						//if (!focusedObject->HasComponent("CapsuleBody"))
+						//{
+						//	if (ImGui::MenuItem("CapsuleBody"))
+						//	{
+						//		focusedObject->AddCapsuleBody();
+						//		ImGui::CloseCurrentPopup();
+						//	}
+						//}
 
-						if (!focusedObject->HasComponent("PolygonBody"))
-						{
-							if (ImGui::MenuItem("PolygonBody"))
-							{
-								focusedObject->AddPolygonBody();
-								ImGui::CloseCurrentPopup();
-							}
-						}
+						//if (!focusedObject->HasComponent("PolygonBody"))
+						//{
+						//	if (ImGui::MenuItem("PolygonBody"))
+						//	{
+						//		focusedObject->AddPolygonBody();
+						//		ImGui::CloseCurrentPopup();
+						//	}
+						//}
 
-						if (!focusedObject->HasComponent("ChainBody"))
-						{
-							if (ImGui::MenuItem("ChainBody"))
-							{
-								focusedObject->AddChainBody();
-								ImGui::CloseCurrentPopup();
-							}
-						}
+						//if (!focusedObject->HasComponent("ChainBody"))
+						//{
+						//	if (ImGui::MenuItem("ChainBody"))
+						//	{
+						//		focusedObject->AddChainBody();
+						//		ImGui::CloseCurrentPopup();
+						//	}
+						//}
 					}
 
-					//if (!focusedObject->HasComponent("TileMap"))
-					//{
-					//	if (ImGui::MenuItem("TileMap"))
-					//	{
-					//		focusedObject->AddTileMap();
-					//		ImGui::CloseCurrentPopup();
-					//	}
-					//}
+					if (!focusedObject->HasComponent("TileMap"))
+					{
+						if (ImGui::MenuItem("TileMap"))
+						{
+							focusedObject->AddTileMap();
+							ImGui::CloseCurrentPopup();
+						}
+					}
 
 					FL::PopMenuStyles();
 				};
@@ -203,44 +207,10 @@ namespace FlatGui
 				{
 					focusedObject->SetActive(b_isActive);
 				}
-				ImGui::SameLine(ImGui::GetContentRegionAvail().x - 100, 5);
-
-
-				static bool b_expandAll = true;
-				if (b_expandAll)
-				{
-					if (FL::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedObjectID), FL::GetTexture("expandFlipped")))
-					{
-						for (Component* component : focusedObject->GetComponents())
-						{
-							component->SetCollapsed(b_expandAll);
-						}
-						b_expandAll = !b_expandAll;
-					}
-					if (ImGui::IsItemHovered())
-					{
-						FL::RenderTextToolTip("Collapse all");
-					}
-				}
-				else
-				{
-					if (FL::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedObjectID), FL::GetTexture("expand")))
-					{
-						for (Component* component : focusedObject->GetComponents())
-						{
-							component->SetCollapsed(b_expandAll);
-						}
-						b_expandAll = !b_expandAll;
-					}
-					if (ImGui::IsItemHovered())
-					{
-						FL::RenderTextToolTip("Expand all");
-					}
-				}
-				ImGui::SameLine();
+				ImGui::SameLine(ImGui::GetContentRegionAvail().x - 90, 5);
+				FL::MoveScreenCursor(0, -2);
 
 				static Vector2 mousePos = ImGui::GetCursorScreenPos();
-
 				TagList &tagList = focusedObject->GetTagList();			
 				if (FL::RenderButton("Tags"))
 				{
@@ -252,7 +222,7 @@ namespace FlatGui
 				if (ImGui::BeginPopupContextItem("TagsPopup", ImGuiPopupFlags_MouseButtonLeft))
 				{
 					std::string labels[2] = { "Is", "Collides" };
-					if (FL::PushTable("TagsTable", 3, FL::F_resizeableTableFlags))
+					if (FL::PushTable("TagsTable", 3, FL::F_resizeableTableFlags, Vector2(-1)))
 					{
 						FL::RenderTextTableRow("TagsTableHeaders", "Tag", "Has", "Collides");
 
@@ -271,17 +241,11 @@ namespace FlatGui
 
 				// Three Dots More Options Button
 				ImGui::SameLine(0, 5);
-				FL::RenderImageButton("##InspectorMoreButton", FL::GetTexture("threeDots"), Vector2(16, 16), 1, FL::GetColor("transparent"));
-				FL::MoveScreenCursor(0, 4);
+				FL::MoveScreenCursor(0, -1);
+				FL::RenderImageButton("##InspectorMoreButton", FL::GetTexture("threeDots"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent"));		
 				FL::PushMenuStyles();
 				if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft)) // <-- use last item id as popup id
 				{
-					if (ImGui::BeginMenu("Add Component"))
-					{
-						L_ShowAddComponentsWindow();
-						ImGui::EndMenu();
-					}
-					ImGui::Separator();
 					if (ImGui::MenuItem("Delete GameObject"))
 					{
 						SetFocusedGameObjectID(-1);
@@ -292,23 +256,58 @@ namespace FlatGui
 					ImGui::EndPopup();
 				}
 				FL::PopMenuStyles();
-		
+
+				ImGui::SameLine(0,2);
+				FL::MoveScreenCursor(0, -1);
+				static bool b_expandAll = true;
+				if (b_expandAll)
+				{
+					if (FL::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedObjectID), FL::GetTexture("expandFlipped"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent")))
+					{
+						for (Component* component : focusedObject->GetComponents())
+						{
+							component->SetCollapsed(b_expandAll);
+						}
+						b_expandAll = !b_expandAll;
+					}
+					if (ImGui::IsItemHovered())
+					{
+						FL::RenderTextToolTip("Collapse all");
+					}
+				}
+				else
+				{
+					if (FL::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedObjectID), FL::GetTexture("expand"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent"), FL::GetColor("white")))
+					{
+						for (Component* component : focusedObject->GetComponents())
+						{
+							component->SetCollapsed(b_expandAll);
+						}
+						b_expandAll = !b_expandAll;
+					}
+					if (ImGui::IsItemHovered())
+					{
+						FL::RenderTextToolTip("Expand all");
+					}
+				}
 
 
-				FL::RenderSectionHeader("Components");
-
+				FL::RenderSectionHeader("Components");				
 
 				// For scrolling components section with background
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("componentsScrollingBg"));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 3));
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(4, 5));
 				ImGui::BeginChild("ComponentsSectionBg", Vector2(0,ImGui::GetContentRegionAvail().y - 30), FL::F_childFlags);
 				ImGui::PopStyleVar();
 				ImGui::PopStyleColor();
 				// {
 				
-					// Border around each component
-					auto wPos = ImGui::GetWindowPos();
-					auto wSize = ImGui::GetWindowSize();
+					// Border around components section
+					wPos = ImGui::GetWindowPos();
+					wSize = ImGui::GetWindowSize();
+
+					Vector2 windowPos;
+					Vector2 windowSize;
 		
 					if (focusedObject != nullptr)
 					{
@@ -427,24 +426,26 @@ namespace FlatGui
 						Body* body = focusedObject->GetBody();
 						if (body != nullptr)
 						{
+							ImDrawList* drawList = ImGui::GetWindowDrawList();
+
 							BeginComponent(body, queuedForDelete);
 							if (!body->IsCollapsed())
 							{
-								RenderBodyComponent(body);
+								RenderBodyComponent(body, drawList);
 							}
 							EndComponent(body);
 						}	
 						
-						//TileMap* tileMap = focusedObject->GetTileMap();
-						//if (tileMap != nullptr)
-						//{
-						//	BeginComponent(tileMap, queuedForDelete);
-						//	if (!tileMap->IsCollapsed())
-						//	{
-						//		RenderTileMapComponent(tileMap);
-						//	}
-						//	EndComponent(tileMap);
-						//}
+						TileMap* tileMap = focusedObject->GetTileMap();
+						if (tileMap != nullptr)
+						{
+							BeginComponent(tileMap, queuedForDelete);
+							if (!tileMap->IsCollapsed())
+							{
+								RenderTileMapComponent(tileMap);
+							}
+							EndComponent(tileMap);
+						}
 
 						if (queuedForDelete != nullptr)
 						{
@@ -456,9 +457,7 @@ namespace FlatGui
 				// }
 				ImGui::EndChild(); // ComponentsSectionBg
 
-				// Border around Components Section
-				ImGui::GetWindowDrawList()->AddRect({ wPos.x, wPos.y - 1 }, { wPos.x + wSize.x, wPos.y + wSize.y + 1}, FL::GetColor32("componentSectionBorder"), 1);
-
+				
 				FL::RenderButton("Add Component", Vector2(ImGui::GetContentRegionAvail().x, 0));
 				if (ImGui::BeginPopupContextItem("##AddComponent", ImGuiPopupFlags_MouseButtonLeft))
 				{

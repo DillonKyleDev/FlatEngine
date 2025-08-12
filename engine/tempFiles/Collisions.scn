@@ -57,21 +57,21 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 2,
-                    "rotation": 0.0,
+                    "rotation": 38.075035095214844,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -0.8499999642372131,
+                    "xPos": 2.0465517044067383,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 6.149999618530273,
+                    "yPos": 1.2977828979492188,
                     "yScale": 1.0
                 },
                 {
                     "_isActive": true,
                     "_isCollapsed": false,
                     "_lockedRotation": false,
-                    "_lockedXAxis": false,
-                    "_lockedYAxis": false,
+                    "_lockedXAxis": true,
+                    "_lockedYAxis": true,
                     "angularDamping": 0.0,
                     "bodyType": 2,
                     "gravityScale": 1.0,
@@ -149,7 +149,7 @@
                             "_isSensor": false,
                             "capsuleLength": 4.0,
                             "cornerRadius": 0.0,
-                            "density": 1.0,
+                            "density": 10.0,
                             "friction": 0.30000001192092896,
                             "height": 1.0,
                             "points": [
@@ -183,14 +183,22 @@
                         }
                     ],
                     "type": "Body"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "Spin (Lua)",
+                    "id": 15,
+                    "scriptParameters": [],
+                    "type": "Script"
                 }
             ],
             "id": 1,
             "name": "GameObject(1)",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -0.8499999642372131,
-            "spawnLocationY": 6.149999618530273,
+            "spawnLocationX": 2.0465517044067383,
+            "spawnLocationY": 1.2977828979492188,
             "tags": [
                 {
                     "Ball": true
@@ -236,165 +244,6 @@
                 },
                 {
                     "Terrain": false
-                }
-            ]
-        },
-        {
-            "_isActive": true,
-            "_isPersistant": false,
-            "_isPrefab": false,
-            "children": [],
-            "collidesTags": [
-                {
-                    "Ball": true
-                },
-                {
-                    "Collectable": false
-                },
-                {
-                    "Enemy": false
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": false
-                }
-            ],
-            "components": [
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "id": 4,
-                    "rotation": 0.0,
-                    "type": "Transform",
-                    "xOrigin": 0.0,
-                    "xPos": -0.4000000059604645,
-                    "xScale": 1.0,
-                    "yOrigin": 0.0,
-                    "yPos": -0.050000011920928955,
-                    "yScale": 1.0
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "_lockedRotation": false,
-                    "_lockedXAxis": false,
-                    "_lockedYAxis": false,
-                    "angularDamping": 0.0,
-                    "bodyType": 0,
-                    "gravityScale": 1.0,
-                    "id": 5,
-                    "linearDamping": 0.0,
-                    "shapes": [
-                        {
-                            "_enableContactEvents": true,
-                            "_enableSensorEvents": true,
-                            "_horizontal": false,
-                            "_isLoop": false,
-                            "_isSensor": false,
-                            "capsuleLength": 4.0,
-                            "cornerRadius": 0.0,
-                            "density": 1.0,
-                            "friction": 0.30000001192092896,
-                            "height": 2.0,
-                            "points": [],
-                            "radius": 1.0,
-                            "restitution": 0.30000001192092896,
-                            "rollingResistance": 0.0,
-                            "rotationOffsetCos": 1.0,
-                            "rotationOffsetSin": 0.0,
-                            "shape": 1,
-                            "tangentSpeed": 0.0,
-                            "width": 2.0,
-                            "xOffset": 0.0,
-                            "yOffset": 0.0
-                        }
-                    ],
-                    "type": "Body"
-                }
-            ],
-            "id": 2,
-            "name": "GameObject(2)",
-            "parent": -1,
-            "prefabName": "",
-            "spawnLocationX": -0.4000000059604645,
-            "spawnLocationY": -0.050000011920928955,
-            "tags": [
-                {
-                    "Ball": false
-                },
-                {
-                    "Collectable": false
-                },
-                {
-                    "Enemy": false
-                },
-                {
-                    "EnemyDamage": false
-                },
-                {
-                    "EnemyTrigger": false
-                },
-                {
-                    "EnvironmentalDamage": false
-                },
-                {
-                    "EnvironmentalTrigger": false
-                },
-                {
-                    "InteractableObject": false
-                },
-                {
-                    "Npc": false
-                },
-                {
-                    "NpcTrigger": false
-                },
-                {
-                    "Player": false
-                },
-                {
-                    "PlayerDamage": false
-                },
-                {
-                    "PlayerTrigger": false
-                },
-                {
-                    "Projectile": false
-                },
-                {
-                    "Terrain": true
                 }
             ]
         },
@@ -458,10 +307,10 @@
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": -0.25,
+                    "xPos": -14.426470756530762,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 11.949999809265137,
+                    "yPos": 10.891176223754883,
                     "yScale": 1.0
                 },
                 {
@@ -484,7 +333,7 @@
                             "_isSensor": false,
                             "capsuleLength": 4.0,
                             "cornerRadius": 0.0,
-                            "density": 1.0,
+                            "density": 0.009999999776482582,
                             "friction": 0.30000001192092896,
                             "height": 1.0,
                             "points": [],
@@ -501,14 +350,51 @@
                         }
                     ],
                     "type": "Body"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 8,
+                    "path": "..\\projects\\ClosedLoop\\images\\sprites\\explosion2\\explosion_1.png",
+                    "pivotPoint": "PivotCenter",
+                    "renderOrder": 27,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "type": "Sprite",
+                    "xOffset": 5.0,
+                    "xScale": 1.0,
+                    "yOffset": 5.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "Car (Lua)",
+                    "id": 9,
+                    "scriptParameters": [],
+                    "type": "Script"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "animationData": [
+                        {
+                            "name": "explode",
+                            "path": "..\\projects\\ClosedLoop\\animations\\explode.anm"
+                        }
+                    ],
+                    "id": 10,
+                    "type": "Animation"
                 }
             ],
             "id": 3,
             "name": "GameObject(3)",
             "parent": -1,
             "prefabName": "",
-            "spawnLocationX": -0.25,
-            "spawnLocationY": 11.949999809265137,
+            "spawnLocationX": -14.426470756530762,
+            "spawnLocationY": 10.891176223754883,
             "tags": [
                 {
                     "Ball": false
@@ -554,6 +440,621 @@
                 },
                 {
                     "Terrain": true
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": true
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 11,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": -1.6213035583496094,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": -28.167343139648438,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": true,
+                    "collisionAreas": [],
+                    "height": 5,
+                    "id": 12,
+                    "tileHeight": 16,
+                    "tileSets": [
+                        {
+                            "name": "Brick"
+                        }
+                    ],
+                    "tileWidth": 16,
+                    "tiles": [
+                        {
+                            "tileCoordX": 0.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 0,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 0.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 1,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 0.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 1,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 0.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 1,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 0.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 5,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 1.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 1.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 7,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 1.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 8,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 1.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 10,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 1.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 2.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 2.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 13,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 2.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 21,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 2.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 16,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 2.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 3.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 3.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 13,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 3.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 21,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 3.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 16,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 3.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 4.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 4.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 13,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 4.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 21,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 4.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 16,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 4.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 5.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 5.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 13,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 5.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 14,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 5.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 16,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 5.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 6.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 6.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 13,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 6.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 21,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 6.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 16,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 6.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 7.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 7.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 13,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 7.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 21,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 7.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 16,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 7.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 8.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 6,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 8.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 25,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 8.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 26,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 8.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 28,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 8.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 11,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 9.0,
+                            "tileCoordY": 0.0,
+                            "tileSetIndex": 30,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 9.0,
+                            "tileCoordY": 1.0,
+                            "tileSetIndex": 31,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 9.0,
+                            "tileCoordY": 2.0,
+                            "tileSetIndex": 31,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 9.0,
+                            "tileCoordY": 3.0,
+                            "tileSetIndex": 31,
+                            "tileSetName": "Brick"
+                        },
+                        {
+                            "tileCoordX": 9.0,
+                            "tileCoordY": 4.0,
+                            "tileSetIndex": 35,
+                            "tileSetName": "Brick"
+                        }
+                    ],
+                    "type": "TileMap",
+                    "width": 10
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.0,
+                    "bodyType": 0,
+                    "gravityScale": 1.0,
+                    "id": 5,
+                    "linearDamping": 0.0,
+                    "shapes": [
+                        {
+                            "_enableContactEvents": true,
+                            "_enableSensorEvents": true,
+                            "_horizontal": false,
+                            "_isLoop": false,
+                            "_isSensor": false,
+                            "capsuleLength": 4.0,
+                            "cornerRadius": 0.0,
+                            "density": 1.0,
+                            "friction": 0.30000001192092896,
+                            "height": 10.0,
+                            "points": [],
+                            "radius": 1.0,
+                            "restitution": 0.30000001192092896,
+                            "rollingResistance": 0.0,
+                            "rotationOffsetCos": 1.0,
+                            "rotationOffsetSin": 0.0,
+                            "shape": 1,
+                            "tangentSpeed": 0.0,
+                            "width": 20.0,
+                            "xOffset": 0.0,
+                            "yOffset": 0.0
+                        }
+                    ],
+                    "type": "Body"
+                }
+            ],
+            "id": 4,
+            "name": "Ground",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -1.6213035583496094,
+            "spawnLocationY": -28.167343139648438,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": true
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 13,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 5.5,
+                    "yScale": 1.0
+                },
+                {
+                    "_follow": false,
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_isPrimaryCamera": true,
+                    "followSmoothing": 0.10000000149011612,
+                    "following": -1,
+                    "frustrumAlpha": 255.0,
+                    "frustrumBlue": 255.0,
+                    "frustrumGreen": 255.0,
+                    "frustrumRed": 255.0,
+                    "height": 30.0,
+                    "id": 14,
+                    "type": "Camera",
+                    "width": 50.0,
+                    "zoom": 29.200000762939453
+                }
+            ],
+            "id": 5,
+            "name": "Camera(5)",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 0.0,
+            "spawnLocationY": 5.5,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
                 }
             ]
         }

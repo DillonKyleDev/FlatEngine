@@ -11,6 +11,7 @@ namespace FlatEngine
 		m_shapeID = b2_nullShapeId;
 		m_chainID = b2_nullChainId;
 		m_parentBody = parentBody;
+		m_b_editingPoints = false;
 	}
 
 	Shape::~Shape()
@@ -202,5 +203,25 @@ namespace FlatEngine
 	{
 		m_shapeProps.rotationOffset = b2MakeRot(DegreesToRadians(Transform::ClampRotation(rotationOffset)));
 		RecreateShape();
+	}
+
+	bool Shape::ShowPoints()
+	{
+		return m_b_showPoints;
+	}
+
+	void Shape::SetShowPoints(bool b_showPoints)
+	{
+		m_b_showPoints = b_showPoints;
+	}
+
+	bool Shape::IsEditingPoints()
+	{
+		return m_b_editingPoints;
+	}
+
+	void Shape::SetEditingPoints(bool b_editingPoints)
+	{
+		m_b_editingPoints = b_editingPoints;
 	}
 }

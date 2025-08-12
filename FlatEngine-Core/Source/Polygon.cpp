@@ -8,21 +8,10 @@ namespace FlatEngine
 	{		
 		m_shapeProps.shape = Shape::ShapeType::BS_Polygon;
 		m_shapeProps.points = { {3.0f, -2.0f}, {0.0f, 2.0f}, {-3.0f, -2.0f} };
-		m_b_editingPoints = false;
 	}
 
 	Polygon::~Polygon()
 	{
-	}
-
-	void Polygon::SetEditingPoints(bool b_editingPoints)
-	{
-		m_b_editingPoints = b_editingPoints;
-	}
-
-	bool Polygon::IsEditingPoints()
-	{
-		return m_b_editingPoints;
 	}
 
 	void Polygon::SetPoints(std::vector<Vector2> points)

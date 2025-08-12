@@ -27,9 +27,6 @@ namespace FlatEngine
 			P_Canvas,
 			P_Audio,
 			P_Text,
-			P_BoxCollider,
-			P_CircleCollider,
-			P_RigidBody,
 			P_CharacterController
 		};
 
@@ -131,18 +128,6 @@ namespace FlatEngine
 			bool b_tintColorAnimated = false;
 			bool b_offsetAnimated = false;
 		};
-		struct S_BoxCollider : public S_Property {
-			bool b_isActive = true;
-		};
-		struct S_CircleCollider : public S_Property {
-			bool b_isActive = true;
-		};
-		struct S_RigidBody : public S_Property {
-			InterpType interpType = I_Lerp;
-			float speed = 0.1f;
-			bool b_isActive = true;
-			float gravityScale = 1;
-		};
 		struct S_CharacterController : public S_Property {
 			bool b_isActive = true;
 		};
@@ -163,9 +148,6 @@ namespace FlatEngine
 			std::vector<std::shared_ptr<S_Canvas>> canvasProps = std::vector<std::shared_ptr<S_Canvas>>();
 			std::vector<std::shared_ptr<S_Audio>> audioProps = std::vector<std::shared_ptr<S_Audio>>();
 			std::vector<std::shared_ptr<S_Text>> textProps = std::vector<std::shared_ptr<S_Text>>();
-			std::vector<std::shared_ptr<S_BoxCollider>> boxColliderProps = std::vector<std::shared_ptr<S_BoxCollider>>();
-			std::vector<std::shared_ptr<S_CircleCollider>> circleColliderProps = std::vector<std::shared_ptr<S_CircleCollider>>();
-			std::vector<std::shared_ptr<S_RigidBody>> rigidBodyProps = std::vector<std::shared_ptr<S_RigidBody>>();
 			std::vector<std::shared_ptr<S_CharacterController>> characterControllerProps = std::vector<std::shared_ptr<S_CharacterController>>();
 
 			static bool CompareTime(std::shared_ptr<S_Property> frame1, std::shared_ptr<S_Property> frame2)
@@ -183,9 +165,6 @@ namespace FlatEngine
 				std::sort(canvasProps.begin(), canvasProps.end(), CompareTime);
 				std::sort(audioProps.begin(), audioProps.end(), CompareTime);
 				std::sort(textProps.begin(), textProps.end(), CompareTime);
-				std::sort(boxColliderProps.begin(), boxColliderProps.end(), CompareTime);
-				std::sort(circleColliderProps.begin(), circleColliderProps.end(), CompareTime);
-				std::sort(rigidBodyProps.begin(), rigidBodyProps.end(), CompareTime);
 				std::sort(characterControllerProps.begin(), characterControllerProps.end(), CompareTime);
 
 				b_isSorted = true;
@@ -230,18 +209,6 @@ namespace FlatEngine
 				if (textProps.size() > 0 && textProps.back()->time > endTime)
 				{
 					endTime = textProps.back()->time;
-				}
-				if (boxColliderProps.size() > 0 && boxColliderProps.back()->time > endTime)
-				{
-					endTime = boxColliderProps.back()->time;
-				}
-				if (circleColliderProps.size() > 0 && circleColliderProps.back()->time > endTime)
-				{
-					endTime = circleColliderProps.back()->time;
-				}
-				if (rigidBodyProps.size() > 0 && rigidBodyProps.back()->time > endTime)
-				{
-					endTime = rigidBodyProps.back()->time;
 				}
 				if (characterControllerProps.size() > 0 && characterControllerProps.back()->time > endTime)
 				{
@@ -348,39 +315,6 @@ namespace FlatEngine
 						if ((*prop) == property)
 						{
 							textProps.erase(prop);
-							return;
-						}
-					}
-				}
-				else if (type == "BoxCollider")
-				{
-					for (std::vector<std::shared_ptr<Animation::S_BoxCollider>>::iterator prop = boxColliderProps.begin(); prop != boxColliderProps.end(); prop++)
-					{
-						if ((*prop) == property)
-						{
-							boxColliderProps.erase(prop);
-							return;
-						}
-					}
-				}
-				else if (type == "CircleCollider")
-				{
-					for (std::vector<std::shared_ptr<Animation::S_CircleCollider>>::iterator prop = circleColliderProps.begin(); prop != circleColliderProps.end(); prop++)
-					{
-						if ((*prop) == property)
-						{
-							circleColliderProps.erase(prop);
-							return;
-						}
-					}
-				}
-				else if (type == "RigidBody")
-				{
-					for (std::vector<std::shared_ptr<Animation::S_RigidBody>>::iterator prop = rigidBodyProps.begin(); prop != rigidBodyProps.end(); prop++)
-					{
-						if ((*prop) == property)
-						{
-							rigidBodyProps.erase(prop);
 							return;
 						}
 					}

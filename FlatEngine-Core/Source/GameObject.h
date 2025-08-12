@@ -101,7 +101,7 @@ namespace FlatEngine
 		Text* GetText();
 		CharacterController* GetCharacterController();
 		Body* GetBody();
-		//TileMap* GetTileMap();
+		TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		
 
 		void SetParentID(long parentID);

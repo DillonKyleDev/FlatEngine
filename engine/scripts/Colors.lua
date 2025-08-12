@@ -29,6 +29,8 @@ F_Colors = {
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	openFileButtonBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
 	openFileButtonHovered = Vector4:new(0.3, 0.3, 0.32, 1.0),
+	shapesScrollingBg = Vector4:new(0.1, 0.1, 0.12, 1.0),
+	shapeBg = Vector4:new(0.16, 0.16, 0.17, 1.0),
 	-- Colliders --
 	sensorActive = Vector4:new(1.0, 1.0, 0.27, 1.0),
 	sensorInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
@@ -88,6 +90,15 @@ F_Colors = {
 	singleItem = Vector4:new(0.16, 0.16, 0.17, 1.0),
 	singleItemDark = Vector4:new(0.09, 0.09, 0.13, 1.0),
 	windowTitleBg = Vector4:new(0.25, 0.25, 0.25, 1.0),
+
+	sectionHeaderBg = Vector4:new(0.1, 0.1, 0.12, 1.0),
+	sectionHeaderBorder = Vector4:new(0.25, 0.25, 0.25, 1.0),
+	-- Scrollbar
+	scrollbarBg = Vector4:new(0.22, 0.22, 0.24, 1.0),
+	scrollbarGrab = Vector4:new(0.42, 0.42, 0.45, 1.0),
+	scrollbarGrabActive = Vector4:new(0.45, 0.45, 0.47, 1.0),
+	scrollbarGrabHovered = Vector4:new(0.55, 0.55, 0.58, 1.0),
+	--------------------
 	--- Scene View ---
 	--------------------
 	-- Buttons container
@@ -191,11 +202,13 @@ F_Colors = {
 	noEditTableRowValueBg = Vector4:new(0.1, 0.1, 0.5, 0.2),
 	tableCellLight = Vector4:new(0.19, 0.19, 0.21, 1.0),
 	tableCellDark = Vector4:new(0.24, 0.24, 0.27, 1.0),
+	fileExplorerTableRowBg = Vector4:new(0.18, 0.18, 0.208, 1.0),
+	fileExplorerTableRowBgAlt = Vector4:new(0.2, 0.2, 0.23, 1.0),
 	-- Trees
-	treeSelectable = Vector4:new(0.15, 0.15, 0.15, 1.0),
-	treeSelectableHovered = Vector4:new(0.3, 0.35, 0.65, 1.0),
-	treeSelectableActive = Vector4:new(0.2, 0.25, 0.45, 1.0),
-	treeSelectableSelected = Vector4:new(0.5, 0.5, 0.8, 1.0),
+	treeSelectable = Vector4:new(0.15, 0.15, 0.15, 0.7),
+	treeSelectableHovered = Vector4:new(0.3, 0.35, 0.65, 0.7),
+	treeSelectableActive = Vector4:new(0.2, 0.25, 0.45, 0.7),
+	treeSelectableSelected = Vector4:new(0.5, 0.5, 0.8, 0.7),
 	hierarchyChildObject = Vector4:new(0.3, 0.3, 0.7, 0.2),
 	-- Combos
 	comboBg = Vector4:new(0.19, 0.19, 0.21, 1.0),

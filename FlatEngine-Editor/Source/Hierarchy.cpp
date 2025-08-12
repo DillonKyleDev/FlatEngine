@@ -15,7 +15,7 @@ namespace FlatGui
 {
 	void RenderHierarchy()
 	{
-		FL::BeginWindow("Hierarchy");
+		FL::BeginWindow("Scene GameObjects");
 		// {
 			
 			// Render Loaded Scene text and threeDots more menu button
@@ -23,7 +23,7 @@ namespace FlatGui
 			std::string loadedSceneString = "Loaded Scene: " + sceneName;
 
 			FL::RenderSectionHeader(loadedSceneString);
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 26, 0);			
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 22, 0);			
 
 			static std::string newSceneName = "";
 			static bool b_openSceneModal = false;
@@ -40,8 +40,8 @@ namespace FlatGui
 			}
 
 			// Three dots
-			FL::MoveScreenCursor(2, -4);
-			FL::RenderImageButton("##SaveLoadMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, FL::GetColor("transparent"));
+			FL::MoveScreenCursor(0, -2);
+			FL::RenderImageButton("##SaveLoadMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent"));
 			FL::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft))
 			{
@@ -89,6 +89,8 @@ namespace FlatGui
 			}
 			FL::PopMenuStyles();
 
+			FL::MoveScreenCursor(0, 1);
+
 			// Table for Scene Objects in Hierarchy
 			float objectColumnWidth = ImGui::GetContentRegionAvail().x;
 			float visibleIconColumnWidth = 25;
@@ -100,14 +102,14 @@ namespace FlatGui
 
 			static int node_clicked = -1;
 
-			FL::BeginWindowChild("##ScrollingHierarchy");
+			FL::BeginWindowChild("##ScrollingHierarchy", FL::GetColor("outerWindow"), 0, Vector2(0));
 			// {
 
 				long queuedForDelete = -1;
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(0, 0));
-				if (ImGui::BeginTable("##SceneHierarchyTable", 3, FL::F_tableFlags, Vector2(ImGui::GetContentRegionAvail().x - 1, ImGui::GetContentRegionAvail().y)))
+				if (ImGui::BeginTable("##SceneHierarchyTable", 3, FL::F_tableFlags, Vector2(ImGui::GetContentRegionAvail().x - 1, ImGui::GetContentRegionAvail().y - 1)))
 				{
 					ImGui::TableSetupColumn("##VISIBLE", 0, visibleIconColumnWidth);
 					ImGui::TableSetupColumn("##OBJECT", 0, objectColumnWidth);
@@ -120,19 +122,20 @@ namespace FlatGui
 					if (b_allAreVisible)
 					{
 						FL::MoveScreenCursor(-1, 0);
-						if (FL::RenderImageButton("##SetAllInvisible", FL::GetTexture("show"), Vector2(16, 16), 0, FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
+						if (FL::RenderImageButton("##SetAllInvisible", FL::GetTexture("show"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 						{
 							for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
 							{
 								iter->second.SetActive(false);
 							}
+
 							b_allAreVisible = false;
 						}
 					}
 					else
 					{
 						FL::MoveScreenCursor(-1, 0);
-						if (FL::RenderImageButton("##SetAllVisible", FL::GetTexture("hide"), Vector2(16, 16), 0, FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
+						if (FL::RenderImageButton("##SetAllVisible", FL::GetTexture("hide"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 						{
 							for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
 							{
@@ -151,7 +154,7 @@ namespace FlatGui
 					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(0, 0));
 					ImGui::TableSetColumnIndex(2);
 					ImGui::PopStyleVar();
-					if (FL::RenderImageButton("##PrefabCubes", FL::GetTexture("prefabCube"), Vector2(16, 16), 0, FL::GetColor("transparent"), FL::GetColor("white"), FL::GetColor("transparent"), FL::GetColor("transparent")))
+					if (FL::RenderImageButton("##PrefabCubes", FL::GetTexture("prefabCube"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("transparent"), FL::GetColor("white"), FL::GetColor("transparent"), FL::GetColor("transparent")))
 					{
 						// Doesn't do anything, should just be an icon
 					}
@@ -191,15 +194,21 @@ namespace FlatGui
 
 					// Add empty table rows so the table goes all the way to the bottom of the screen
 					float availableVerticalSpace = ImGui::GetContentRegionAvail().y;
-					if (availableVerticalSpace > 23)
+					while (availableVerticalSpace > 22)
+					{			
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 9);
+						ImGui::Text("");
+
+						availableVerticalSpace = ImGui::GetContentRegionAvail().y;						
+					}
+
+					if (availableVerticalSpace > 1)
 					{
-						for (int i = 0; i < availableVerticalSpace / 20 - 1; i++)
-						{
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(1);
-							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 7);
-							ImGui::Text("");
-						}
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(1);
+						ImGui::SetCursorPosY(ImGui::GetCursorPosY() + availableVerticalSpace - 1);
 					}
 
 					// }
@@ -305,14 +314,14 @@ namespace FlatGui
 		// Show Visible/Invisible Icons
 		if (currentObject.IsActive())
 		{
-			if (FL::RenderImageButton(visibleID.c_str(), FL::GetTexture("show"), Vector2(16, 16), 0, FL::GetColor("transparent")))
+			if (FL::RenderImageButton(visibleID.c_str(), FL::GetTexture("show"), Vector2(16), 0, Vector2(4), FL::GetColor("transparent")))
 			{
 				currentObject.SetActive(false);
 			}
 		}
 		else
 		{
-			if (FL::RenderImageButton(visibleID.c_str(), FL::GetTexture("hide"), Vector2(16, 16), 0, FL::GetColor("transparent")))
+			if (FL::RenderImageButton(visibleID.c_str(), FL::GetTexture("hide"), Vector2(16), 0, Vector2(4), FL::GetColor("transparent")))
 			{
 				currentObject.SetActive(true);
 			}
@@ -557,7 +566,7 @@ namespace FlatGui
 			std::string prefabIDContextMenu = "PrefabIDContext" + std::to_string(currentObject.GetID());
 			ImGui::TableSetColumnIndex(2);
 			ImGui::SetCursorPos(Vector2(ImGui::GetCursorPosX() - 1, ImGui::GetCursorPosY()));
-			FL::RenderImageButton(prefabIDImageButton.c_str(), FL::GetTexture("prefabCube"), Vector2(16, 16), 0, FL::GetColor("transparent"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive"));
+			FL::RenderImageButton(prefabIDImageButton.c_str(), FL::GetTexture("prefabCube"), Vector2(16), 0, Vector2(4), FL::GetColor("transparent"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive"));
 			FL::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem(prefabIDContextMenu.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 			{

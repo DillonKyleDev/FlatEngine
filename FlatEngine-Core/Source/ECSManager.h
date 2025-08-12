@@ -86,7 +86,7 @@ namespace FlatEngine
 		std::map<long, Text>& GetTexts();		
 		std::map<long, Body>& GetBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
-		//std::map<long, TileMap>& GetTileMaps();		
+		std::map<long, TileMap>& GetTileMaps();		
 
 	private:
 		std::map<long, Transform> m_Transforms;
@@ -101,6 +101,6 @@ namespace FlatEngine
 		std::map<long, Text> m_Texts;				
 		std::map<long, Body> m_Bodies;
 		std::map<long, CharacterController> m_CharacterControllers;
-		//std::map<long, TileMap> m_TileMaps;		
+		std::map<long, TileMap> m_TileMaps;		
 	};
 }

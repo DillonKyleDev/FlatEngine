@@ -1,0 +1,14 @@
+{
+    "tileSetData": {
+        "name": "Brick",
+        "texturePath": "..\\projects\\ClosedLoop\\images\\tileTextures\\BrickWall.png",
+        "tileHeight": 16,
+        "tileSetPath": "..\\projects\\ClosedLoop\\tileSets\\Brick.tls",
+        "tileWidth": 16
+    },
+    "tiles": [
+        {
+            "index": 14
+        }
+    ]
+}

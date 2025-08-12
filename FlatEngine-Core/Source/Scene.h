@@ -91,7 +91,7 @@ namespace FlatEngine
 		Button* GetButtonByOwner(long ownerID);
 		Body* GetBodyByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
-		//TileMap* GetTileMapByOwner(long ownerID);
+		TileMap* GetTileMapByOwner(long ownerID);
 
 		std::map<long, Transform> &GetTransforms();
 		std::map<long, Sprite>& GetSprites();
@@ -105,7 +105,7 @@ namespace FlatEngine
 		std::map<long, Text>& GetTexts();
 		std::map<long, Body>& GetBodies();
 		std::map<long, CharacterController>& GetCharacterControllers();
-		//std::map<long, TileMap>& GetTileMaps();		
+		std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);
 		bool IsPersistantScene();
 

@@ -14,8 +14,6 @@ namespace FlatEngine
         Chain(Body* parentBody);
         ~Chain();        
 
-        void SetEditingPoints(bool b_editingPoints);
-        bool IsEditingPoints();
         void SetPoints(std::vector<Vector2> points);
         void UpdatePoints();
         void SetIsLoop(bool b_isLoop);
@@ -23,7 +21,6 @@ namespace FlatEngine
         void SetRollingResistance(float rollingResistance);
 
     private:
-        bool m_b_editingPoints;
     };
 }
 

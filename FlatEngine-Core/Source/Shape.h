@@ -82,11 +82,17 @@ namespace FlatEngine
 		// for PolygonBody and ChainBody
 		virtual void SetPoints(std::vector<Vector2> points) {};
 		virtual void UpdatePoints() {};
+		bool ShowPoints();
+		void SetShowPoints(bool b_showPoints);
+		bool IsEditingPoints();
+		void SetEditingPoints(bool b_editingPoints);
 
 	private:
 		b2ShapeId m_shapeID;
 		b2ChainId m_chainID;
 		Body* m_parentBody;
 		ShapeProps m_shapeProps;
+		bool m_b_showPoints;
+		bool m_b_editingPoints;
 	};
 }

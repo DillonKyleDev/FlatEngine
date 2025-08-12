@@ -1047,18 +1047,18 @@ namespace FlatEngine
 		return nullptr;
 	}
 
-	//TileMap* GameObject::GetTileMap()
-	//{
-	//	if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-	//	{
-	//		return GetLoadedProject().GetPersistantGameObjectScene()->GetTileMapByOwner(m_ID);
-	//	}
-	//	else if (GetLoadedScene() != nullptr)
-	//	{
-	//		return GetLoadedScene()->GetTileMapByOwner(m_ID);
-	//	}
-	//	return nullptr;
-	//}
+	TileMap* GameObject::GetTileMap()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetTileMapByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetTileMapByOwner(m_ID);
+		}
+		return nullptr;
+	}
 
 	std::vector<Component*> GameObject::GetComponents()
 	{

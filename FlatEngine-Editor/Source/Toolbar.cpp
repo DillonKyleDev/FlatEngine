@@ -1,5 +1,6 @@
 #include "FlatEngine.h"
 #include "GameLoop.h"
+#include "Vector2.h"
 
 
 namespace FL = FlatEngine;
@@ -28,9 +29,9 @@ namespace FlatGui
 			ImGui::PushStyleVar(ImGuiStyleVar_DisabledAlpha, 0.4f);
 
 			float windowWidth = ImGui::GetWindowSize().x;
-			FL::MoveScreenCursor(3, 4);
+			FL::MoveScreenCursor(3, 3);
 			ImGui::BeginDisabled(FL::GameLoopStarted());
-			if (FL::RenderImageButton(playID.c_str(), FL::GetTexture("play")))
+			if (FL::RenderImageButton(playID.c_str(), FL::GetTexture("play"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::StartGameLoop();				
 			}
@@ -38,7 +39,7 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 		
 			ImGui::BeginDisabled(!FL::GameLoopStarted());
-			if (FL::RenderImageButton(pauseID.c_str(), FL::GetTexture("pause")))
+			if (FL::RenderImageButton(pauseID.c_str(), FL::GetTexture("pause"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::PauseGameLoop();				
 			}
@@ -46,7 +47,7 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 
 			ImGui::BeginDisabled(!FL::GameLoopStarted());
-			if (FL::RenderImageButton(stopID.c_str(), FL::GetTexture("stop")))
+			if (FL::RenderImageButton(stopID.c_str(), FL::GetTexture("stop"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::StopGameLoop();
 			}
@@ -54,7 +55,7 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 		
 			ImGui::BeginDisabled(!FL::GameLoopPaused());
-			if (FL::RenderImageButton(nextFrameID.c_str(), FL::GetTexture("nextFrame")))
+			if (FL::RenderImageButton(nextFrameID.c_str(), FL::GetTexture("nextFrame"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::F_Application->GetGameLoop()->SkipFrames(1);
 			}
@@ -62,7 +63,7 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 
 			ImGui::BeginDisabled(!FL::GameLoopPaused());
-			if (FL::RenderImageButton(skipFramesID.c_str(), FL::GetTexture("nextFrame")))
+			if (FL::RenderImageButton(skipFramesID.c_str(), FL::GetTexture("skipFrames"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{				
 				FL::F_Application->GetGameLoop()->SkipFrames(framesToSkip);
 			}

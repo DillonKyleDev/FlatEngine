@@ -447,10 +447,10 @@ namespace FlatEngine
 		return m_ECSManager.GetCharacterControllerByOwner(ownerID);
 	}
 
-	//TileMap* Scene::GetTileMapByOwner(long ownerID)
-	//{
-		//return m_ECSManager.GetTileMapByOwner(ownerID);
-	//}
+	TileMap* Scene::GetTileMapByOwner(long ownerID)
+	{
+		return m_ECSManager.GetTileMapByOwner(ownerID);
+	}
 
 	std::map<long, Transform> &Scene::GetTransforms()
 	{
@@ -500,8 +500,8 @@ namespace FlatEngine
 	{
 		return m_ECSManager.GetCharacterControllers();
 	}
-	//std::map<long, TileMap>& Scene::GetTileMaps()
-	//{
-		//return m_ECSManager.GetTileMaps();
-	//}
+	std::map<long, TileMap>& Scene::GetTileMaps()
+	{
+		return m_ECSManager.GetTileMaps();
+	}
 }

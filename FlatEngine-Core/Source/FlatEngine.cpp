@@ -1149,37 +1149,37 @@ namespace FlatEngine
 			{
 				switch (event.key.keysym.sym)
 				{
-				case SDLK_1:
-					F_CursorMode = F_CURSOR_MODE::TRANSLATE;
-					break;
+				//case SDLK_1:
+				//	F_CursorMode = F_CURSOR_MODE::TRANSLATE;
+				//	break;
 
-				case SDLK_2:
-					F_CursorMode = F_CURSOR_MODE::SCALE;
-					break;
+				//case SDLK_2:
+				//	F_CursorMode = F_CURSOR_MODE::SCALE;
+				//	break;
 
-				case SDLK_3:
-					F_CursorMode = F_CURSOR_MODE::ROTATE;
-					break;
+				//case SDLK_3:
+				//	F_CursorMode = F_CURSOR_MODE::ROTATE;
+				//	break;
 
-				case SDLK_4:
-					F_CursorMode = F_CURSOR_MODE::TILE_BRUSH;
-					break;
+				//case SDLK_4:
+				//	F_CursorMode = F_CURSOR_MODE::TILE_BRUSH;
+				//	break;
 
-				case SDLK_5:
-					F_CursorMode = F_CURSOR_MODE::TILE_ERASE;
-					break;
+				//case SDLK_5:
+				//	F_CursorMode = F_CURSOR_MODE::TILE_ERASE;
+				//	break;
 
-				case SDLK_6:
-					F_CursorMode = F_CURSOR_MODE::TILE_COLLIDER_DRAW;
-					break;
+				//case SDLK_6:
+				//	F_CursorMode = F_CURSOR_MODE::TILE_COLLIDER_DRAW;
+				//	break;
 
-				case SDLK_7:
-					F_CursorMode = F_CURSOR_MODE::TILE_MULTISELECT;
-					break;
+				//case SDLK_7:
+				//	F_CursorMode = F_CURSOR_MODE::TILE_MULTISELECT;
+				//	break;
 
-				case SDLK_8:
-					F_CursorMode = F_CURSOR_MODE::TILE_MOVE;
-					break;
+				//case SDLK_8:
+				//	F_CursorMode = F_CURSOR_MODE::TILE_MOVE;
+				//	break;
 
 				case SDLK_DELETE:
 					DeleteGameObject(F_FocusedGameObjectID);
@@ -1663,20 +1663,6 @@ namespace FlatEngine
 			std::string data = jsonData.dump();
 			textProps.push_back(json::parse(data));
 		}
-		
-		json rigidBodyProps = json::array();
-		for (std::shared_ptr<Animation::S_RigidBody> rigidBodyProp : propertiesObject->rigidBodyProps)
-		{
-			json jsonData = {
-				{ "time", rigidBodyProp->time },
-				{ "interpType", rigidBodyProp->interpType },
-				{ "speed", rigidBodyProp->speed },
-				{ "_isActive", rigidBodyProp->b_isActive },
-				{ "gravityScale", rigidBodyProp->gravityScale },
-			};
-			std::string data = jsonData.dump();
-			rigidBodyProps.push_back(json::parse(data));
-		}
 	
 		json characterControllerProps = json::array();
 		for (std::shared_ptr<Animation::S_CharacterController> characterControllerProp : propertiesObject->characterControllerProps)
@@ -1699,7 +1685,6 @@ namespace FlatEngine
 			{ "canvas", canvasProps },
 			{ "audio", audioProps },
 			{ "text", textProps },
-			{ "rigidBody", rigidBodyProps },
 			{ "characterController", characterControllerProps }
 		});
 
@@ -1951,26 +1936,6 @@ namespace FlatEngine
 						frame->b_tintColorAnimated = CheckJsonBool(textProps.at(i), "_tintColorAnimated", animName);
 						frame->b_offsetAnimated = CheckJsonBool(textProps.at(i), "_offsetAnimated", animName);
 						animProps->textProps.push_back(frame);
-					}
-					catch (const json::out_of_range& e)
-					{
-						LogError(e.what());
-					}
-				}
-				
-				json rigidBodyProps = animationJson["animationProperties"]["rigidBody"];
-				for (int i = 0; i < rigidBodyProps.size(); i++)
-				{
-					try
-					{
-						std::shared_ptr<Animation::S_RigidBody> frame = std::make_shared<Animation::S_RigidBody>();
-						frame->name = "RigidBody";
-						frame->time = CheckJsonFloat(rigidBodyProps.at(i), "time", animName);
-						frame->b_isActive = CheckJsonBool(rigidBodyProps.at(i), "_isActive", animName);
-						frame->interpType = (Animation::InterpType)CheckJsonInt(rigidBodyProps.at(i), "interpType", animName);
-						frame->speed = CheckJsonFloat(rigidBodyProps.at(i), "speed", animName);
-						frame->gravityScale = CheckJsonFloat(rigidBodyProps.at(i), "gravityScale", animName);
-						animProps->rigidBodyProps.push_back(frame);
 					}
 					catch (const json::out_of_range& e)
 					{

@@ -12,22 +12,12 @@ namespace FlatEngine
 		m_shapeProps.tangentSpeed = 0.0f;
 		m_shapeProps.rollingResistance = 0.0f;
 		m_shapeProps.b_enableSensorEvents = false;
-		m_b_editingPoints = false;
 	}
 
 	Chain::~Chain()
 	{
 	}
 
-	void Chain::SetEditingPoints(bool b_editingPoints)
-	{
-		m_b_editingPoints = b_editingPoints;
-	}
-
-	bool Chain::IsEditingPoints()
-	{
-		return m_b_editingPoints;
-	}
 
 	void Chain::SetPoints(std::vector<Vector2> points)
 	{		

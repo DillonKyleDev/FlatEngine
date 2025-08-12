@@ -233,28 +233,28 @@ namespace FlatGui
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);
 						newObject->AddSprite();
-						newObject->SetName("Sprite_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Sprite(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Button"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);
 						newObject->AddButton();
-						newObject->SetName("Button_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Button(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Camera"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);
 						newObject->AddCamera();
-						newObject->SetName("Camera_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Camera(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Canvas"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);					
 						newObject->AddCanvas();
-						newObject->SetName("Canvas_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Canvas(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Animation"))
@@ -262,28 +262,28 @@ namespace FlatGui
 						GameObject *newObject = FL::CreateGameObject(-1);						
 						newObject->AddAnimation();
 						Sprite* sprite = newObject->AddSprite();						
-						newObject->SetName("Animation_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Animation(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Audio"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);
 						newObject->AddAudio();
-						newObject->SetName("Audio_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Audio(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Text"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);						
 						newObject->AddText();
-						newObject->SetName("Text_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Text(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("Script"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);
 						newObject->AddScript();
-						newObject->SetName("Script_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Script(" + std::to_string(newObject->GetID()));
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("CharacterController"))
@@ -291,7 +291,7 @@ namespace FlatGui
 						GameObject *newObject = FL::CreateGameObject(-1);
 						
 						newObject->AddCharacterController();
-						newObject->SetName("CharacterController_" + std::to_string(newObject->GetID()));
+						newObject->SetName("CharacterController(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					//if (ImGui::MenuItem("CompositeBody"))
@@ -301,27 +301,34 @@ namespace FlatGui
 					//	newObject->SetName("CompositeBody_" + std::to_string(newObject->GetID()));
 					//	SetFocusedGameObjectID(newObject->GetID());
 					//}
-					if (ImGui::MenuItem("BoxBody"))
+					if (ImGui::MenuItem("Body"))
 					{
 						GameObject *newObject = FL::CreateGameObject(-1);						
 						newObject->AddBoxBody(Physics::BodyProps(), Shape::ShapeProps());
-						newObject->SetName("BoxBody_" + std::to_string(newObject->GetID()));
+						newObject->SetName("Body(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
-					if (ImGui::MenuItem("CircleBody"))
-					{
-						GameObject* newObject = FL::CreateGameObject(-1);
-						newObject->AddCircleBody();
-						newObject->SetName("CircleBody_" + std::to_string(newObject->GetID()));
-						SetFocusedGameObjectID(newObject->GetID());
-					}
-					if (ImGui::MenuItem("CapsuleBody"))
-					{
-						GameObject* newObject = FL::CreateGameObject(-1);
-						newObject->AddCapsuleBody();
-						newObject->SetName("CapsuleBody_" + std::to_string(newObject->GetID()));
-						SetFocusedGameObjectID(newObject->GetID());
-					}
+					//if (ImGui::MenuItem("BoxBody"))
+					//{
+					//	GameObject *newObject = FL::CreateGameObject(-1);						
+					//	newObject->AddBoxBody(Physics::BodyProps(), Shape::ShapeProps());
+					//	newObject->SetName("BoxBody_" + std::to_string(newObject->GetID()));
+					//	SetFocusedGameObjectID(newObject->GetID());
+					//}
+					//if (ImGui::MenuItem("CircleBody"))
+					//{
+					//	GameObject* newObject = FL::CreateGameObject(-1);
+					//	newObject->AddCircleBody();
+					//	newObject->SetName("CircleBody_" + std::to_string(newObject->GetID()));
+					//	SetFocusedGameObjectID(newObject->GetID());
+					//}
+					//if (ImGui::MenuItem("CapsuleBody"))
+					//{
+					//	GameObject* newObject = FL::CreateGameObject(-1);
+					//	newObject->AddCapsuleBody();
+					//	newObject->SetName("CapsuleBody_" + std::to_string(newObject->GetID()));
+					//	SetFocusedGameObjectID(newObject->GetID());
+					//}
 					//if (ImGui::MenuItem("PolygonBody"))
 					//{
 					//	GameObject* newObject = FL::CreateGameObject(-1);
@@ -329,13 +336,13 @@ namespace FlatGui
 					//	newObject->SetName("PolygonBody_" + std::to_string(newObject->GetID()));
 					//	SetFocusedGameObjectID(newObject->GetID());
 					//}
-					if (ImGui::MenuItem("ChainBody"))
-					{
-						GameObject* newObject = FL::CreateGameObject(-1);
-						newObject->AddChainBody();
-						newObject->SetName("ChainBody_" + std::to_string(newObject->GetID()));
-						SetFocusedGameObjectID(newObject->GetID());
-					}
+					//if (ImGui::MenuItem("ChainBody"))
+					//{
+					//	GameObject* newObject = FL::CreateGameObject(-1);
+					//	newObject->AddChainBody();
+					//	newObject->SetName("ChainBody_" + std::to_string(newObject->GetID()));
+					//	SetFocusedGameObjectID(newObject->GetID());
+					//}
 					//if (ImGui::MenuItem("TileMap"))
 					//{
 					//	GameObject* newObject = FL::CreateGameObject(-1);

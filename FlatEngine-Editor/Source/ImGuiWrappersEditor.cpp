@@ -62,12 +62,11 @@ namespace FlatGui
 		// {
 		
 			// Border around each component
-			auto componentWindowPos = ImGui::GetWindowPos();
-			auto componentWindowSize = ImGui::GetWindowSize();		
-			ImGui::GetWindowDrawList()->AddRect({ componentWindowPos.x, componentWindowPos.y + 1 }, { componentWindowPos.x + componentWindowSize.x, componentWindowPos.y + componentWindowSize.y - 1 }, FL::GetColor32("componentBorder"), 2);
+			Vector2 windowPos = ImGui::GetWindowPos();
+			Vector2 windowSize = ImGui::GetWindowSize();
 
 			// Tooltip for Component meta data
-			FL::RenderInvisibleButton("ComponentToolTipButton-" + std::to_string(ID), { componentWindowPos.x, componentWindowPos.y }, { componentWindowSize.x, 27 });
+			FL::RenderInvisibleButton("ComponentToolTipButton-" + std::to_string(ID), { windowPos.x, windowPos.y }, { windowSize.x, 27 });
 			if (ImGui::IsItemHovered() && ImGui::GetIO().KeyAlt)
 			{
 				FL::BeginToolTip("Component Data");
@@ -75,7 +74,7 @@ namespace FlatGui
 				FL::RenderToolTipLong("ParentID", component->GetParentID());
 				FL::EndToolTip();
 			}
-			ImGui::SetCursorScreenPos({ componentWindowPos.x + 5, componentWindowPos.y + 5 });
+			ImGui::SetCursorScreenPos({ windowPos.x + 5, windowPos.y + 5 });
 		
 			// Component Name			
 			FL::MoveScreenCursor(4, 5);
@@ -136,6 +135,9 @@ namespace FlatGui
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("componentBg"));
 				ImGui::BeginChild(componentItemID.c_str(), Vector2(0, 0), FL::F_autoResizeChildFlags);
 			}
+
+			// Border around Components Section
+			ImGui::GetWindowDrawList()->AddRect({ windowPos.x, windowPos.y - 1 }, { windowPos.x + windowSize.x, windowPos.y + windowSize.y + 1 }, FL::GetColor32("componentSectionBorder"), 0);
 	}
 
 	void EndComponent(Component* component)
@@ -340,19 +342,19 @@ namespace FlatGui
 		// TopLeft, Top, TopRight
 		ImGui::GetWindowDrawList()->AddRectFilled(cursorScreen, Vector2(cursorScreen.x + cellSize.x, cursorScreen.y + cellSize.y), FL::GetColor32("pivotSelectionBg"));
 		FL::MoveScreenCursor(5, 5);
-		if (FL::RenderImageButton("##" + componentType + "PivotTopLeftButton", FL::GetTexture("upLeft"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotTopLeftButton", FL::GetTexture("upLeft"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotTopLeft;
 			b_pivotChanged = true;
 		}
 		ImGui::SameLine(0, 3);
-		if (FL::RenderImageButton("##" + componentType + "PivotTopButton", FL::GetTexture("up"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotTopButton", FL::GetTexture("up"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotTop;
 			b_pivotChanged = true;
 		}
 		ImGui::SameLine(0, 3);
-		if (FL::RenderImageButton("##" + componentType + "PivotTopRightButton", FL::GetTexture("upRight"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotTopRightButton", FL::GetTexture("upRight"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotTopRight;
 			b_pivotChanged = true;
@@ -360,19 +362,19 @@ namespace FlatGui
 
 		// Left, Center, Right
 		FL::MoveScreenCursor(5, 0);
-		if (FL::RenderImageButton("##" + componentType + "PivotLeftButton", FL::GetTexture("left"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotLeftButton", FL::GetTexture("left"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotLeft;
 			b_pivotChanged = true;
 		}
 		ImGui::SameLine(0, 3);
-		if (FL::RenderImageButton("##" + componentType + "PivotCenterButton", FL::GetTexture("center"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotCenterButton", FL::GetTexture("center"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotCenter;
 			b_pivotChanged = true;
 		}
 		ImGui::SameLine(0, 3);
-		if (FL::RenderImageButton("##" + componentType + "PivotRightButton", FL::GetTexture("right"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotRightButton", FL::GetTexture("right"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotRight;
 			b_pivotChanged = true;
@@ -380,19 +382,19 @@ namespace FlatGui
 
 		// BottomLeft, Bottom, BottomRight		
 		FL::MoveScreenCursor(5, 0);
-		if (FL::RenderImageButton("##" + componentType + "PivotBottomLeftButton", FL::GetTexture("downLeft"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotBottomLeftButton", FL::GetTexture("downLeft"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotBottomLeft;
 			b_pivotChanged = true;
 		}
 		ImGui::SameLine(0, 3);
-		if (FL::RenderImageButton("##" + componentType + "PivotBottomButton", FL::GetTexture("down"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotBottomButton", FL::GetTexture("down"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotBottom;
 			b_pivotChanged = true;
 		}
 		ImGui::SameLine(0, 3);
-		if (FL::RenderImageButton("##" + componentType + "PivotBottomRightButton", FL::GetTexture("downRight"), Vector2(16, 16), 1, FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
+		if (FL::RenderImageButton("##" + componentType + "PivotBottomRightButton", FL::GetTexture("downRight"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("imageButtonDark"), FL::GetColor("imageButtonTint"), FL::GetColor("pivotButtonHovered")))
 		{
 			pivot = FL::Pivot::PivotBottomRight;
 			b_pivotChanged = true;
@@ -1509,7 +1511,7 @@ namespace FlatGui
 		}
 	}
 
-	void RenderBodyComponent(Body* body)
+	void RenderBodyComponent(Body* body, ImDrawList* drawList)
 	{		
 		bool b_isActive = body->IsActive();
 		FL::Physics::BodyProps bodyProps = body->GetBodyProps();
@@ -1551,6 +1553,8 @@ namespace FlatGui
 			FL::PopTable();
 		}
 
+		FL::MoveScreenCursor(0, 3);
+
 		if (FL::RenderCheckbox(" Lock Rotation", bodyProps.b_lockedRotation))
 		{
 			body->SetLockedRotation(bodyProps.b_lockedRotation);
@@ -1564,6 +1568,7 @@ namespace FlatGui
 			body->SetLockedYAxis(bodyProps.b_lockedYAxis);
 		}
 
+		FL::MoveScreenCursor(0, 3);
 
 		FL::RenderButton("Add Shape", Vector2(ImGui::GetContentRegionAvail().x, 0));
 		if (ImGui::BeginPopupContextItem("##AddShape", ImGuiPopupFlags_MouseButtonLeft))
@@ -1588,13 +1593,11 @@ namespace FlatGui
 				ImGui::CloseCurrentPopup();
 			}
 			
-
 			if (ImGui::MenuItem("Polygon"))
 			{
 				body->AddPolygon();
 				ImGui::CloseCurrentPopup();
-			}
-				
+			}				
 
 			if (ImGui::MenuItem("Chain"))
 			{
@@ -1606,11 +1609,42 @@ namespace FlatGui
 			ImGui::EndMenu();
 		}
 
-		std::vector<Shape*> shapes = body->GetShapes();
+		if (body->GetShapes().size() > 0)
+		{
+			FL::MoveScreenCursor(0, 3);
+			ImGui::Text("Body Shapes");
+			FL::MoveScreenCursor(0, 2);
+			ImGui::Separator();
+			FL::MoveScreenCursor(0, -3);
 
-		for (Shape* shape : shapes)
-		{					
-			RenderShapeComponentProps(shape);
+			// For scrolling shapes section with background
+			std::string childID = "Shapes_" + std::to_string(ID);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("shapesScrollingBg"));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 5));
+			ImGui::BeginChild(childID.c_str(), Vector2(0, 300), FL::F_childFlags);
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+
+			// Border around components section
+			auto wPos = ImGui::GetWindowPos();
+			auto wSize = ImGui::GetWindowSize();
+
+			std::vector<Shape*> shapes = body->GetShapes();
+
+			for (int i = 0; i < shapes.size(); i++)
+			{
+				RenderShapeComponentProps(shapes[i]);
+				
+				if (i != shapes.size() - 1)
+				{
+					FL::MoveScreenCursor(0, 3);
+				}
+			}
+
+			ImGui::EndChild();
+
+			// Border around Shapes Section
+			ImGui::GetWindowDrawList()->AddRect({wPos.x, wPos.y - 1}, {wPos.x + wSize.x, wPos.y + wSize.y + 1}, FL::GetColor32("componentSectionBorder"), 0);
 		}
 	}
 	
@@ -1618,9 +1652,18 @@ namespace FlatGui
 	{
 		Shape::ShapeProps shapeProps = shape->GetShapeProps();
 		b2ShapeId shapeID = shape->GetShapeID();
+		b2ChainId chainID = shape->GetChainID();
 		Shape::ShapeType shapeType = shape->GetShape();
-		int ID = (int)shapeID.index1;
-		std::string shapeString = shape->GetShapeString();
+		std::string ID = "";
+		if (shapeType != Shape::ShapeType::BS_Chain)
+		{
+			ID = std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);
+		}
+		else
+		{
+			ID = std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);
+		}
+		std::string shapeString = shape->GetShapeString() + " ID: " + ID;
 		bool b_isSensor = shapeProps.b_isSensor;
 		float restitution = shapeProps.restitution;
 		float friction = shapeProps.friction;
@@ -1632,37 +1675,40 @@ namespace FlatGui
 		bool b_horizontal = shapeProps.b_horizontal;
 		std::vector<Vector2> points = shapeProps.points;
 		int pointCount = (int)points.size();
-		static bool b_showPoints = false;
-		bool b_editingPoints = false;
+		bool b_showPoints = shape->ShowPoints();
+		bool b_editingPoints = shape->IsEditingPoints();
 		bool b_isLoop = shapeProps.b_isLoop;
 		float tangentSpeed = shapeProps.tangentSpeed;
 		float rollingResistance = shapeProps.rollingResistance;
 		bool b_enableSensorEvents = shapeProps.b_enableSensorEvents;
 		bool b_enableContactEvents = shapeProps.b_enableContactEvents;
 
-		if (shapeType == Shape::ShapeType::BS_Chain)
-		{
-			b_editingPoints = static_cast<Chain*>(shape)->IsEditingPoints();
-		}
-		else if (shapeType == Shape::ShapeType::BS_Polygon)
-		{
-			b_editingPoints = static_cast<FL::Polygon*>(shape)->IsEditingPoints();
-		}
+
+		std::string childID = "Shape_" + ID;
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("shapeBg"));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 3));
+		ImGui::BeginChild(childID.c_str(), Vector2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize);
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+
+		// Border around each shape
+		auto shapeWindowPos = ImGui::GetWindowPos();
+		auto shapeWindowSize = ImGui::GetWindowSize();	
 
 		FL::RenderSectionHeader(shapeString);
+		FL::MoveScreenCursor(0, -4);
 
-		FL::MoveScreenCursor(0, 5);
-		if (FL::PushTable("##" + shapeString + "ShapeProps" + std::to_string(ID), 2))
+		if (FL::PushTable("##" + shapeString + "ShapeProps" + ID, 2))
 		{
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "Density" + std::to_string(ID), "Density", density, 0.001f, 0.001f, FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "Density" + ID, "Density", density, 0.001f, 0.001f, FLT_MAX))
 			{
 				shape->SetDensity(density);
 			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "Friction" + std::to_string(ID), "Friction", friction, 0.001f, 0.0f, FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "Friction" + ID, "Friction", friction, 0.001f, 0.0f, FLT_MAX))
 			{
 				shape->SetFriction(friction);
 			}
-			if (FL::RenderFloatDragTableRow("##" + shapeString + "Restitution" + std::to_string(ID), "Restitution", restitution, 0.001f, 0.0f, FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##" + shapeString + "Restitution" + ID, "Restitution", restitution, 0.001f, 0.0f, FLT_MAX))
 			{
 				shape->SetRestitution(restitution);
 			}
@@ -1671,30 +1717,30 @@ namespace FlatGui
 				Vector2 positionOffset = shapeProps.positionOffset;
 				float rotationOffset = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));				
 
-				if (FL::RenderFloatDragTableRow("##PositionXOffset" + std::to_string(ID), "X Offset", positionOffset.x, 0.01f, -FLT_MAX, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##PositionXOffset" + ID, "X Offset", positionOffset.x, 0.01f, -FLT_MAX, FLT_MAX))
 				{
 					shape->SetPositionOffset(positionOffset);
 				}
-				if (FL::RenderFloatDragTableRow("##PositionYOffset" + std::to_string(ID), "Y Offset", positionOffset.y, 0.01f, -FLT_MAX, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##PositionYOffset" + ID, "Y Offset", positionOffset.y, 0.01f, -FLT_MAX, FLT_MAX))
 				{
 					shape->SetPositionOffset(positionOffset);
 				}
-				if (FL::RenderFloatDragTableRow("##RotationOffset" + std::to_string(ID), "Rotation Offset", rotationOffset, 0.5f, -FLT_MAX, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##RotationOffset" + ID, "Rotation Offset", rotationOffset, 0.5f, -FLT_MAX, FLT_MAX))
 				{
 					shape->SetRotationOffset(rotationOffset);
 				}
 			}
 			if (shapeType == Shape::ShapeType::BS_Box)
 			{
-				if (FL::RenderFloatDragTableRow("##BoxWidth" + std::to_string(ID), "Width", dimensions.x, 0.01f, 0.01f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##BoxWidth" + ID, "Width", dimensions.x, 0.01f, 0.01f, FLT_MAX))
 				{
 					static_cast<Box*>(shape)->SetDimensions(dimensions);
 				}
-				if (FL::RenderFloatDragTableRow("##BoxHeight" + std::to_string(ID), "Height", dimensions.y, 0.01f, 0.01f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##BoxHeight" + ID, "Height", dimensions.y, 0.01f, 0.01f, FLT_MAX))
 				{
 					static_cast<Box*>(shape)->SetDimensions(dimensions);
 				}
-				if (FL::RenderFloatDragTableRow("##ShapeCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##ShapeCornerRadius" + ID, "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
 				{
 					if (cornerRadius >= 0)
 					{
@@ -1708,7 +1754,7 @@ namespace FlatGui
 			}
 			else if (shapeType == Shape::ShapeType::BS_Polygon)
 			{
-				if (FL::RenderFloatDragTableRow("##ShapeCornerRadius" + std::to_string(ID), "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##ShapeCornerRadius" + ID, "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
 				{
 					if (cornerRadius >= 0)
 					{
@@ -1722,33 +1768,33 @@ namespace FlatGui
 			}
 			if (shapeType == Shape::ShapeType::BS_Circle)
 			{
-				if (FL::RenderFloatDragTableRow("##ShapeRadius" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##ShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
 				{
 					static_cast<Circle*>(shape)->SetRadius(radius);
 				}
 			}
 			if (shapeType == Shape::ShapeType::BS_Capsule)
 			{
-				if (FL::RenderFloatDragTableRow("##ShapeRadius" + std::to_string(ID), "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##ShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
 				{
 					static_cast<Capsule*>(shape)->SetRadius(radius);
 				}
-				if (FL::RenderFloatDragTableRow("##CapsuleLength" + std::to_string(ID), "Length", capsuleLength, 0.01f, 0.01f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##CapsuleLength" + ID, "Length", capsuleLength, 0.01f, 0.01f, FLT_MAX))
 				{
 					static_cast<Capsule*>(shape)->SetCapsuleLength(capsuleLength);
 				}
-				if (FL::RenderFloatDragTableRow("##CapsuleHeight" + std::to_string(ID), "Radii", radius, 0.01f, 0.01f, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##CapsuleHeight" + ID, "Radii", radius, 0.01f, 0.01f, FLT_MAX))
 				{
 					static_cast<Capsule*>(shape)->SetRadius(radius);
 				}
 			}
 			if (shapeType == Shape::ShapeType::BS_Chain)
 			{
-				if (FL::RenderFloatDragTableRow("##ChainTangentSpeed" + std::to_string(ID), "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##ChainTangentSpeed" + ID, "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
 				{
 					static_cast<Chain*>(shape)->SetTangentSpeed(tangentSpeed);
 				}
-				if (FL::RenderFloatDragTableRow("##ChainRollingResistance" + std::to_string(ID), "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
+				if (FL::RenderFloatDragTableRow("##ChainRollingResistance" + ID, "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
 				{
 					static_cast<Chain*>(shape)->SetRollingResistance(rollingResistance);
 				}
@@ -1756,69 +1802,76 @@ namespace FlatGui
 			FL::PopTable();
 		}
 
+		FL::MoveScreenCursor(0, 3);
 		if (shapeType != Shape::ShapeType::BS_Chain)
 		{
-			if (FL::RenderCheckbox(" Is Sensor##Chain_" + std::to_string(ID), b_isSensor))
+			if (FL::RenderCheckbox(" Is Sensor##Chain_" + ID, b_isSensor))
 			{
 				shape->SetIsSensor(b_isSensor);
 			}
 		}
-		if (FL::RenderCheckbox(" Enable Sensor Events##Chain_" + std::to_string(ID), b_enableSensorEvents))
+		if (FL::RenderCheckbox(" Enable Sensor Events##Chain_" + ID, b_enableSensorEvents))
 		{
 			shape->SetEnableSensorEvents(b_enableSensorEvents);
 		}
-		if (FL::RenderCheckbox(" Enable Contact Events##_Chain" + std::to_string(ID), b_enableContactEvents))
+		if (FL::RenderCheckbox(" Enable Contact Events##_Chain" + ID, b_enableContactEvents))
 		{
 			shape->SetEnableContactEvents(b_enableContactEvents);
 		}
 
 		if (shapeType == Shape::ShapeType::BS_Capsule)
 		{
-			if (FL::RenderCheckbox(" Horizontal##Capsule_" + std::to_string(ID), b_horizontal))
+			if (FL::RenderCheckbox(" Horizontal##Capsule_" + ID, b_horizontal))
 			{
 				static_cast<Capsule*>(shape)->SetHorizontal(b_horizontal);
 			}
 		}
 
 		if (shapeType == Shape::ShapeType::BS_Chain)
-		{
-			FL::MoveScreenCursor(0, 3);
-			if (FL::RenderCheckbox(" Loop endpoints##Chain_" + std::to_string(ID), b_isLoop))
+		{			
+			if (FL::RenderCheckbox(" Loop endpoints##Chain_" + ID, b_isLoop))
 			{
 				static_cast<Chain*>(shape)->SetIsLoop(b_isLoop);
 			}
-
+			
 			FL::MoveScreenCursor(0, 3);
-			FL::RenderCheckbox(" Show points##Chain_" + std::to_string(ID), b_showPoints);
+			ImGui::Separator();
+			FL::MoveScreenCursor(0, 3);
 
-			ImGui::SameLine(0, 10);
 			if (!b_editingPoints)
 			{
-				if (FL::RenderButton("Edit Points##Chain_" + std::to_string(ID)))
+				if (FL::RenderButton("Edit Points##Chain_" + ID))
 				{
-					static_cast<Chain*>(shape)->SetEditingPoints(true);
+					shape->SetEditingPoints(true);
 				}
 			}
 			else
 			{
-				if (FL::RenderButton("Stop editing##Chain_" + std::to_string(ID)))
+				if (FL::RenderButton("Stop editing##Chain_" + ID))
 				{
-					static_cast<Chain*>(shape)->SetEditingPoints(false);
+					shape->SetEditingPoints(false);
 				}
+			}
+
+			ImGui::SameLine();
+			FL::MoveScreenCursor(0, 3);
+			if (FL::RenderCheckbox(" Show points##Chain_" + ID, b_showPoints))
+			{
+				shape->SetShowPoints(b_showPoints);
 			}
 
 			if (b_showPoints)
 			{
-				ImGui::Text("Point Positions");
-				if (FL::PushTable("##ShapePointPositions" + std::to_string(ID), 2))
+				FL::MoveScreenCursor(0, 3);
+				if (FL::PushTable("##ShapePointPositions" + ID, 2))
 				{
 					for (int i = 0; i < pointCount; i++)
 					{
-						if (FL::RenderFloatDragTableRow("##ShapePointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+						if (FL::RenderFloatDragTableRow("##ShapePointXPos" + ID + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
 						{
 							static_cast<Chain*>(shape)->SetPoints(points);
 						}
-						if (FL::RenderFloatDragTableRow("##ShapePointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+						if (FL::RenderFloatDragTableRow("##ShapePointYPos" + ID + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
 						{
 							static_cast<Chain*>(shape)->SetPoints(points);
 						}
@@ -1828,38 +1881,45 @@ namespace FlatGui
 			}
 		}
 		else if (shapeType == Shape::ShapeType::BS_Polygon)
-		{
+		{			
 			FL::MoveScreenCursor(0, 3);
-			FL::RenderCheckbox(" Show points##Polygon_" + std::to_string(ID), b_showPoints);
+			ImGui::Separator();
+			FL::MoveScreenCursor(0, 3);
 
-			ImGui::SameLine(0, 10);
 			if (!b_editingPoints)
 			{
-				if (FL::RenderButton("Edit Points##Polygon_" + std::to_string(ID)))
+				if (FL::RenderButton("Edit Points##Polygon_" + ID))
 				{
-					static_cast<FL::Polygon*>(shape)->SetEditingPoints(true);
+					shape->SetEditingPoints(true);
 				}
 			}
 			else
 			{
-				if (FL::RenderButton("Stop editing##Polygon_" + std::to_string(ID)))
+				if (FL::RenderButton("Stop editing##Polygon_" + ID))
 				{
-					static_cast<FL::Polygon*>(shape)->SetEditingPoints(false);
+					shape->SetEditingPoints(false);
 				}
+			}
+
+			ImGui::SameLine();	
+			FL::MoveScreenCursor(0, 3);
+			if (FL::RenderCheckbox(" Show points##Polygon_" + ID, b_showPoints))
+			{
+				shape->SetShowPoints(b_showPoints);
 			}
 
 			if (b_showPoints)
 			{
-				ImGui::Text("Point Positions");
-				if (FL::PushTable("##ShapePointPositions" + std::to_string(ID), 2))
+				FL::MoveScreenCursor(0, 3);				
+				if (FL::PushTable("##ShapePointPositions" + ID, 2))
 				{
 					for (int i = 0; i < pointCount; i++)
 					{
-						if (FL::RenderFloatDragTableRow("##ShapePointXPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+						if (FL::RenderFloatDragTableRow("##ShapePointXPos" + ID + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
 						{
 							static_cast<FL::Polygon*>(shape)->SetPoints(points);
 						}
-						if (FL::RenderFloatDragTableRow("##ShapePointYPos" + std::to_string(ID) + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+						if (FL::RenderFloatDragTableRow("##ShapePointYPos" + ID + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
 						{
 							static_cast<FL::Polygon*>(shape)->SetPoints(points);
 						}
@@ -1869,7 +1929,12 @@ namespace FlatGui
 			}
 		}
 
-		FL::MoveScreenCursor(0, 5);
+
+		FL::MoveScreenCursor(0, 3);
+
+		ImGui::EndChild();
+
+		ImGui::GetWindowDrawList()->AddRect({ shapeWindowPos.x , shapeWindowPos.y }, { shapeWindowPos.x + shapeWindowSize.x, shapeWindowPos.y + shapeWindowSize.y }, FL::GetColor32("componentBorder"), 0);
 	}
 
 	void RenderTileMapComponent(TileMap* tileMap)
@@ -2060,7 +2125,7 @@ namespace FlatGui
 						uvEnd = Vector2(uvEnd.x / textureWidth, uvEnd.y / textureHeight);
 
 						std::string tileButtonID = "##TileSelect" + std::to_string(index);
-						if (FL::RenderImageButton(tileButtonID, texture, Vector2(iconSize, iconSize), 0, FL::GetColor("imageButton"), FL::GetColor("imageButtonTint"), FL::GetColor("tileSetIconHovered"), FL::GetColor("imageButtonActive"), uvStart, uvEnd))
+						if (FL::RenderImageButton(tileButtonID, texture, Vector2(iconSize, iconSize), 0, Vector2(1, 1), FL::GetColor("imageButton"), FL::GetColor("imageButtonTint"), FL::GetColor("tileSetIconHovered"), FL::GetColor("imageButtonActive"), uvStart, uvEnd))
 						{
 							std::pair<std::string, int> tileBrushPair = { selectedTileSet->GetName(), index };
 							FL::F_tileSetAndIndexOnBrush = tileBrushPair;
@@ -2088,110 +2153,110 @@ namespace FlatGui
 
 
 
-		FL::RenderSubTitle("Collision Areas");
+		//FL::RenderSubTitle("Collision Areas");
 
-		std::map<std::string, std::vector<FL::CollisionAreaData>> &collisionAreas = tileMap->GetCollisionAreas();
-		static std::string selectedCollisionArea = "";
-		static int currentSelectedColArea = 0;
-		static std::string collisionAreaLabel = "";
-		std::vector<std::string> areaNames;
-		for (std::pair<std::string, std::vector<FL::CollisionAreaData>> collisionArea : collisionAreas)
-		{
-			areaNames.push_back(collisionArea.first);
-		}
+		//std::map<std::string, std::vector<FL::CollisionAreaData>> &collisionAreas = tileMap->GetCollisionAreas();
+		//static std::string selectedCollisionArea = "";
+		//static int currentSelectedColArea = 0;
+		//static std::string collisionAreaLabel = "";
+		//std::vector<std::string> areaNames;
+		//for (std::pair<std::string, std::vector<FL::CollisionAreaData>> collisionArea : collisionAreas)
+		//{
+		//	areaNames.push_back(collisionArea.first);
+		//}
 
-		// Create new Collision Area
-		ImGui::TextWrapped("New collision area name:");		
-		ImGui::SameLine(ImGui::GetContentRegionAvail().x - 48, 0);
-		
-		FL::MoveScreenCursor(0, -3);
-		ImGui::BeginDisabled(collisionAreaLabel == "");
-		if (FL::RenderButton("Create"))
-		{
-			if (!tileMap->ContainsCollisionAreaLabel(collisionAreaLabel))
-			{
-				std::vector<FL::CollisionAreaData> newData = std::vector<FL::CollisionAreaData>();
-				collisionAreas.emplace(collisionAreaLabel, newData);
-				collisionAreaLabel = "";
-			}
-			else
-			{
-				FL::LogError("Collision area label already being used in this TileMap, please choose a different one.");
-			}
-		}
-		ImGui::EndDisabled();
+		//// Create new Collision Area
+		//ImGui::TextWrapped("New collision area name:");		
+		//ImGui::SameLine(ImGui::GetContentRegionAvail().x - 48, 0);
+		//
+		//FL::MoveScreenCursor(0, -3);
+		//ImGui::BeginDisabled(collisionAreaLabel == "");
+		//if (FL::RenderButton("Create"))
+		//{
+		//	if (!tileMap->ContainsCollisionAreaLabel(collisionAreaLabel))
+		//	{
+		//		std::vector<FL::CollisionAreaData> newData = std::vector<FL::CollisionAreaData>();
+		//		collisionAreas.emplace(collisionAreaLabel, newData);
+		//		collisionAreaLabel = "";
+		//	}
+		//	else
+		//	{
+		//		FL::LogError("Collision area label already being used in this TileMap, please choose a different one.");
+		//	}
+		//}
+		//ImGui::EndDisabled();
 
-		FL::RenderInput("##CollisionAreaLabel" + std::to_string(ID), "", collisionAreaLabel, false);
-
-
-		FL::RenderSeparator(3, 3);
+		//FL::RenderInput("##CollisionAreaLabel" + std::to_string(ID), "", collisionAreaLabel, false);
 
 
-		if (areaNames.size() > 0)
-		{
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
-			FL::PushMenuStyles();
-			if (ImGui::BeginTable("#CollisionAreasTable", 1, FL::F_tableFlags))
-			{
-				ImGui::TableSetupColumn("##CollisionArea", 0, ImGui::GetContentRegionAvail().x);
+		//FL::RenderSeparator(3, 3);
 
-				for (std::string areaName : areaNames)
-				{
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
 
-					ImGuiTreeNodeFlags nodeFlags;
-					std::string treeID = "##SelectActiveTileSetTree";
+		//if (areaNames.size() > 0)
+		//{
+		//	ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
+		//	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
+		//	FL::PushMenuStyles();
+		//	if (ImGui::BeginTable("#CollisionAreasTable", 1, FL::F_tableFlags))
+		//	{
+		//		ImGui::TableSetupColumn("##CollisionArea", 0, ImGui::GetContentRegionAvail().x);
 
-					// If node selected
-					if (selectedCollisionArea == areaName)
-					{
-						nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_Selected;
-					}
-					else
-					{
-						nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
-					}
+		//		for (std::string areaName : areaNames)
+		//		{
+		//			ImGui::TableNextRow();
+		//			ImGui::TableSetColumnIndex(0);
 
-					// render a leaf
-					ImGui::TreeNodeEx((void*)(intptr_t)treeID.c_str(), nodeFlags, areaName.c_str());
-					if (ImGui::IsItemClicked())
-					{
-						tileMap->SetSelectedCollisionArea(areaName);
-						selectedCollisionArea = areaName;
-					}
-				}
+		//			ImGuiTreeNodeFlags nodeFlags;
+		//			std::string treeID = "##SelectActiveTileSetTree";
 
-				ImGui::EndTable();
-			}
-			FL::PopMenuStyles();
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
-		}
+		//			// If node selected
+		//			if (selectedCollisionArea == areaName)
+		//			{
+		//				nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_Selected;
+		//			}
+		//			else
+		//			{
+		//				nodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+		//			}
 
-		if (selectedCollisionArea != "")
-		{
-			if (FL::RenderButton("Draw Collision Areas"))
-			{
-				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
-				FG_collisionAreasBuffer.clear();
-			}
-			ImGui::SameLine(0, 5);
-			ImGui::BeginDisabled(FG_collisionAreasBuffer.size() == 0);
-			if (FL::RenderButton("Generate Colliders"))
-			{
-				FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
-				tileMap->SetCollisionAreaValues(selectedCollisionArea, FG_collisionAreasBuffer);
-				FG_collisionAreasBuffer.clear();
-			}
-			ImGui::EndDisabled();
-		}
+		//			// render a leaf
+		//			ImGui::TreeNodeEx((void*)(intptr_t)treeID.c_str(), nodeFlags, areaName.c_str());
+		//			if (ImGui::IsItemClicked())
+		//			{
+		//				tileMap->SetSelectedCollisionArea(areaName);
+		//				selectedCollisionArea = areaName;
+		//			}
+		//		}
 
-		if (areaNames.size() > 0)
-		{			
-			FL::MoveScreenCursor(0, 5);
-		}
+		//		ImGui::EndTable();
+		//	}
+		//	FL::PopMenuStyles();
+		//	ImGui::PopStyleVar();
+		//	ImGui::PopStyleColor();
+		//}
+
+		//if (selectedCollisionArea != "")
+		//{
+		//	if (FL::RenderButton("Draw Collision Areas"))
+		//	{
+		//		FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
+		//		FG_collisionAreasBuffer.clear();
+		//	}
+		//	ImGui::SameLine(0, 5);
+		//	ImGui::BeginDisabled(FG_collisionAreasBuffer.size() == 0);
+		//	if (FL::RenderButton("Generate Colliders"))
+		//	{
+		//		FL::F_CursorMode = FL::F_CURSOR_MODE::TILE_COLLIDER_DRAW;
+		//		tileMap->SetCollisionAreaValues(selectedCollisionArea, FG_collisionAreasBuffer);
+		//		FG_collisionAreasBuffer.clear();
+		//	}
+		//	ImGui::EndDisabled();
+		//}
+
+		//if (areaNames.size() > 0)
+		//{			
+		//	FL::MoveScreenCursor(0, 5);
+		//}
 	}
 
 	void BeginToolTip(std::string title)

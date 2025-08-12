@@ -49,6 +49,7 @@ F_Textures = {
 	pause = "..\\engine\\images\\icons\\pause.png",
 	stop = "..\\engine\\images\\icons\\stop.png",
 	nextFrame = "..\\engine\\images\\icons\\next.png",
+	skipFrames = "..\\engine\\images\\icons\\fastForward.png",
 	expand = "..\\engine\\images\\icons\\expand.png",
 	expandFlipped = "..\\engine\\images\\icons\\collapse.png",
 	trash = "..\\engine\\images\\icons\\delete.png",

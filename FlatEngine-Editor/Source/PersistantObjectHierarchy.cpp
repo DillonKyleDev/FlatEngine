@@ -21,7 +21,7 @@ namespace FlatGui
 			std::string projectName = "Loaded Project: " + FL::GetFilenameFromPath(FL::F_LoadedProject.GetPath());
 
 			FL::RenderSectionHeader(projectName);
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 26, 0);
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 22, 0);
 
 			static std::string newSceneName = "";
 			static bool b_openSceneModal = false;
@@ -34,8 +34,8 @@ namespace FlatGui
 			}
 
 			// Three dots
-			FL::MoveScreenCursor(2, -4);
-			FL::RenderImageButton("##PersistantSaveLoadMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, FL::GetColor("transparent"));
+			FL::MoveScreenCursor(0, -2);
+			FL::RenderImageButton("##PersistantSaveLoadMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent"));
 			FL::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft))
 			{
@@ -82,6 +82,8 @@ namespace FlatGui
 			}
 			FL::PopMenuStyles();
 
+			FL::MoveScreenCursor(0, 1);
+
 			// Table for Scene Objects in Hierarchy
 			float objectColumnWidth = ImGui::GetContentRegionAvail().x;
 			float visibleIconColumnWidth = 25;
@@ -93,15 +95,14 @@ namespace FlatGui
 
 			static int node_clicked = -1;
 
-			FL::BeginWindowChild("##ScrollingHierarchy");
+			FL::BeginWindowChild("##ScrollingHierarchy", FL::GetColor("outerWindow"), 0, Vector2(0));
 			// {
 
 				long queuedForDelete = -1;
-				FL::MoveScreenCursor(0, 4);
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(0, 0));
-				if (ImGui::BeginTable("##PersistantHierarchyTable", 3, FL::F_tableFlags, Vector2(ImGui::GetContentRegionAvail().x - 1, ImGui::GetContentRegionAvail().y)))
+				if (ImGui::BeginTable("##PersistantHierarchyTable", 3, FL::F_tableFlags, Vector2(ImGui::GetContentRegionAvail().x - 1, ImGui::GetContentRegionAvail().y - 1)))
 				{
 					ImGui::TableSetupColumn("##VISIBLE", 0, visibleIconColumnWidth);
 					ImGui::TableSetupColumn("##OBJECT", 0, objectColumnWidth);
@@ -114,7 +115,7 @@ namespace FlatGui
 						if (b_allAreVisible)
 						{
 							FL::MoveScreenCursor(-1, 0);
-							if (FL::RenderImageButton("##SetAllInvisible", FL::GetTexture("show"), Vector2(16, 16), 0, FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
+							if (FL::RenderImageButton("##SetAllInvisible", FL::GetTexture("show"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 							{
 								for (std::map<long, GameObject>::iterator iter = persistantObjects.begin(); iter != persistantObjects.end(); iter++)
 								{
@@ -126,7 +127,7 @@ namespace FlatGui
 						else
 						{
 							FL::MoveScreenCursor(-1, 0);
-							if (FL::RenderImageButton("##SetAllVisible", FL::GetTexture("hide"), Vector2(16, 16), 0, FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
+							if (FL::RenderImageButton("##SetAllVisible", FL::GetTexture("hide"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 							{
 								for (std::map<long, GameObject>::iterator iter = persistantObjects.begin(); iter != persistantObjects.end(); iter++)
 								{
@@ -176,15 +177,21 @@ namespace FlatGui
 
 						// Add empty table rows so the table goes all the way to the bottom of the screen
 						float availableVerticalSpace = ImGui::GetContentRegionAvail().y;
-						if (availableVerticalSpace > 23)
+						while (availableVerticalSpace > 22)
 						{
-							for (int i = 0; i < availableVerticalSpace / 19 - 3; i++)
-							{
-								ImGui::TableNextRow();
-								ImGui::TableSetColumnIndex(1);
-								ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 7);
-								ImGui::Text("");
-							}
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(1);
+							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 9);
+							ImGui::Text("");
+
+							availableVerticalSpace = ImGui::GetContentRegionAvail().y;
+						}
+
+						if (availableVerticalSpace > 1)
+						{
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(1);
+							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + availableVerticalSpace - 1);
 						}
 
 					// }

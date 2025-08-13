@@ -1518,23 +1518,21 @@ namespace FlatEngine
 			json jsonData = {
 				{ "functionName", eventProp->functionName },
 				{ "time", eventProp->time },
+				{ "_cppEvent", eventProp->b_cppEvent },
+				{ "_luaEvent", eventProp->b_luaEvent }
 			};
 
-			json parameters = json::array();
-			for (Animation::S_EventFunctionParam parameter : eventProp->parameters)
-			{
-				parameters.push_back({
-					{ "type", parameter.type },
-					{ "string", parameter.e_string },
-					{ "int", parameter.e_int },
-					{ "float", parameter.e_float },
-					{ "double", parameter.e_double },
-					{ "long", parameter.e_long },
-					{ "bool", parameter.e_boolean },
-					{ "vector2X", parameter.e_Vector2.x },
-					{ "vector2Y", parameter.e_Vector2.y },
-				});
-			}
+			json parameters = {
+				{ "string", eventProp->parameters.e_string },
+				{ "int", eventProp->parameters.e_int },
+				{ "float", eventProp->parameters.e_float },
+				{ "double", eventProp->parameters.e_double },
+				{ "long", eventProp->parameters.e_long },
+				{ "bool", eventProp->parameters.e_boolean },
+				{ "vector2X", eventProp->parameters.e_Vector2.x },
+				{ "vector2Y", eventProp->parameters.e_Vector2.y },
+			};
+
 			jsonData.push_back({ "parameters", parameters });
 
 			std::string data = jsonData.dump();
@@ -1596,29 +1594,7 @@ namespace FlatEngine
 			std::string data = jsonData.dump();
 			cameraProps.push_back(json::parse(data));
 		}
-		
-		json scriptProps = json::array();
-		for (std::shared_ptr<Animation::S_Script> scriptProp : propertiesObject->scriptProps)
-		{
-			json jsonData = {
-				{ "time", scriptProp->time },
-				{ "path", scriptProp->path }
-			};
-			std::string data = jsonData.dump();
-			scriptProps.push_back(json::parse(data));
-		}
-		
-		json buttonProps = json::array();
-		for (std::shared_ptr<Animation::S_Button> buttonProp : propertiesObject->buttonProps)
-		{
-			json jsonData = {
-				{ "time", buttonProp->time },
-				{ "_isActive", buttonProp->b_isActive }
-			};
-			std::string data = jsonData.dump();
-			buttonProps.push_back(json::parse(data));
-		}
-		
+
 		json canvasProps = json::array();
 		for (std::shared_ptr<Animation::S_Canvas> canvasProp : propertiesObject->canvasProps)
 		{
@@ -1680,8 +1656,6 @@ namespace FlatEngine
 			{ "transform", transformProps },
 			{ "sprite", spriteProps },
 			{ "camera", cameraProps },
-			{ "script", scriptProps },
-			{ "button", buttonProps },
 			{ "canvas", canvasProps },
 			{ "audio", audioProps },
 			{ "text", textProps },
@@ -1748,23 +1722,21 @@ namespace FlatEngine
 						frame->name = "Event";
 						frame->functionName = CheckJsonString(eventProps.at(i), "functionName", animName);
 						frame->time = CheckJsonFloat(eventProps.at(i), "time", animName);
+						frame->b_cppEvent = CheckJsonBool(eventProps.at(i), "_cppEvent", animName);
+						frame->b_luaEvent = CheckJsonBool(eventProps.at(i), "_luaEvent", animName);
 
-						for (int p = 0; p < eventProps.at(i)["parameters"].size(); p++)
-						{
-							json param = eventProps.at(i)["parameters"][p];
-							Animation::S_EventFunctionParam parameter;
-							parameter.type = CheckJsonString(param, "type", animName);
-							parameter.e_string = CheckJsonString(param, "string", animName);
-							parameter.e_int = CheckJsonInt(param, "int", animName);
-							parameter.e_float = CheckJsonFloat(param, "float", animName);
-							parameter.e_long = CheckJsonLong(param, "long", animName);
-							parameter.e_double = CheckJsonDouble(param, "double", animName);
-							parameter.e_boolean = CheckJsonBool(param, "bool", animName);
-							parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", animName), CheckJsonFloat(param, "vector2Y", animName));
+						json parameters = eventProps.at(i)["parameters"];
+						Animation::S_EventFunctionParam parameter;
+						parameter.e_string = CheckJsonString(parameters, "string", animName);
+						parameter.e_int = CheckJsonInt(parameters, "int", animName);
+						parameter.e_float = CheckJsonFloat(parameters, "float", animName);
+						parameter.e_long = CheckJsonLong(parameters, "long", animName);
+						parameter.e_double = CheckJsonDouble(parameters, "double", animName);
+						parameter.e_boolean = CheckJsonBool(parameters, "bool", animName);
+						parameter.e_Vector2 = Vector2(CheckJsonFloat(parameters, "vector2X", animName), CheckJsonFloat(parameters, "vector2Y", animName));
 
-							frame->parameters.push_back(parameter);
-						}
-
+						frame->parameters = parameter;
+				
 						animProps->eventProps.push_back(frame);
 					}
 					catch (const json::out_of_range& e)
@@ -1840,40 +1812,6 @@ namespace FlatEngine
 						frame->time = CheckJsonFloat(cameraProps.at(i), "time", animName);
 						frame->b_isPrimaryCamera = CheckJsonBool(cameraProps.at(i), "_isPrimaryCamera", animName);
 						animProps->cameraProps.push_back(frame);
-					}
-					catch (const json::out_of_range& e)
-					{
-						LogError(e.what());
-					}
-				}
-				
-				json scriptProps = animationJson["animationProperties"]["script"];
-				for (int i = 0; i < scriptProps.size(); i++)
-				{
-					try
-					{
-						std::shared_ptr<Animation::S_Script> frame = std::make_shared<Animation::S_Script>();
-						frame->name = "Script";
-						frame->time = CheckJsonFloat(scriptProps.at(i), "time", animName);
-						frame->path = CheckJsonString(scriptProps.at(i), "path", animName);
-						animProps->scriptProps.push_back(frame);
-					}
-					catch (const json::out_of_range& e)
-					{
-						LogError(e.what());
-					}
-				}
-				
-				json buttonProps = animationJson["animationProperties"]["button"];
-				for (int i = 0; i < buttonProps.size(); i++)
-				{
-					try
-					{
-						std::shared_ptr<Animation::S_Button> frame = std::make_shared<Animation::S_Button>();
-						frame->name = "Button";
-						frame->time = CheckJsonFloat(buttonProps.at(i), "time", animName);
-						frame->b_isActive = CheckJsonBool(buttonProps.at(i), "_isActive", animName);
-						animProps->buttonProps.push_back(frame);
 					}
 					catch (const json::out_of_range& e)
 					{
@@ -3165,7 +3103,7 @@ namespace FlatEngine
 									try
 									{
 										json param = scriptParamsJson.at(i);
-										Animation::S_EventFunctionParam parameter;
+										Script::S_ScriptParam parameter;
 										std::string paramName = CheckJsonString(param, "paramName", objectName);
 										parameter.type = CheckJsonString(param, "type", objectName);
 										parameter.e_string = CheckJsonString(param, "string", objectName);
@@ -3196,32 +3134,18 @@ namespace FlatEngine
 
 								json functionParamsJson = componentJson.at("luaFunctionParameters");
 								std::shared_ptr<Animation::S_Event> functionParams = std::make_shared<Animation::S_Event>();
-
-								for (int i = 0; i < functionParamsJson.size(); i++)
-								{
-									try
-									{
-										json param = functionParamsJson.at(i);
-										Animation::S_EventFunctionParam parameter;
-										parameter.type = CheckJsonString(param, "type", objectName);
-										parameter.e_string = CheckJsonString(param, "string", objectName);
-										parameter.e_int = CheckJsonInt(param, "int", objectName);
-										parameter.e_float = CheckJsonFloat(param, "float", objectName);
-										parameter.e_long = CheckJsonLong(param, "long", objectName);
-										parameter.e_double = CheckJsonDouble(param, "double", objectName);
-										parameter.e_boolean = CheckJsonBool(param, "bool", objectName);
-										parameter.e_Vector2 = Vector2(CheckJsonFloat(param, "vector2X", objectName), CheckJsonFloat(param, "vector2Y", objectName));
-
-										functionParams->parameters.push_back(parameter);
-									}
-									catch (const json::out_of_range& e)
-									{
-										LogError(e.what());
-									}
-								}
-
+								Animation::S_EventFunctionParam parameter;				
+								parameter.e_string = CheckJsonString(functionParamsJson, "string", objectName);
+								parameter.e_int = CheckJsonInt(functionParamsJson, "int", objectName);
+								parameter.e_float = CheckJsonFloat(functionParamsJson, "float", objectName);
+								parameter.e_long = CheckJsonLong(functionParamsJson, "long", objectName);
+								parameter.e_double = CheckJsonDouble(functionParamsJson, "double", objectName);
+								parameter.e_boolean = CheckJsonBool(functionParamsJson, "bool", objectName);
+								parameter.e_Vector2 = Vector2(CheckJsonFloat(functionParamsJson, "vector2X", objectName), CheckJsonFloat(functionParamsJson, "vector2Y", objectName));
+										
+								functionParams->parameters = parameter;
+								
 								newButton->SetLuaFunctionParams(functionParams);
-
 							}
 							else if (type == "Canvas")
 							{								

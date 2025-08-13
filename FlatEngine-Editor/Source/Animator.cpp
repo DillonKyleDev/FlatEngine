@@ -9,10 +9,12 @@
 #include "Texture.h"
 #include "Scene.h"
 #include "Audio.h"
+#include "Animation.h"
 
 #include "imgui.h"
 #include "math.h"
 #include <fstream>
+#include <string>
 
 
 namespace FL = FlatEngine;
@@ -27,7 +29,7 @@ namespace FlatGui
 			FL::BeginResizeWindowChild("Animated Properties", FL::GetColor("outerWindow"), 0, Vector2(0));			
 			// {
 			
-				std::string animationName = "- No Animation Selected -";
+				std::string animationName = "- No Animation Loaded -";
 				if (GetFocusedAnimation() != nullptr && GetFocusedAnimation()->animationName != "")
 				{
 					animationName = GetFocusedAnimation()->animationName;
@@ -50,7 +52,15 @@ namespace FlatGui
 						SetFocusedAnimation(FL::LoadAnimationFile(animationFilePath));
 					}
 
-					FL::RenderSectionHeader(animationName);
+					std::string animationHeaderString = "Loaded: " + animationName;
+					if (animationName != "- No Animation Loaded -")
+					{
+						FL::RenderSectionHeader(animationHeaderString);
+					}
+					else
+					{
+						FL::RenderSectionHeader(animationName);
+					}
 
 					// Three dots
 					FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 24, -27);
@@ -89,7 +99,7 @@ namespace FlatGui
 					FL::MoveScreenCursor(0, 5);
 					std::shared_ptr<Animation::S_AnimationProperties> animProps = GetFocusedAnimation();
 
-					const char* properties[] = { "- select property -", "Event", "Transform", "Sprite", "Camera", "Script", "Button", "Canvas", "Audio", "Text", "CharacterController" };
+					const char* properties[] = { "- select property -", "Event", "Transform", "Sprite", "Camera", "Canvas", "Audio", "Text", "CharacterController" };
 					static int current_property = 0;
 					static std::string nodeClicked = "";
 
@@ -120,18 +130,6 @@ namespace FlatGui
 							std::shared_ptr<Animation::S_Camera> cameraProperties = std::make_shared<Animation::S_Camera>();
 							cameraProperties->name = "Camera";
 							animProps->cameraProps.push_back(cameraProperties);
-						}
-						else if (property == "Script")
-						{
-							std::shared_ptr<Animation::S_Script> scriptProperties = std::make_shared<Animation::S_Script>();
-							scriptProperties->name = "Script";
-							animProps->scriptProps.push_back(scriptProperties);
-						}
-						else if (property == "Button")
-						{
-							std::shared_ptr<Animation::S_Button> buttonProperties = std::make_shared<Animation::S_Button>();
-							buttonProperties->name = "Button";
-							animProps->buttonProps.push_back(buttonProperties);
 						}
 						else if (property == "Canvas")
 						{
@@ -177,14 +175,6 @@ namespace FlatGui
 							else if (property == "Camera")
 							{
 								animProps->cameraProps.clear();
-							}
-							else if (property == "Script")
-							{
-								animProps->scriptProps.clear();
-							}
-							else if (property == "Button")
-							{
-								animProps->buttonProps.clear();
 							}
 							else if (property == "Canvas")
 							{
@@ -236,8 +226,6 @@ namespace FlatGui
 									animProps->transformProps.size() == 0 && properties[n] == "Transform" ||
 									animProps->spriteProps.size() == 0 && properties[n] == "Sprite" ||
 									animProps->cameraProps.size() == 0 && properties[n] == "Camera" ||
-									animProps->scriptProps.size() == 0 && properties[n] == "Script" ||
-									animProps->buttonProps.size() == 0 && properties[n] == "Button" ||
 									animProps->canvasProps.size() == 0 && properties[n] == "Canvas" ||
 									animProps->audioProps.size() == 0 && properties[n] == "Audio" ||
 									animProps->textProps.size() == 0 && properties[n] == "Text" ||
@@ -278,8 +266,6 @@ namespace FlatGui
 							animProps->transformProps.size() > 0 ||
 							animProps->spriteProps.size() > 0 ||
 							animProps->cameraProps.size() > 0 ||
-							animProps->scriptProps.size() > 0 ||
-							animProps->buttonProps.size() > 0 ||
 							animProps->canvasProps.size() > 0 ||
 							animProps->audioProps.size() > 0 ||
 							animProps->textProps.size() > 0 ||
@@ -326,8 +312,6 @@ namespace FlatGui
 							RenderPropertyButton("Transform", (int)animProps->transformProps.size(), nodeClicked);
 							RenderPropertyButton("Sprite", (int)animProps->spriteProps.size(), nodeClicked);
 							RenderPropertyButton("Camera", (int)animProps->cameraProps.size(), nodeClicked);
-							RenderPropertyButton("Script", (int)animProps->scriptProps.size(), nodeClicked);
-							RenderPropertyButton("Button", (int)animProps->buttonProps.size(), nodeClicked);
 							RenderPropertyButton("Canvas", (int)animProps->canvasProps.size(), nodeClicked);
 							RenderPropertyButton("Audio", (int)animProps->audioProps.size(), nodeClicked);
 							RenderPropertyButton("Text", (int)animProps->textProps.size(), nodeClicked);
@@ -363,9 +347,7 @@ namespace FlatGui
 				//ImGui::GetWindowDrawList()->AddRect({ propsWindowPos.x + 2, propsWindowPos.y + 2 }, { propsWindowPos.x + propsWindowSize.x - 2, propsWindowPos.y + propsWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
 
 				ImGui::BeginChild("Property Header", Vector2(0,0), FL::F_headerFlags);
-				// {
-
-					FL::RenderSectionHeader("Animation Timeline");					
+				// {			
 
 					float availableSpace = ImGui::GetContentRegionAvail().x / 2;
 					ImGui::SetNextItemWidth(availableSpace);
@@ -672,42 +654,6 @@ namespace FlatGui
 						propertyYPos--;
 						propertyCounter++;
 					}
-					if (animProps->scriptProps.size() > 0)
-					{
-						rectColor = Vector4(4, 159, 206, 100);
-						std::vector<float> keyFrameTimes = std::vector<float>();
-						L_RenderPropertyInTimeline("Script", keyFrameTimes, rectColor);
-
-						for (std::shared_ptr<Animation::S_Script> frame : animProps->scriptProps)
-						{
-							std::string ID = "Script";					
-							float keyFrameX = frame->time / 1000;
-							Vector2 keyFramePos = Vector2(keyFrameX, propertyYPos);
-							if (zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) + 6 < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) > canvasP0.y)
-								L_RenderAnimationTimelineKeyFrames(frame, IDCounter, keyFramePos, zeroPoint, scrolling, canvasP0, canvasP1, canvasSize, animatorGridgridStep);
-							IDCounter++;
-						}
-						propertyYPos--;
-						propertyCounter++;
-					}
-					if (animProps->buttonProps.size() > 0)
-					{
-						rectColor = Vector4(152, 16, 198, 100);
-						std::vector<float> keyFrameTimes = std::vector<float>();
-						L_RenderPropertyInTimeline("Button", keyFrameTimes, rectColor);
-
-						for (std::shared_ptr<Animation::S_Button> frame : animProps->buttonProps)
-						{
-							std::string ID = "Button";					
-							float keyFrameX = frame->time / 1000;
-							Vector2 keyFramePos = Vector2(keyFrameX, propertyYPos);
-							if (zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) + 6 < canvasP1.y && zeroPoint.y + (propertyYPos * animatorGridgridStep * -1) > canvasP0.y)
-								L_RenderAnimationTimelineKeyFrames(frame, IDCounter, keyFramePos, zeroPoint, scrolling, canvasP0, canvasP1, canvasSize, animatorGridgridStep);
-							IDCounter++;
-						}
-						propertyYPos--;
-						propertyCounter++;
-					}
 					if (animProps->canvasProps.size() > 0)
 					{
 						rectColor = Vector4(224, 81, 15, 100);
@@ -903,7 +849,7 @@ namespace FlatGui
 			auto propsWindowSize = ImGui::GetWindowSize();  // This is the size of the current box, perfect for getting the exact dimensions for a border
 			ImGui::GetWindowDrawList()->AddRect({ propsWindowPos.x + 2, propsWindowPos.y + 2 }, { propsWindowPos.x + propsWindowSize.x - 2, propsWindowPos.y + propsWindowSize.y - 2 }, FL::GetColor32("componentBorder"), 0);
 
-			FL::BeginWindowChild("Animated Properties");
+			FL::BeginWindowChild("Animated Properties", FL::GetColor("outerWindow"), 0, Vector2(0));
 			// {
 
 				std::string keyFrameProperty = "No KeyFrame Selected";
@@ -915,7 +861,7 @@ namespace FlatGui
 				FL::RenderSectionHeader(keyFrameProperty);
 
 				// Three dots
-				FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 29, -31);
+				FL::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 24, -27);
 				ImGui::BeginDisabled(FG_FocusedAnimation == nullptr || FG_SelectedKeyFrameToEdit == nullptr);
 				FL::RenderImageButton("##KeyframeEditorHamburgerMenu", FL::GetTexture("threeDots"), Vector2(16, 16), 1, Vector2(1, 1), FL::GetColor("transparent"));
 				ImGui::EndDisabled();
@@ -933,12 +879,12 @@ namespace FlatGui
 				}
 				FL::PopMenuStyles();
 
-				FL::RenderSeparator(6, 6);
+				FL::MoveScreenCursor(0, 10);
 
 				if (FG_SelectedKeyFrameToEdit != nullptr)
 				{
 					float frameTime = FG_SelectedKeyFrameToEdit->time / 1000;
-					if (FL::RenderDragFloat("Keyframe time (seconds)", 100, frameTime, 0.001f, 0, 10000000))
+					if (FL::RenderDragFloat("Keyframe time (sec)", 100, frameTime, 0.001f, 0, 10000000))
 					{
 						FG_SelectedKeyFrameToEdit->time = frameTime * 1000;
 					}
@@ -947,187 +893,117 @@ namespace FlatGui
 					{
 						std::shared_ptr<Animation::S_Event> event = std::static_pointer_cast<Animation::S_Event>(FG_SelectedKeyFrameToEdit);
 						std::string functionName = event->functionName;
-						if (FL::RenderInput("##AnimationEventName", "Function Name", functionName))
+						bool b_cppEvent = event->b_cppEvent;
+						bool b_luaEvent = event->b_luaEvent;
+
+						std::string choices[2] = { "C++", "Lua" };
+						std::string currentChoice = "";
+
+						if (b_cppEvent)
 						{
-							event->functionName = functionName;
+							currentChoice = "C++";
+						}
+						else if (b_luaEvent)
+						{
+							currentChoice = "Lua";
+						}
+
+						if (ImGui::RadioButton("C++ Function", currentChoice == choices[0]))
+						{
+							currentChoice = choices[0];
+							event->b_cppEvent = true;
+							event->b_luaEvent = false;
+						}
+						if (ImGui::RadioButton("Lua Function", currentChoice == choices[1]))
+						{
+							currentChoice = choices[1];
+							event->b_cppEvent = false;
+							event->b_luaEvent = true;
+						}
+
+						FL::RenderSeparator(1, 1);
+
+						if (event->b_cppEvent)
+						{
+							int currentEventFunction = 0;
+							std::vector<std::string> eventFunctions = { "- none -" };
+
+							for (std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>::iterator iter = FL::F_CPPAnimationEventFunctions.begin(); iter != FL::F_CPPAnimationEventFunctions.end(); iter++)
+							{
+								eventFunctions.push_back(iter->first);
+							}
+
+							for (int i = 0; i < eventFunctions.size(); i++)
+							{
+								if (event->functionName == eventFunctions[i])
+								{
+									currentEventFunction = i;
+								}
+							}
+
+							if (eventFunctions.size())
+							{
+								std::string comboID = "##EventFunctionName";
+								if (FL::RenderCombo(comboID, eventFunctions[currentEventFunction], eventFunctions, currentEventFunction))
+								{
+									event->functionName = eventFunctions[currentEventFunction];
+								}
+							}
+							else
+							{
+								ImGui::Text("Add event functions using AddCPPAnimationEventFunction() in attached C++ script.");
+							}
+						}
+
+						if (b_luaEvent)
+						{
+							if (FL::RenderInput("##AnimationEventName", "Function Name", functionName))
+							{
+								event->functionName = functionName;
+							}
 						}
 
 						FL::MoveScreenCursor(0, 10);
 
-						ImGui::BeginDisabled(event->parameters.size() >= 5);
-						if (FL::RenderButton("Add parameter"))
-						{
-							Animation::S_EventFunctionParam param = Animation::S_EventFunctionParam();
-							param.type = "string";
-							event->parameters.push_back(param);
-						}
-						ImGui::EndDisabled();
+						std::string stringValue = event->parameters.e_string;
+						int intValue = event->parameters.e_int;
+						float floatValue = event->parameters.e_float;
+						int longValue = (int)event->parameters.e_long;
+						bool b_boolean = event->parameters.e_boolean;
+						Vector2 vector2 = event->parameters.e_Vector2;
 
-						ImGui::SameLine(0, 5);
-
-						if (event->parameters.size() >= 5)
-						{
-							ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor32("col_5"));
-						}
-						std::string paramCountString = std::to_string(event->parameters.size()) + " / 5";
-						ImGui::Text(paramCountString.c_str());
-						if (event->parameters.size() >= 5)
-						{
-							ImGui::PopStyleColor();
-						}
-
-						FL::MoveScreenCursor(0, 5);
-
-						if (event->parameters.size() > 0)
-						{
-							//FL::MoveScreenCursor(30, 0);
-							ImGui::Text("Type:");
-							ImGui::SameLine(0, 75);
-							ImGui::Text("Value:");
-						}
-
-						FL::MoveScreenCursor(0, 5);
-
-						int paramCounter = 0;
-						int paramQueuedForDelete = -1;
-						for (Animation::S_EventFunctionParam& param : event->parameters)
-						{
-							int currentType = 0;
-							std::vector<std::string> types = { "string", "int", "float", "double", "long", "bool", "Vector2" };
-
-							for (int i = 0; i < types.size(); i++)
+						if (FL::PushTable("##EventParameters", 2))
+						{							
+							if (FL::RenderInputTableRow("##EventParamString", "String", stringValue, false))
 							{
-								if (param.type == types[i])
-								{
-									currentType = i;
-								}
+								event->parameters.e_string = stringValue;
 							}
-
-							std::string comboID = "##EventFunctionParameterType" + std::to_string(paramCounter);
-							if (FL::RenderCombo(comboID, types[currentType], types, currentType, 85))
+							if (FL::RenderIntDragTableRow("##EventParamInt", "Int", intValue, 1, -INT_MAX, INT_MAX))
 							{
-								param.type = types[currentType];
+								event->parameters.e_int = intValue;
 							}
-
-							ImGui::SameLine();
-
-							float inputWidth = ImGui::GetContentRegionAvail().x - 36;
-
-							if (param.type == "string")
+							if (FL::RenderIntDragTableRow("##EventParamLong", "Long", longValue, 1, -LONG_MAX, LONG_MAX))
 							{
-								std::string stringValue = param.e_string;
-								if (FL::RenderInput("##EventParamString" + std::to_string(paramCounter), "", stringValue, false, inputWidth))
-								{
-									param.e_string = stringValue;
-								}
+								event->parameters.e_int = intValue;
 							}
-											
-							if (param.type == "int")
+							if (FL::RenderFloatDragTableRow("##EventParamFloat", "Float", floatValue, 0.001f, -FLT_MAX, FLT_MAX))
 							{
-								int intValue = param.e_int;
-								ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-								ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-								if (FL::RenderDragInt("##EventParamInt" + std::to_string(paramCounter), inputWidth, intValue, 1, INT_MIN, INT_MAX, 0, "input"))
-								{
-									param.e_int = intValue;
-								}
-								ImGui::PopStyleVar();
-								ImGui::PopStyleVar();
+								event->parameters.e_float = floatValue;
 							}
-							if (param.type == "long")
+							if (FL::RenderFloatDragTableRow("##EventParamVector2X", "Vector2 X", vector2.x, 0.001f, -FLT_MAX, FLT_MAX))
 							{
-								int longValue = (int)param.e_long;
-								ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-								ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-								if (FL::RenderDragInt("##EventParamLong" + std::to_string(paramCounter), inputWidth, longValue, 1, INT_MIN, INT_MAX, 0, "input"))
-								{
-									param.e_long = longValue;
-								}
-								ImGui::PopStyleVar();
-								ImGui::PopStyleVar();
+								event->parameters.e_Vector2 = vector2;
 							}
-							if (param.type == "float")
+							if (FL::RenderFloatDragTableRow("##EventParamVector2Y", "Vector2 Y", vector2.y, 0.001f, -FLT_MAX, FLT_MAX))
 							{
-								float floatValue = param.e_float;
-								ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-								ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-								if (FL::RenderDragFloat("##EventParamFloat" + std::to_string(paramCounter), inputWidth, floatValue, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-								{
-									param.e_float = floatValue;
-								}
-								ImGui::PopStyleVar();
-								ImGui::PopStyleVar();
+								event->parameters.e_Vector2 = vector2;
 							}
-							if (param.type == "double")
-							{
-								float doubleValue = (float)param.e_double;
-								ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-								ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-								if (FL::RenderDragFloat("##EventParamFloat" + std::to_string(paramCounter), inputWidth, doubleValue, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-								{
-									param.e_double = doubleValue;
-								}
-								ImGui::PopStyleVar();
-								ImGui::PopStyleVar();
-							}
-							if (param.type == "bool")
-							{
-								std::vector<std::string> trueFalse = { "true", "false" };
-								int currentBool = 0;
-								if (param.e_boolean)
-								{
-									currentBool = 0;
-								}
-								else
-								{
-									currentBool = 1;
-								}
-								if (FL::RenderCombo("##EventParamBooleanDropdown" + std::to_string(paramCounter), param.e_boolean ? "true" : "false", trueFalse, currentBool, inputWidth))
-								{
-									param.e_boolean = trueFalse[currentBool] == "true";
-								}
-							}
-							if (param.type == "Vector2")
-							{
-								inputWidth = (inputWidth / 2) - 3;
-								Vector2 vector2Value = param.e_Vector2;
-
-								ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-								ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-								if (FL::RenderDragFloat("##EventParamVector2X" + std::to_string(paramCounter), inputWidth, vector2Value.x, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-								{
-									param.e_Vector2.x = vector2Value.x;
-								}
-								ImGui::PopStyleVar();
-								ImGui::PopStyleVar();
-
-								ImGui::SameLine(0, 6);
-
-								ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-								ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-								if (FL::RenderDragFloat("##EventParamVector2Y" + std::to_string(paramCounter), inputWidth, vector2Value.y, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-								{
-									param.e_Vector2.y = vector2Value.y;
-								}
-								ImGui::PopStyleVar();
-								ImGui::PopStyleVar();
-							}							
-
-							ImGui::SameLine(0, 5);
-
-							std::string trashcanID = "##EventParamtrashIcon-" + std::to_string(paramCounter);						
-							if (FL::RenderImageButton(trashcanID.c_str(), FL::GetTexture("trash")))
-							{
-								paramQueuedForDelete = paramCounter;
-							}
-
-							paramCounter++;
+							FL::PopTable();
 						}
 
-						if (paramQueuedForDelete != -1)
-						{
-							event->parameters.erase(std::next(event->parameters.begin(), paramQueuedForDelete));
-						}
+						FL::MoveScreenCursor(0, 3);
+						FL::RenderCheckbox("Boolean", b_boolean);		
+						FL::MoveScreenCursor(0, 3);
 					}
 					else if (FG_SelectedKeyFrameToEdit->name == "Transform")
 					{

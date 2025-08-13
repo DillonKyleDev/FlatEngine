@@ -15,6 +15,7 @@
 #include "MappingContext.h"
 #include "Project.h"
 #include "Body.h"
+#include "Script.h"
 
 #include "box2d.h"
 #include <fstream>
@@ -190,7 +191,7 @@ namespace FlatEngine
 		F_Lua["GetScriptParam"] = [](std::string paramName, long ID, std::string scriptName)
 		{
 			GameObject* thisObject = GetObjectByID(ID);
-			Animation::S_EventFunctionParam parameter = Animation::S_EventFunctionParam();
+			Script::S_ScriptParam parameter = Script::S_ScriptParam();
 
 			if (thisObject != nullptr)
 			{
@@ -221,7 +222,7 @@ namespace FlatEngine
 			GameObject* thisObject = GetObjectByID(ID);
 			std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
 			std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
-			Animation::S_EventFunctionParam parameter = Animation::S_EventFunctionParam();
+			Script::S_ScriptParam parameter = Script::S_ScriptParam();
 
 			if (thisObject != nullptr)
 			{
@@ -610,8 +611,7 @@ namespace FlatEngine
 			"HasAnimation", &Animation::HasAnimation
 		);
 
-		F_Lua.new_usertype<Animation::S_EventFunctionParam>("ScriptParameter",
-			"type",&Animation::S_EventFunctionParam::GetType,
+		F_Lua.new_usertype<Animation::S_EventFunctionParam>("AnimationEventParameter",
 			"string", &Animation::S_EventFunctionParam::GetString,
 			"int", &Animation::S_EventFunctionParam::GetInt,
 			"long", &Animation::S_EventFunctionParam::GetLong,
@@ -619,24 +619,41 @@ namespace FlatEngine
 			"double", &Animation::S_EventFunctionParam::GetDouble,
 			"bool", &Animation::S_EventFunctionParam::GetBool,
 			"Vector2", &Animation::S_EventFunctionParam::GetVector2,
-			"SetType", & Animation::S_EventFunctionParam::SetType,
-			"SetString", & Animation::S_EventFunctionParam::SetString,
-			"SetInt", & Animation::S_EventFunctionParam::SetInt,
-			"SetLong", & Animation::S_EventFunctionParam::SetLong,
-			"SetFloat", & Animation::S_EventFunctionParam::SetFloat,
-			"SetDouble", & Animation::S_EventFunctionParam::SetDouble,
-			"SetBool", & Animation::S_EventFunctionParam::SetBool,
-			"SetVector2", & Animation::S_EventFunctionParam::SetVector2
+			"SetString", &Animation::S_EventFunctionParam::SetString,
+			"SetInt", &Animation::S_EventFunctionParam::SetInt,
+			"SetLong", &Animation::S_EventFunctionParam::SetLong,
+			"SetFloat", &Animation::S_EventFunctionParam::SetFloat,
+			"SetDouble", &Animation::S_EventFunctionParam::SetDouble,
+			"SetBool", &Animation::S_EventFunctionParam::SetBool,
+			"SetVector2", &Animation::S_EventFunctionParam::SetVector2
 		);
 
-		F_Lua.new_usertype<Animation::S_Event>("ParameterList",
-			"SetParameters", &Animation::S_Event::SetParameters,
-			"AddParameter", &Animation::S_Event::AddParameter
+		F_Lua.new_usertype<Script::S_ScriptParam>("ScriptParameter",
+			"string", &Script::S_ScriptParam::GetString,
+			"int", &Script::S_ScriptParam::GetInt,
+			"long", &Script::S_ScriptParam::GetLong,
+			"float", &Script::S_ScriptParam::GetFloat,
+			"double", &Script::S_ScriptParam::GetDouble,
+			"bool", &Script::S_ScriptParam::GetBool,
+			"Vector2", &Script::S_ScriptParam::GetVector2,			
+			"SetString", & Script::S_ScriptParam::SetString,
+			"SetInt", & Script::S_ScriptParam::SetInt,
+			"SetLong", & Script::S_ScriptParam::SetLong,
+			"SetFloat", & Script::S_ScriptParam::SetFloat,
+			"SetDouble", & Script::S_ScriptParam::SetDouble,
+			"SetBool", & Script::S_ScriptParam::SetBool,
+			"SetVector2", & Script::S_ScriptParam::SetVector2
 		);
+
+		//F_Lua.new_usertype<Animation::S_Event>("ParameterList",
+		//	"SetParameters", &Animation::S_Event::SetParameters,
+		//	"AddParameter", &Animation::S_Event::AddParameter
+		//);
 
 		//F_Lua.new_usertype<Physics::BodyProps>("BodyProps",
 
-		//);		
+		//);	
+			
 		F_Lua.new_usertype<b2Vec2>("b2Vec2",
 			"x", sol::readonly(&b2Vec2::x),
 			"y", sol::readonly(&b2Vec2::y)			
@@ -1218,34 +1235,14 @@ namespace FlatEngine
 		CallVoidLuaFunction<GameObject*>(eventFunc);
 	}
 	// Button On Click function events directly added through the Button Component in the Inspector window
-	void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2, Animation::S_EventFunctionParam param3, Animation::S_EventFunctionParam param4, Animation::S_EventFunctionParam param5)
+	void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam params)
 	{
 		LoadLuaGameObject(caller, "Button On Click function");
 		sol::protected_function protectedFunc = F_Lua[eventFunc];
 		if (protectedFunc)
 		{
 			auto result = sol::function_result();
-
-			if (param2.type == "empty")
-			{
-				result = protectedFunc(param1);
-			}
-			else if (param3.type == "empty")
-			{
-				result = protectedFunc(param1, param2);
-			}
-			else if (param4.type == "empty")
-			{
-				result = protectedFunc(param1, param2, param3);
-			}
-			else if (param5.type == "empty")
-			{
-				result = protectedFunc(param1, param2, param3, param4);
-			}
-			else
-			{
-				result = protectedFunc(param1, param2, param3, param4, param5);
-			}
+			result = protectedFunc(params);
 
 			if (!result.valid())
 			{
@@ -1281,7 +1278,7 @@ namespace FlatEngine
 			}
 		}
 	}
-	void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2, Animation::S_EventFunctionParam param3, Animation::S_EventFunctionParam param4, Animation::S_EventFunctionParam param5)
+	void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam params)
 	{
 		if (caller->HasComponent("Script"))
 		{
@@ -1303,27 +1300,7 @@ namespace FlatEngine
 						if (protectedFunc)
 						{
 							auto result = sol::function_result();
-
-							if (param2.type == "empty")
-							{
-								result = protectedFunc(param1);
-							}
-							else if (param3.type == "empty")
-							{
-								result = protectedFunc(param1, param2);
-							}
-							else if(param4.type == "empty")
-							{
-								result = protectedFunc(param1, param2, param3);
-							}
-							else if (param5.type == "empty")
-							{
-								result = protectedFunc(param1, param2, param3, param4);
-							}
-							else
-							{
-								result = protectedFunc(param1, param2, param3, param4, param5);
-							}
+							result = protectedFunc(params);
 
 							if (!result.valid())
 							{

@@ -3,13 +3,43 @@
         "_loop": false,
         "animationProperties": {
             "audio": [],
-            "button": [],
             "camera": [],
             "canvas": [],
             "characterController": [],
-            "event": [],
-            "rigidBody": [],
-            "script": [],
+            "event": [
+                {
+                    "_cppEvent": true,
+                    "_luaEvent": false,
+                    "functionName": "EventFuncLog",
+                    "parameters": {
+                        "bool": true,
+                        "double": -1.0,
+                        "float": 0.11999999731779099,
+                        "int": 279,
+                        "long": 546,
+                        "string": "String value passed in",
+                        "vector2X": 0.3149999976158142,
+                        "vector2Y": 0.41999998688697815
+                    },
+                    "time": 0.0
+                },
+                {
+                    "_cppEvent": true,
+                    "_luaEvent": false,
+                    "functionName": "EventFuncLog",
+                    "parameters": {
+                        "bool": false,
+                        "double": 0.0,
+                        "float": 0.0,
+                        "int": 0,
+                        "long": 0,
+                        "string": "Second String",
+                        "vector2X": 0.0,
+                        "vector2Y": 0.0
+                    },
+                    "time": 2000.0
+                }
+            ],
             "sprite": [
                 {
                     "_instantTintChange": false,

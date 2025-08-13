@@ -223,7 +223,7 @@ namespace FlatGui
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
 	extern void RenderBodyComponent(Body* body, ImDrawList* drawList);	
-	extern void RenderShapeComponentProps(Shape* shape);
+	extern void RenderShapeComponentProps(Shape* shape, b2ShapeId& shapeToDelete, b2ChainId& chainToDelete);
 	extern void RenderTileMapComponent(TileMap* tileMap);
 
 	// SceneView

@@ -9,6 +9,37 @@ using namespace nlohmann::literals;
 
 namespace FlatEngine
 {
+	Script::S_ScriptParam Script::GetScriptParam(std::string paramName, long ID, std::string scriptName)
+	{
+		GameObject* thisObject = GetObjectByID(ID);
+		Script::S_ScriptParam parameter = Script::S_ScriptParam();
+
+		if (thisObject != nullptr)
+		{
+			Script* script = thisObject->GetScript(scriptName);
+			if (script != nullptr)
+			{
+				parameter = script->GetParam(paramName);
+
+				if (parameter.type == "empty")
+				{
+					LogError("No parameter with the name \"" + paramName + "\" found in " + scriptName + " Script on the " + thisObject->GetName() + " GameObject");
+				}
+			}
+			else
+			{
+				LogError(thisObject->GetName() + " does not contain the Script named " + scriptName);
+			}
+		}
+		else
+		{
+			LogError("GameObject with that id not found.");
+		}
+
+		return parameter;
+	}
+
+
 	Script::Script(long myID, long parentID)
 	{
 		SetType(T_Script);
@@ -34,10 +65,10 @@ namespace FlatEngine
 
 		json parameters = json::array();
 
-		for (std::pair<std::string, Animation::S_EventFunctionParam> paramPair : m_scriptParams)
+		for (std::pair<std::string, Script::S_ScriptParam> paramPair : m_scriptParams)
 		{
 			std::string paramName = paramPair.first;
-			Animation::S_EventFunctionParam parameter = paramPair.second;
+			Script::S_ScriptParam parameter = paramPair.second;
 
 			parameters.push_back({
 				{ "paramName", paramName },
@@ -79,27 +110,27 @@ namespace FlatEngine
 		return m_attachedScript;
 	}
 
-	std::map<std::string, Animation::S_EventFunctionParam> &Script::GetScriptParams()
+	std::map<std::string, Script::S_ScriptParam> &Script::GetScriptParams()
 	{
 		return m_scriptParams;
 	}
 
-	void Script::SetScriptParams(std::map<std::string, Animation::S_EventFunctionParam> scriptParams)
+	void Script::SetScriptParams(std::map<std::string, Script::S_ScriptParam> scriptParams)
 	{
 		m_scriptParams = scriptParams;
 	}
 
-	Animation::S_EventFunctionParam Script::GetParam(std::string paramName)
+	Script::S_ScriptParam Script::GetParam(std::string paramName)
 	{
 		if (m_scriptParams.count(paramName))
 		{
 			return m_scriptParams.at(paramName);
 		}
 
-		return Animation::S_EventFunctionParam();
+		return Script::S_ScriptParam();
 	}
 
-	void Script::AddScriptParam(std::string paramName, Animation::S_EventFunctionParam parameter)
+	void Script::AddScriptParam(std::string paramName, Script::S_ScriptParam parameter)
 	{
 		if (m_scriptParams.count(paramName) == 0)
 		{

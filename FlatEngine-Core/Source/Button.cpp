@@ -45,22 +45,17 @@ namespace FlatEngine
 			{ "_rightClick", m_b_rightClick },
 		};
 
-		json parameters = json::array();
-
-		for (Animation::S_EventFunctionParam parameter : m_luaFunctionParams->parameters)
-		{
-			parameters.push_back({
-				{ "type", parameter.type },
-				{ "string", parameter.e_string },
-				{ "int", parameter.e_int },
-				{ "float", parameter.e_float },
-				{ "double", parameter.e_double },
-				{ "long", parameter.e_long },
-				{ "bool", parameter.e_boolean },
-				{ "vector2X", parameter.e_Vector2.x },
-				{ "vector2Y", parameter.e_Vector2.y },
-			});
-		}
+		json parameters = {			
+			{ "string", m_luaFunctionParams->parameters.e_string },
+			{ "int", m_luaFunctionParams->parameters.e_int },
+			{ "float", m_luaFunctionParams->parameters.e_float },
+			{ "double", m_luaFunctionParams->parameters.e_double },
+			{ "long", m_luaFunctionParams->parameters.e_long },
+			{ "bool", m_luaFunctionParams->parameters.e_boolean },
+			{ "vector2X", m_luaFunctionParams->parameters.e_Vector2.x },
+			{ "vector2Y", m_luaFunctionParams->parameters.e_Vector2.y },
+		};
+		
 		jsonData.push_back({ "luaFunctionParameters", parameters });
 
 		std::string data = jsonData.dump();

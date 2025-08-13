@@ -12,6 +12,17 @@
 
 namespace FlatEngine
 {
+	std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)> F_CPPAnimationEventFunctions = std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>();
+
+	void AddCPPAnimationEventFunction(std::string functionName, void (*eventFunction)(GameObject*, Animation::S_EventFunctionParam))
+	{
+		if (functionName != "" && F_CPPAnimationEventFunctions.count(functionName) == 0)
+		{
+			std::pair<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)> newFunctionPair = { functionName, eventFunction };
+			F_CPPAnimationEventFunctions.emplace(newFunctionPair);
+		}
+	}
+
 	Animation::Animation(long myID, long parentID)
 	{
 		SetType(T_Animation);
@@ -481,29 +492,16 @@ namespace FlatEngine
 					{
 						if ((eventFrame->time == 0 && !eventFrame->b_fired) || (!eventFrame->b_fired && (ellapsedTime >= animData.startTime + eventFrame->time || eventFrame->time == 0)))
 						{
-							if (eventFrame->parameters.size() == 0)
+							if (eventFrame->b_luaEvent)
 							{
-								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName);
+								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName, eventFrame->parameters);
 							}
-							else if (eventFrame->parameters.size() == 1)
+							else if (eventFrame->b_cppEvent)
 							{
-								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName, eventFrame->parameters[0]);
-							}
-							else if (eventFrame->parameters.size() == 2)
-							{
-								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName, eventFrame->parameters[0], eventFrame->parameters[1]);
-							}
-							else if (eventFrame->parameters.size() == 3)
-							{
-								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName, eventFrame->parameters[0], eventFrame->parameters[1], eventFrame->parameters[2]);
-							}
-							else if (eventFrame->parameters.size() == 4)
-							{
-								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName, eventFrame->parameters[0], eventFrame->parameters[1], eventFrame->parameters[2], eventFrame->parameters[3]);
-							}
-							else if (eventFrame->parameters.size() == 5)
-							{
-								CallLuaAnimationEventFunction(GetParent(), eventFrame->functionName, eventFrame->parameters[0], eventFrame->parameters[1], eventFrame->parameters[2], eventFrame->parameters[3], eventFrame->parameters[4]);
+								if (F_CPPAnimationEventFunctions.count(eventFrame->functionName))
+								{
+									F_CPPAnimationEventFunctions.at(eventFrame->functionName)(GetParent(), eventFrame->parameters);
+								}
 							}
 
 							eventFrame->b_fired = true;							

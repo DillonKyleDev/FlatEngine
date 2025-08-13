@@ -168,7 +168,7 @@ namespace FlatEngine
 				for (int i = 0; i < scriptParamsJson.size(); i++)
 				{
 					json param = scriptParamsJson[i];
-					Animation::S_EventFunctionParam parameter;
+					Script::S_ScriptParam parameter;
 					std::string paramName = CheckJsonString(param, "paramName", objectName);
 					parameter.type = CheckJsonString(param, "type", objectName);
 					parameter.e_string = CheckJsonString(param, "string", objectName);

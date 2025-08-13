@@ -12,6 +12,7 @@ namespace FlatEngine
 		m_chainID = b2_nullChainId;
 		m_parentBody = parentBody;
 		m_b_editingPoints = false;
+		m_b_showPoints = false;
 	}
 
 	Shape::~Shape()

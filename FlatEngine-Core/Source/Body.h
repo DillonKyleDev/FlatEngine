@@ -47,8 +47,9 @@ namespace FlatEngine
 		Physics::BodyProps GetLiveProps();
 		void SetBodyID(b2BodyId bodyID);
 		b2BodyId GetBodyID();
-		std::vector<Shape*> GetShapes();
-		void AddShape(Shape* shape);	
+		std::vector<Shape*> GetShapes();		
+		void RemoveShape(b2ShapeId shapeID);
+		void RemoveChain(b2ChainId chainID);
 		std::vector<Box>& GetBoxes();
 		std::vector<Circle>& GetCircles();
 		std::vector<Capsule>& GetCapsules();

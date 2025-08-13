@@ -3,6 +3,8 @@
 #include "Transform.h"
 #include "Vector2.h"
 #include "Body.h"
+#include "Animation.h"
+#include "FlatEngine.h"
 
 
 namespace FlatEngine
@@ -14,10 +16,24 @@ namespace FlatEngine
 		LogString("Sensor began touching from C++");
 	}
 
+	void EventFuncLog(GameObject* callingObject, Animation::S_EventFunctionParam params)
+	{
+		//LogString("Event function called on Animation! By " + callingObject->GetName());
+		LogString(params.e_string);
+		//LogInt(params.e_int);
+		//LogLong(params.e_long);
+		//LogFloat(params.e_float);
+		//LogVector2(params.e_Vector2);
+
+		if (params.e_boolean)
+		{
+			//LogString();
+		}
+	}
 
 	Player::Player()
 	{
-
+		AddCPPAnimationEventFunction("EventFuncLog", EventFuncLog);
 	}
 
 	Player::~Player()
@@ -32,27 +48,13 @@ namespace FlatEngine
 
 	void Player::Start()
 	{		
-		m_context = GetMappingContext("MC_Player");
-		m_body = GetParent()->GetBody();
-		m_body->SetOnSensorBeginTouch(SensorCallbackFunction);
+		GetParent()->GetAnimation()->Play("explode");
+		//std::string name = GetScriptParam("nameString").e_string;
+		//LogString(name);
 	}
 
 	void Player::Update()
     {
-		if (m_context->ActionPressed("IA_MoveRight"))
-		{
-			LogString("Right");
-			m_body->ApplyForceToCenter(Vector2(100, 0));
-		}
-		if (m_context->ActionPressed("IA_MoveLeft"))
-		{
-			LogString("Left");
-			m_body->ApplyForceToCenter(Vector2(-100, 0));
-		}
-		if (m_context->Fired("IA_Jump"))
-		{
-			LogString("Jump");
-			m_body->ApplyForceToCenter(Vector2(0, 5000));
-		}
+
 	}
 }

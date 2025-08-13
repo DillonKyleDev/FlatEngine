@@ -14,7 +14,7 @@ end
 function Start()
      -- required to access instance data
      local data = GetInstanceData("Car", my_id)     
-     data.animation:Play("explode")
+     -- data.animation:Play("explode")
 end
 
 function Update()

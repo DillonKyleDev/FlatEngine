@@ -418,6 +418,84 @@ namespace FlatEngine
 		return shapes;
 	}
 
+	void Body::RemoveShape(b2ShapeId shapeID)
+	{
+		int toDelete = -1;
+
+		for (int i = 0; i < m_boxes.size(); i++)
+		{
+			if (m_boxes[i].GetShapeID().index1 == shapeID.index1)
+			{
+				m_boxes[i].DestroyShape();
+				toDelete = i;
+			}
+		}
+		if (toDelete != -1)
+		{
+			m_boxes.erase(std::next(m_boxes.begin(), toDelete));
+			toDelete = -1;
+		}
+
+		for (int i = 0; i < m_circles.size(); i++)
+		{
+			if (m_circles[i].GetShapeID().index1 == shapeID.index1)
+			{
+				m_circles[i].DestroyShape();
+			}
+		}
+		if (toDelete != -1)
+		{
+			m_circles.erase(std::next(m_circles.begin(), toDelete));
+			toDelete = -1;
+		}
+
+		for (int i = 0; i < m_capsules.size(); i++)
+		{
+			if (m_capsules[i].GetShapeID().index1 == shapeID.index1)
+			{
+				m_capsules[i].DestroyShape();
+				toDelete = i;
+			}
+		}
+		if (toDelete != -1)
+		{
+			m_capsules.erase(std::next(m_capsules.begin(), toDelete));
+			toDelete = -1;
+		}
+
+		for (int i = 0; i < m_polygons.size(); i++)
+		{
+			if (m_polygons[i].GetShapeID().index1 == shapeID.index1)
+			{
+				m_polygons[i].DestroyShape();
+				toDelete = i;
+			}
+		}
+		if (toDelete != -1)
+		{
+			m_polygons.erase(std::next(m_polygons.begin(), toDelete));
+			toDelete = -1;
+		}
+	}
+
+	void Body::RemoveChain(b2ChainId chainID)
+	{
+		int toDelete = -1;
+
+		for (int i = 0; i < m_chains.size(); i++)
+		{
+			if (m_chains[i].GetChainID().index1 == chainID.index1)
+			{
+				m_chains[i].DestroyShape();
+				toDelete = i;
+			}
+		}
+		if (toDelete != -1)
+		{
+			m_chains.erase(std::next(m_chains.begin(), toDelete));
+		}
+	}
+
 	std::vector<Box>& Body::GetBoxes()
 	{
 		return m_boxes;

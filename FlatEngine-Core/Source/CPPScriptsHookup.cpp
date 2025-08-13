@@ -15,6 +15,7 @@ std::shared_ptr<FlatEngine::CPPScript> FlatEngine::InstantiateCPPScript(std::str
 	if (scriptName == "Player (C++)")
 	{
 		newScript = std::make_shared<FlatEngine::Player>();
+		newScript->SetName("Player (C++)");
 	}
 
 	return newScript;

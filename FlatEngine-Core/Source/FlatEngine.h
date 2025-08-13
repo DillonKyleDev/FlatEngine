@@ -23,6 +23,7 @@ using namespace nlohmann::literals;
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol.hpp>
+#include <map>
 
 
 /*
@@ -152,6 +153,7 @@ namespace FlatEngine
 	extern std::vector<Process> F_ProfilerProcesses;
 	extern Sound F_SoundController;
 	extern TTF_Font* F_fontCinzel;
+	extern std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)> F_CPPAnimationEventFunctions;
 
 	extern int F_maxSpriteLayers;
 	extern float F_spriteScaleMultiplier;
@@ -240,9 +242,9 @@ namespace FlatEngine
 	extern void CallLuaSensorFunction(LuaEventFunction eventFunc, Body* caller, Body* touched);
 	extern void CallLuaButtonEventFunction(GameObject* caller, LuaEventFunction eventFunc);
 	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc);
-	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param3 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param4 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param5 = Animation::S_EventFunctionParam());
+	extern void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam params);
 	extern void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc);
-	extern void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam param1, Animation::S_EventFunctionParam param2 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param3 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param4 = Animation::S_EventFunctionParam(), Animation::S_EventFunctionParam param5 = Animation::S_EventFunctionParam());
+	extern void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam params);
 	
 	// C++ Scripts
 	extern void RetrieveCPPScriptNames();
@@ -366,6 +368,7 @@ namespace FlatEngine
 	// Animation
 	extern void SaveAnimationFile(std::shared_ptr<Animation::S_AnimationProperties> propertiesObject, std::string path);
 	extern std::shared_ptr<Animation::S_AnimationProperties> LoadAnimationFile(std::string path);
+	extern void AddCPPAnimationEventFunction(std::string functionName, void (*eventFunction)(GameObject*, Animation::S_EventFunctionParam));
 
 	// TileSet / TileMap
 	extern void SaveTileSet(TileSet tileSet);

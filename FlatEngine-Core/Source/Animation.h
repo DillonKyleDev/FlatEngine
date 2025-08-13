@@ -41,7 +41,6 @@ namespace FlatEngine
 			bool b_fired;
 		};	
 		struct S_EventFunctionParam {
-			std::string type = "empty"; // Can be "string", "int", "float", "double", "long", "bool", "Vector2"
 			int e_int = 0;
 			long e_long = 0;
 			float e_float = 0.0f;
@@ -49,7 +48,6 @@ namespace FlatEngine
 			bool e_boolean = false;
 			Vector2 e_Vector2 = Vector2(0, 0);
 			std::string e_string = "";
-			void SetType(std::string newType) { type = newType; };
 			void SetString(std::string newString) { e_string = newString; };
 			void SetInt(int newInt) { e_int = newInt; };
 			void SetLong(long newLong) { e_long = newLong; };
@@ -57,7 +55,6 @@ namespace FlatEngine
 			void SetDouble(double newDouble) { e_double = newDouble; };
 			void SetBool(bool newBoolean) { e_boolean = newBoolean; };
 			void SetVector2(Vector2 newVector2) { e_Vector2 = newVector2; };
-			std::string GetType() { return type; };
 			std::string GetString() { return e_string; };
 			int GetInt() { return e_int; };
 			long GetLong() { return e_long; };
@@ -67,10 +64,12 @@ namespace FlatEngine
 			Vector2 GetVector2() { return e_Vector2; };
 		};
 		struct S_Event : public S_Property {
+			bool b_cppEvent = false;
+			bool b_luaEvent = false;
 			std::string functionName = "";
-			std::vector<S_EventFunctionParam> parameters = std::vector<S_EventFunctionParam>();
-			void SetParameters(std::vector<S_EventFunctionParam> newParameters) { parameters = newParameters; };
-			void AddParameter(S_EventFunctionParam eventParam) { parameters.push_back(eventParam); };
+			S_EventFunctionParam parameters = S_EventFunctionParam();
+			//void SetParameters(std::vector<S_EventFunctionParam> newParameters) { parameters = newParameters; };
+			//void AddParameter(S_EventFunctionParam eventParam) { parameters.push_back(eventParam); };
 		};
 		struct S_Transform : public S_Property {
 			InterpType transformInterpType = I_Lerp;
@@ -143,8 +142,6 @@ namespace FlatEngine
 			std::vector<std::shared_ptr<S_Transform>> transformProps = std::vector<std::shared_ptr<S_Transform>>();
 			std::vector<std::shared_ptr<S_Sprite>> spriteProps = std::vector<std::shared_ptr<S_Sprite>>();
 			std::vector<std::shared_ptr<S_Camera>> cameraProps = std::vector<std::shared_ptr<S_Camera>>();
-			std::vector<std::shared_ptr<S_Script>> scriptProps = std::vector<std::shared_ptr<S_Script>>();
-			std::vector<std::shared_ptr<S_Button>> buttonProps = std::vector<std::shared_ptr<S_Button>>();
 			std::vector<std::shared_ptr<S_Canvas>> canvasProps = std::vector<std::shared_ptr<S_Canvas>>();
 			std::vector<std::shared_ptr<S_Audio>> audioProps = std::vector<std::shared_ptr<S_Audio>>();
 			std::vector<std::shared_ptr<S_Text>> textProps = std::vector<std::shared_ptr<S_Text>>();
@@ -160,8 +157,6 @@ namespace FlatEngine
 				std::sort(transformProps.begin(), transformProps.end(), CompareTime);
 				std::sort(spriteProps.begin(), spriteProps.end(), CompareTime);
 				std::sort(cameraProps.begin(), cameraProps.end(), CompareTime);
-				std::sort(scriptProps.begin(), scriptProps.end(), CompareTime);
-				std::sort(buttonProps.begin(), buttonProps.end(), CompareTime);
 				std::sort(canvasProps.begin(), canvasProps.end(), CompareTime);
 				std::sort(audioProps.begin(), audioProps.end(), CompareTime);
 				std::sort(textProps.begin(), textProps.end(), CompareTime);
@@ -189,14 +184,6 @@ namespace FlatEngine
 				if (cameraProps.size() > 0 && cameraProps.back()->time > endTime)
 				{
 					endTime = cameraProps.back()->time;
-				}
-				if (scriptProps.size() > 0 && scriptProps.back()->time > endTime)
-				{
-					endTime = scriptProps.back()->time;
-				}
-				if (buttonProps.size() > 0 && buttonProps.back()->time > endTime)
-				{
-					endTime = buttonProps.back()->time;
 				}
 				if (canvasProps.size() > 0 && canvasProps.back()->time > endTime)
 				{
@@ -260,28 +247,6 @@ namespace FlatEngine
 						if ((*prop) == property)
 						{
 							cameraProps.erase(prop);
-							return;
-						}
-					}
-				}
-				else if (type == "Script")
-				{
-					for (std::vector<std::shared_ptr<Animation::S_Script>>::iterator prop = scriptProps.begin(); prop != scriptProps.end(); prop++)
-					{
-						if ((*prop) == property)
-						{
-							scriptProps.erase(prop);
-							return;
-						}
-					}
-				}
-				else if (type == "Button")
-				{
-					for (std::vector<std::shared_ptr<Animation::S_Button>>::iterator prop = buttonProps.begin(); prop != buttonProps.end(); prop++)
-					{
-						if ((*prop) == property)
-						{
-							buttonProps.erase(prop);
 							return;
 						}
 					}

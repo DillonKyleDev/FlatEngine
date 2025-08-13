@@ -181,34 +181,10 @@ namespace FlatEngine
 						// For Button On Click events in Button Inspector Component
 						if (hovered.GetLeftClick() && functionName != "")
 						{
-							std::shared_ptr<Animation::S_Event> functionParams = hovered.GetLuaFunctionParams();
-							std::vector<Animation::S_EventFunctionParam> parameters = functionParams->parameters;
+							std::shared_ptr<Animation::S_Event> functionParams = hovered.GetLuaFunctionParams();							
 							GameObject* owner = hovered.GetParent();
-
-							if (parameters.size() == 0)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName);
-							}
-							else if (parameters.size() == 1)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0]);
-							}
-							else if (parameters.size() == 2)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1]);
-							}
-							else if (parameters.size() == 3)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1], parameters[2]);
-							}
-							else if (parameters.size() == 4)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1], parameters[2], parameters[3]);
-							}
-							else if (parameters.size() == 5)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
-							}
+				
+							CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
 						}
 					}					
 					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
@@ -226,35 +202,11 @@ namespace FlatEngine
 						if (hovered.GetRightClick() && functionName != "")
 						{
 							// For OnButtonRightClick() event function in Lua Scripts
-							std::shared_ptr<Animation::S_Event> functionParams = hovered.GetLuaFunctionParams();
-							std::vector<Animation::S_EventFunctionParam> parameters = functionParams->parameters;
+							std::shared_ptr<Animation::S_Event> functionParams = hovered.GetLuaFunctionParams();							
 							GameObject* owner = hovered.GetParent();
 
 							// For Button On Click events in Button Inspector Component
-							if (parameters.size() == 0)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName);
-							}
-							else if (parameters.size() == 1)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0]);
-							}
-							else if (parameters.size() == 2)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1]);
-							}
-							else if (parameters.size() == 3)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1], parameters[2]);
-							}
-							else if (parameters.size() == 4)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1], parameters[2], parameters[3]);
-							}
-							else if (parameters.size() == 5)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
-							}
+							CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
 						}
 					}					
 					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))

@@ -1168,24 +1168,21 @@ namespace FlatEngine
 		Vector4 currentModalWindowDimBgColor = style.Colors[ImGuiCol_ModalWindowDimBg];
 		//style.Colors[ImGuiCol_ModalWindowDimBg] = GetColor("white");
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(F_childPadding));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(10));
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(F_childPadding));
 		if (ImGui::BeginPopupModal(label.c_str(), NULL, ImGuiWindowFlags_AlwaysAutoResize))
-		{
-			RenderSectionHeader(description + ":");
-			
-			ImGui::Separator();
+		{			
+			ImGui::Text(description.c_str());
+			MoveScreenCursor(0, 2);
 
 			float inputWidth = ImGui::CalcTextSize(description.c_str()).x;
-			if (inputWidth < 250)
+			if (inputWidth < 245)
 			{
-				inputWidth = 250;
+				inputWidth = 245;
 			}
-
+			
 			std::string inputLabel = "##" + label;
 			RenderInput(inputLabel.c_str(), "", inputValue, false, inputWidth);
-
-			RenderSeparator(0, 10);
 
 			if (ImGui::IsKeyPressed(ImGuiKey_Enter))
 			{
@@ -1198,20 +1195,19 @@ namespace FlatEngine
 				ImGui::CloseCurrentPopup();
 			}
 
-			MoveScreenCursor(ImGui::GetContentRegionAvail().x - 160, 0);
+			MoveScreenCursor(0, 5);
 
-			if (RenderButton("OK", Vector2(70, 30)))
+			if (RenderButton("OK", Vector2(50, 25)))
 			{ 
 				b_validInput = (inputValue != "");
 				ImGui::CloseCurrentPopup(); 
 			}
 			ImGui::SetItemDefaultFocus();
-			ImGui::SameLine(0, 10);
-			if (RenderButton("Cancel", Vector2(70, 30)))
+			ImGui::SameLine(0, 8);
+			if (RenderButton("Cancel", Vector2(50, 25)))
 			{
 				ImGui::CloseCurrentPopup();
-			}
-			MoveScreenCursor(0, 8);
+			}			
 			ImGui::EndPopup();
 		}		
 		//style.Colors[ImGuiCol_ModalWindowDimBg] = currentModalWindowDimBgColor;

@@ -57,7 +57,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 2,
-                    "rotation": 38.14848709106445,
+                    "rotation": 38.37578201293945,
                     "type": "Transform",
                     "xOrigin": 0.0,
                     "xPos": 2.0465517044067383,
@@ -72,7 +72,7 @@
                     "_lockedRotation": false,
                     "_lockedXAxis": true,
                     "_lockedYAxis": true,
-                    "angularDamping": 0.0,
+                    "angularDamping": 0.0729999989271164,
                     "bodyType": 2,
                     "gravityScale": 1.0,
                     "id": 3,
@@ -183,14 +183,6 @@
                         }
                     ],
                     "type": "Body"
-                },
-                {
-                    "_isActive": true,
-                    "_isCollapsed": false,
-                    "attachedScript": "Spinner (Lua)",
-                    "id": 15,
-                    "scriptParameters": [],
-                    "type": "Script"
                 }
             ],
             "id": 1,
@@ -980,10 +972,10 @@
                     "rotation": 0.0,
                     "type": "Transform",
                     "xOrigin": 0.0,
-                    "xPos": 0.0,
+                    "xPos": -14.857142448425293,
                     "xScale": 1.0,
                     "yOrigin": 0.0,
-                    "yPos": 5.5,
+                    "yPos": 1.9285714626312256,
                     "yScale": 1.0
                 },
                 {
@@ -1008,8 +1000,174 @@
             "name": "Camera(5)",
             "parent": -1,
             "prefabName": "",
+            "spawnLocationX": -14.857142448425293,
+            "spawnLocationY": 1.9285714626312256,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 19,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xOrigin": 0.0,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yOrigin": 0.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "attachedScript": "Player (C++)",
+                    "id": 20,
+                    "scriptParameters": [
+                        {
+                            "bool": false,
+                            "double": 0.0,
+                            "float": 0.0,
+                            "int": 9,
+                            "long": 0,
+                            "paramName": "Lives",
+                            "string": "",
+                            "type": "int",
+                            "vector2X": 0.0,
+                            "vector2Y": 0.0
+                        },
+                        {
+                            "bool": false,
+                            "double": 0.0,
+                            "float": 0.0,
+                            "int": 0,
+                            "long": 0,
+                            "paramName": "nameString",
+                            "string": "Testing new value",
+                            "type": "string",
+                            "vector2X": 0.0,
+                            "vector2Y": 0.0
+                        }
+                    ],
+                    "type": "Script"
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "animationData": [
+                        {
+                            "name": "explode",
+                            "path": "..\\projects\\ClosedLoop\\animations\\explode.anm"
+                        }
+                    ],
+                    "id": 21,
+                    "type": "Animation"
+                }
+            ],
+            "id": 6,
+            "name": "Player",
+            "parent": -1,
+            "prefabName": "",
             "spawnLocationX": 0.0,
-            "spawnLocationY": 5.5,
+            "spawnLocationY": 0.0,
             "tags": [
                 {
                     "Ball": false

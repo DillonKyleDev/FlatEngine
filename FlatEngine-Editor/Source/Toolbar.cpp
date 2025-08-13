@@ -60,6 +60,10 @@ namespace FlatGui
 				FL::F_Application->GetGameLoop()->SkipFrames(1);
 			}
 			ImGui::EndDisabled();
+			if (ImGui::IsItemHovered())
+			{
+				FL::RenderTextToolTip("Advance 1");
+			}
 			ImGui::SameLine(0, 5);
 
 			ImGui::BeginDisabled(!FL::GameLoopPaused());
@@ -68,13 +72,18 @@ namespace FlatGui
 				FL::F_Application->GetGameLoop()->SkipFrames(framesToSkip);
 			}
 			ImGui::EndDisabled();
+			if (ImGui::IsItemHovered())
+			{
+				FL::RenderTextToolTip("Advance " + std::to_string(framesToSkip));
+			}
 
 			ImGui::SameLine(0, 5); 
-			FL::MoveScreenCursor(0, 4);
+			FL::MoveScreenCursor(3, 5);
 			ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor("logText"));
-			ImGui::Text("Frames to skip: ");
+			ImGui::Text("Frames to advance ");
 			ImGui::PopStyleColor();
-			ImGui::SameLine(0, 5);
+			ImGui::SameLine();
+			FL::MoveScreenCursor(-12, 2);
 			FL::RenderDragInt(framesToSkipDragID.c_str(), 30, framesToSkip, 1, 1, 360);
 		
 

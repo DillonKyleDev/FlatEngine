@@ -8,6 +8,7 @@
 #include "Vector2.h"
 #include "PrefabManager.h"
 #include "TagList.h"
+#include "WindowManager.h"
 
 #include "imgui.h"
 
@@ -36,12 +37,11 @@ namespace FlatGui
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Project Hub"))
+				if (ImGui::MenuItem("Project Select"))
 				{					
-					//b_openProjectModal = true;
-					FL::F_b_projectSelected = false;
-					
-					FL::F_LoadedProject = Project();
+					FL::F_b_projectSelected = false;					
+					FL::F_Window->ResizeWindow(800, 500);
+					RecreateProjectNameTexts();
 				}
 				ImGui::Separator();
 				//if (ImGui::MenuItem("Open Project..."))

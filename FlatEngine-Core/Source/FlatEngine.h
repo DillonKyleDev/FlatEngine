@@ -17,6 +17,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 #include "json.hpp"
+#include <ctime>
 
 using json = nlohmann::json;
 using namespace nlohmann::literals;
@@ -399,6 +400,13 @@ namespace FlatEngine
 	extern float Abs(float value);
 	extern double Abs(double value);
 	extern int Abs(int value);
+
+	extern time_t GetCurrentTimeAndDateStamp();
+	extern time_t CreateTimeStamp(tm timeStruct);
+	extern tm GetTMStructFromTimeStamp(time_t timeStamp);
+	extern bool CompareTimeStamps(time_t timeStamp1, time_t timeStamp2);
+	extern tm GetProjectTimeStruct(std::string projectPath);
+	extern std::string GetFormattedTime(tm& timeStruct);
 
 	// Json parsing
 	extern json CreateJsonFromObject(GameObject gameObject);

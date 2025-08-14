@@ -998,11 +998,13 @@ namespace FlatGui
 							{
 								event->parameters.e_Vector2 = vector2;
 							}
+							if (FL::RenderCheckboxTableRow("##EventParamBoolean", "Boolean", b_boolean))
+							{
+								event->parameters.e_boolean = b_boolean;
+							}
 							FL::PopTable();
 						}
-
-						FL::MoveScreenCursor(0, 3);
-						FL::RenderCheckbox("Boolean", b_boolean);		
+	
 						FL::MoveScreenCursor(0, 3);
 					}
 					else if (FG_SelectedKeyFrameToEdit->name == "Transform")

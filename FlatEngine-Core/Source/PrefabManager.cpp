@@ -192,6 +192,9 @@ namespace FlatEngine
 				button->activeDimensions = Vector2(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
 				button->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
 				button->activeLayer = CheckJsonInt(componentJson, "activeLayer", objectName);
+				button->functionName = CheckJsonString(componentJson, "functionName", objectName);
+				button->b_cppEvent = CheckJsonBool(componentJson, "_cppEvent", objectName);
+				button->b_luaEvent = CheckJsonBool(componentJson, "_luaEvent", objectName);
 
 				prefab.components.emplace(componentID, button);
 			}
@@ -649,6 +652,9 @@ namespace FlatEngine
 						button->SetActiveDimensions(buttonData->activeDimensions.x, buttonData->activeDimensions.y);
 						button->SetActiveOffset(buttonData->activeOffset);
 						button->SetActiveLayer(buttonData->activeLayer);
+						button->SetFunctionName(buttonData->functionName);
+						button->SetIsCPP(buttonData->b_cppEvent);
+						button->SetIsLua(buttonData->b_luaEvent);
 					}
 					else if (prefab.components.at(componentID)->type == "Canvas")
 					{

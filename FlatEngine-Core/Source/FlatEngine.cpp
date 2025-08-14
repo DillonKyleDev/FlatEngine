@@ -448,6 +448,7 @@ namespace FlatEngine
 	{
 		QuitImGui();
 		SetupImGui();
+		SetImGuiColors();
 	}
 
 	void QuitImGui()
@@ -1979,23 +1980,6 @@ namespace FlatEngine
 
 	void DrawRectangle(Vector2 startingPoint, Vector2 endPoint, Vector2 canvas_p0, Vector2 canvas_sz, Vector4 color, float thickness, ImDrawList* drawList)
 	{
-		if (startingPoint.x < canvas_p0.x)
-		{
-			startingPoint.x = canvas_p0.x;
-		}
-		if (endPoint.x > canvas_p0.x + canvas_sz.x)
-		{
-			endPoint.x = canvas_p0.x + canvas_sz.x;
-		}
-		if (startingPoint.y < canvas_p0.y)
-		{
-			startingPoint.y = canvas_p0.y;
-		}
-		if (endPoint.y > canvas_p0.y + canvas_sz.y)
-		{
-			endPoint.y = canvas_p0.y + canvas_sz.y;
-		}
-
 		F_Logger.DrawRectangle(startingPoint, endPoint, color, thickness, drawList);
 	}
 
@@ -2644,6 +2628,93 @@ namespace FlatEngine
 		return value;
 	}
 
+	time_t GetCurrentTimeAndDateStamp()
+	{
+		time_t timeStamp;
+		time(&timeStamp);
+		return timeStamp;
+	}
+
+	time_t CreateTimeStamp(tm timeStruct)
+	{		
+		return mktime(&timeStruct);
+	}
+
+	tm GetTMStructFromTimeStamp(time_t timeStamp)
+	{
+		tm timeStruct;
+		localtime_s(&timeStruct, &timeStamp);
+
+		return timeStruct;
+	}
+
+	// Returns true if timeStamp1 is more recent than timeStamp2
+	bool CompareTimeStamps(time_t timeStamp1, time_t timeStamp2)
+	{
+		return difftime(timeStamp1, timeStamp2) > 0;
+	}
+
+	tm GetProjectTimeStruct(std::string projectPath)
+	{
+		tm dateSaved = tm();
+
+		std::ofstream fileObject;
+		std::ifstream ifstream(projectPath);
+
+		fileObject.open(projectPath, std::ios::in);
+		std::string fileContent = "";
+
+		if (fileObject.good())
+		{
+			std::string line;
+			while (!ifstream.eof())
+			{
+				std::getline(ifstream, line);
+				fileContent.append(line + "\n");
+			}
+		}
+
+		fileObject.close();
+
+		if (fileObject.good())
+		{
+			json projectJson = json::parse(fileContent);
+
+			if (projectJson["Project Properties"][0] != "nullptr")
+			{
+				for (int i = 0; i < projectJson["Project Properties"].size(); i++)
+				{
+					try
+					{
+						json projectData = projectJson["Project Properties"][i];
+						std::string projectName = GetFilenameFromPath(projectPath);
+
+						dateSaved.tm_year = CheckJsonInt(projectData, "yearsSinceSave", projectName);
+						dateSaved.tm_mon = CheckJsonInt(projectData, "monthsSinceSave", projectName);
+						dateSaved.tm_mday = CheckJsonInt(projectData, "daysSinceSave", projectName);
+						dateSaved.tm_hour = CheckJsonInt(projectData, "hoursSinceSave", projectName);
+						dateSaved.tm_min = CheckJsonInt(projectData, "minutesSinceSave", projectName);
+						dateSaved.tm_sec = CheckJsonInt(projectData, "secondsSinceSave", projectName);
+					}
+					catch (const json::out_of_range& e)
+					{
+						LogError(e.what());
+					}
+				}
+			}
+		}
+
+		return dateSaved;
+	}
+
+	std::string GetFormattedTime(tm& timeStruct)
+	{
+		char formatedTimeStamp[50];
+		strftime(formatedTimeStamp, 50, "%b %e, %Y - %I:%M:%S %p", &timeStruct);
+		return formatedTimeStamp;
+	}
+
+
 	// Json Parsing
 	json CreateJsonFromObject(GameObject currentObject)
 	{		
@@ -3125,16 +3196,10 @@ namespace FlatEngine
 							else if  (type == "Button")
 							{						
 								Button* newButton = loadedObject->AddButton(id, b_isActive, b_isCollapsed);
-								newButton->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
-								newButton->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-								newButton->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
-								newButton->SetLuaFunctionName(CheckJsonString(componentJson, "luaFunctionName", objectName));
-								newButton->SetLeftClick(CheckJsonBool(componentJson, "_leftClick", objectName));
-								newButton->SetRightClick(CheckJsonBool(componentJson, "_rightClick", objectName));
 
-								json functionParamsJson = componentJson.at("luaFunctionParameters");
+								json functionParamsJson = componentJson.at("functionParameters");
 								std::shared_ptr<Animation::S_Event> functionParams = std::make_shared<Animation::S_Event>();
-								Animation::S_EventFunctionParam parameter;				
+								Animation::S_EventFunctionParam parameter;
 								parameter.e_string = CheckJsonString(functionParamsJson, "string", objectName);
 								parameter.e_int = CheckJsonInt(functionParamsJson, "int", objectName);
 								parameter.e_float = CheckJsonFloat(functionParamsJson, "float", objectName);
@@ -3142,10 +3207,17 @@ namespace FlatEngine
 								parameter.e_double = CheckJsonDouble(functionParamsJson, "double", objectName);
 								parameter.e_boolean = CheckJsonBool(functionParamsJson, "bool", objectName);
 								parameter.e_Vector2 = Vector2(CheckJsonFloat(functionParamsJson, "vector2X", objectName), CheckJsonFloat(functionParamsJson, "vector2Y", objectName));
-										
 								functionParams->parameters = parameter;
-								
-								newButton->SetLuaFunctionParams(functionParams);
+								newButton->SetFunctionParams(functionParams);
+
+								newButton->SetActiveDimensions(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
+								newButton->SetActiveOffset(Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
+								newButton->SetActiveLayer(CheckJsonInt(componentJson, "activeLayer", objectName));
+								newButton->SetFunctionName(CheckJsonString(componentJson, "functionName", objectName));
+								newButton->SetIsCPP(CheckJsonBool(componentJson, "_cppEvent", objectName));
+								newButton->SetIsLua(CheckJsonBool(componentJson, "_luaEvent", objectName));								
+								newButton->SetLeftClick(CheckJsonBool(componentJson, "_leftClick", objectName));
+								newButton->SetRightClick(CheckJsonBool(componentJson, "_rightClick", objectName));							
 							}
 							else if (type == "Canvas")
 							{								

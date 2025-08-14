@@ -372,4 +372,16 @@ namespace FlatEngine
 	{
 		return m_effectsVolume;
 	}
+
+	void Project::UpdateSavedTime()
+	{
+		time_t currentTime;
+		time(&currentTime);
+		m_timeSinceSave = GetTMStructFromTimeStamp(currentTime);
+	}
+
+	tm Project::GetSavedTime()
+	{
+		return m_timeSinceSave;
+	}
 }

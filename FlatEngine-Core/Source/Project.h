@@ -1,8 +1,8 @@
 #pragma once
 #include "Scene.h"	
+#include "Vector2.h"
 
 #include <string>
-#include "Vector2.h"
 
 
 namespace FlatEngine
@@ -51,6 +51,8 @@ namespace FlatEngine
 		int GetMusicVolume();
 		void SetEffectsVolume(int volume);
 		int GetEffectsVolume();
+		void UpdateSavedTime();
+		tm GetSavedTime();
 
 	private:
 		std::string m_path;
@@ -70,5 +72,6 @@ namespace FlatEngine
 		bool m_b_vsyncEnabled;
 		int m_musicVolume;
 		int m_effectsVolume;
+		tm m_timeSinceSave;
 	};
 }

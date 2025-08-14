@@ -131,6 +131,14 @@ namespace FlatEngine
 		return RecreateWindow();
 	}
 
+	void WindowManager::ResizeWindow(int width, int height)
+	{
+		m_windowWidth = width;
+		m_windowHeight = height;
+		SDL_SetWindowSize(m_window, m_windowWidth, m_windowHeight);
+		SDL_SetWindowPosition(m_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+	}
+
 	void WindowManager::Render()
 	{
 		//Clear the screen

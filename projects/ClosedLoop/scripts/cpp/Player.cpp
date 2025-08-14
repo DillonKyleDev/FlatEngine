@@ -16,7 +16,7 @@ namespace FlatEngine
 		LogString("Sensor began touching from C++");
 	}
 
-	void EventFuncLog(GameObject* callingObject, Animation::S_EventFunctionParam params)
+	void AnimationEventFuncLog(GameObject* callingObject, Animation::S_EventFunctionParam params)
 	{
 		//LogString("Event function called on Animation! By " + callingObject->GetName());
 		LogString(params.e_string);
@@ -31,9 +31,14 @@ namespace FlatEngine
 		}
 	}
 
+	void OnLeftClick(GameObject* callingObject)
+	{
+		LogString(callingObject->GetName() + " button was clicked.");
+	}
+
 	Player::Player()
 	{
-		AddCPPAnimationEventFunction("EventFuncLog", EventFuncLog);
+		AddCPPAnimationEventFunction("EventFuncLog", AnimationEventFuncLog);
 	}
 
 	Player::~Player()
@@ -43,14 +48,18 @@ namespace FlatEngine
 
 	void Player::Awake()
 	{
-
+		if (GetParent()->GetButton() != nullptr)
+		{
+			GetParent()->GetButton()->SetOnLeftClickCallback(OnLeftClick);
+		}
 	}
 
 	void Player::Start()
 	{		
-		GetParent()->GetAnimation()->Play("explode");
+		//GetParent()->GetAnimation()->Play("explode");
 		//std::string name = GetScriptParam("nameString").e_string;
 		//LogString(name);
+
 	}
 
 	void Player::Update()

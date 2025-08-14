@@ -170,21 +170,36 @@ namespace FlatEngine
 				if (hovered.GetActiveLayer() >= GetFirstUnblockedLayer())
 				{
 					GameObject* owner = hovered.GetParent();
-					
+					std::shared_ptr<Animation::S_Event> functionParams = hovered.GetFunctionParams();					
+					std::string functionName = hovered.GetFunctionName();
+
 					if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !b_hasLeftClicked)
 					{
-						// For OnButtonLeftClick() event function in Lua Scripts
+						// For OnButtonLeftClick() event function in Lua and user defined function in C++ Scripts
 						b_hasLeftClicked = true;
+
+						if (hovered.LeftClickSet())
+						{
+							hovered.OnLeftClick();
+						}
+
 						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonLeftClick);
-						std::string functionName = hovered.GetLuaFunctionName();
+						
 
 						// For Button On Click events in Button Inspector Component
 						if (hovered.GetLeftClick() && functionName != "")
-						{
-							std::shared_ptr<Animation::S_Event> functionParams = hovered.GetLuaFunctionParams();							
-							GameObject* owner = hovered.GetParent();
-				
-							CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
+						{													
+							if (functionParams->b_cppEvent)
+							{
+								if (F_CPPAnimationEventFunctions.count(functionName))
+								{
+									F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParent(), functionParams->parameters);
+								}
+							}
+							else if (functionParams->b_luaEvent)
+							{
+								CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
+							}
 						}
 					}					
 					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
@@ -194,19 +209,30 @@ namespace FlatEngine
 
 					if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !b_hasRightClicked)
 					{
+						// Scripts
 						b_hasRightClicked = true;
+					
+						if (hovered.RightClickSet())
+						{
+							hovered.OnRightClick();
+						}
+
 						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonRightClick);
 
-						std::string functionName = hovered.GetLuaFunctionName();
-
+						// Inspector
 						if (hovered.GetRightClick() && functionName != "")
 						{
-							// For OnButtonRightClick() event function in Lua Scripts
-							std::shared_ptr<Animation::S_Event> functionParams = hovered.GetLuaFunctionParams();							
-							GameObject* owner = hovered.GetParent();
-
-							// For Button On Click events in Button Inspector Component
-							CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
+							if (functionParams->b_cppEvent)
+							{
+								if (F_CPPAnimationEventFunctions.count(functionName))
+								{
+									F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParent(), functionParams->parameters);
+								}
+							}
+							else if (functionParams->b_luaEvent)
+							{						
+								CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
+							}							
 						}
 					}					
 					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
@@ -241,6 +267,12 @@ namespace FlatEngine
 						m_hoveredButtons.push_back(buttonPair.second);
 						buttonPair.second.SetMouseIsOver(true);
 						GameObject* owner = buttonPair.second.GetParent();
+
+						if (buttonPair.second.MouseOverSet())
+						{
+							buttonPair.second.OnMouseOver();
+						}
+
 						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonMouseOver);
 					}
 				}
@@ -261,7 +293,13 @@ namespace FlatEngine
 						m_hoveredButtons.push_back(buttonPair.second);
 						buttonPair.second.SetMouseIsOver(true);
 						GameObject* owner = buttonPair.second.GetParent();
-						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonMouseOver);
+
+						if (buttonPair.second.MouseOverSet())
+						{
+							buttonPair.second.OnMouseOver();
+						}
+
+						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonMouseOver);					
 					}
 				}
 			}
@@ -280,7 +318,12 @@ namespace FlatEngine
 			}
 			if (b_mouseJustEntered)
 			{
-				CallLuaButtonEventFunction(hoveredButton.GetParent(), LuaEventFunction::OnButtonMouseEnter);
+				if (hoveredButton.MouseEnterSet())
+				{
+					hoveredButton.OnMouseEnter();
+				}
+
+				CallLuaButtonEventFunction(hoveredButton.GetParent(), LuaEventFunction::OnButtonMouseEnter);			
 			}
 		}
 
@@ -297,7 +340,12 @@ namespace FlatEngine
 			}
 			if (!b_stillHovered && lastHovered.GetParent() != nullptr)
 			{
-				CallLuaButtonEventFunction(lastHovered.GetParent(), LuaEventFunction::OnButtonMouseLeave);
+				if (lastHovered.MouseLeaveSet())
+				{
+					lastHovered.OnMouseLeave();
+				}
+
+				CallLuaButtonEventFunction(lastHovered.GetParent(), LuaEventFunction::OnButtonMouseLeave);			
 			}
 		}
 

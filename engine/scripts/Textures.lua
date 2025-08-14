@@ -8,7 +8,7 @@ F_Textures = {
 	-- Resources
 	empty = "..\\engine\\images\\resources\\empty.png",
 	-- Project Hub
-	flatEngine = "..\\engine\\images\\engine\\FlatEngine.png",
+	flatEngine = "..\\engine\\images\\engine\\FlatEngine2D.png",
 	flatEngineLogo = "..\\engine\\images\\engine\\FlatEngineLogo.png",
 	flatEngineLogoGradient = "..\\engine\\images\\engine\\FlatEngineLogoGradient.png",
 	selectProject = "..\\engine\\images\\engine\\selectProject.png",

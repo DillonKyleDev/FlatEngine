@@ -15,6 +15,7 @@ namespace FlatEngine
 		bool Init(std::string title, int width, int height);
 		void Close();
 		bool SetScreenDimensions(int width, int height);
+		void ResizeWindow(int width, int height);
 		void SetTitle(std::string title);
 		void Render();
 		void SetFullscreen(bool b_isFullscreen);

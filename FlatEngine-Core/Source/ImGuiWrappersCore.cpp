@@ -1086,56 +1086,58 @@ namespace FlatEngine
 
 	void RenderTextToolTip(std::string text)
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(3, 3));
 		ImGui::BeginTooltip();
 		ImGui::Text(text.c_str());
 		ImGui::EndTooltip();
+		ImGui::PopStyleVar();
 	}
 
 	void BeginToolTip(std::string title)
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(6));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(6));
 		ImGui::BeginTooltip();
 		if (title != "")
 		{
 			ImGui::Text(title.c_str());
-			RenderSeparator(5, 5);
 		}
 	}
 
 	void EndToolTip()
 	{		
-		ImGui::EndTooltip();
+		ImGui::EndTooltip();		
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
 	}
 
 	void RenderToolTipText(std::string label, std::string text)
 	{
-		std::string newLabel = label + "  |  ";
+		std::string newLabel = label + "| ";
 		ImGui::Text(newLabel.c_str());
 		ImGui::SameLine();
-		ImGui::Text(text.c_str());
-		RenderSeparator(5, 5);
+		ImGui::Text(text.c_str());		
 	}
 
 	void RenderToolTipFloat(std::string label, float data)
 	{
-		std::string newLabel = label + "  |  ";
+		std::string newLabel = label + "| ";
 		ImGui::Text(newLabel.c_str());
 		ImGui::SameLine();
-		ImGui::Text(std::to_string(data).c_str());
-		RenderSeparator(5, 5);
+		ImGui::Text(std::to_string(data).c_str());		
 	}
 
 	void RenderToolTipLong(std::string label, long data)
 	{
-		std::string newLabel = label + "  |  ";
+		std::string newLabel = label + "| ";
 		ImGui::Text(newLabel.c_str());
 		ImGui::SameLine();
 		ImGui::Text(std::to_string(data).c_str());
-		RenderSeparator(5, 5);
 	}
 
 	void RenderToolTipLongVector(std::string label, std::vector<long> data)
 	{
-		std::string newLabel = label + "  |  ";
+		std::string newLabel = label + "| ";
 		ImGui::Text(newLabel.c_str());
 		for (int i = 0; i < data.size(); i++)
 		{
@@ -1146,8 +1148,7 @@ namespace FlatEngine
 			}
 			ImGui::SameLine();
 			ImGui::Text(dataString.c_str());
-		}		
-		MoveScreenCursor(0, 5);
+		}				
 	}
 
 	// Returns true if a valid input was retrieved. ***Remember to use static std::strings for inputValue***

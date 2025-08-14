@@ -18,10 +18,20 @@ namespace FlatEngine
 		m_activeHeight = 3;
 		m_activeOffset = Vector2(0, 0);
 		m_activeLayer = 0;
-		m_luaFunctionName = "";
-		m_luaFunctionParams = std::make_shared<Animation::S_Event>();
+		m_functionParams = std::make_shared<Animation::S_Event>();
 		m_b_leftClick = true;
 		m_b_rightClick = false;
+
+		m_onMouseEnterCallback = nullptr;
+		m_b_onMouseEnterCallbackSet = false;
+		m_onMouseLeaveCallback = nullptr;
+		m_b_onMouseLeaveCallbackSet = false;
+		m_onMouseOverCallback = nullptr;
+		m_b_onMouseOverCallbackSet = false;
+		m_onLeftClickCallback = nullptr;
+		m_b_onLeftClickCallbackSet = false;
+		m_onRightClickCallback = nullptr;
+		m_b_onRightClickCallbackSet = false;
 	}
 
 	Button::~Button()
@@ -40,23 +50,25 @@ namespace FlatEngine
 			{ "activeOffsetX", m_activeOffset.x },
 			{ "activeOffsetY", m_activeOffset.y },
 			{ "activeLayer", m_activeLayer },
-			{ "luaFunctionName", m_luaFunctionName },
+			{ "functionName", m_functionParams->functionName },
+			{ "_cppEvent", m_functionParams->b_cppEvent },
+			{ "_luaEvent", m_functionParams->b_luaEvent },
 			{ "_leftClick", m_b_leftClick },
 			{ "_rightClick", m_b_rightClick },
 		};
 
 		json parameters = {			
-			{ "string", m_luaFunctionParams->parameters.e_string },
-			{ "int", m_luaFunctionParams->parameters.e_int },
-			{ "float", m_luaFunctionParams->parameters.e_float },
-			{ "double", m_luaFunctionParams->parameters.e_double },
-			{ "long", m_luaFunctionParams->parameters.e_long },
-			{ "bool", m_luaFunctionParams->parameters.e_boolean },
-			{ "vector2X", m_luaFunctionParams->parameters.e_Vector2.x },
-			{ "vector2Y", m_luaFunctionParams->parameters.e_Vector2.y },
+			{ "string", m_functionParams->parameters.e_string },
+			{ "int", m_functionParams->parameters.e_int },
+			{ "float", m_functionParams->parameters.e_float },
+			{ "double", m_functionParams->parameters.e_double },
+			{ "long", m_functionParams->parameters.e_long },
+			{ "bool", m_functionParams->parameters.e_boolean },
+			{ "vector2X", m_functionParams->parameters.e_Vector2.x },
+			{ "vector2Y", m_functionParams->parameters.e_Vector2.y },
 		};
 		
-		jsonData.push_back({ "luaFunctionParameters", parameters });
+		jsonData.push_back({ "functionParameters", parameters });
 
 		std::string data = jsonData.dump();
 		// Return dumped json object with required data for saving
@@ -151,14 +163,24 @@ namespace FlatEngine
 		return m_activeEdges;
 	}
 
-	void Button::SetLuaFunctionName(std::string functionName)
+	void Button::SetFunctionName(std::string functionName)
 	{
-		m_luaFunctionName = functionName;
+		m_functionParams->functionName = functionName;
 	}
 
-	std::string Button::GetLuaFunctionName()
+	std::string Button::GetFunctionName()
 	{
-		return m_luaFunctionName;
+		return m_functionParams->functionName;
+	}
+
+	void Button::SetIsCPP(bool b_isCPP)
+	{
+		m_functionParams->b_cppEvent = b_isCPP;
+	}
+
+	void Button::SetIsLua(bool b_isLua)
+	{
+		m_functionParams->b_luaEvent = b_isLua;
 	}
 
 	void Button::SetLeftClick(bool b_leftClick)
@@ -181,22 +203,105 @@ namespace FlatEngine
 		return m_b_rightClick;
 	}
 
-	void Button::SetLuaFunctionParams(std::shared_ptr<Animation::S_Event> params)
+	void Button::SetFunctionParams(std::shared_ptr<Animation::S_Event> params)
 	{
-		m_luaFunctionParams = params;
+		m_functionParams = params;
 	}
 
-	void Button::SetLuaFunctionParamsLua(Animation::S_Event params)
+	void Button::SetFunctionParamsLua(Animation::S_Event params)
 	{		
-		m_luaFunctionParams->name = params.name;
-		m_luaFunctionParams->functionName = params.functionName;
-		m_luaFunctionParams->time = params.time;
-		m_luaFunctionParams->b_fired = params.b_fired;
-		m_luaFunctionParams->parameters = params.parameters;
+		m_functionParams->name = params.name;
+		m_functionParams->functionName = params.functionName;
+		m_functionParams->b_cppEvent = params.b_cppEvent;
+		m_functionParams->b_luaEvent = params.b_luaEvent;
+		m_functionParams->time = params.time;
+		m_functionParams->b_fired = params.b_fired;
+		m_functionParams->parameters = params.parameters;
 	}
 
-	std::shared_ptr<Animation::S_Event> Button::GetLuaFunctionParams()
+	std::shared_ptr<Animation::S_Event> Button::GetFunctionParams()
 	{
-		return m_luaFunctionParams;
+		return m_functionParams;
 	}
+
+	void Button::SetOnMouseEnterCallback(void (*callback)(GameObject* caller))
+	{
+		m_onMouseEnterCallback = callback;
+		m_b_onMouseEnterCallbackSet = true;
+	}
+
+	void Button::SetOnMouseLeaveCallback(void (*callback)(GameObject* caller))
+	{
+		m_onMouseLeaveCallback = callback;
+		m_b_onMouseLeaveCallbackSet = true;
+	}
+
+	void Button::SetOnMouseOverCallback(void (*callback)(GameObject* caller))
+	{
+		m_onMouseOverCallback = callback;
+		m_b_onMouseOverCallbackSet = true;
+	}
+
+	void Button::SetOnLeftClickCallback(void (*callback)(GameObject* caller))
+	{
+		m_onLeftClickCallback = callback;
+		m_b_onLeftClickCallbackSet = true;
+	}
+
+	void Button::SetOnRightClickCallback(void (*callback)(GameObject* caller))
+	{
+		m_onRightClickCallback = callback;
+		m_b_onRightClickCallbackSet = true;
+	}
+
+	bool Button::MouseEnterSet()
+	{
+		return m_b_onMouseEnterCallbackSet;
+	}
+
+	bool Button::MouseLeaveSet()
+	{
+		return m_b_onMouseLeaveCallbackSet;
+	}
+
+	bool Button::MouseOverSet()
+	{
+		return m_b_onMouseOverCallbackSet;
+	}
+
+	bool Button::LeftClickSet()
+	{
+		return m_b_onLeftClickCallbackSet;
+	}
+
+	bool Button::RightClickSet()
+	{
+		return m_b_onRightClickCallbackSet;
+	}
+
+	void Button::OnMouseEnter()
+	{
+		m_onMouseEnterCallback(GetParent());
+	}
+
+	void Button::OnMouseLeave()
+	{
+		m_onMouseLeaveCallback(GetParent());
+	}
+
+	void Button::OnMouseOver()
+	{
+		m_onMouseOverCallback(GetParent());
+	}
+
+	void Button::OnLeftClick()
+	{
+		m_onLeftClickCallback(GetParent());
+	}
+
+	void Button::OnRightClick()
+	{
+		m_onRightClickCallback(GetParent());
+	}
+
 }

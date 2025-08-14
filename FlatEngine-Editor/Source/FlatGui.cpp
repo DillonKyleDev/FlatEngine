@@ -14,6 +14,7 @@
 #include <vector>
 #include <filesystem>
 #include <windows.h> // For getting directory name
+#include <ctime>
 
 
 namespace FL = FlatEngine;
@@ -417,6 +418,9 @@ namespace FlatGui
 
 		json projectProperties;
 		
+		project.UpdateSavedTime();
+		tm timeSaved = project.GetSavedTime();
+
 		json properties = json::object({
 			{ "path", path },
 			{ "loadedScenePath", project.GetLoadedScenePath()},
@@ -451,7 +455,13 @@ namespace FlatGui
 			{ "_showLogger", FG_b_showLogger },
 			{ "_showProfiler", FG_b_showProfiler },
 			{ "_showMappingContextEditor", FG_b_showMappingContextEditor },
-			{ "_clearLogBuffer", FG_b_clearBufferEveryFrame }
+			{ "_clearLogBuffer", FG_b_clearBufferEveryFrame },
+			{ "yearsSinceSave", timeSaved.tm_year },
+			{ "monthsSinceSave", timeSaved.tm_mon },
+			{ "daysSinceSave", timeSaved.tm_mday },
+			{ "hoursSinceSave", timeSaved.tm_hour },
+			{ "minutesSinceSave", timeSaved.tm_min },
+			{ "secondsSinceSave", timeSaved.tm_sec }
 		});
 
 		projectProperties.push_back(properties);

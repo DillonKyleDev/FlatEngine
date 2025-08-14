@@ -73,6 +73,9 @@ namespace FlatEngine
 		Vector2 activeDimensions = Vector2(2.0f, 2.0f);
 		Vector2 activeOffset = Vector2();
 		int activeLayer = 0;
+		std::string functionName;
+		bool b_cppEvent = false;
+		bool b_luaEvent = false;
 	};
 	struct CanvasPrefabData : public ComponentPrefabData {		
 		int layerNumber = 0;

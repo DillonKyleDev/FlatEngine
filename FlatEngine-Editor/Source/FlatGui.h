@@ -96,6 +96,10 @@ namespace FlatGui
 	extern void SaveProject(Project& project, std::string path);
 	extern void SaveCurrentProject();	
 
+	extern std::map<std::string, Text> FG_projectNameTexts;
+
+	extern void RecreateProjectNameTexts();
+
 	// File Explorer
 	extern std::map<std::string, std::shared_ptr<Texture>> FG_visibleThumbnails;
 	extern std::string FG_currentDirectory;

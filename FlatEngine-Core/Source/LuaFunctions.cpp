@@ -582,9 +582,9 @@ namespace FlatEngine
 			"GetLeftClick", & Button::GetLeftClick,
 			"SetRightClick", & Button::SetRightClick,
 			"GetRightClick", & Button::GetRightClick,
-			"SetLuaFunctionName", &Button::SetLuaFunctionName,
-			"GetLuaFunctionName", & Button::GetLuaFunctionName,
-			"SetLuaFunctionParams", &Button::SetLuaFunctionParamsLua
+			"SetFunctionName", &Button::SetFunctionName,
+			"GetFunctionName", &Button::GetFunctionName,
+			"SetFunctionParams", &Button::SetFunctionParamsLua
 		);
 
 		F_Lua.new_usertype<Script>("Script",
@@ -1231,13 +1231,13 @@ namespace FlatEngine
 	// Button On Click function events directly added through the Button Component in the Inspector window
 	void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc)
 	{
-		LoadLuaGameObject(caller, "Button On Click function");
+		LoadLuaGameObject(caller, eventFunc + " (Lua)");
 		CallVoidLuaFunction<GameObject*>(eventFunc);
 	}
 	// Button On Click function events directly added through the Button Component in the Inspector window
 	void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, Animation::S_EventFunctionParam params)
 	{
-		LoadLuaGameObject(caller, "Button On Click function");
+		LoadLuaGameObject(caller, eventFunc + " (Lua)");
 		sol::protected_function protectedFunc = F_Lua[eventFunc];
 		if (protectedFunc)
 		{

@@ -154,31 +154,17 @@ namespace FlatGui
 		Vector2 positionInGrid = Vector2((inputOutput.MousePos.x - FG_sceneViewCenter.x) / FG_sceneViewGridStep.x, -(inputOutput.MousePos.y - FG_sceneViewCenter.y) / FG_sceneViewGridStep.y);
 		std::string cursorXPosGrid = "x: " + std::to_string(positionInGrid.x);
 		std::string cursorYPosGrid = "y: " + std::to_string(positionInGrid.y);	
-		std::string cursorXPosScreen = "x: " + std::to_string(inputOutput.MousePos.x);
-		std::string cursorYPosScreen = "y: " + std::to_string(inputOutput.MousePos.y);
-		ImGui::BeginTooltip();	
-		FL::MoveScreenCursor(5, 5);
-		ImGui::Text("Scene View Data ");
-		ImGui::Separator();
-		FL::MoveScreenCursor(5, 5);
-		// Cursor Position
-		ImGui::Text("Cursor Pos Grid: ");
-		FL::MoveScreenCursor(5, 0);
+		std::string cursorXPosScreen = "x: " + std::to_string((int)inputOutput.MousePos.x);
+		std::string cursorYPosScreen = "y: " + std::to_string((int)inputOutput.MousePos.y);
+		FL::BeginToolTip("");		
+		ImGui::Text("Cursor Pos World");
 		ImGui::Text(cursorXPosGrid.c_str());
-		FL::MoveScreenCursor(5, 0);
-		ImGui::Text(cursorYPosGrid.c_str());
-		FL::MoveScreenCursor(0, 5);
-
-		ImGui::Separator();
-		ImGui::Text("Cursor Pos Screen: ");
-		FL::MoveScreenCursor(5, 0);
+		ImGui::Text(cursorYPosGrid.c_str());		
+		FL::RenderSeparator(3, 3);
+		ImGui::Text("Cursor Pos Screen");
 		ImGui::Text(cursorXPosScreen.c_str());
-		FL::MoveScreenCursor(5, 0);
-		ImGui::Text(cursorYPosScreen.c_str());
-		FL::MoveScreenCursor(0, 5);
-		ImGui::Separator();
-		FL::MoveScreenCursor(0, 5);
-		ImGui::EndTooltip();
+		ImGui::Text(cursorYPosScreen.c_str());				
+		FL::EndToolTip();
 	}
 
 	void RenderCursorModeButtons()

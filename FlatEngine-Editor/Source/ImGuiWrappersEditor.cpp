@@ -70,8 +70,12 @@ namespace FlatGui
 			if (ImGui::IsItemHovered() && ImGui::GetIO().KeyAlt)
 			{
 				FL::BeginToolTip("Component Data");
-				FL::RenderToolTipLong("ID", ID);
-				FL::RenderToolTipLong("ParentID", component->GetParentID());
+				FL::MoveScreenCursor(0, -1);
+				FL::RenderSeparator(3, 3);
+				FL::MoveScreenCursor(0, -1);
+				FL::RenderToolTipLong("ID       ", ID);
+				FL::MoveScreenCursor(0, -1);
+				FL::RenderToolTipLong("ParentID ", component->GetParentID());
 				FL::EndToolTip();
 			}
 			ImGui::SetCursorScreenPos({ windowPos.x + 5, windowPos.y + 5 });
@@ -771,11 +775,13 @@ namespace FlatGui
 		float activeHeight = button->GetActiveHeight();
 		Vector2 activeOffset = button->GetActiveOffset();
 		int activeLayer = button->GetActiveLayer();	
-		std::string luaFunctionName = button->GetLuaFunctionName();
 		bool b_leftClick = button->GetLeftClick();
 		bool b_rightClick = button->GetRightClick();
-		std::shared_ptr<Animation::S_Event> luaFunctionParams = button->GetLuaFunctionParams();
+		std::shared_ptr<Animation::S_Event> functionParams = button->GetFunctionParams();
 		long ID = button->GetID();
+		std::string functionName = functionParams->functionName;
+		bool b_cppEvent = functionParams->b_cppEvent;
+		bool b_luaEvent = functionParams->b_luaEvent;
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
@@ -804,10 +810,6 @@ namespace FlatGui
 			{
 				button->SetActiveOffset(activeOffset);
 			}
-			if (FL::RenderInputTableRow("##luaFunctionName" + std::to_string(ID), "On Click", luaFunctionName))
-			{
-				button->SetLuaFunctionName(luaFunctionName);
-			}
 			if (FL::RenderCheckboxTableRow("##leftClickableCheckbox" + std::to_string(ID), "Left Click", b_leftClick))
 			{
 				button->SetLeftClick(b_leftClick);
@@ -818,104 +820,123 @@ namespace FlatGui
 			}
 			FL::PopTable();
 
-			FL::RenderSectionHeader("On Click Function Parameters");	
+			std::string choices[2] = { "C++", "Lua" };
+			std::string currentChoice = "";
 
-			//FL::MoveScreenCursor(30, 0);
-			ImGui::Text("Type:");
-			ImGui::SameLine(0, 75);
-			ImGui::Text("Value:");
-			
+			if (b_cppEvent)
+			{
+				currentChoice = "C++";
+			}
+			else if (b_luaEvent)
+			{
+				currentChoice = "Lua";
+			}
 
-			FL::MoveScreenCursor(0, 5);
+			std::string cppRadioID = "C++ Function##" + std::to_string(ID);
+			std::string luaRadioID = "Lua Function##" + std::to_string(ID);
 
-			int paramCounter = 0;
-			int paramQueuedForDelete = -1;
+			if (ImGui::RadioButton(cppRadioID.c_str(), currentChoice == choices[0]))
+			{
+				currentChoice = choices[0];
+				functionParams->b_cppEvent = true;
+				functionParams->b_luaEvent = false;
+			}
+			if (ImGui::RadioButton(luaRadioID.c_str(), currentChoice == choices[1]))
+			{
+				currentChoice = choices[1];
+				functionParams->b_cppEvent = false;
+				functionParams->b_luaEvent = true;
+			}
 
-			float inputWidth = ImGui::GetContentRegionAvail().x - 36;
+			FL::RenderSeparator(1, 1);
 
-			std::string stringValue = luaFunctionParams->parameters.e_string;
-			if (FL::RenderInput("##EventParamString" + std::to_string(paramCounter), "", stringValue, false, inputWidth))
+			if (functionParams->b_cppEvent)
 			{
-				luaFunctionParams->parameters.e_string = stringValue;
-			}
-				
-			int intValue = luaFunctionParams->parameters.e_int;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-			if (FL::RenderDragInt("##EventParamInt" + std::to_string(paramCounter), inputWidth, intValue, 1, INT_MIN, INT_MAX, 0, "input"))
-			{
-				luaFunctionParams->parameters.e_int = intValue;
-			}
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-		
-			int longValue = (int)luaFunctionParams->parameters.e_long;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-			if (FL::RenderDragInt("##EventParamLong" + std::to_string(paramCounter), inputWidth, longValue, 1, INT_MIN, INT_MAX, 0, "input"))
-			{
-				luaFunctionParams->parameters.e_long = longValue;
-			}
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-		
-			float floatValue = luaFunctionParams->parameters.e_float;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-			if (FL::RenderDragFloat("##EventParamFloat" + std::to_string(paramCounter), inputWidth, floatValue, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-			{
-				luaFunctionParams->parameters.e_float = floatValue;
-			}
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-		
-			float doubleValue = (float)luaFunctionParams->parameters.e_double;
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-			if (FL::RenderDragFloat("##EventParamFloat" + std::to_string(paramCounter), inputWidth, doubleValue, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-			{
-				luaFunctionParams->parameters.e_double = doubleValue;
-			}
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-			
-			std::vector<std::string> trueFalse = { "true", "false" };
-			int currentBool = 0;
-			if (luaFunctionParams->parameters.e_boolean)
-			{
-				currentBool = 0;
-			}
-			else
-			{
-				currentBool = 1;
-			}
-			if (FL::RenderCombo("##EventParamBooleanDropdown" + std::to_string(paramCounter), luaFunctionParams->parameters.e_boolean ? "true" : "false", trueFalse, currentBool, inputWidth))
-			{
-				luaFunctionParams->parameters.e_boolean = trueFalse[currentBool] == "true";
-			}
-				
-			inputWidth = (inputWidth / 2) - 3;
-			Vector2 vector2Value = luaFunctionParams->parameters.e_Vector2;
+				int currentEventFunction = 0;
+				std::vector<std::string> eventFunctions = { "- none -" };
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-			if (FL::RenderDragFloat("##EventParamVector2X" + std::to_string(paramCounter), inputWidth, vector2Value.x, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-			{
-				luaFunctionParams->parameters.e_Vector2.x = vector2Value.x;
-			}
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
+				for (std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>::iterator iter = FL::F_CPPAnimationEventFunctions.begin(); iter != FL::F_CPPAnimationEventFunctions.end(); iter++)
+				{
+					eventFunctions.push_back(iter->first);
+				}
 
-			ImGui::SameLine(0, 6);
+				for (int i = 0; i < eventFunctions.size(); i++)
+				{
+					if (functionParams->functionName == eventFunctions[i])
+					{
+						currentEventFunction = i;
+					}
+				}
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);
-			if (FL::RenderDragFloat("##EventParamVector2Y" + std::to_string(paramCounter), inputWidth, vector2Value.y, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"))
-			{
-				luaFunctionParams->parameters.e_Vector2.y = vector2Value.y;
+				if (eventFunctions.size())
+				{
+					FL::MoveScreenCursor(0, 3);
+					ImGui::Text("Callback Function:");
+					ImGui::SameLine();
+					FL::MoveScreenCursor(0, -3);
+					std::string comboID = "##EventFunctionName";
+					ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+					if (FL::RenderCombo(comboID, eventFunctions[currentEventFunction], eventFunctions, currentEventFunction))
+					{
+						functionParams->functionName = eventFunctions[currentEventFunction];
+					}		
+					FL::MoveScreenCursor(0, -6);
+				}
+				else
+				{
+					ImGui::TextWrapped("Add C++ callback functions using AddCPPAnimationEventFunction() in attached C++ script.");
+				}
 			}
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();									
+
+			if (functionParams->b_luaEvent)
+			{
+				if (FL::RenderInput("##ButtonEventName", "Callback Function", functionName))
+				{
+					functionParams->functionName = functionName;
+				}
+			}
+
+			std::string stringValue = functionParams->parameters.e_string;
+			int intValue = functionParams->parameters.e_int;
+			float floatValue = functionParams->parameters.e_float;
+			int longValue = (int)functionParams->parameters.e_long;
+			bool b_boolean = functionParams->parameters.e_boolean;
+			Vector2 vector2 = functionParams->parameters.e_Vector2;
+
+			if (FL::PushTable("##ButtonEventParameters", 2))
+			{
+				if (FL::RenderInputTableRow("##ButtonEventParamString" + std::to_string(ID), "String", stringValue, false))
+				{
+					functionParams->parameters.e_string = stringValue;
+				}
+				if (FL::RenderIntDragTableRow("##ButtonEventParamInt" + std::to_string(ID), "Int", intValue, 1, -INT_MAX, INT_MAX))
+				{
+					functionParams->parameters.e_int = intValue;
+				}
+				if (FL::RenderIntDragTableRow("##ButtonEventParamLong" + std::to_string(ID), "Long", longValue, 1, -LONG_MAX, LONG_MAX))
+				{
+					functionParams->parameters.e_int = intValue;
+				}
+				if (FL::RenderFloatDragTableRow("##ButtonEventParamFloat" + std::to_string(ID), "Float", floatValue, 0.001f, -FLT_MAX, FLT_MAX))
+				{
+					functionParams->parameters.e_float = floatValue;
+				}
+				if (FL::RenderFloatDragTableRow("##ButtonEventParamVector2X" + std::to_string(ID), "Vector2 X", vector2.x, 0.001f, -FLT_MAX, FLT_MAX))
+				{
+					functionParams->parameters.e_Vector2 = vector2;
+				}
+				if (FL::RenderFloatDragTableRow("##ButtonEventParamVector2Y" + std::to_string(ID), "Vector2 Y", vector2.y, 0.001f, -FLT_MAX, FLT_MAX))
+				{
+					functionParams->parameters.e_Vector2 = vector2;
+				}
+				if (FL::RenderCheckboxTableRow("##ButtonEventParamBoolean" + std::to_string(ID), "Boolean", b_boolean))
+				{
+					functionParams->parameters.e_boolean = b_boolean;
+				}
+				FL::PopTable();
+			}
+
+			FL::MoveScreenCursor(0, 3);								
 		}
 	}
 

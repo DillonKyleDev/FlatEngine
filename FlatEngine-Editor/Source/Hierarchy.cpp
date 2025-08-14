@@ -441,9 +441,14 @@ namespace FlatGui
 		if (ImGui::IsItemHovered() && ImGui::GetIO().KeyAlt)
 		{	
 			FL::BeginToolTip("GameObject Data");
-			FL::RenderToolTipLong("Object ID", currentObject.GetID());
-			FL::RenderToolTipLong("Parent ID", currentObject.GetParentID());
-			FL::RenderToolTipLongVector("Children IDs", currentObject.GetChildren());
+			FL::MoveScreenCursor(0, 3);
+			FL::RenderSeparator(3, 3);
+			FL::MoveScreenCursor(0, 3);
+			FL::RenderToolTipLong("Object ID    ", currentObject.GetID());
+			FL::MoveScreenCursor(0, 3);
+			FL::RenderToolTipLong("Parent ID    ", currentObject.GetParentID());
+			FL::MoveScreenCursor(0, 3);
+			FL::RenderToolTipLongVector("Children IDs ", currentObject.GetChildren());
 			FL::EndToolTip();
 		}
 

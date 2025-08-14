@@ -18,6 +18,7 @@ F_Colors = {
 	col_10 = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	red = Vector4:new(1.0, 0.0, 0.0, 1.0),
 	textLight = Vector4:new(0.45, 0.45, 0.45, 1.0),
+	transparentLight = Vector4:new(1.0, 1.0, 1.0, 0.05),
 	----------------------
 	-- Components --------
 	----------------------

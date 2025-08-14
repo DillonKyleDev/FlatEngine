@@ -254,12 +254,8 @@ public:
 		if (m_b_recreateWindow)
 		{
 			m_b_recreateWindow = false;
-			FL::F_Window->SetScreenDimensions(1500, 850);
-			FL::RestartImGui();
 			FlatGui::LoadProject(m_startupProject);
-			FL::F_AssetManager.CollectColors();
-			FL::F_AssetManager.CollectTextures();
-
+			FL::F_Window->ResizeWindow(1500, 850);
 		}
 	}
 	void Quit()

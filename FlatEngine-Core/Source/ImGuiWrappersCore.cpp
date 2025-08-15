@@ -479,14 +479,25 @@ namespace FlatEngine
 			ImGui::SameLine(0, 5);			
 		}
 
+		float textLength = label.size() * ImGui::GetFont()->FontSize;
+
 		if (b_canOpenFiles && inputWidth == -1)
 		{
-			inputWidth = ImGui::GetContentRegionAvail().x - 31;
+			inputWidth = ImGui::GetContentRegionAvail().x - 31 - textLength;
 		}
 		else if (b_canOpenFiles)
 		{
-			inputWidth -= 31;
+			inputWidth -= 31 - textLength;
 		}
+		else if (inputWidth == -1)
+		{
+			inputWidth = ImGui::GetContentRegionAvail().x;
+		}
+		else
+		{
+			inputWidth -= textLength;
+		}
+
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 1);

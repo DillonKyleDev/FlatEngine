@@ -14,6 +14,39 @@ namespace FlatGui
 	std::string fileName = "";
 	bool b_openCreateContextModal = false;
 
+
+	void RenderInputAction(MappingContext* context, FL::ActionMapping& actionMapping, float width)
+	{
+		std::string actionName = actionMapping.actionName;
+		std::string keyCode = actionMapping.keyCode;
+		FL::PressType pressType = actionMapping.pressType;
+
+		static int currentPressType = (int)pressType;
+		int selectedPressType = 0;
+
+		for (int i = 0; i < (int)FL::PressType::PT_Size; i++)
+		{
+			if (currentPressType == i)
+			{
+				selectedPressType = i;
+			}
+		}
+		
+		std::string textLabelID = "##EditInputActionName" + keyCode + std::to_string((int)pressType);
+		
+		if (FL::RenderInput(textLabelID.c_str(), FL::F_PressTypeStrings[(int)pressType], actionName, false, width))
+		{			
+			if (!context->InputActionNameTaken(actionName, keyCode))
+			{
+				actionMapping.actionName = actionName;
+			}
+			else
+			{
+				FL::LogString("Duplicate action names not allowed in the same Mapping Context.");
+			}
+		}
+	}
+
 	void RenderMappingContextEditor()
 	{
 		FL::BeginWindow("Mapping Context Editor", FG_b_showMappingContextEditor);
@@ -44,8 +77,7 @@ namespace FlatGui
 						{
 							for (int i = 0; i < FL::F_MappingContexts.size(); i++)
 							{
-
-								bool b_isSelected = (FL::F_MappingContexts.at(i).GetName() == FL::F_selectedMappingContextName); // You can store your selection however you want, outside or inside your objects
+								bool b_isSelected = (FL::F_MappingContexts.at(i).GetName() == FL::F_selectedMappingContextName);
 								ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("outerWindow"));
 								if (ImGui::Selectable(FL::F_MappingContexts.at(i).GetName().c_str(), b_isSelected))
 								{
@@ -97,11 +129,13 @@ namespace FlatGui
 						FL::MoveScreenCursor(0, 5);
 
 						static int currentInput = 0;
+						static int currentPressType = 0;
 						static std::string inputText = "Input Action Name";
+						float itemWidth = ImGui::GetContentRegionAvail().x / 3;
 
 						ImGui::Text("Input Source");
 						FL::PushComboStyles();										
-						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 2);
+						ImGui::SetNextItemWidth(itemWidth);
 						if (ImGui::BeginCombo("##CreateInputActionInputSelector", FL::F_KeyBindingsAvailable[currentInput].c_str()))
 						{
 							for (int n = 0; n < FL::F_KeyBindingsAvailable.size(); n++)
@@ -118,17 +152,43 @@ namespace FlatGui
 
 
 						ImGui::SameLine();
-						FL::MoveScreenCursor(0, -25);
 						Vector2 cursorPos = ImGui::GetCursorScreenPos();
+						FL::MoveScreenCursor(0, -25);
+						ImGui::Text("Press Type");
+						ImGui::SetCursorScreenPos(cursorPos);
+						FL::PushComboStyles();
+						ImGui::SetNextItemWidth(itemWidth);
+						if (ImGui::BeginCombo("##NewInputActionPressTypeSelector", FL::F_PressTypeStrings[currentPressType].c_str()))
+						{
+							for (int n = 0; n < FL::F_PressTypeStrings.size(); n++)
+							{
+								bool b_isSelected = (FL::F_PressTypeStrings[currentPressType] == FL::F_PressTypeStrings[n]);
+								if (ImGui::Selectable(FL::F_PressTypeStrings[n].c_str(), b_isSelected))
+								{
+									currentPressType = n;
+								}
+							}
+							ImGui::EndCombo();
+						}
+						FL::PopComboStyles();
+
+
+						ImGui::SameLine();
+
+
+						FL::MoveScreenCursor(0, -25);
+						cursorPos = ImGui::GetCursorScreenPos();
 						ImGui::Text("Action Name:");
-						ImGui::SetCursorScreenPos(Vector2(cursorPos.x, cursorPos.y + 25));					
+						ImGui::SetCursorScreenPos(Vector2(cursorPos.x, cursorPos.y + 25));		
+						ImGui::SetNextItemWidth(itemWidth);
 						FL::RenderInput("##InputActionName", "", inputText, false, ImGui::GetContentRegionAvail().x - 40, ImGuiInputTextFlags_AutoSelectAll);
 
 
 						ImGui::SameLine();
 						if (FL::RenderButton("Add"))
 						{
-							currentContext->AddKeyBinding(FL::F_KeyBindingsAvailable[currentInput].c_str(), inputText);
+							currentContext->AddKeyBinding(FL::F_KeyBindingsAvailable[currentInput].c_str(), inputText, (FL::PressType)currentPressType);
+							inputText = "";
 						}
 
 					// }
@@ -147,52 +207,21 @@ namespace FlatGui
 						ImGui::Text("Existing Bindings:");
 						FL::MoveScreenCursor(0, 5);
 
-						int inputActionIDCounter = 0;
 						if (currentContext != nullptr)
 						{					
 							for (std::pair<std::string, std::shared_ptr<FL::InputMapping>> inputAction : currentContext->GetInputActions())
 							{
-								int selectedInput = 0;
-								for (int i = 0; i < FL::F_KeyBindingsAvailable.size(); i++)
-								{
-									if (inputAction.second->keyCode == FL::F_KeyBindingsAvailable[i])
-									{
-										selectedInput = i;
-									}
-								}
+								FL::MoveScreenCursor(0, 5);
+								ImGui::Text(inputAction.second->keyCode.c_str());
+								float halfWidth = ImGui::GetContentRegionAvail().x / 2;
 
-								std::string comboId = "##EditInputActionKeyCode" + currentContext->GetName() + std::to_string(inputActionIDCounter);
-								FL::PushComboStyles();
-								ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x / 2);
-								if (ImGui::BeginCombo(comboId.c_str(), FL::F_KeyBindingsAvailable[selectedInput].c_str()))
-								{
-									for (int n = 0; n < FL::F_KeyBindingsAvailable.size(); n++)
-									{
-										bool b_isSelected = (FL::F_KeyBindingsAvailable[selectedInput] == FL::F_KeyBindingsAvailable[n]);
-
-										if (ImGui::Selectable(FL::F_KeyBindingsAvailable[n].c_str(), b_isSelected))
-										{											
-											selectedInput = n;
-											currentContext->AddKeyBinding(FL::F_KeyBindingsAvailable[selectedInput], inputAction.first);
-										}										
-									}
-									ImGui::EndCombo();
-								}
-								FL::PopComboStyles();
-						
-
+								RenderInputAction(currentContext, inputAction.second->pressActions.downAction, halfWidth);
 								ImGui::SameLine();
+								RenderInputAction(currentContext, inputAction.second->pressActions.upAction, ImGui::GetContentRegionAvail().x);
 
-
-								std::string inputActionName = inputAction.first;
-								std::string textLabelID = "##EditInputActionName" + inputAction.second->keyCode + std::to_string(inputActionIDCounter);
-
-								if (FL::RenderInput(textLabelID.c_str(), "", inputActionName))
-								{
-									currentContext->AddKeyBinding(inputAction.second->keyCode, inputActionName);
-								}								
-
-								inputActionIDCounter++;
+								RenderInputAction(currentContext, inputAction.second->pressActions.holdAction, halfWidth);
+								ImGui::SameLine();
+								RenderInputAction(currentContext, inputAction.second->pressActions.doubleAction, -1);
 							}
 						}
 

@@ -10,21 +10,11 @@ using namespace nlohmann::literals;
 
 namespace FlatEngine 
 {
-	Vector2 InputMapping::GetMouseMotionWorld() 
-	{ 
-		return ConvertScreenToWorld(Vector2((float)event.motion.x, (float)event.motion.y));
-	}
-
-	Vector2 InputMapping::GetMouseMotionScreen() 
-	{
-		return Vector2((float)event.motion.x, (float)event.motion.y); 
-	}
-
 	MappingContext::MappingContext()
 	{
 		m_name = "";		
 		m_inputsByBinding = std::map<std::string, std::shared_ptr<InputMapping>>();
-		m_inputsByAction = std::map<std::string, std::shared_ptr<InputMapping>>();
+		m_bindingsByInput = std::map<std::string, std::string>();
 		m_remapTimeoutTime = 0;
 		m_remapStartTime = 0;
 		m_actionToRemap = "";
@@ -37,21 +27,33 @@ namespace FlatEngine
 
 	std::string MappingContext::GetData()
 	{
-		json jsonData = {
-			{ "name", m_name }
-		};
+		json mappings;
 
-		for (std::pair<std::string, std::shared_ptr<InputMapping>> inputMapping : m_inputsByAction)
+		for (std::pair<std::string, std::shared_ptr<InputMapping>> inputMapping : m_inputsByBinding)
 		{
-			std::string keyString = inputMapping.second->keyCode;
-			std::string inputAction = inputMapping.first;
-			if (inputAction != "")
-			{
-				jsonData.emplace(keyString, inputAction);
-			}
+			std::string keyString = inputMapping.first;
+			std::string downAction = inputMapping.second->pressActions.downAction.actionName;
+			std::string upAction = inputMapping.second->pressActions.upAction.actionName;
+			std::string holdAction = inputMapping.second->pressActions.holdAction.actionName;
+			std::string doubleAction = inputMapping.second->pressActions.doubleAction.actionName;
+
+			json actions = 
+			{					
+				{ "downAction", downAction },	
+				{ "upAction", upAction },
+				{ "holdAction", holdAction },
+				{ "doubleAction", doubleAction },
+			};
+
+			mappings.emplace(keyString, actions);
 		}
 
-		std::string data = jsonData.dump();		
+		json jsonData = {
+			{ "name", m_name },
+			{ "mappings", mappings }
+		};
+
+		std::string data = jsonData.dump(4);		
 		return data;
 	}
 
@@ -75,58 +77,172 @@ namespace FlatEngine
 		return m_path;
 	}
 
-	void MappingContext::AddKeyBinding(std::string keyBinding, std::string actionName)
+	void MappingContext::AddKeyBinding(std::string keyBinding, std::string actionName, PressType pressType)
 	{
 		if (actionName != "")
 		{
-			std::shared_ptr<InputMapping> inputMap = std::make_shared<InputMapping>();
-			inputMap->keyCode = keyBinding;
-			inputMap->actionName = actionName;
-
-			std::pair<std::string, std::shared_ptr<InputMapping>> bindingPair = { keyBinding, inputMap };
-			std::pair<std::string, std::shared_ptr<InputMapping>> actionPair = { actionName, inputMap };
-
-			// Add by binding
-			if (m_inputsByBinding.count(keyBinding) > 0)
+			// Remove existing binding using that actionName if it exists.
+			if (m_bindingsByInput.count(actionName))
 			{
-				std::string oldActionName = m_inputsByBinding.at(keyBinding)->actionName;
-				m_inputsByBinding.at(keyBinding) = inputMap;
-
-				// erase old inputAction pair from m_inputsByAction if the action name has changed
-				if (oldActionName != actionName)
+				std::string existingKeyBind = m_bindingsByInput.at(actionName);
+				if (existingKeyBind != keyBinding)
 				{
-					m_inputsByAction.erase(oldActionName);
+					if (m_inputsByBinding.count(existingKeyBind))
+					{
+						std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(existingKeyBind);
+						switch (pressType)
+						{
+						case PT_Down:
+						{							
+							inputMap->pressActions.downAction.actionName = "";
+							break;
+						}
+						case PT_Up:
+						{							
+							inputMap->pressActions.upAction.actionName = "";
+							break;
+						}
+						case PT_Hold:
+						{							
+							inputMap->pressActions.holdAction.actionName = "";
+							break;
+						}
+						case PT_Double:
+						{							
+							inputMap->pressActions.doubleAction.actionName = "";
+							break;
+						}
+						}
+						LogString("No duplicate action names allowed in the same Mapping Context. Previous keybinding with that action name removed.");
+					}
 				}
 			}
+
+			std::shared_ptr<InputMapping> inputMap = nullptr;
+
+			if (m_inputsByBinding.count(keyBinding) > 0)
+			{
+				inputMap = m_inputsByBinding.at(keyBinding);
+			}
 			else
 			{
+				inputMap = std::make_shared<InputMapping>();
+				inputMap->keyCode = keyBinding;
+			}
+
+			inputMap->pressActions.downAction.keyCode = keyBinding;
+			inputMap->pressActions.upAction.keyCode = keyBinding;
+			inputMap->pressActions.holdAction.keyCode = keyBinding;
+			inputMap->pressActions.doubleAction.keyCode = keyBinding;
+
+			std::string oldActionName = "";
+
+			switch (pressType)
+			{
+			case PT_Down:
+			{
+				oldActionName = inputMap->pressActions.downAction.actionName;
+				inputMap->pressActions.downAction.actionName = actionName;
+				inputMap->pressActions.downAction.keyCode = keyBinding;
+				break;
+			}
+			case PT_Up:
+			{
+				oldActionName = inputMap->pressActions.upAction.actionName;
+				inputMap->pressActions.upAction.actionName = actionName;
+				inputMap->pressActions.upAction.keyCode = keyBinding;
+				break;
+			}
+			case PT_Hold:
+			{
+				oldActionName = inputMap->pressActions.holdAction.actionName;
+				inputMap->pressActions.holdAction.actionName = actionName;
+				inputMap->pressActions.holdAction.keyCode = keyBinding;
+				break;
+			}
+			case PT_Double:
+			{
+				oldActionName = inputMap->pressActions.doubleAction.actionName;
+				inputMap->pressActions.doubleAction.actionName = actionName;
+				inputMap->pressActions.doubleAction.keyCode = keyBinding;
+				break;
+			}
+			}
+			
+			if (m_inputsByBinding.count(keyBinding) == 0)
+			{
+				std::pair<std::string, std::shared_ptr<InputMapping>> bindingPair = { keyBinding, inputMap };
 				m_inputsByBinding.emplace(bindingPair);
 			}
-			// Add by action
-			if (m_inputsByAction.count(actionName) > 0)
+
+
+			std::pair<std::string, std::string> actionPair = { actionName, keyBinding };
+
+			// erase old inputAction pair from m_inputsByAction if the action name has changed
+			if (oldActionName != actionName && m_bindingsByInput.count(oldActionName))
 			{
-				m_inputsByAction.at(actionName) = inputMap;
+				m_bindingsByInput.erase(oldActionName);
+			}			
+			
+			if (m_bindingsByInput.count(actionName))
+			{
+				m_bindingsByInput.at(actionName) = keyBinding;
 			}
 			else
 			{
-				m_inputsByAction.emplace(actionPair);
+				m_bindingsByInput.emplace(actionPair);
 			}
 		}
 		else if (m_inputsByBinding.count(keyBinding) > 0)
 		{
-			std::string oldActionName = m_inputsByBinding.at(keyBinding)->actionName;
-			m_inputsByBinding.erase(keyBinding);
-			m_inputsByAction.erase(oldActionName);
+			std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(keyBinding);
+			std::string oldActionName = "";
+
+			switch (pressType)
+			{
+			case PT_Down:
+			{
+				oldActionName = inputMap->pressActions.downAction.actionName;
+				inputMap->pressActions.downAction.actionName = "";
+				inputMap->pressActions.downAction.keyCode = "";
+				break;
+			}
+			case PT_Up:
+			{
+				oldActionName = inputMap->pressActions.upAction.actionName;
+				inputMap->pressActions.upAction.actionName = "";
+				inputMap->pressActions.upAction.keyCode = "";
+				break;
+			}
+			case PT_Hold:
+			{
+				oldActionName = inputMap->pressActions.holdAction.actionName;
+				inputMap->pressActions.holdAction.actionName = "";
+				inputMap->pressActions.upAction.keyCode = "";
+				break;
+			}
+			case PT_Double:
+			{
+				oldActionName = inputMap->pressActions.doubleAction.actionName;
+				inputMap->pressActions.doubleAction.actionName = "";
+				inputMap->pressActions.doubleAction.keyCode = "";
+				break;
+			}
+			}
+
+			if (m_bindingsByInput.count(actionName))
+			{
+				m_bindingsByInput.erase(actionName);
+			}
 		}
 	}
 
-	bool MappingContext::FireEvent(std::string keyBinding, SDL_Event event)
+	bool MappingContext::FireEvent(std::string keyBinding, SDL_Event event, PressType pressType)
 	{
 		std::string actionName = "";
 
 		if (m_b_waitingForRemap && !RemapTimedOut(GetEngineTime()))
-		{
-			AddKeyBinding(keyBinding, m_actionToRemap);
+		{			
 			m_b_waitingForRemap = false;
 			SaveMappingContext(m_path, *this);
 		}
@@ -136,10 +252,42 @@ namespace FlatEngine
 		}
 
 		if (m_inputsByBinding.count(keyBinding) > 0)
-		{						
-			m_inputsByBinding.at(keyBinding)->event = event;
-			m_inputsByBinding.at(keyBinding)->b_fired = true;
-			return true;
+		{
+			std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(keyBinding);
+			switch (pressType)
+			{
+			case PT_Down:
+			{
+				if (inputMap->pressActions.downAction.actionName != "" || inputMap->pressActions.holdAction.actionName != "")
+				{
+					inputMap->pressActions.downAction.event = event;
+					inputMap->pressActions.downAction.b_fired = true;
+					inputMap->pressActions.holdAction.event = event;
+					inputMap->pressActions.holdAction.b_fired = true;
+					return true;
+				}
+				break;
+			}
+			case PT_Up:
+			{
+				bool b_actionFound = false;
+				if (inputMap->pressActions.upAction.actionName != "")
+				{
+					inputMap->pressActions.upAction.event = event;
+					inputMap->pressActions.upAction.b_fired = true;
+					b_actionFound = true;
+				}
+				if (inputMap->pressActions.holdAction.actionName != "")
+				{
+					inputMap->pressActions.holdAction.event = SDL_Event();
+					inputMap->pressActions.holdAction.b_fired = false;
+					b_actionFound = true;
+				}
+
+				return b_actionFound;
+				break;
+			}
+			}
 		}
 
 		return false;
@@ -147,62 +295,93 @@ namespace FlatEngine
 
 	void MappingContext::UnFireEvent(std::string keyBinding)
 	{
-		std::string actionName = "null";
-
 		if (m_inputsByBinding.count(keyBinding) > 0)
 		{			
-			m_inputsByBinding.at(keyBinding)->b_fired = false;
+			std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(keyBinding);
+
+			inputMap->pressActions.downAction.b_fired = false;
+			inputMap->pressActions.downAction.event = SDL_Event();
+			inputMap->pressActions.upAction.b_fired = false;
+			inputMap->pressActions.upAction.event = SDL_Event();
+			inputMap->pressActions.doubleAction.b_fired = false;
+			inputMap->pressActions.doubleAction.event = SDL_Event();
 		}
 	}
 
-	bool MappingContext::Fired(std::string actionName)
+	SDL_Event MappingContext::GetInputActionEvent(std::string actionName)
 	{
-		if (m_inputsByAction.count(actionName))
+		if (m_bindingsByInput.count(actionName) > 0)
 		{
-			return m_inputsByAction.at(actionName)->b_fired;
-		}
-		else
-		{
-			return false;
-		}
-	}
+			std::string keyBinding = m_bindingsByInput.at(actionName);
 
-	void MappingContext::ClearInputActionEvent(std::string keyBinding)
-	{
-		if (m_inputsByBinding.count(keyBinding) > 0)
-		{
-			m_inputsByBinding.at(keyBinding)->event = SDL_Event();
-		}
-	}
+			if (m_inputsByBinding.count(keyBinding))
+			{
+				std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(keyBinding);
 
-	// Get more detailed event information
-	SDL_Event MappingContext::GetInputAction(std::string actionName)
-	{
-		SDL_Event inputEvent = SDL_Event();
+				if (inputMap->pressActions.downAction.actionName == actionName)
+				{
+					return inputMap->pressActions.downAction.event;
+				}
+				else if (inputMap->pressActions.upAction.actionName == actionName)
+				{
+					return inputMap->pressActions.upAction.event;
+				}
+				else if (inputMap->pressActions.holdAction.actionName == actionName)
+				{
+					return inputMap->pressActions.holdAction.event;
+				}
+				else if (inputMap->pressActions.doubleAction.actionName == actionName)
+				{
+					return inputMap->pressActions.doubleAction.event;
+				}
+			}
+		}	
 
-		if (m_inputsByAction.count(actionName) > 0)
-		{
-			inputEvent = m_inputsByAction.at(actionName)->event;
-		}
-
-		return inputEvent;
+		return SDL_Event();
 	}
 
 	bool MappingContext::ActionPressed(std::string actionName)
 	{
-		return GetInputAction(actionName).type != 0;
+		if (m_bindingsByInput.count(actionName) > 0)
+		{
+			std::string keyBinding = m_bindingsByInput.at(actionName);
+
+			if (m_inputsByBinding.count(keyBinding))
+			{
+				std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(keyBinding);
+
+				if (inputMap->pressActions.downAction.actionName == actionName)
+				{
+					return inputMap->pressActions.downAction.b_fired;
+				}
+				else if (inputMap->pressActions.upAction.actionName == actionName)
+				{
+					return inputMap->pressActions.upAction.b_fired;
+				}
+				else if (inputMap->pressActions.holdAction.actionName == actionName)
+				{
+					return inputMap->pressActions.holdAction.b_fired;
+				}
+				else if (inputMap->pressActions.doubleAction.actionName == actionName)
+				{
+					return inputMap->pressActions.doubleAction.b_fired;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	std::map<std::string, std::shared_ptr<InputMapping>> MappingContext::GetInputActions()
 	{
-		return m_inputsByAction;
+		return m_inputsByBinding;
 	}
 
 	std::vector<std::shared_ptr<InputMapping>> MappingContext::GetInputMappingsLua()
 	{
 		std::vector<std::shared_ptr<InputMapping>> inputActions = std::vector<std::shared_ptr<InputMapping>>();
 
-		for (std::pair<std::string, std::shared_ptr<InputMapping>> inputAction : m_inputsByAction)
+		for (std::pair<std::string, std::shared_ptr<InputMapping>> inputAction : m_inputsByBinding)
 		{
 			InputMapping newMapping;
 			inputActions.push_back(inputAction.second);
@@ -213,12 +392,34 @@ namespace FlatEngine
 
 	std::shared_ptr<InputMapping> MappingContext::GetInputMapping(std::string actionName)
 	{
-		if (m_inputsByAction.count(actionName) > 0)
+		if (m_bindingsByInput.count(actionName) > 0)
 		{
-			return m_inputsByAction.at(actionName);
+			std::string keyBinding = m_bindingsByInput.at(actionName);
+
+			if (m_inputsByBinding.count(keyBinding))
+			{
+				std::shared_ptr<InputMapping> inputMap = m_inputsByBinding.at(keyBinding);
+
+				if (inputMap->pressActions.downAction.actionName == actionName)
+				{
+					return inputMap;
+				}
+				else if (inputMap->pressActions.upAction.actionName == actionName)
+				{
+					return inputMap;
+				}
+				else if (inputMap->pressActions.holdAction.actionName == actionName)
+				{
+					return inputMap;
+				}
+				else if (inputMap->pressActions.doubleAction.actionName == actionName)
+				{
+					return inputMap;
+				}
+			}
 		}
 
-		else return nullptr;
+		return nullptr;
 	}
 
 	void MappingContext::SetWaitingForRemap(bool b_waiting)
@@ -259,5 +460,14 @@ namespace FlatEngine
 	Uint32 MappingContext::GetRemapTimeoutTime()
 	{
 		return m_remapTimeoutTime;
+	}
+
+	bool MappingContext::InputActionNameTaken(std::string actionName, std::string keyCode)
+	{
+		if (m_bindingsByInput.count(actionName))
+		{
+			return m_bindingsByInput.at(actionName) != keyCode;
+		}
+		return false;
 	}
 }

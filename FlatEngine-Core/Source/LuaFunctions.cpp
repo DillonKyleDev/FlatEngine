@@ -15,13 +15,13 @@
 #include "MappingContext.h"
 #include "Project.h"
 #include "Body.h"
-#include "Script.h"
 
 #include "box2d.h"
 #include <fstream>
 #include <random>
 #include <vector>
 #include <map>
+#include <string>
 
 
 // https://github.com/ThePhD/sol2/issues/354
@@ -365,19 +365,7 @@ namespace FlatEngine
 			};
 		F_Lua["SceneDrawLine"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
-			PushWindowStyles();
-			ImGui::Begin("Scene View", 0, 16 | 8);
-			PopWindowStyles();
-			// {
-
-				DrawLine(startPoint, endPoint, color, thickness, ImGui::GetWindowDrawList());
-
-			// }
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-			ImGui::End(); // Scene View
+			DrawLineInScene(startPoint, endPoint, color, thickness);
 		};
 		F_Lua["GameDrawLine"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
 		{
@@ -419,11 +407,11 @@ namespace FlatEngine
 		{
 			RemapInputAction(contextName, inputAction, Uint32(timeoutTime));
 		};
-		F_Lua["GetMousePosWorld"] = [](std::string color)
+		F_Lua["GetMousePosWorld"] = []()
 		{
 			return GetMousePosWorld();
 		};
-		F_Lua["GetMousePosScreen"] = [](std::string color)
+		F_Lua["GetMousePosScreen"] = []()
 		{
 			return GetMousePosScreen();
 		};
@@ -441,9 +429,9 @@ namespace FlatEngine
 		F_Lua.new_usertype<Vector2>("Vector2",
 			sol::constructors<Vector2(), Vector2(float x,float y)>(),
 			"SetX", &Vector2::SetX,
-			"x", &Vector2::GetX,
+			"x", sol::readonly(&Vector2::x),
 			"SetY", &Vector2::SetY,
-			"y", &Vector2::GetY,
+			"y", sol::readonly(&Vector2::y),
 			"SetXY", &Vector2::_xy,
 			"Normalize", &Vector2::NormalizeSelf
 		);
@@ -483,7 +471,8 @@ namespace FlatEngine
 			"GetText", &GameObject::GetText,
 			"GetBody", &GameObject::GetBody,
 			"GetCharacterController", &GameObject::GetCharacterController,		
-			//"GetTileMap", &GameObject::GetTileMap,
+			"GetTileMap", &GameObject::GetTileMap,
+			"HasComponent", &GameObject::HasComponentLua,
 			
 			"AddSprite", &GameObject::AddSpriteLua,
 			"AddScript", &GameObject::AddScriptLua,
@@ -686,7 +675,7 @@ namespace FlatEngine
 			"SetGravity", &Body::SetGravityScale,			
 			"SetLinearDamping", &Body::SetLinearDamping,
 			"SetAngularDamping", &Body::SetAngularDamping,
-			"AddForce", &Body::ApplyForce,
+			"ApplyForce", &Body::ApplyForce,
 			"ApplyLinearInpulse", &Body::ApplyLinearInpulse,
 			"ApplyForceToCenter", &Body::ApplyForceToCenter,
 			"ApplyLinearImpulseToCenter", &Body::ApplyLinearImpulseToCenter,
@@ -706,14 +695,11 @@ namespace FlatEngine
 		);
 
 		F_Lua.new_usertype<InputMapping>("InputMapping",
-			"GetMouseMotionWorld", &InputMapping::GetMouseMotionWorld,
-			"GetMouseMotionScreen", &InputMapping::GetMouseMotionScreen,
-			"KeyCode", &InputMapping::GetKeyCode,
-			"InputActionName", &InputMapping::GetActionName
+			"KeyCode", &InputMapping::GetKeyCode
+			//"InputActionName", &InputMapping::GetActionName
 		);
 
-		F_Lua.new_usertype<MappingContext>("MappingContext",
-			"Fired", &MappingContext::Fired,
+		F_Lua.new_usertype<MappingContext>("MappingContext",			
 			"ActionPressed", &MappingContext::ActionPressed,
 			"GetName", &MappingContext::GetName,
 			"GetInputMappings", &MappingContext::GetInputMappingsLua,

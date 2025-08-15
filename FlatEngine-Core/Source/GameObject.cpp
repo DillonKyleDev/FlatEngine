@@ -914,6 +914,11 @@ namespace FlatEngine
 		return false;
 	}
 
+	bool GameObject::HasComponentLua(std::string componentString)
+	{
+		return HasComponent(componentString);
+	}
+
 	Transform* GameObject::GetTransform()
 	{
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)

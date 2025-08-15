@@ -983,14 +983,7 @@ namespace FlatEngine
 		// Opening file in append mode
 		fileObject.open(path, std::ios::app);
 
-
-		json mappings = json::array();
-		std::string data = context.GetData();
-		mappings.push_back(json::parse(data));
-
-
-		json newFileObject = json::object({ {"Mapping Context", mappings } });
-		fileObject << newFileObject.dump(4).c_str() << std::endl;
+		fileObject << context.GetData().c_str() << std::endl;
 		fileObject.close();
 
 		InitializeMappingContexts();
@@ -1003,8 +996,7 @@ namespace FlatEngine
 		json contextData = LoadFileData(path);
 		if (contextData != nullptr)
 		{
-			auto mappings = contextData["Mapping Context"][0];
-			newContext.SetName(CheckJsonString(mappings, "name", "MappingContext"));
+			newContext.SetName(CheckJsonString(contextData, "name", "MappingContext"));
 			newContext.SetPath(path);
 
 			if (newContext.GetName() == "")
@@ -1012,13 +1004,34 @@ namespace FlatEngine
 				newContext.SetName(GetFilenameFromPath(path));
 			}
 
+			auto mappings = contextData["mappings"];
 			std::string errorMessage = "";
 			for (std::string possibleBinding : F_KeyBindingsAvailable)
 			{
-				std::string inputAction = CheckJsonString(mappings, possibleBinding, newContext.GetName(), errorMessage);
-				if (inputAction != "")
+				auto pressActions = mappings[possibleBinding];
+
+				if (pressActions != nullptr)
 				{
-					newContext.AddKeyBinding(possibleBinding, inputAction);
+					std::string downAction = CheckJsonString(pressActions, "downAction", newContext.GetName());
+					if (downAction != "")
+					{
+						newContext.AddKeyBinding(possibleBinding, downAction, PressType::PT_Down);
+					}
+					std::string upAction = CheckJsonString(pressActions, "upAction", newContext.GetName());
+					if (upAction != "")
+					{
+						newContext.AddKeyBinding(possibleBinding, upAction, PressType::PT_Up);
+					}
+					std::string holdAction = CheckJsonString(pressActions, "holdAction", newContext.GetName());
+					if (holdAction != "")
+					{
+						newContext.AddKeyBinding(possibleBinding, holdAction, PressType::PT_Hold);
+					}
+					std::string doubleAction = CheckJsonString(pressActions, "doubleAction", newContext.GetName());
+					if (doubleAction != "")
+					{
+						newContext.AddKeyBinding(possibleBinding, doubleAction, PressType::PT_Double);
+					}
 				}
 			}
 
@@ -1080,6 +1093,9 @@ namespace FlatEngine
 	{
 		// Unfire all keybinds that were fired in the last frame then clear the saved keys
 		static std::vector<std::string> firedKeys = std::vector<std::string>();
+		static std::vector<std::string> firedLastFrameKeys = std::vector<std::string>();
+		firedLastFrameKeys = firedKeys;
+
 		for (std::string keybind : firedKeys)
 		{
 			for (MappingContext& context : F_MappingContexts)
@@ -1207,7 +1223,8 @@ namespace FlatEngine
 			if (F_MappedMouseCodes.count(Mouse_motion))
 			{								
 				std::string key = F_MappedMouseCodes.at(Mouse_motion);
-				if (context.FireEvent(key, event))
+
+				if (context.FireEvent(key, event, PressType::PT_Down))
 				{
 					firedKeys.push_back(key);
 				}
@@ -1218,7 +1235,8 @@ namespace FlatEngine
 			if (F_MappedMouseCodes.count(event.button.button))
 			{
 				std::string key = F_MappedMouseCodes.at(event.button.button);
-				if (context.FireEvent(key, event))
+
+				if (context.FireEvent(key, event, PressType::PT_Down))
 				{
 					firedKeys.push_back(key);
 				}
@@ -1226,12 +1244,13 @@ namespace FlatEngine
 		}
 		if (event.type == SDL_MOUSEBUTTONUP)
 		{
-			if (F_MappedMouseCodes.count(event.key.keysym.sym))
+			if (F_MappedMouseCodes.count(event.button.button))
 			{
 				std::string key = F_MappedMouseCodes.at(event.button.button);
-				if (context.FireEvent(key, event))
+
+				if (context.FireEvent(key, event, PressType::PT_Up))
 				{
-					context.ClearInputActionEvent(key);
+					firedKeys.push_back(key);
 				}
 			}
 		}
@@ -1241,7 +1260,8 @@ namespace FlatEngine
 			if (F_MappedKeyboardCodes.count(event.key.keysym.sym))
 			{
 				std::string key = F_MappedKeyboardCodes.at(event.key.keysym.sym);
-				if (context.FireEvent(key, event))
+
+				if (context.FireEvent(key, event, PressType::PT_Down))
 				{
 					firedKeys.push_back(key);
 				}
@@ -1254,7 +1274,11 @@ namespace FlatEngine
 			if (F_MappedKeyboardCodes.count(event.key.keysym.sym))
 			{
 				std::string key = F_MappedKeyboardCodes.at(event.key.keysym.sym);
-				context.ClearInputActionEvent(key);
+
+				if (context.FireEvent(key, event, PressType::PT_Up))
+				{
+					firedKeys.push_back(key);
+				}
 			}
 		}
 		// Axis (analog inputs)
@@ -1265,12 +1289,14 @@ namespace FlatEngine
 			//{			
 			if (F_MappedXInputAnalogCodes.count(event.jaxis.axis))
 			{
-				std::string key = F_MappedXInputAnalogCodes.at(event.jaxis.axis);			
+				std::string key = F_MappedXInputAnalogCodes.at(event.jaxis.axis);	
+
 				if (event.jaxis.value > -F_JOYSTICK_DEAD_ZONE && event.jaxis.value < F_JOYSTICK_DEAD_ZONE)
 				{
 					event.jaxis.value = 0;
 				}					
-				context.FireEvent(key, event);
+
+				context.FireEvent(key, event, PressType::PT_Down);
 			}
 		}
 		// Buttons Down
@@ -1279,7 +1305,8 @@ namespace FlatEngine
 			if (F_MappedXInputButtonCodes.count(event.jbutton.button))
 			{
 				std::string key = F_MappedXInputButtonCodes.at(event.jbutton.button);
-				if (context.FireEvent(key, event))
+
+				if (context.FireEvent(key, event, PressType::PT_Down))
 				{					
 					firedKeys.push_back(key);
 				}
@@ -1291,7 +1318,11 @@ namespace FlatEngine
 			if (F_MappedXInputButtonCodes.count(event.jbutton.button))
 			{
 				std::string key = F_MappedXInputButtonCodes.at(event.jbutton.button);
-				context.ClearInputActionEvent(key);
+
+				if (context.FireEvent(key, event, PressType::PT_Up))
+				{
+					firedKeys.push_back(key);
+				}
 			}
 		}
 		// Hats
@@ -1301,6 +1332,8 @@ namespace FlatEngine
 			{
 				std::string key = F_MappedXInputDPadCodes.at(event.jhat.value);
 				LogString(key);
+
+				// TODO
 			}
 		}
 	}
@@ -1993,6 +2026,7 @@ namespace FlatEngine
 		F_Logger.DrawLine(startingPoint, endingPoint, color, thickness, drawList);
 	}
 
+	// Start and End are in world coordinates
 	void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness)
 	{
 		Vector2 start = ConvertWorldToScreen(startingPoint);

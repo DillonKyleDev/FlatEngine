@@ -1,8 +1,11 @@
 {
-    "Mapping Context": [
-        {
-            "Mouse: Left Click": "IA_BeginHit",
-            "name": "MC_Player"
+    "mappings": {
+        "Mouse: Left Click": {
+            "doubleAction": "",
+            "downAction": "IA_StartShot",
+            "holdAction": "IA_Aiming",
+            "upAction": "IA_ReleaseShot"
         }
-    ]
+    },
+    "name": "MC_Player"
 }

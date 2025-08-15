@@ -1,0 +1,61 @@
+{
+    "animation": {
+        "_loop": false,
+        "animationProperties": {
+            "audio": [],
+            "camera": [],
+            "canvas": [],
+            "characterController": [],
+            "event": [
+                {
+                    "_cppEvent": false,
+                    "_luaEvent": true,
+                    "functionName": "DestroySelf",
+                    "parameters": {
+                        "bool": false,
+                        "double": 0.0,
+                        "float": 0.0,
+                        "int": 0,
+                        "long": 0,
+                        "string": "",
+                        "vector2X": 0.0,
+                        "vector2Y": 0.0
+                    },
+                    "time": 47.79497528076172
+                }
+            ],
+            "sprite": [],
+            "text": [],
+            "transform": [
+                {
+                    "_posAnimated": false,
+                    "_scaleAnimated": true,
+                    "scaleInterpType": 0,
+                    "scaleSpeed": 0.10000000149011612,
+                    "time": 2.7272963523864746,
+                    "transformInterpType": 0,
+                    "transformSpeed": 0.10000000149011612,
+                    "xPos": 0.0,
+                    "xScale": 1.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_posAnimated": false,
+                    "_scaleAnimated": true,
+                    "scaleInterpType": 0,
+                    "scaleSpeed": 0.10000000149011612,
+                    "time": 53.04347229003906,
+                    "transformInterpType": 0,
+                    "transformSpeed": 0.10000000149011612,
+                    "xPos": 0.0,
+                    "xScale": 0.0010000000474974513,
+                    "yPos": 0.0,
+                    "yScale": 0.0010000000474974513
+                }
+            ]
+        },
+        "length": 0.0,
+        "name": "Disappear"
+    }
+}

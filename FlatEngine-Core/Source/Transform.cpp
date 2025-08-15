@@ -12,12 +12,12 @@ namespace FlatEngine
 		SetType(T_Transform);
 		SetID(myID);
 		SetParentID(parentID);
-		m_origin = Vector2(0, 0);
+		m_positionOrigin = Vector2(0, 0);
 		m_position = Vector2(0, 0);
 		m_baseScale = Vector2(1, 1);
-		m_scale = Vector2(1, 1);
-		m_baseRotation = 0;
+		m_scale = Vector2(1, 1);		
 		m_rotation = 0;
+		m_rotationOrigin = 0;
 	}
 
 	Transform::~Transform()
@@ -31,8 +31,8 @@ namespace FlatEngine
 			{ "id", GetID() },
 			{ "_isCollapsed", IsCollapsed() },
 			{ "_isActive", IsActive() },
-			{ "xOrigin", m_origin.x },
-			{ "yOrigin", m_origin.y },
+			{ "xOrigin", m_positionOrigin.x },
+			{ "yOrigin", m_positionOrigin.y },
 			{ "xPos", m_position.x },
 			{ "yPos", m_position.y },
 			{ "rotation", m_rotation },
@@ -66,7 +66,7 @@ namespace FlatEngine
 
 	void Transform::SetOrigin(Vector2 newOrigin)
 	{
-		m_origin = Vector2(newOrigin.x * m_baseScale.x, newOrigin.y * m_baseScale.y);
+		m_positionOrigin = Vector2(newOrigin.x * m_baseScale.x, newOrigin.y * m_baseScale.y);
 
 		if (GetParent() != nullptr && GetParent()->HasComponent("Button"))
 		{
@@ -76,7 +76,7 @@ namespace FlatEngine
 
 	Vector2 Transform::GetOrigin()
 	{
-		return m_origin;
+		return m_positionOrigin;
 	}
 
 	Vector2 Transform::GetTruePosition()
@@ -85,11 +85,10 @@ namespace FlatEngine
 
 		if (body != nullptr)
 		{
-			m_position = body->GetPosition();
-			m_rotation = body->GetRotation();
+			m_position = body->GetPosition();			
 		}
 
-		return Vector2(m_origin.x + m_position.x, m_origin.y + m_position.y);
+		return m_positionOrigin + m_position;
 	}
 
 	void Transform::SetPosition(Vector2 newPosition)
@@ -117,7 +116,7 @@ namespace FlatEngine
 
 	void Transform::UpdateOrigin(Vector2 newOrigin)
 	{
-		m_origin = Vector2(newOrigin.x * m_baseScale.x, newOrigin.y * m_baseScale.y);
+		m_positionOrigin = Vector2(newOrigin.x * m_baseScale.x, newOrigin.y * m_baseScale.y);
 		UpdateChildOrigins(GetTruePosition());
 	}
 
@@ -193,8 +192,7 @@ namespace FlatEngine
 
 		if (body != nullptr)
 		{
-			m_position = body->GetPosition();
-			m_rotation = body->GetRotation();
+			m_position = body->GetPosition();			
 		}
 
 		return m_position;
@@ -207,7 +205,33 @@ namespace FlatEngine
 
 	float Transform::GetRotation()
 	{
+		Body* body = GetParent()->GetBody();
+
+		if (body != nullptr)
+		{
+			m_rotation = body->GetRotation();
+		}
+
 		return m_rotation;
+	}
+
+	float Transform::GetTrueRotation()
+	{
+		Body* body = GetParent()->GetBody();
+
+		if (body != nullptr)
+		{			
+			m_rotation = body->GetRotation();
+		}
+
+		float parentTrueRotation = 0;
+
+		if (GetParent() != nullptr)
+		{
+			parentTrueRotation = GetParent()->GetTransform()->GetTrueRotation();
+		}
+
+		return m_rotation + parentTrueRotation;
 	}
 
 	void Transform::LookAt(Vector2 lookAt)

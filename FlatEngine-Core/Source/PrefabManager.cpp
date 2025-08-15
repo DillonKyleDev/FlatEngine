@@ -189,6 +189,10 @@ namespace FlatEngine
 				std::shared_ptr<ButtonPrefabData> button = std::make_shared<ButtonPrefabData>();
 				button->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				button->type = "Button";
+				button->ownerId = object.ID;
+				button->id = componentID;
+				button->b_isActive = b_isActive;
+				button->b_isCollapsed = b_isCollapsed;
 				button->activeDimensions = Vector2(CheckJsonFloat(componentJson, "activeWidth", objectName), CheckJsonFloat(componentJson, "activeHeight", objectName));
 				button->activeOffset = Vector2(CheckJsonFloat(componentJson, "activeOffsetX", objectName), CheckJsonFloat(componentJson, "activeOffsetY", objectName));
 				button->activeLayer = CheckJsonInt(componentJson, "activeLayer", objectName);
@@ -203,6 +207,10 @@ namespace FlatEngine
 				std::shared_ptr<CanvasPrefabData> canvas = std::make_shared<CanvasPrefabData>();
 				canvas->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				canvas->type = "Canvas";
+				canvas->ownerId = object.ID;
+				canvas->id = componentID;
+				canvas->b_isActive = b_isActive;
+				canvas->b_isCollapsed = b_isCollapsed;
 				canvas->width = CheckJsonFloat(componentJson, "width", objectName);
 				canvas->height = CheckJsonFloat(componentJson, "height", objectName);
 				canvas->layerNumber = CheckJsonInt(componentJson, "layerNumber", objectName);
@@ -215,6 +223,10 @@ namespace FlatEngine
 				std::shared_ptr<AnimationPrefabData> animation = std::make_shared<AnimationPrefabData>();
 				animation->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				animation->type = "Animation";
+				animation->ownerId = object.ID;
+				animation->id = componentID;
+				animation->b_isActive = b_isActive;
+				animation->b_isCollapsed = b_isCollapsed;
 
 				if (JsonContains(componentJson, "animationData", objectName))
 				{
@@ -239,6 +251,11 @@ namespace FlatEngine
 				std::shared_ptr<AudioPrefabData> audio = std::make_shared<AudioPrefabData>();
 				audio->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				audio->type = "Audio";
+				audio->ownerId = object.ID;
+				audio->id = componentID;
+				audio->b_isActive = b_isActive;
+				audio->b_isCollapsed = b_isCollapsed;
+
 				if (JsonContains(componentJson, "soundData", objectName))
 				{
 					for (int sound = 0; sound < componentJson["soundData"].size(); sound++)
@@ -277,6 +294,10 @@ namespace FlatEngine
 				std::shared_ptr<TextPrefabData> text = std::make_shared<TextPrefabData>();
 				text->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				text->type = "Text";
+				text->ownerId = object.ID;
+				text->id = componentID;
+				text->b_isActive = b_isActive;
+				text->b_isCollapsed = b_isCollapsed;
 				text->fontPath = CheckJsonString(componentJson, "fontPath", objectName);
 				text->fontSize = CheckJsonInt(componentJson, "fontSize", objectName);
 				text->color = Vector4(
@@ -296,6 +317,10 @@ namespace FlatEngine
 				std::shared_ptr<CharacterControllerPrefabData> characterController = std::make_shared<CharacterControllerPrefabData>();
 				characterController->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);
 				characterController->type = "CharacterController";
+				characterController->ownerId = object.ID;
+				characterController->id = componentID;
+				characterController->b_isActive = b_isActive;
+				characterController->b_isCollapsed = b_isCollapsed;
 				characterController->maxSpeed = CheckJsonFloat(componentJson, "maxSpeed", objectName);
 				characterController->maxAcceleration = CheckJsonFloat(componentJson, "maxAcceleration", objectName);
 				characterController->airControl = CheckJsonFloat(componentJson, "airControl", objectName);
@@ -308,6 +333,10 @@ namespace FlatEngine
 				std::shared_ptr<BodyPrefabData> body = std::make_shared<BodyPrefabData>();
 				body->b_isActive = CheckJsonBool(componentJson, "_isActive", objectName);				
 				body->type = "Body";
+				body->ownerId = object.ID;
+				body->id = componentID;
+				body->b_isActive = b_isActive;
+				body->b_isCollapsed = b_isCollapsed;
 				body->bodyType = (b2BodyType)CheckJsonInt(componentJson, "bodyType", objectName);
 				body->b_lockedRotation = CheckJsonBool(componentJson, "_lockedRotation", objectName);
 				body->b_lockedXAxis = CheckJsonBool(componentJson, "_lockedXAxis", objectName);
@@ -328,10 +357,10 @@ namespace FlatEngine
 							shape->b_enableContactEvents = CheckJsonBool(shapeJson, "_enableContactEvents", objectName);;
 							shape->b_enableSensorEvents = CheckJsonBool(shapeJson, "_enableSensorEvents", objectName);;
 							shape->b_isSensor = CheckJsonBool(shapeJson, "_isSensor", objectName);;
-							shape->shape = (Shape::ShapeType)CheckJsonInt(componentJson, "shape", objectName);
+							shape->shape = (Shape::ShapeType)CheckJsonInt(shapeJson, "shape", objectName);
 							shape->positionOffset = Vector2(CheckJsonFloat(shapeJson, "xOffset", objectName) , CheckJsonFloat(shapeJson, "yOffset", objectName));
-							shape->rotationOffset.c = CheckJsonFloat(componentJson, "rotationOffsetCos", objectName);
-							shape->rotationOffset.s = CheckJsonFloat(componentJson, "rotationOffsetSin", objectName);
+							shape->rotationOffset.c = CheckJsonFloat(shapeJson, "rotationOffsetCos", objectName);
+							shape->rotationOffset.s = CheckJsonFloat(shapeJson, "rotationOffsetSin", objectName);
 							shape->restitution = CheckJsonFloat(shapeJson, "restitution", objectName);
 							shape->density = CheckJsonFloat(shapeJson, "density", objectName);
 							shape->friction = CheckJsonFloat(shapeJson, "friction", objectName);
@@ -357,9 +386,11 @@ namespace FlatEngine
 								}
 							}						
 
-							shape->b_isLoop = CheckJsonBool(componentJson, "_lockedRotation", objectName);;
-							shape->tangentSpeed = CheckJsonFloat(componentJson, "linearDamping", objectName);;
-							shape->rollingResistance = CheckJsonFloat(componentJson, "linearDamping", objectName);;
+							shape->b_isLoop = CheckJsonBool(componentJson, "_lockedRotation", objectName);
+							shape->tangentSpeed = CheckJsonFloat(componentJson, "linearDamping", objectName);
+							shape->rollingResistance = CheckJsonFloat(componentJson, "linearDamping", objectName);
+							
+							body->shapes.push_back(shape);
 						}
 						catch (const json::out_of_range& e)
 						{
@@ -373,6 +404,10 @@ namespace FlatEngine
 			{
 				std::shared_ptr<TileMapPrefabData> tileMap = std::make_shared<TileMapPrefabData>();
 				tileMap->type = "TileMap";
+				tileMap->ownerId = object.ID;
+				tileMap->id = componentID;
+				tileMap->b_isActive = b_isActive;
+				tileMap->b_isCollapsed = b_isCollapsed;
 				tileMap->width = CheckJsonInt(componentJson, "width", objectName);
 				tileMap->height = CheckJsonInt(componentJson, "height", objectName);
 				tileMap->tileWidth = CheckJsonInt(componentJson, "tileWidth", objectName);
@@ -446,34 +481,6 @@ namespace FlatEngine
 
 					tileMap->tiles = tiles;
 				}
-				// Get Collision Area data
-				if (JsonContains(componentJson, "collisionAreas", objectName))
-				{
-					std::map<std::string, std::vector<std::pair<Vector2, Vector2>>> collisionAreasDataMap;
-
-					for (int collisionArea = 0; collisionArea < componentJson["collisionAreas"].size(); collisionArea++)
-					{
-						json colliderAreaJson = componentJson["collisionAreas"][collisionArea];
-						json colliderDataJson = colliderAreaJson["areaData"];
-						std::string collisionAreaName = CheckJsonString(colliderAreaJson, "name", objectName);
-						std::vector<std::pair<Vector2, Vector2>> collisionCoordBuffer;
-
-						for (int colArea = 0; colArea < colliderDataJson.size(); colArea++)
-						{
-							Vector2 startCoord = Vector2(CheckJsonFloat(colliderDataJson[colArea], "startCoordX", objectName), CheckJsonFloat(colliderDataJson[colArea], "startCoordY", objectName));
-							Vector2 endCoord = Vector2(CheckJsonFloat(colliderDataJson[colArea], "endCoordX", objectName), CheckJsonFloat(colliderDataJson[colArea], "endCoordY", objectName));
-							std::pair<Vector2, Vector2> colPair = { startCoord, endCoord };
-							collisionCoordBuffer.push_back(colPair);
-						}
-
-						if (collisionCoordBuffer.size() > 0)
-						{
-							collisionAreasDataMap.emplace(collisionAreaName, collisionCoordBuffer);
-						}
-					}
-
-					tileMap->collisionAreas = collisionAreasDataMap;
-				}
 
 				prefab.components.emplace(componentID, tileMap);
 			}
@@ -504,6 +511,7 @@ namespace FlatEngine
 		gameObject.SetName(prefabName);
 		gameObject.SetIsPrefab(false);
 		gameObject.SetPrefabName("");
+		gameObject.SetParentID(-1);
 		gameObject.SetPrefabSpawnLocation(Vector2(0, 0));
 
 		prefabObjectJsonArray.push_back(CreateJsonFromObject(gameObject));
@@ -849,6 +857,7 @@ namespace FlatEngine
 			GameObjectPrefabData root = prefab.rootObject;
 
 			rootObject = InstantiateSelfAndChildren(-1, root.ID, prefab, scene, spawnLocation);
+			rootObject->SetParentID(parentID);
 		}
 
 		return rootObject;

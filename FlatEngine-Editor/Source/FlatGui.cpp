@@ -716,22 +716,31 @@ namespace FlatGui
 		{
 			long focusedObjectID = GetFocusedGameObjectID();
 			Vector2 position = transform->GetTruePosition();
-			float rotation = transform->GetRotation();
-			Vector2 relativePosition = transform->GetPosition();
+			float rotation = transform->GetRotation();			
 			Vector2 origin = transform->GetOrigin();
 			Vector2 transformScale = transform->GetScale();		
 			Vector2 scale = transform->GetScale();			
-			
-			FL::RenderInvisibleButton("##TransformSelect_" + std::to_string(transform->GetID()), FL::ConvertWorldToScreen(position) - Vector2(5, 5), Vector2(10, 10), false, true);
-			const bool b_isItemClicked = ImGui::IsItemClicked();
-			const bool b_isItemHovered = ImGui::IsItemHovered();
-			if (b_isItemClicked || b_isItemHovered)
+					
+			if (self.GetID() != focusedObjectID)
 			{
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			}
-			if (b_isItemClicked)
-			{
-				SetFocusedGameObjectID(transform->GetParentID());
+				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers);
+
+				float selectObjectWidth = (float)FL::GetTextureObject("selectGameObject")->GetWidth();
+				float selectObjectHeight = (float)FL::GetTextureObject("selectGameObject")->GetHeight();
+				Vector2 selectObjectOffset = Vector2(selectObjectWidth / 2, selectObjectHeight / 2);
+
+				FL::AddImageToDrawList(FL::GetTexture("selectGameObject"), position, *FL::F_sceneViewCenter, selectObjectWidth, selectObjectHeight, selectObjectOffset, Vector2(1), false, FL::F_sceneViewGridStep->x, drawList);
+				FL::RenderInvisibleButton("##TransformSelect_" + std::to_string(transform->GetID()), FL::ConvertWorldToScreen(position) - selectObjectOffset, Vector2(selectObjectWidth, selectObjectHeight), false);
+				const bool b_isItemClicked = ImGui::IsItemClicked();
+				const bool b_isItemHovered = ImGui::IsItemHovered();
+				if (b_isItemClicked || b_isItemHovered)
+				{
+					ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+				}
+				if (b_isItemClicked)
+				{
+					SetFocusedGameObjectID(transform->GetParentID());
+				}
 			}
 
 			if (sprite != nullptr && sprite->GetTexture() != nullptr && sprite->IsActive())

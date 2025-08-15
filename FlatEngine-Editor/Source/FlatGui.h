@@ -3,6 +3,7 @@
 #include "Vector4.h"
 #include "Animation.h"
 #include "Texture.h"
+#include "MappingContext.h"
 
 #include <sstream>
 #include <memory>
@@ -186,6 +187,7 @@ namespace FlatGui
 	extern void RenderKeyFrameEditor();
 	extern void RenderLog();
 	extern void RenderProfiler();
+	extern void RenderInputAction(FL::MappingContext* context, FL::ActionMapping& actionMapping, float width);
 	extern void RenderMappingContextEditor();
 	extern void RenderSettings();
 	extern void Cleanup();

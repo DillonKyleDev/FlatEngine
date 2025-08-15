@@ -1680,7 +1680,7 @@ namespace FlatGui
 			{
 				shape->SetRestitution(restitution);
 			}
-			if (shapeType != Shape::ShapeType::BS_Polygon && shapeType != Shape::ShapeType::BS_Chain)
+			if (shapeType != Shape::ShapeType::BS_Polygon && shapeType != Shape::ShapeType::BS_Chain && shapeType != Shape::ShapeType::BS_Circle)
 			{
 				Vector2 positionOffset = shapeProps.positionOffset;
 				float rotationOffset = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));				

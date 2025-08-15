@@ -90,6 +90,7 @@ namespace FlatEngine
 		Component* GetComponent(ComponentTypes type);
 		bool HasComponent(ComponentTypes type);
 		bool HasComponent(std::string type);
+		bool HasComponentLua(std::string);
 		Transform* GetTransform();
 		Sprite* GetSprite();
 		Camera* GetCamera();

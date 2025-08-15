@@ -36,15 +36,16 @@ namespace FlatEngine
 		Vector2 GetPosition();
 		Vector2 GetScale();
 		float GetRotation();
+		float GetTrueRotation();
 		void LookAt(Vector2 lookAt);
 		void Move(Vector2 moveBy);
 
 	private:
-		Vector2 m_origin;
+		Vector2 m_positionOrigin;
 		Vector2 m_position;
+		float m_rotationOrigin;
 		Vector2 m_baseScale;
-		Vector2 m_scale;
-		float m_baseRotation;
+		Vector2 m_scale;		
 		float m_rotation;
 	};
 }

@@ -6,8 +6,8 @@
 function Awake() 
      GameManager[my_id] =
      {
-		mappingContext = GetMappingContext("MC_Player")
-          clickPos;
+		mappingContext = GetMappingContext("MC_Player"),
+
      }
      local data = GetInstanceData("GameManager", my_id)
 end
@@ -20,8 +20,10 @@ end
 function Update()
      local data = GetInstanceData("GameManager", my_id)
 
-     if data.mappingContext:ActionFired("IA_BeginHit") then
+     if data.mappingContext:Fired("IA_BeginHit") then
           LogString("Hit began.")
+          clickPos = GetMousePosWorld()
+
      end
 end
 
@@ -47,25 +49,4 @@ function OnButtonLeftClick()
 end
 
 function OnButtonRightClick()
-end
-
-
---Lua cheatsheet
-
---Lua if statements:
---if (test) then
---elseif
-
---end
-
---Lua for loops:
---for init, min/max value, increment
-do
-
-end
---example:
-for i = 0, 10, 1
-do
-
-LogInt(i)
 end

@@ -10,6 +10,24 @@
 
 namespace FlatEngine 
 {
+	enum PressType {
+		PT_None,
+		PT_Down,
+		PT_Up,
+		PT_Hold,
+		PT_Double,
+		PT_Size
+	};	
+
+	const std::vector<std::string> F_PressTypeStrings =
+	{
+		"None",
+		"Down",
+		"Up",
+		"Hold",
+		"Double",
+	};
+
 	enum FMouseKeys {
 		Mouse_leftClick = SDL_BUTTON_LEFT,
 		Mouse_middleClick = SDL_BUTTON_MIDDLE,
@@ -273,15 +291,36 @@ namespace FlatEngine
 		{ RT, "XInput: Right Trigger" }
 	};
 
-	struct InputMapping {
-		SDL_Event event = SDL_Event();
+	struct ActionMapping {
 		std::string keyCode = "";
+		PressType pressType = PT_None;
+		SDL_Event event = SDL_Event();
 		std::string actionName = "";
 		bool b_fired = false;
-		Vector2 GetMouseMotionWorld();
-		Vector2 GetMouseMotionScreen();
+	};
+
+	struct PressTypeActions {
+		PressTypeActions()
+		{
+			downAction.pressType = PT_Down;
+			upAction.pressType = PT_Up;
+			holdAction.pressType = PT_Hold;
+			doubleAction.pressType = PT_Double;
+		};
+		ActionMapping downAction = ActionMapping();
+		ActionMapping upAction = ActionMapping();
+		ActionMapping holdAction = ActionMapping();
+		ActionMapping doubleAction = ActionMapping();
+	};
+
+	struct InputMapping {
+		std::string keyCode = "";
+		PressTypeActions pressActions = PressTypeActions();
 		std::string GetKeyCode() { return keyCode; };
-		std::string GetActionName() { return actionName; };
+		std::string GetDownActionName() { return pressActions.downAction.actionName; };
+		std::string GetUpActionName() { return pressActions.upAction.actionName; };
+		std::string GetHoldActionName() { return pressActions.holdAction.actionName; };
+		std::string GetDoublectionName() { return pressActions.doubleAction.actionName; };
 	};
 
 	class MappingContext
@@ -295,12 +334,10 @@ namespace FlatEngine
 		std::string GetName();
 		void SetPath(std::string path);
 		std::string GetPath();
-		void AddKeyBinding(std::string keyBinding, std::string actionName);		
-		bool FireEvent(std::string actionName, SDL_Event event);
-		void UnFireEvent(std::string actionName);
-		bool Fired(std::string actionName);
-		void ClearInputActionEvent(std::string keyBinding);
-		SDL_Event GetInputAction(std::string actionName);
+		void AddKeyBinding(std::string keyBinding, std::string actionName, PressType pressType);
+		bool FireEvent(std::string actionName, SDL_Event event, PressType pressType);
+		void UnFireEvent(std::string actionName);		
+		SDL_Event GetInputActionEvent(std::string actionName);
 		bool ActionPressed(std::string actionName);		
 		std::map<std::string, std::shared_ptr<InputMapping>> GetInputActions();
 		std::vector<std::shared_ptr<InputMapping>> GetInputMappingsLua();
@@ -313,13 +350,14 @@ namespace FlatEngine
 		bool RemapTimedOut(Uint32 currentTime);
 		void SetRemapTimeoutTime(Uint32 timeoutTime);
 		Uint32 GetRemapTimeoutTime();
+		bool InputActionNameTaken(std::string actionName, std::string keyCode);
 
 	private:
 		std::string m_name;
 		std::string m_path;
 		std::map<std::string, std::shared_ptr<InputMapping>> m_inputsByBinding;
 		// Eventually: map<string, vector<shared_ptr<InputMapping>> so that the same action can be bound to more than one input, ie. Controller/Keyboard can both be used for the same actions
-		std::map<std::string, std::shared_ptr<InputMapping>> m_inputsByAction;
+		std::map<std::string, std::string> m_bindingsByInput;
 		Uint32 m_remapTimeoutTime;
 		Uint32 m_remapStartTime;
 		std::string m_actionToRemap;

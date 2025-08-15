@@ -1,46 +1,44 @@
--- Pocket.scp.lua
+-- Ball.scp.lua
 -- use "this_object" to reference the object that owns this script and "my_id" to access it's id
 
 
 function Awake() 
-     Pocket[my_id] =
+     Ball[my_id] =
      {
 		-- Key value pairs here
      }
-     local data = GetInstanceData("Pocket", my_id)
+     local data = GetInstanceData("Ball", my_id)
 end
 
 function Start()
      -- required to access instance data
-     local data = GetInstanceData("Pocket", my_id)
+     local data = GetInstanceData("Ball", my_id)
 end
 
 function Update()
-     local data = GetInstanceData("Pocket", my_id)
+     local data = GetInstanceData("Ball", my_id)
+end
+
+function DestroySelf()
+     LogInt(my_id);
+     Destroy(my_id);
 end
 
 -- each of these functions must be present in each Lua script file otherwise other script's implementations will be used with this object instead
 function OnBeginCollision(collidedWith, manifold)
-   
+     local data = GetInstanceData("Ball", my_id)
 end
 
 function OnEndCollision(collidedWith, manifold)
-     local data = GetInstanceData("Pocket", my_id)
+     local data = GetInstanceData("Ball", my_id)
 end
 
 function OnBeginSensorTouch(touched)
-     local data = GetInstanceData("Pocket", my_id)
-     local touchedParent = touched:GetParent()    
-
-     if (touchedParent:HasComponent("Body")) then
-          -- if (touchedParent:GetName() == "WhiteBall") then
-          --      ResetWhiteBall()
-          -- end                    
-          touchedParent:GetAnimation():Play("Disappear")
-     end
+     local data = GetInstanceData("Ball", my_id)
 end
 
-function OnEndSensorTouch(touched)      
+function OnEndSensorTouch(touched)
+     local data = GetInstanceData("Ball", my_id)
 end
 
 function OnButtonMouseOver()

@@ -40,6 +40,7 @@ F_Textures = {
 	transformArrowAllWhite = "..\\engine\\images\\widgets\\transformArrowAllWhite.png",
 	transformArrowXWhite = "..\\engine\\images\\widgets\\transformArrowXWhite.png",
 	transformArrowYWhite = "..\\engine\\images\\widgets\\transformArrowYWhite.png",
+	selectGameObject = "..\\engine\\images\\widgets\\selectGameObject.png",
 	joint = "..\\engine\\images\\widgets\\joint.png",
 	jointHovered = "..\\engine\\images\\widgets\\jointHovered.png",
 	addJoint = "..\\engine\\images\\widgets\\addJoint.png",

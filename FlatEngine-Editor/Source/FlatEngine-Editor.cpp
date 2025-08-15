@@ -223,6 +223,12 @@ public:
 	}
 	void BeginRender()
 	{
+		if (m_b_recreateWindow)
+		{
+			FL::F_Window->ResizeWindow(1500, 850);
+			m_b_recreateWindow = false;
+		}
+
 		Application::BeginRender();
 
 
@@ -253,9 +259,7 @@ public:
 		// If window was recreated this frame ( for after selecting a project )
 		if (m_b_recreateWindow)
 		{
-			m_b_recreateWindow = false;
 			FlatGui::LoadProject(m_startupProject);
-			FL::F_Window->ResizeWindow(1500, 850);
 		}
 	}
 	void Quit()

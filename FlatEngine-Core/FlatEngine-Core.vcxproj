@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -121,7 +121,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\FlatSpace\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;..\projects\ClosedLoop\scripts\cpp;..\projects\Pool\scripts\cpp;..\Vendor\includes\Box2D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -280,15 +280,13 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\variadic_results.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
-    <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h" />
-    <ClInclude Include="Source\Circle.h" />
-    <ClInclude Include="Source\Box.h" />
-    <ClInclude Include="Source\Shape.h" />
+    <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetManager.h" />
     <ClInclude Include="Source\Audio.h" />
     <ClInclude Include="Source\Body.h" />
+    <ClInclude Include="Source\Box.h" />
     <ClInclude Include="Source\Button.h" />
     <ClInclude Include="Source\CPPScript.h" />
     <ClInclude Include="Source\CPPScriptHeaders.h" />
@@ -298,25 +296,32 @@
     <ClInclude Include="Source\Capsule.h" />
     <ClInclude Include="Source\Chain.h" />
     <ClInclude Include="Source\CharacterController.h" />
+    <ClInclude Include="Source\Circle.h" />
     <ClInclude Include="Source\Component.h" />
+    <ClInclude Include="Source\DistanceJoint.h" />
     <ClInclude Include="Source\ECSManager.h" />
     <ClInclude Include="Source\EntryPoint.h" />
     <ClInclude Include="Source\FlatEngine.h" />
     <ClInclude Include="Source\GameLoop.h" />
     <ClInclude Include="Source\GameObject.h" />
+    <ClInclude Include="Source\Joint.h" />
     <ClInclude Include="Source\Line.h" />
     <ClInclude Include="Source\Logger.h" />
     <ClInclude Include="Source\MappingContext.h" />
     <ClInclude Include="Source\Matrix.h" />
+    <ClInclude Include="Source\MotorJoint.h" />
+    <ClInclude Include="Source\MouseJoint.h" />
     <ClInclude Include="Source\Physics.h" />
     <ClInclude Include="Source\Polygon.h" />
     <ClInclude Include="Source\PrefabManager.h" />
+    <ClInclude Include="Source\PrismaticJoint.h" />
     <ClInclude Include="Source\ProfilerProcess.h" />
     <ClInclude Include="Source\Project.h" />
-    <ClInclude Include="Source\RayCast.h" />
+    <ClInclude Include="Source\RevoluteJoint.h" />
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\Script.h" />
+    <ClInclude Include="Source\Shape.h" />
     <ClInclude Include="Source\Sound.h" />
     <ClInclude Include="Source\Sprite.h" />
     <ClInclude Include="Source\TagList.h" />
@@ -327,6 +332,8 @@
     <ClInclude Include="Source\Transform.h" />
     <ClInclude Include="Source\Vector2.h" />
     <ClInclude Include="Source\Vector4.h" />
+    <ClInclude Include="Source\WeldJoint.h" />
+    <ClInclude Include="Source\WheelJoint.h" />
     <ClInclude Include="Source\WindowManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -342,15 +349,13 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
-    <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp" />
-    <ClCompile Include="Source\Circle.cpp" />
-    <ClCompile Include="Source\Box.cpp" />
-    <ClCompile Include="Source\Shape.cpp" />
+    <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AssetManager.cpp" />
     <ClCompile Include="Source\Audio.cpp" />
     <ClCompile Include="Source\Body.cpp" />
+    <ClCompile Include="Source\Box.cpp" />
     <ClCompile Include="Source\Button.cpp" />
     <ClCompile Include="Source\CPPScript.cpp" />
     <ClCompile Include="Source\CPPScriptMethods.cpp" />
@@ -360,28 +365,35 @@
     <ClCompile Include="Source\Capsule.cpp" />
     <ClCompile Include="Source\Chain.cpp" />
     <ClCompile Include="Source\CharacterController.cpp" />
+    <ClCompile Include="Source\Circle.cpp" />
     <ClCompile Include="Source\Component.cpp" />
+    <ClCompile Include="Source\DistanceJoint.cpp" />
     <ClCompile Include="Source\ECSManager.cpp" />
     <ClCompile Include="Source\FlatEngine.cpp" />
     <ClCompile Include="Source\GameLoop.cpp" />
     <ClCompile Include="Source\GameObject.cpp" />
     <ClCompile Include="Source\GameView.cpp" />
     <ClCompile Include="Source\ImGuiWrappersCore.cpp" />
+    <ClCompile Include="Source\Joint.cpp" />
     <ClCompile Include="Source\Line.cpp" />
     <ClCompile Include="Source\Logger.cpp" />
     <ClCompile Include="Source\LuaFunctions.cpp" />
     <ClCompile Include="Source\MappingContext.cpp" />
     <ClCompile Include="Source\Matrix.cpp" />
+    <ClCompile Include="Source\MotorJoint.cpp" />
+    <ClCompile Include="Source\MouseJoint.cpp" />
     <ClCompile Include="Source\Physics.cpp" />
     <ClCompile Include="Source\Polygon.cpp" />
     <ClCompile Include="Source\PrefabManager.cpp" />
+    <ClCompile Include="Source\PrismaticJoint.cpp" />
     <ClCompile Include="Source\Profiler.cpp" />
     <ClCompile Include="Source\ProfilerProcess.cpp" />
     <ClCompile Include="Source\Project.cpp" />
-    <ClCompile Include="Source\RayCast.cpp" />
+    <ClCompile Include="Source\RevoluteJoint.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\Script.cpp" />
+    <ClCompile Include="Source\Shape.cpp" />
     <ClCompile Include="Source\Sound.cpp" />
     <ClCompile Include="Source\Sprite.cpp" />
     <ClCompile Include="Source\TagList.cpp" />
@@ -392,6 +404,8 @@
     <ClCompile Include="Source\Transform.cpp" />
     <ClCompile Include="Source\Vector2.cpp" />
     <ClCompile Include="Source\Vector4.cpp" />
+    <ClCompile Include="Source\WeldJoint.cpp" />
+    <ClCompile Include="Source\WheelJoint.cpp" />
     <ClCompile Include="Source\WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>

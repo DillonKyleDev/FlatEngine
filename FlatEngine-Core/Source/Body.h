@@ -6,10 +6,14 @@
 #include "Vector2.h"
 
 #include <vector>
+#include <list>
 
 
 namespace FlatEngine
 {
+	class Joint;
+	class DistanceJoint;
+
 	class Body : public Component
 	{
 		friend class BoxBody;
@@ -50,11 +54,11 @@ namespace FlatEngine
 		std::vector<Shape*> GetShapes();		
 		void RemoveShape(b2ShapeId shapeID);
 		void RemoveChain(b2ChainId chainID);
-		std::vector<Box>& GetBoxes();
-		std::vector<Circle>& GetCircles();
-		std::vector<Capsule>& GetCapsules();
-		std::vector<Polygon>& GetPolygons();
-		std::vector<Chain>& GetChains();
+		std::list<Box>& GetBoxes();
+		std::list<Circle>& GetCircles();
+		std::list<Capsule>& GetCapsules();
+		std::list<Polygon>& GetPolygons();
+		std::list<Chain>& GetChains();
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);
 		Vector2 GetPosition();
@@ -87,15 +91,19 @@ namespace FlatEngine
 		void AddPolygon(Shape::ShapeProps shapeProps = Shape::ShapeProps());
 		void AddChain(Shape::ShapeProps shapeProps = Shape::ShapeProps());
 
+		void AddJoint(Joint* joint);
+
 		void Cleanup();
 
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
-		std::vector<Box> m_boxes;
-		std::vector<Circle> m_circles;
-		std::vector<Capsule> m_capsules;
-		std::vector<Polygon> m_polygons;
-		std::vector<Chain> m_chains;
+		std::list<Box> m_boxes;
+		std::list<Circle> m_circles;
+		std::list<Capsule> m_capsules;
+		std::list<Polygon> m_polygons;
+		std::list<Chain> m_chains;
+		std::list<DistanceJoint*> m_distanceJoints;
+
 		Physics::BodyProps m_bodyProps;			
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

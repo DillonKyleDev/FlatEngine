@@ -2,6 +2,7 @@
 #include "box2d.h"
 #include "Vector2.h"
 #include "Shape.h"
+#include "TagList.h"
 
 #include <vector>
 
@@ -11,6 +12,7 @@ namespace FlatEngine
 	class GameObject;
 	class Body;
 	class Shape;
+	class Joint;
 
 	class Physics
 	{
@@ -31,6 +33,8 @@ namespace FlatEngine
 		Physics();
 		~Physics();
 
+		static bool CanCollide(TagList tagList1, TagList tagList2);
+
 		void Init();
 		void Shutdown();
 		void Update(float deltaTime);
@@ -44,7 +48,11 @@ namespace FlatEngine
 		void DestroyShape(b2ShapeId shapeID);
 		void RecreateShape(Shape* shape);
 
+		void CreateJoint(Body* bodyA, Body* bodyB, Joint* joint);
+		void DestroyJoint(b2JointId jointID);
+		void RecreateJoint();
+
 	private:
-		b2WorldId m_worldID{};
+		b2WorldId m_worldID;
 	};
 }

@@ -54,8 +54,8 @@ namespace FlatEngine
 
 		Shape(Body* parentBody);
 		~Shape();
-		ShapeType GetShape();
 		json GetShapeData();
+		ShapeType GetShapeType();
 		std::string GetShapeString();
 
 		void SetShapeID(b2ShapeId shapeID);
@@ -64,11 +64,15 @@ namespace FlatEngine
 		b2ChainId GetChainID();
 		Body* GetParentBody();
 		b2BodyId GetParentBodyID();
-		void SetProps(ShapeProps shapeProps);
+		void SetShapeProps(ShapeProps shapeProps);
 		ShapeProps& GetShapeProps();
 		void CreateShape();
 		void RecreateShape();
 		void DestroyShape();
+		bool PointInShape(Vector2 point);
+
+		b2CastOutput CastRayAt(b2RayCastInput* rayCastInput);
+		b2CastOutput CastShapeAt(b2ShapeCastInput* shapeCastInput);
 
 		void SetIsSensor(bool b_isSensor);
 		void SetEnableSensorEvents(bool b_enableSensorEvents);

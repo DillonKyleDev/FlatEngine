@@ -6,6 +6,7 @@ F_Tags = {
     "Ball",
     "Table",
     "Pocket",
+    "PocketBlocker",
     "Player",
     "Enemy",
     "Npc",

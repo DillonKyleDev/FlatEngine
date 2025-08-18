@@ -2,10 +2,47 @@
 #include "Body.h"
 #include "Transform.h"
 #include "FlatEngine.h"
+#include "Scene.h"
+#include "Physics.h"
+#include "Vector4.h"
 
 
 namespace FlatEngine
 {
+	// RayCast will only be visible for the frame of the cast if b_visible = true
+	b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible)
+	{
+		if (b_visible)
+		{
+			DrawLineInScene(initialPos, (initialPos + direction) * 10, GetColor("rayCast"), 2);
+		}
+
+		for (std::pair<long, Body> bodyPair : GetLoadedScene()->GetBodies())
+		{
+			bodyPair.second.GetParent()->GetTagList().UpdateBits();
+			if (Physics::CanCollide(tagList, bodyPair.second.GetParent()->GetTagList()))
+			{
+				for (Shape* shape : bodyPair.second.GetShapes())
+				{
+					b2RayCastInput input = { 0 };
+					input.origin = Vector2::GetB2Vev2(initialPos);
+					input.translation = Vector2::GetB2Vev2(direction);
+					input.maxFraction = increment;
+
+					b2CastOutput output = shape->CastRayAt(&input);
+
+					if (output.hit)
+					{
+						hit = bodyPair.second;
+						return output;
+					}
+				}
+			}
+		}
+
+		return b2CastOutput();
+	}
+
 	Shape::Shape(Body* parentBody)
 	{		
 		m_shapeID = b2_nullShapeId;
@@ -19,7 +56,7 @@ namespace FlatEngine
 	{
 	}
 
-	Shape::ShapeType Shape::GetShape()
+	Shape::ShapeType Shape::GetShapeType()
 	{
 		return m_shapeProps.shape;
 	}
@@ -93,6 +130,10 @@ namespace FlatEngine
 		}
 	}
 
+	//void Shape::SetShapeUserData(std::shared_ptr<Shape> shapePtr)
+	//{
+	//	b2Shape_SetUserData(m_shapeID, shapePtr);
+	//}
 
 	void Shape::SetShapeID(b2ShapeId shapeID)
 	{
@@ -124,7 +165,7 @@ namespace FlatEngine
 		return m_parentBody->GetBodyID();
 	}
 
-	void Shape::SetProps(ShapeProps shapeProps)
+	void Shape::SetShapeProps(ShapeProps shapeProps)
 	{
 		m_shapeProps = shapeProps;
 	}
@@ -157,6 +198,103 @@ namespace FlatEngine
 		}
 		m_shapeID = b2_nullShapeId;
 	}
+
+	bool Shape::PointInShape(Vector2 point)
+	{
+		switch (m_shapeProps.shape)
+		{
+		case Shape::ShapeType::BS_Box:
+		{
+			b2Polygon box = b2Shape_GetPolygon(m_shapeID);
+			return b2PointInPolygon(&box, Vector2::GetB2Vev2(point));
+		}
+		case Shape::ShapeType::BS_Circle:
+		{
+			b2Circle circle = b2Shape_GetCircle(m_shapeID);
+			return b2PointInCircle(&circle, Vector2::GetB2Vev2(point));
+		}
+		case Shape::ShapeType::BS_Capsule:
+		{
+			b2Capsule capsule = b2Shape_GetCapsule(m_shapeID);
+			return b2PointInCapsule(&capsule, Vector2::GetB2Vev2(point));
+		}
+		case Shape::ShapeType::BS_Polygon:
+		{
+			b2Polygon polygon = b2Shape_GetPolygon(m_shapeID);
+			return b2PointInPolygon(&polygon, Vector2::GetB2Vev2(point));
+		}
+		default:
+			return false;
+		}
+	}
+
+	b2CastOutput Shape::CastRayAt(b2RayCastInput* rayCastInput)
+	{
+		switch (m_shapeProps.shape)
+		{
+		case Shape::ShapeType::BS_Box:
+		{
+			b2Polygon box = b2Shape_GetPolygon(m_shapeID);
+			return b2RayCastPolygon(&box, rayCastInput);
+		}
+		case Shape::ShapeType::BS_Circle:
+		{					
+			b2Circle circle = b2Shape_GetCircle(m_shapeID);
+			return b2RayCastCircle(&circle, rayCastInput);
+		}
+		case Shape::ShapeType::BS_Capsule:
+		{
+			b2Capsule capsule = b2Shape_GetCapsule(m_shapeID);
+			return b2RayCastCapsule(&capsule, rayCastInput);
+		}
+		case Shape::ShapeType::BS_Polygon:
+		{
+			b2Polygon polygon = b2Shape_GetPolygon(m_shapeID);
+			return b2RayCastPolygon(&polygon, rayCastInput);
+		}
+		case Shape::ShapeType::BS_Chain:
+		{
+			//return b2RayCastSegment(&b2Shape_GetPolygon(m_shapeID), rayCastInput);
+		}
+		default:
+			return b2CastOutput();
+		}
+	}
+
+	b2CastOutput Shape::CastShapeAt(b2ShapeCastInput* shapeCastInput)
+	{
+		switch (m_shapeProps.shape)
+		{
+		case Shape::ShapeType::BS_Box:
+		{
+			b2Polygon box = b2Shape_GetPolygon(m_shapeID);
+			return b2ShapeCastPolygon(&box, shapeCastInput);
+		}
+		case Shape::ShapeType::BS_Circle:
+		{
+			b2Circle circle = b2Shape_GetCircle(m_shapeID);
+			return b2ShapeCastCircle(&circle, shapeCastInput);
+		}
+		case Shape::ShapeType::BS_Capsule:
+		{
+			b2Capsule capsule = b2Shape_GetCapsule(m_shapeID);
+			return b2ShapeCastCapsule(&capsule, shapeCastInput);
+		}
+		case Shape::ShapeType::BS_Polygon:
+		{
+			b2Polygon polygon = b2Shape_GetPolygon(m_shapeID);
+			return b2ShapeCastPolygon(&polygon, shapeCastInput);
+		}
+		case Shape::ShapeType::BS_Chain:
+		{
+			//return b2ShapeCastSegment(&b2Shape_GetPolygon(m_shapeID), rayCastInput);
+		}
+		default:
+			return b2CastOutput();
+		}
+	}
+
+
 
 	void Shape::SetIsSensor(bool b_isSensor)
 	{

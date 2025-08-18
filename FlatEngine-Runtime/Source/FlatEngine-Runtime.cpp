@@ -80,7 +80,10 @@ public:
 		{
 			RunOnceAfterInitialization();
 
-			static Uint32 frameStart = FL::GetEngineTime();			
+			static Uint32 frameStart = FL::GetEngineTime();	
+
+			int iterations = 0;
+			int minIter = 1;
 
 			BeginRender();
 
@@ -97,17 +100,25 @@ public:
 				{
 					A_GameLoop->m_accumulator += frameTime;
 				}
-
-				if (!GameLoopPaused())
+				else if (A_GameLoop->IsFrameSkipped())
 				{
-					while (A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
+					A_GameLoop->m_accumulator += A_GameLoop->m_deltaTime;
+				}
+
+				if (!GameLoopPaused() || A_GameLoop->IsFrameSkipped())
+				{
+					while (iterations < minIter || A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
 					{
 						FL::HandleEvents(b_hasQuit);
 						A_GameLoop->Update();
-						A_GameLoop->SetFrameSkipped(false);
 
 						A_GameLoop->m_time += A_GameLoop->m_deltaTime;
-						A_GameLoop->m_accumulator -= A_GameLoop->m_deltaTime;
+						if (A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
+						{
+							A_GameLoop->m_accumulator -= A_GameLoop->m_deltaTime;
+						}
+
+						iterations++;
 					}
 				}
 
@@ -150,15 +161,15 @@ public:
 		{
 			json projectJson;
 			FL::LoadGameProject(FL::FindAllFilesWithExtension("..\\", ".prj").front(), projectJson);
-			FL::F_AssetManager.CollectDirectories();
-			FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
-			FL::F_AssetManager.CollectColors();
-			FL::F_AssetManager.CollectTextures();
-			FL::InitializeTileSets();
-			FL::F_PrefabManager->InitializePrefabs();
-			FL::RetrieveLuaScriptPaths();
-			FL::RetrieveCPPScriptNames();
-			FL::InitializeMappingContexts();
+			//FL::F_AssetManager.CollectDirectories();
+			//FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
+			//FL::F_AssetManager.CollectColors();
+			//FL::F_AssetManager.CollectTextures();
+			//FL::InitializeTileSets();
+			//FL::F_PrefabManager->InitializePrefabs();
+			//FL::RetrieveLuaScriptPaths();
+			//FL::RetrieveCPPScriptNames();
+			//FL::InitializeMappingContexts();
 
 			b_hasRunOnce = true;
 		}

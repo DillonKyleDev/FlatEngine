@@ -6,8 +6,8 @@
 function Awake() 
      GameManager[my_id] =
      {
-		mappingContext = GetMappingContext("MC_Player"),
-
+		score = 0,
+          audio = this_object:GetAudio()
      }
      local data = GetInstanceData("GameManager", my_id)
 end
@@ -20,11 +20,12 @@ end
 function Update()
      local data = GetInstanceData("GameManager", my_id)
 
-     if data.mappingContext:Fired("IA_BeginHit") then
-          LogString("Hit began.")
-          clickPos = GetMousePosWorld()
-
+     if (data.score == 15) then
+          data.audio:Play("Victory")
+          this_object:GetText():SetActive(true)
+          data.score = 0
      end
+
 end
 
 -- each of these functions must be present in each file if they are to be called otherwise other scripts copies will be used with this object instead

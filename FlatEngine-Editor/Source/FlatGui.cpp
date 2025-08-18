@@ -337,6 +337,14 @@ namespace FlatGui
 				{
 					FG_b_showMappingContextEditor = currentObjectJson["_showMappingContextEditor"];
 				}
+				if (currentObjectJson.contains("musicVolume"))
+				{
+					FL::F_musicVolume = currentObjectJson["musicVolume"];
+				}
+				if (currentObjectJson.contains("effectVolume"))
+				{
+					FL::F_effectVolume = currentObjectJson["effectVolume"];
+				}
 				
 				if (currentObjectJson.contains("currentFileDirectory"))
 				{
@@ -715,11 +723,9 @@ namespace FlatGui
 		if (transform != nullptr)
 		{
 			long focusedObjectID = GetFocusedGameObjectID();
-			Vector2 position = transform->GetTruePosition();
-			float rotation = transform->GetRotation();			
-			Vector2 origin = transform->GetOrigin();
-			Vector2 transformScale = transform->GetScale();		
-			Vector2 scale = transform->GetScale();			
+			Vector2 position = transform->GetAbsolutePosition();
+			float rotation = transform->GetAbsoluteRotation();						
+			Vector2 scale = transform->GetAbsoluteScale();						
 					
 			if (self.GetID() != focusedObjectID)
 			{
@@ -730,7 +736,7 @@ namespace FlatGui
 				Vector2 selectObjectOffset = Vector2(selectObjectWidth / 2, selectObjectHeight / 2);
 
 				FL::AddImageToDrawList(FL::GetTexture("selectGameObject"), position, *FL::F_sceneViewCenter, selectObjectWidth, selectObjectHeight, selectObjectOffset, Vector2(1), false, FL::F_sceneViewGridStep->x, drawList);
-				FL::RenderInvisibleButton("##TransformSelect_" + std::to_string(transform->GetID()), FL::ConvertWorldToScreen(position) - selectObjectOffset, Vector2(selectObjectWidth, selectObjectHeight), false);
+				FL::RenderInvisibleButton("##TransformSelect_" + std::to_string(transform->GetID()), FL::Scene_ConvertWorldToScreen(position) - selectObjectOffset, Vector2(selectObjectWidth, selectObjectHeight), false);
 				const bool b_isItemClicked = ImGui::IsItemClicked();
 				const bool b_isItemHovered = ImGui::IsItemHovered();
 				if (b_isItemClicked || b_isItemHovered)
@@ -785,7 +791,7 @@ namespace FlatGui
 				}
 			}
 
-			if (text != nullptr)
+			if (text != nullptr && text->IsActive())
 			{
 				std::shared_ptr<Texture> textTexture = text->GetTexture();
 				float textWidth = (float)textTexture->GetWidth();
@@ -800,8 +806,7 @@ namespace FlatGui
 				Vector2 newScale = Vector2(scale.x * FL::F_spriteScaleMultiplier, scale.y * FL::F_spriteScaleMultiplier);
 
 				if (textTexture->GetTexture() != nullptr)
-				{
-					//Vector2 scaledPosition = Vector2(origin.x + (relativePosition.x * baseScale.x), origin.y + (relativePosition.y * baseScale.y));
+				{					
 					Vector2 positionOnScreen = Vector2(FG_sceneViewCenter.x + (position.x * gridStep) - ((offset.x * FL::F_spriteScaleMultiplier * gridStep) * newScale.x), FG_sceneViewCenter.y - (position.y * gridStep) - ((offset.y * FL::F_spriteScaleMultiplier * gridStep) * newScale.y));
 					Vector2 buttonSize = Vector2(textWidth * FL::F_spriteScaleMultiplier * gridStep * newScale.x, textHeight * FL::F_spriteScaleMultiplier * gridStep * newScale.y);
 					
@@ -825,7 +830,7 @@ namespace FlatGui
 				}
 			}
 			
-			if (camera != nullptr)
+			if (camera != nullptr && camera->IsActive())
 			{
 				float cameraWidth = camera->GetWidth();
 				float cameraHeight = camera->GetHeight();
@@ -858,16 +863,16 @@ namespace FlatGui
 				FL::AddImageToDrawList(FL::GetTexture("camera"), position, centerPoint, cameraTextureWidth, cameraTextureHeight, cameraTextureOffset, cameraTextureScale, b_scalesWithZoom, gridStep, drawList, 0, IM_COL32(255, 255, 255, FG_iconTransparency));
 			}
 
-			if (canvas != nullptr)
+			if (canvas != nullptr && canvas->IsActive())
 			{
 				float activeWidth = canvas->GetWidth();
 				float activeHeight = canvas->GetHeight();
 				int layerNumber = canvas->GetLayerNumber();				
 
-				float renderXStart = FG_sceneViewCenter.x + ((position.x - (activeWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x);
-				float renderYStart = FG_sceneViewCenter.y - ((position.y + (activeHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x);
+				float renderXStart = FG_sceneViewCenter.x + ((position.x - (activeWidth * scale.x / 2)) * FG_sceneViewGridStep.x);
+				float renderYStart = FG_sceneViewCenter.y - ((position.y + (activeHeight * scale.y / 2)) * FG_sceneViewGridStep.x);
 				Vector2 renderStart = Vector2(renderXStart, renderYStart);
-				Vector2 renderEnd = Vector2(renderXStart + ((activeWidth * transformScale.x) * FG_sceneViewGridStep.x), renderYStart + ((activeHeight * transformScale.y) * FG_sceneViewGridStep.x));
+				Vector2 renderEnd = Vector2(renderXStart + ((activeWidth * scale.x) * FG_sceneViewGridStep.x), renderYStart + ((activeHeight * scale.y) * FG_sceneViewGridStep.x));
 
 				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
@@ -893,10 +898,10 @@ namespace FlatGui
 					}
 				}
 
-				float activeLeft = FG_sceneViewCenter.x + ((position.x - (activeWidth * transformScale.x / 2) + activeOffset.x * transformScale.x) * FG_sceneViewGridStep.x);
-				float activeRight = FG_sceneViewCenter.x + ((position.x + (activeWidth * transformScale.x / 2) + activeOffset.x * transformScale.x) * FG_sceneViewGridStep.x);
-				float activeTop = FG_sceneViewCenter.y - ((position.y + (activeHeight * transformScale.y / 2) + activeOffset.y * transformScale.y) * FG_sceneViewGridStep.y);
-				float activeBottom = FG_sceneViewCenter.y - ((position.y - (activeHeight * transformScale.y / 2) + activeOffset.y * transformScale.y) * FG_sceneViewGridStep.y);
+				float activeLeft = FG_sceneViewCenter.x + ((position.x - (activeWidth * scale.x / 2) + activeOffset.x * scale.x) * FG_sceneViewGridStep.x);
+				float activeRight = FG_sceneViewCenter.x + ((position.x + (activeWidth * scale.x / 2) + activeOffset.x * scale.x) * FG_sceneViewGridStep.x);
+				float activeTop = FG_sceneViewCenter.y - ((position.y + (activeHeight * scale.y / 2) + activeOffset.y * scale.y) * FG_sceneViewGridStep.y);
+				float activeBottom = FG_sceneViewCenter.y - ((position.y - (activeHeight * scale.y / 2) + activeOffset.y * scale.y) * FG_sceneViewGridStep.y);
 
 				Vector2 center = Vector2(activeLeft + (activeRight - activeLeft) / 2, activeTop + (activeBottom - activeTop) / 2);
 
@@ -912,10 +917,10 @@ namespace FlatGui
 					float cosA = cosf(rotation * 2.0f * (float)M_PI / 360.0f); // Convert degrees into radians
 					float sinA = sinf(rotation * 2.0f * (float)M_PI / 360.0f);
 
-					topLeft = ImRotate(Vector2(-activeWidth * FG_sceneViewGridStep.x / 2 * transformScale.x, -activeHeight * FG_sceneViewGridStep.x / 2 * transformScale.y), cosA, sinA);
-					topRight = ImRotate(Vector2(+activeWidth * FG_sceneViewGridStep.x / 2 * transformScale.x, -activeHeight * FG_sceneViewGridStep.x / 2 * transformScale.y), cosA, sinA);
-					bottomRight = ImRotate(Vector2(+activeWidth * FG_sceneViewGridStep.x / 2 * transformScale.x, +activeHeight * FG_sceneViewGridStep.x / 2 * transformScale.y), cosA, sinA);
-					bottomLeft = ImRotate(Vector2(-activeWidth * FG_sceneViewGridStep.x / 2 * transformScale.x, +activeHeight * FG_sceneViewGridStep.x / 2 * transformScale.y), cosA, sinA);
+					topLeft = ImRotate(Vector2(-activeWidth * FG_sceneViewGridStep.x / 2 * scale.x, -activeHeight * FG_sceneViewGridStep.x / 2 * scale.y), cosA, sinA);
+					topRight = ImRotate(Vector2(+activeWidth * FG_sceneViewGridStep.x / 2 * scale.x, -activeHeight * FG_sceneViewGridStep.x / 2 * scale.y), cosA, sinA);
+					bottomRight = ImRotate(Vector2(+activeWidth * FG_sceneViewGridStep.x / 2 * scale.x, +activeHeight * FG_sceneViewGridStep.x / 2 * scale.y), cosA, sinA);
+					bottomLeft = ImRotate(Vector2(-activeWidth * FG_sceneViewGridStep.x / 2 * scale.x, +activeHeight * FG_sceneViewGridStep.x / 2 * scale.y), cosA, sinA);
 
 					Vector2 pos[4] =
 					{
@@ -938,11 +943,11 @@ namespace FlatGui
 
 			if (body != nullptr)
 			{
-				std::vector<Box>& boxes = body->GetBoxes();
-				std::vector<Circle>& circles = body->GetCircles();
-				std::vector<Capsule>& capsules = body->GetCapsules();
-				std::vector<FL::Polygon>& polygons = body->GetPolygons();
-				std::vector<Chain>& chains = body->GetChains();
+				std::list<Box>& boxes = body->GetBoxes();
+				std::list<Circle> circles = body->GetCircles();
+				std::list<Capsule>& capsules = body->GetCapsules();
+				std::list<FL::Polygon>& polygons = body->GetPolygons();
+				std::list<Chain>& chains = body->GetChains();
 
 				for (Box& box : boxes)
 				{
@@ -992,14 +997,13 @@ namespace FlatGui
 
 				for (Circle& circle : circles)
 				{
-					//bool b_isActive = circleBody->IsActive();
-					bool b_isActive = true;
+					bool b_isActive = body->IsActive();
 					FL::Physics::BodyProps bodyProps = body->GetBodyProps();
 					Shape::ShapeProps shapeProps = circle.GetShapeProps();
 					bool b_isSensor = shapeProps.b_isSensor;
 					float radius = shapeProps.radius * FG_sceneViewGridStep.x;
 					Vector2 offset = shapeProps.positionOffset;
-					Vector2 center = ConvertWorldToScreen(position + Vector2::Rotate(offset, rotation));
+					Vector2 center = Scene_ConvertWorldToScreen(position + Vector2::Rotate(offset, rotation));
 
 					drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
 
@@ -1044,8 +1048,8 @@ namespace FlatGui
 					Vector2 offset = shapeProps.positionOffset;
 					float rotation = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));
 
-					Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center1)));
-					Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center2)));
+					Vector2 center1 = Scene_ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center1)));
+					Vector2 center2 = Scene_ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center2)));
 					Vector2 difference = center2 - center1;
 					Vector2 diffN = Vector2::Normalize(difference);
 					Vector2 diffNR = diffN * radiusScreen;
@@ -1155,8 +1159,8 @@ namespace FlatGui
 						Vector2 rPerpEnd = rPerpStart + (points[FL::Fmod(i + 1, pointCount)] - points[i]);
 						Vector2 rotatedStart = Vector2::Rotate(rPerpStart, rotation);
 						Vector2 rotatedEnd = Vector2::Rotate(rPerpEnd, rotation);
-						Vector2 lineStart = FL::ConvertWorldToScreen(position + rotatedStart);
-						Vector2 lineEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
+						Vector2 lineStart = FL::Scene_ConvertWorldToScreen(position + rotatedStart);
+						Vector2 lineEnd = FL::Scene_ConvertWorldToScreen(position + rotatedEnd);
 
 						FL::DrawLine(lineStart, lineEnd, colorLight, 2.0f, drawList);
 						FL::DrawLine(lineStart, lineEnd, color, 1.0f, drawList);
@@ -1165,8 +1169,8 @@ namespace FlatGui
 						{
 							Vector2 rotatedCircleStart = Vector2::Rotate(points[i], rotation);
 							Vector2 rotatedCircleEnd = Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation);
-							Vector2 circleStart = FL::ConvertWorldToScreen(position + rotatedStart);
-							Vector2 circleEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
+							Vector2 circleStart = FL::Scene_ConvertWorldToScreen(position + rotatedStart);
+							Vector2 circleEnd = FL::Scene_ConvertWorldToScreen(position + rotatedEnd);
 
 							FL::DrawCircle(circleStart, cornerRadius* FG_sceneViewGridStep.x, colorLight, drawList, 2.0f);
 							FL::DrawCircle(circleStart, cornerRadius * FG_sceneViewGridStep.x, color, drawList);
@@ -1231,8 +1235,8 @@ namespace FlatGui
 					{
 						if (i < pointCount - 1 || b_isLoop)
 						{
-							Vector2 start = FL::ConvertWorldToScreen(position + Vector2::Rotate(points[i], rotation));
-							Vector2 end = FL::ConvertWorldToScreen(position + Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation));
+							Vector2 start = FL::Scene_ConvertWorldToScreen(position + Vector2::Rotate(points[i], rotation));
+							Vector2 end = FL::Scene_ConvertWorldToScreen(position + Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation));
 
 							if (b_isLoop || (i > 0 && i < pointCount - 2))
 							{
@@ -1296,10 +1300,10 @@ namespace FlatGui
 				static std::vector<Vector2> selectedTiles = std::vector<Vector2>();
 					
 				// For Drawing TileMap border and background color
-				float renderXStart = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x);
-				float renderYStart = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x);
+				float renderXStart = FG_sceneViewCenter.x + ((position.x - (gridWidth * scale.x / 2)) * FG_sceneViewGridStep.x);
+				float renderYStart = FG_sceneViewCenter.y - ((position.y + (gridHeight * scale.y / 2)) * FG_sceneViewGridStep.x);
 				Vector2 renderStart = Vector2(renderXStart, renderYStart);
-				Vector2 renderEnd = Vector2(renderXStart + ((gridWidth * transformScale.x) * FG_sceneViewGridStep.x), renderYStart + ((gridHeight * transformScale.y) * FG_sceneViewGridStep.x));
+				Vector2 renderEnd = Vector2(renderXStart + ((gridWidth * scale.x) * FG_sceneViewGridStep.x), renderYStart + ((gridHeight * scale.y) * FG_sceneViewGridStep.x));
 				Vector2 focusObjectButtonSize = Vector2(renderEnd.x - renderStart.x, renderEnd.y - renderStart.y);
 
 				float tileWidthInPx = FG_sceneViewGridStep.x * (tileWidth / FL::F_pixelsPerGridSpace);
@@ -1369,8 +1373,8 @@ namespace FlatGui
 							}
 
 							// tileStart = viewport center + top left corner in pixel screen space + tile offset
-							float tileStartX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (w * tileWidthInPx);
-							float tileStartY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.x) + (h * tileHeightInPx);
+							float tileStartX = FG_sceneViewCenter.x + ((position.x - (gridWidth * scale.x / 2)) * FG_sceneViewGridStep.x) + (w * tileWidthInPx);
+							float tileStartY = FG_sceneViewCenter.y - ((position.y + (gridHeight * scale.y / 2)) * FG_sceneViewGridStep.x) + (h * tileHeightInPx);
 
 							Vector2 tileStart = Vector2(tileStartX, tileStartY);
 							Vector2 tileEnd = Vector2(tileStartX + tileWidthInPx, tileStartY + tileHeightInPx);
@@ -1576,8 +1580,8 @@ namespace FlatGui
 					// Draw box around selected multiselect tiles
 					if ((selectedTiles.size() > 0) && (FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MULTISELECT || FL::F_CursorMode == FL::F_CURSOR_MODE::TILE_MOVE))
 					{
-						float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (savedMultiSelectStartTile.x * tileWidthInPx);
-						float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.y) + (savedMultiSelectStartTile.y * tileHeightInPx);
+						float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * scale.x / 2)) * FG_sceneViewGridStep.x) + (savedMultiSelectStartTile.x * tileWidthInPx);
+						float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * scale.y / 2)) * FG_sceneViewGridStep.y) + (savedMultiSelectStartTile.y * tileHeightInPx);
 						float selectWidth = multiSelectEndTile.x - savedMultiSelectStartTile.x;
 						if (selectWidth < 0)
 						{
@@ -1616,8 +1620,8 @@ namespace FlatGui
 						Vector2 startCoord = collAreaBuffer.first;
 						Vector2 endCoord = collAreaBuffer.second;
 
-						float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * transformScale.x / 2)) * FG_sceneViewGridStep.x) + (startCoord.x * tileWidthInPx);
-						float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * transformScale.y / 2)) * FG_sceneViewGridStep.y) + (startCoord.y * tileHeightInPx);
+						float startPosX = FG_sceneViewCenter.x + ((position.x - (gridWidth * scale.x / 2)) * FG_sceneViewGridStep.x) + (startCoord.x * tileWidthInPx);
+						float startPosY = FG_sceneViewCenter.y - ((position.y + (gridHeight * scale.y / 2)) * FG_sceneViewGridStep.y) + (startCoord.y * tileHeightInPx);
 						float selectWidth = endCoord.x - startCoord.x;
 						if (selectWidth < 0)
 						{
@@ -1716,7 +1720,7 @@ namespace FlatGui
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
 		Vector2 adjustedPoint = position + Vector2::Rotate(midPoint, rotation);
 		ImGuiIO& inputOutput = ImGui::GetIO();
-		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);		
+		Vector2 jointScreenPos = FL::Scene_ConvertWorldToScreen(adjustedPoint);		
 		jointScreenPos = jointScreenPos - jointOffset;
 
 		FL::RenderInvisibleButton("##bodyAddJoint_" + std::to_string(body->GetID()) + "_" + std::to_string(startIndex), jointScreenPos, Vector2(textureWidth, textureHeight), false);
@@ -1768,7 +1772,7 @@ namespace FlatGui
 		float textureHeight = (float)FL::GetTextureObject("joint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
 		Vector2 adjustedPoint = position + Vector2::Rotate(point, rotation);		
-		Vector2 jointScreenPos = FL::ConvertWorldToScreen(adjustedPoint);
+		Vector2 jointScreenPos = FL::Scene_ConvertWorldToScreen(adjustedPoint);
 		jointScreenPos = jointScreenPos - jointOffset;		
 		std::string invisibleButtonID = "##bodyJoint_" + std::to_string(body->GetID()) + "_" + std::to_string(index);
 
@@ -1811,7 +1815,7 @@ namespace FlatGui
 
 		if (b_jointActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 		{
-			Vector2 mousePosInGrid = FL::GetMousePosWorld();
+			Vector2 mousePosInGrid = FL::Scene_GetMousePosWorld();
 			point = Vector2(b2Body_GetLocalPoint(body->GetBodyID(), b2Vec2(mousePosInGrid.x, mousePosInGrid.y)));			
 			shape->UpdatePoints();
 		}
@@ -1837,7 +1841,7 @@ namespace FlatGui
 
 			if (transform != nullptr)
 			{
-				position = transform->GetTruePosition();
+				position = transform->GetAbsolutePosition();
 			}
 
 			if (body != nullptr)
@@ -1899,23 +1903,23 @@ namespace FlatGui
 			
 			if (b_baseClicked || b_xClicked || b_yClicked)
 			{
-				transformOffsetFromMouse = position - FL::GetMousePosWorld();
+				transformOffsetFromMouse = position - FL::Scene_GetMousePosWorld();
 			}
 
 			if (b_baseActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 			{			
-				Vector2 newPosition = FL::GetMousePosWorld() + transformOffsetFromMouse;
-				transform->SetPosition(newPosition);
+				Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
+				transform->SetPosition(newPosition - transform->GetPositionOrigin());
 			}
 			else if (b_xActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 			{
-				Vector2 newPosition = FL::GetMousePosWorld() + transformOffsetFromMouse;
-				transform->SetPosition(Vector2(newPosition.x, position.y));
+				Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
+				transform->SetPosition(Vector2(newPosition.x - transform->GetPositionOrigin().x, position.y - transform->GetPositionOrigin().x));
 			}
 			else if (b_yActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
 			{
-				Vector2 newPosition = FL::GetMousePosWorld() + transformOffsetFromMouse;
-				transform->SetPosition(Vector2(position.x, newPosition.y));
+				Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
+				transform->SetPosition(Vector2(position.x - transform->GetPositionOrigin().x, newPosition.y - transform->GetPositionOrigin().y));
 			}
 
 

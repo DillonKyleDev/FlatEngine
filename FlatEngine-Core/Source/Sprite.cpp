@@ -244,6 +244,7 @@ namespace FlatEngine
 		return m_pivotOffset;
 	}
 
+	// for r, g, b, a, enter floats between 0.0f - 1.0f
 	void Sprite::SetTintColor(Vector4 newTintColor)
 	{
 		m_tintColor = newTintColor;

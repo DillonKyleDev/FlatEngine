@@ -171,17 +171,38 @@ namespace FlatEngine
 				if (fileContentJson.contains("Persistant GameObjects") && fileContentJson["Persistant GameObjects"][0] != "NULL")
 				{
 					auto firstObjectName = fileContentJson["Persistant GameObjects"];
+					std::vector<json> prefabsJson = std::vector<json>();
 
 					// Loop through the saved GameObjects in the JSON file
 					for (int i = 0; i < fileContentJson["Persistant GameObjects"].size(); i++)
 					{
-						// Add created GameObject to our new Scene
-						bool b_persistant = true;
-						GameObject* loadedObject = CreateObjectFromJson(fileContentJson["Persistant GameObjects"][i], &m_persistantGameObjectsScene);
-						// Check for primary camera
-						if (loadedObject != nullptr && loadedObject->HasComponent("Camera") && loadedObject->GetCamera()->IsPrimary())
+						if (CheckJsonBool(fileContentJson["Persistant GameObjects"][i], "_isPrefab", "GameObject"))
 						{
-							SetPrimaryCamera(loadedObject->GetCamera());
+							prefabsJson.push_back(fileContentJson["Persistant GameObjects"][i]);
+						}
+						else
+						{						
+							// Add created GameObject to our new Scene
+							bool b_persistant = true;
+							GameObject* loadedObject = CreateObjectFromJson(fileContentJson["Persistant GameObjects"][i], &m_persistantGameObjectsScene);
+							// Check for primary camera
+							if (loadedObject != nullptr && loadedObject->HasComponent("Camera") && loadedObject->GetCamera()->IsPrimary())
+							{
+								SetPrimaryCamera(loadedObject->GetCamera());
+							}
+						}
+					}
+
+					// Create prefabs after regular objects so that prefab children don't steal "unused" GameObject IDs from regular objects and then get overwritten by those objects
+					for (json objectJson : prefabsJson)
+					{
+						try
+						{
+							CreateObjectFromJson(objectJson, &m_persistantGameObjectsScene);
+						}
+						catch (const json::out_of_range& e)
+						{
+							LogError(e.what());
 						}
 					}
 

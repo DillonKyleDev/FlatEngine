@@ -99,6 +99,8 @@ namespace FlatGui
 			// {
 
 				long queuedForDelete = -1;
+				long parentToUnparent = -1;
+				long childToRemove = -1;
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(0, 0));
@@ -157,7 +159,7 @@ namespace FlatGui
 								const char* charName = name.c_str();
 								float indent = 0;
 
-								AddObjectToHierarchy(currentObject, charName, node_clicked, queuedForDelete, indent);
+								AddObjectToHierarchy(currentObject, charName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
 							}
 						}
 

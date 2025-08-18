@@ -106,6 +106,15 @@ namespace FlatEngine
 			//Get window surface down here so we don't have to delete it if the SDL_image init fails anyway
 			m_screenSurface = SDL_GetWindowSurface(m_window);
 		}
+		
+		if (m_b_isFullscreen)
+		{
+			SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		}
+		else
+		{
+			SDL_SetWindowFullscreen(m_window, 0);
+		}
 
 		return b_success;
 	}

@@ -151,6 +151,12 @@ namespace FlatEngine
 
 	GameObject* Scene::CreateGameObject(long parentID, long myID)
 	{
+		if (m_sceneObjects.count(myID))
+		{
+			LogError("GameObject not created, ID taken already: " + std::to_string(myID));
+			return nullptr;
+		}
+
 		GameObject newObject = GameObject(parentID, myID);
 		newObject.SetPersistant(m_b_persistantScene);
 		newObject.AddTransform();
@@ -214,7 +220,7 @@ namespace FlatEngine
 			{
 				std::vector<long> childrenIDs = objectToDelete->GetChildren();
 
-				for (int i = 0; i < objectToDelete->GetChildren().size(); i++)
+				for (int i = 0; i < childrenIDs.size(); i++)
 				{
 					GameObject* child = GetObjectByID(childrenIDs[i]);
 					if (child != nullptr)

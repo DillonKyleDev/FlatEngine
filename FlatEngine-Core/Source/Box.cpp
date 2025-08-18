@@ -65,10 +65,10 @@ namespace FlatEngine
 	std::vector<Vector2> Box::GetCornersScreen()
 	{
 		std::vector<Vector2> corners = {
-			ConvertWorldToScreen(m_corners[0]),
-			ConvertWorldToScreen(m_corners[1]),
-			ConvertWorldToScreen(m_corners[2]),
-			ConvertWorldToScreen(m_corners[3]),
+			Scene_ConvertWorldToScreen(m_corners[0]),
+			Scene_ConvertWorldToScreen(m_corners[1]),
+			Scene_ConvertWorldToScreen(m_corners[2]),
+			Scene_ConvertWorldToScreen(m_corners[3]),
 		};
 
 		return corners;

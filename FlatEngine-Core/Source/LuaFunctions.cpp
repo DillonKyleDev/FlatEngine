@@ -363,25 +363,13 @@ namespace FlatEngine
 			{
 				F_b_closeProgramQueued = true;
 			};
-		F_Lua["SceneDrawLine"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
+		F_Lua["DrawLineInScene"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
 		{
 			DrawLineInScene(startPoint, endPoint, color, thickness);
 		};
-		F_Lua["GameDrawLine"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
+		F_Lua["DrawLineInGame"] = [](Vector2 startPoint, Vector2 endPoint, Vector4 color, float thickness)
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
-			PushWindowStyles();
-			ImGui::Begin("Game View", 0, 16 | 8);
-			PopWindowStyles();
-			// {
-
-			DrawLine(startPoint, endPoint, color, thickness, ImGui::GetWindowDrawList());
-
-			// }
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-			ImGui::End(); // Scene View
+			DrawLineInGame(startPoint, endPoint, color, thickness);
 		};
 		F_Lua["GetTime"] = []()
 		{
@@ -407,6 +395,10 @@ namespace FlatEngine
 		{
 			RemapInputAction(contextName, inputAction, Uint32(timeoutTime));
 		};
+		F_Lua["Scene_GetMousePosWorld"] = []()
+			{
+				return Scene_GetMousePosWorld();
+			};
 		F_Lua["GetMousePosWorld"] = []()
 		{
 			return GetMousePosWorld();
@@ -415,6 +407,38 @@ namespace FlatEngine
 		{
 			return GetMousePosScreen();
 		};
+		F_Lua["Rotate"] = [](Vector2 vector, float angleDegrees)
+			{
+				return Vector2::Rotate(vector, angleDegrees);
+			};
+		F_Lua["Normalize"] = [](Vector2 vector)
+			{
+				return Vector2::Normalize(vector);
+			};
+		F_Lua["GetMagnitude"] = [](Vector2 vector)
+			{
+				return vector.GetMagnitude();
+			};
+		F_Lua["GetAngleBetween"] = [](Vector2 vector1, Vector2 vector2)
+			{
+				return Vector2::GetAngleBetween(vector1, vector2);
+			};
+		F_Lua["SubtractVectors"] = [](Vector2 vector1, Vector2 vector2)
+			{
+				return vector1 - vector2;
+			};
+		F_Lua["AddVectors"] = [](Vector2 vector1, Vector2 vector2)
+			{
+				return vector1 + vector2;
+			};
+		F_Lua["ToInt"] = [](float value)
+			{
+				return (int)value;
+			};
+		F_Lua["ToFloat"] = [](int value)
+			{
+				return (float)value;
+			};
 	}
 
 	// Map C++ types to Lua "Types" -- https://sol2.readthedocs.io/en/latest/api/usertype.html
@@ -433,7 +457,15 @@ namespace FlatEngine
 			"SetY", &Vector2::SetY,
 			"y", sol::readonly(&Vector2::y),
 			"SetXY", &Vector2::_xy,
-			"Normalize", &Vector2::NormalizeSelf
+			"Normalize", &Vector2::NormalizeSelf,
+			"Rotate", &Vector2::RotateSelf,
+			"GetMagnitude", &Vector2::GetMagnitude,
+			"ProjectOnto", &Vector2::ProjectedOnto,
+			"CrossKResult", &Vector2::CrossKResult,
+			"AmountProjectedOnto", &Vector2::AmountProjectedOnto,
+			"Dot", &Vector2::Dot,
+			"+", &Vector2::operator+,
+			"-", &Vector2::operator-
 		);
 
 		F_Lua.new_usertype<Vector4>("Vector4",
@@ -504,11 +536,13 @@ namespace FlatEngine
 			"GetID", &Transform::GetID,
 			"SetPosition", &Transform::SetPosition,
 			"GetPosition", &Transform::GetPosition,
-			"GetTruePosition", &Transform::GetTruePosition,
+			"GetAbsolutePosition", &Transform::GetAbsolutePosition,
 			"SetRotation", &Transform::SetRotation,
 			"GetRotation", &Transform::GetRotation,
+			"GetAbsoluteRotation", &Transform::GetAbsoluteRotation,
 			"SetScale", &Transform::SetScale,
 			"GetScale", &Transform::GetScale,
+			"GetAbsoluteScale", &Transform::GetAbsoluteScale,
 			"LookAt", &Transform::LookAt
 		);
 
@@ -550,7 +584,9 @@ namespace FlatEngine
 			"Play", &Audio::PlaySound,
 			"Pause", &Audio::PauseSound,
 			"Stop", &Audio::PauseSound,
-			"StopAll", &Audio::StopAll
+			"StopAll", &Audio::StopAll,
+			"SetEffectVolume", &Audio::SetEffectVolume,
+			"SetMusicVolume", &Audio::SetMusicVolume
 		);
 
 		F_Lua.new_usertype<Button>("Button",

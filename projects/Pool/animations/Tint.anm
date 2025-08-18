@@ -1,0 +1,79 @@
+{
+    "animation": {
+        "_loop": false,
+        "animationProperties": {
+            "audio": [],
+            "camera": [],
+            "canvas": [],
+            "characterController": [],
+            "event": [],
+            "sprite": [
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": false,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": true,
+                    "interpType": 0,
+                    "path": "",
+                    "speed": 0.10000000149011612,
+                    "time": 0.0,
+                    "tintColorW": 1.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 0.0,
+                    "yOffset": 0.0
+                },
+                {
+                    "_instantTintChange": false,
+                    "_offsetAnimated": false,
+                    "_pathAnimated": false,
+                    "_scaleAnimated": false,
+                    "_tintColorAnimated": true,
+                    "interpType": 0,
+                    "path": "",
+                    "speed": 0.10000000149011612,
+                    "time": 995.2379150390625,
+                    "tintColorW": 0.0,
+                    "tintColorX": 1.0,
+                    "tintColorY": 1.0,
+                    "tintColorZ": 1.0,
+                    "xOffset": 0.0,
+                    "yOffset": 0.0
+                }
+            ],
+            "text": [],
+            "transform": [
+                {
+                    "_posAnimated": true,
+                    "_scaleAnimated": false,
+                    "scaleInterpType": 0,
+                    "scaleSpeed": 0.10000000149011612,
+                    "time": 0.0,
+                    "transformInterpType": 0,
+                    "transformSpeed": 0.10000000149011612,
+                    "xPos": 7.0,
+                    "xScale": 1.0,
+                    "yPos": 0.0,
+                    "yScale": 1.0
+                },
+                {
+                    "_posAnimated": true,
+                    "_scaleAnimated": false,
+                    "scaleInterpType": 0,
+                    "scaleSpeed": 0.10000000149011612,
+                    "time": 980.0,
+                    "transformInterpType": 0,
+                    "transformSpeed": 0.10000000149011612,
+                    "xPos": 7.0,
+                    "xScale": 1.0,
+                    "yPos": 3.0,
+                    "yScale": 1.0
+                }
+            ]
+        },
+        "length": 0.0,
+        "name": "Tint"
+    }
+}

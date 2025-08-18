@@ -28,8 +28,6 @@ namespace FlatGui
 
 	void Scene_RenderView()
 	{
-		FL::RenderSceneLines();
-
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
 
@@ -126,7 +124,7 @@ namespace FlatGui
 			if (FG_b_sceneViewLockedOnObject && lockedObject != nullptr)
 			{
 				Transform* transform = lockedObject->GetTransform();
-				Vector2 position = transform->GetTruePosition();
+				Vector2 position = transform->GetAbsoluteScale();
 				FG_sceneViewScrolling = Vector2(position.x * -FG_sceneViewGridStep.x + (ImGui::GetWindowWidth() / 2), position.y * FG_sceneViewGridStep.y + (ImGui::GetWindowHeight() / 2));
 			}
 
@@ -141,6 +139,8 @@ namespace FlatGui
 			// Game Stats in GameView
 			//RenderStatsOnGameView();
 		
+			FL::RenderSceneLines();
+
 		// }
 		ImGui::PopStyleVar();
 		ImGui::PopStyleVar();

@@ -97,7 +97,7 @@ namespace FlatEngine
 			contents.pop_back();
 		}
 
-		contents += "if (scriptName == \"" + fileName + " (C++)\")\n	{\n		newScript = std::make_shared<FlatEngine::" + fileName + ">();\n	}\n	newScript->SetName(\"" + fileName + "\");\n	return newScript; \n }";
+		contents += "if (scriptName == \"" + fileName + " (C++)\")\n	{\n		newScript = std::make_shared<FlatEngine::" + fileName + ">();\n		newScript->SetName(\"" + fileName + " (C++)\");\n	}\n	return newScript; \n }";
 
 		std::ofstream hookupFile(hookupFilePath, std::ios::trunc);
 		hookupFile << contents;

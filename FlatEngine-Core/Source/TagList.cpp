@@ -3,6 +3,8 @@
 #include "GameLoop.h"
 #include "Scene.h"
 
+#include <map>
+
 
 namespace FlatEngine 
 {
@@ -12,12 +14,16 @@ namespace FlatEngine
 	{
 		m_ownerID = -1;
 		UpdateAvailableTags();
+		m_categoryBits = 0;
+		m_maskBits = 0;
 	}
 
 	TagList::TagList(long ownerID)
 	{
 		m_ownerID = ownerID;
 		UpdateAvailableTags();
+		m_categoryBits = 0;
+		m_maskBits = 0;
 	}
 
 	TagList::TagList(TagList* toCopy)
@@ -34,12 +40,20 @@ namespace FlatEngine
 				m_tags.emplace(iterator->first, iterator->second);
 			}
 		}
+
+		m_categoryBits = 0;
+		m_maskBits = 0;
 	}
 
 	TagList::~TagList()
 	{
 	}
 
+
+	void TagList::SetOwnerID(long ownerID)
+	{
+		m_ownerID = ownerID;
+	}
 
 	void TagList::UpdateAvailableTags()
 	{
@@ -170,5 +184,72 @@ namespace FlatEngine
 			}
 		}
 		return ignoredTags;
+	}
+
+	void TagList::SetCategoryBits(uint64_t categoryBits)
+	{
+		m_categoryBits = categoryBits;
+	}
+
+	uint64_t TagList::GetCategoryBits()
+	{
+		return m_categoryBits;
+	}
+
+	void TagList::SetMaskBits(uint64_t maskBits)
+	{
+		m_maskBits = maskBits;
+	}
+
+	uint64_t TagList::GetMaskBits()
+	{
+		return m_maskBits;
+	}
+
+	void TagList::UpdateBits()
+	{
+		m_categoryBits = 0;
+		m_maskBits = 0;
+
+		for (std::map<std::string, bool>::iterator iterator = m_tags.begin(); iterator != m_tags.end(); iterator++)
+		{
+			if (iterator->second)
+			{
+				uint64_t bit = 1;
+				int index = (int)std::distance(m_tags.begin(), iterator);
+
+				for (int i = 0; i < index; i++)
+				{
+					bit *= 2;
+				}
+				if (index == 0)
+				{
+					bit = 2;
+				}
+
+				m_categoryBits |= bit;
+			}
+		}		
+
+		// Masked tags		
+		for (std::map<std::string, bool>::iterator iterator = m_collidesTags.begin(); iterator != m_collidesTags.end(); iterator++)
+		{
+			if (iterator->second)
+			{
+				uint64_t bit = 1;
+				int index = (int)std::distance(m_collidesTags.begin(), iterator);
+
+				for (int i = 0; i < index; i++)
+				{
+					bit *= 2;
+				}
+				if (index == 0)
+				{
+					bit = 2;
+				}
+
+				m_maskBits |= bit;
+			}
+		}		
 	}
 }

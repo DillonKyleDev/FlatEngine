@@ -130,7 +130,7 @@ namespace FlatEngine
 			
 			if (cameraTransform != nullptr)
 			{
-				cameraPosition = cameraTransform->GetTruePosition();
+				cameraPosition = cameraTransform->GetAbsolutePosition();
 			}
 			else
 			{
@@ -179,9 +179,9 @@ namespace FlatEngine
 
 		if (transform != nullptr && transform->IsActive())
 		{
-			Vector2 position = transform->GetTruePosition();
-			Vector2 scale = transform->GetScale();
-			float rotation = transform->GetRotation();
+			Vector2 position = transform->GetAbsolutePosition();
+			Vector2 scale = transform->GetAbsoluteScale();
+			float rotation = transform->GetAbsoluteRotation();
 
 			float cameraLeftEdge = cameraPosition.x - cameraWidth / 2;
 			float cameraRightEdge = cameraPosition.x + cameraWidth / 2;

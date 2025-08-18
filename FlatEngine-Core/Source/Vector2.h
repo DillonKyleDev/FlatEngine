@@ -43,5 +43,6 @@ namespace FlatEngine
 		float GetMagnitude();
 		void Rotate(float degrees);	
 		void NormalizeSelf();
+		void RotateSelf(float degrees);
 	};
 }

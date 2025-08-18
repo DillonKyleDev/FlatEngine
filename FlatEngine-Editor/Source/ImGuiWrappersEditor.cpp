@@ -1607,7 +1607,7 @@ namespace FlatGui
 		Shape::ShapeProps shapeProps = shape->GetShapeProps();
 		b2ShapeId shapeID = shape->GetShapeID();
 		b2ChainId chainID = shape->GetChainID();
-		Shape::ShapeType shapeType = shape->GetShape();
+		Shape::ShapeType shapeType = shape->GetShapeType();
 		std::string ID = "";
 		if (shapeType != Shape::ShapeType::BS_Chain)
 		{
@@ -1680,7 +1680,7 @@ namespace FlatGui
 			{
 				shape->SetRestitution(restitution);
 			}
-			if (shapeType != Shape::ShapeType::BS_Polygon && shapeType != Shape::ShapeType::BS_Chain && shapeType != Shape::ShapeType::BS_Circle)
+			if (shapeType != Shape::ShapeType::BS_Polygon && shapeType != Shape::ShapeType::BS_Chain && shapeType)
 			{
 				Vector2 positionOffset = shapeProps.positionOffset;
 				float rotationOffset = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));				

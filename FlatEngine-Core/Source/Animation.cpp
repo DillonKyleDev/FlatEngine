@@ -271,7 +271,7 @@ namespace FlatEngine
 							bool b_pathAnimated = thisFrameProps->b_pathAnimated;
 							bool b_scaleAnimated = thisFrameProps->b_scaleAnimated;
 							bool b_offsetAnimated = thisFrameProps->b_offsetAnimated;
-							bool b_tintColorAnimated = thisFrameProps->b_tintColorAnimated;
+							bool b_tintColorAnimated = thisFrameProps->b_tintColorAnimated;							
 
 							float lastFrameTime = 0;
 							if (spriteFrameCounter > 0 && props->spriteProps.size() > 1)
@@ -301,7 +301,7 @@ namespace FlatEngine
 								sprite->UpdatePivotOffset();
 								thisFrameProps->b_fired = true;
 							}
-							else if (ellapsedTime > animData.startTime + keyframeTime && !thisFrameProps->b_fired)
+							else if ((ellapsedTime > lastFrameTime + animData.startTime) && (ellapsedTime < animData.startTime + keyframeTime))
 							{								
 								std::shared_ptr<S_Sprite> lastFrameProps = (*lastFrame);
 								float timeLeft = (animData.startTime + keyframeTime) - ellapsedTime;

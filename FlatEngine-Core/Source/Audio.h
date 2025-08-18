@@ -37,13 +37,15 @@ namespace FlatEngine
 		bool IsPaused(std::string soundName);
 		void StopAll();
 		bool IsMusicPlaying(std::string soundName);
-		void Play(std::string soundName, int channel = -1);
-		void Pause(std::string soundName, int channel = -1);
-		void Stop(std::string soundName, int channel = -1);
+		void Play(std::string soundName);
+		void Pause(std::string soundName);
+		void Stop(std::string soundName);
 		// Lua function wrappers because default parameters are not allowed in Lua
 		void PlaySound(std::string soundName);
 		void PauseSound(std::string soundName);
 		void StopSound(std::string soundName);
+		void SetEffectVolume(std::string soundName, int volume);
+		void SetMusicVolume(std::string soundName, int volume);
 
 	private:
 		std::vector<SoundData> m_sounds;

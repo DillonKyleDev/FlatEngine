@@ -28,6 +28,7 @@ namespace FlatEngine
 		}
 		m_b_isPrefab = false;
 		m_prefabName = "";
+		m_b_isPrefabsChild = false;
 		m_prefabSpawnLocation = Vector2();
 		m_tagList = TagList(m_ID);
 		m_parentID = newParentID;
@@ -50,6 +51,16 @@ namespace FlatEngine
 	bool GameObject::IsPrefab()
 	{
 		return m_b_isPrefab;
+	}
+
+	void GameObject::SetIsPrefabChild(bool b_isPrefabChild)
+	{
+		m_b_isPrefabsChild = b_isPrefabChild;
+	}
+
+	bool GameObject::IsPrefabChild()
+	{
+		return m_b_isPrefabsChild;
 	}
 
 	void GameObject::SetPrefabName(std::string prefabName)
@@ -203,8 +214,7 @@ namespace FlatEngine
 			if (parent != nullptr && parent->HasComponent("Transform"))
 			{
 				Transform* parentTransform = parent->GetTransform();
-				Vector2 parentTruePosition = parentTransform->GetTruePosition();
-				transform.SetOrigin(parentTruePosition);
+				Vector2 parentTruePosition = parentTransform->GetAbsolutePosition();				
 			}
 		}
 
@@ -1143,13 +1153,13 @@ namespace FlatEngine
 	{
 		m_b_isActive = b_active;
 
-		for (long child : GetChildren())
-		{
-			if (GetObjectByID(child) != nullptr)
-			{
-				GetObjectByID(child)->SetActive(b_active);
-			}
-		}
+		//for (long child : GetChildren())
+		//{
+		//	if (GetObjectByID(child) != nullptr)
+		//	{
+		//		GetObjectByID(child)->SetActive(b_active);
+		//	}
+		//}
 	}
 
 	bool GameObject::IsActive()

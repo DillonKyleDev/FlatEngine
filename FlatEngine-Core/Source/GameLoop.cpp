@@ -86,10 +86,15 @@ namespace FlatEngine
 		for (std::map<long, Body>::iterator iterator = bodies.begin(); iterator != bodies.end(); iterator++)
 		{
 			//LogVector2(iterator->second.GetPosition(), "Pos: ");
-			for (Box box : iterator->second.GetBoxes())
+			for (Box& box : iterator->second.GetBoxes())
 			{
 
 			}
+			//for (Circle& circle : iterator->second.GetCircles())
+			//{
+			//	LogString("Circle");
+			//	Circle* circlePtr = static_cast<Circle*>(b2Shape_GetUserData(circle.GetShapeID()));
+			//}
 			//LogInt((int)iterator->second.GetBodyProps().type);
 			//LogVector2(iterator->second.GetBodyProps().position, iterator->second.GetParent()->GetName() + " Props Pos: ");	
 			

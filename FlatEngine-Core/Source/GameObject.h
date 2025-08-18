@@ -38,6 +38,8 @@ namespace FlatEngine
 
 		void SetIsPrefab(bool b_isPrefab);
 		bool IsPrefab();
+		void SetIsPrefabChild(bool b_isPrefabChild);
+		bool IsPrefabChild();
 		void SetPrefabName(std::string newPrefabName);
 		std::string GetPrefabName();
 		void SetPrefabSpawnLocation(Vector2 newSpawnLocation);
@@ -122,6 +124,7 @@ namespace FlatEngine
 	private:
 		std::string m_name;
 		bool m_b_isPrefab;
+		bool m_b_isPrefabsChild;
 		std::string m_prefabName;
 		Vector2 m_prefabSpawnLocation;
 		TagList m_tagList;

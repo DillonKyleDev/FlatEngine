@@ -593,6 +593,7 @@ namespace FlatEngine
 			self->SetName(myData.name);
 			self->SetActive(myData.b_isActive);
 			self->SetTagList(myData.tagList);
+			self->GetTagList().SetOwnerID(self->GetID());
 
 			for (long componentID : myData.componentIDs)
 			{
@@ -609,14 +610,12 @@ namespace FlatEngine
 
 						if (parentID != -1)
 						{
-							Vector2 parentPosition = GetObjectByID(parentID)->GetTransform()->GetTruePosition();
-							transform->SetOrigin(parentPosition);
-							transform->SetInitialPosition(transformData->position);
+							Vector2 parentPosition = GetObjectByID(parentID)->GetTransform()->GetAbsolutePosition();							
+							transform->SetPosition(transformData->position);
 						}
 						else
-						{
-							transform->SetOrigin(Vector2(0, 0));
-							transform->SetInitialPosition(spawnLocation);
+						{							
+							transform->SetPosition(spawnLocation);
 						}
 					}
 					else if (prefab.components.at(componentID)->type == "Sprite")
@@ -802,6 +801,7 @@ namespace FlatEngine
 			for (long prefabChildID : myData.childrenIDs)
 			{
 				GameObject* child = InstantiateSelfAndChildren(self->GetID(), prefabChildID, prefab, scene);
+				child->SetIsPrefabChild(true);
 			}
 
 			// After all components are initialized, activate the script components if there are any

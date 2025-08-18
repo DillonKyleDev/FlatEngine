@@ -54,8 +54,7 @@ namespace FlatEngine
 	class GameLoop;
 	class Project;
 	class Scene;
-	class Process;
-	class RayCast;
+	class Process;	
 	class Logger;
 	class Line;
 	class SceneManager;
@@ -153,6 +152,10 @@ namespace FlatEngine
 	extern std::vector<Line> F_SceneLines;
 	extern std::vector<Process> F_ProfilerProcesses;
 	extern Sound F_SoundController;
+	extern int F_musicVolume;
+	extern int F_effectVolume;
+	extern int F_nextAvailableChannel;
+	extern int F_totalAvailableChannels;
 	extern TTF_Font* F_fontCinzel;
 	extern std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)> F_CPPAnimationEventFunctions;
 
@@ -174,9 +177,8 @@ namespace FlatEngine
 	extern Vector2* F_sceneViewCenter;
 	extern Vector2* F_sceneViewGridStep; 
 
-
 	// Collision Detection
-	extern RayCast CastRay(Vector2 initialPos, Vector2 direction, float increment, float length, void(*callback)(RayCast*, Body*), long parentID, bool b_visible = false);
+	extern b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible = false);
 
 	extern bool LoadFonts();
 	extern void FreeFonts();
@@ -196,6 +198,7 @@ namespace FlatEngine
 	extern void HandleEngineEvents(SDL_Event event);
 	extern void HandleContextEvents(MappingContext& context, SDL_Event event, std::vector<std::string>& firedKeys);
 	extern void RemapInputAction(std::string contextName, std::string inputAction, Uint32 timeoutTime = 0);
+	extern Vector2 Scene_GetMousePosWorld();
 	extern Vector2 GetMousePosWorld();
 	extern Vector2 GetMousePosScreen();
 
@@ -251,7 +254,6 @@ namespace FlatEngine
 	extern void RetrieveCPPScriptNames();
 	extern std::shared_ptr<CPPScript> InstantiateCPPScript(std::string scriptName);
 
-
 	// Profiler
 	extern void AddProfilerProcess(std::string name);
 	extern void AddProcessData(std::string processName, float data);
@@ -298,6 +300,7 @@ namespace FlatEngine
 	extern Vector2 AddImageToDrawList(SDL_Texture* texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offset, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation = 0, ImU32 addColor = GetColor32("white"), Vector2 uvStart = Vector2(0, 0), Vector2 uvEnd = Vector2(1, 1));
 	extern void SetMusicVolume(int volume);
 	extern void SetEffectsVolume(int volume);
+	extern int GetNextAvailableEffectChannel();
 
 	// Engine
 	extern bool Init(int windowWidth, int windowHeight);
@@ -330,11 +333,14 @@ namespace FlatEngine
 	extern void DrawRectangle(Vector2 startingPoint, Vector2 endingPoint, Vector2 canvasP0, Vector2 canvasSize, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawLine(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness);
+	extern void DrawLineInGame(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness);
 	extern void DrawRectangleFromLines(Vector2* corners, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void DrawCircle(Vector2 center, float radius, Vector4 color, ImDrawList* drawList, float thickness = 1, int segments = 0);
 	extern void DrawPoint(Vector2 point, Vector4 color, ImDrawList* drawList);
 	extern void DebugRectangle(Vector2 startingPoint, Vector2 endPoint, Vector4 color, float thickness, ImDrawList* drawList);
 	extern void SaveDebugLogToFile(std::string path = "");
+	extern Vector2 Scene_ConvertWorldToScreen(Vector2 positionInWorld);
+	extern Vector2 Scene_ConvertScreenToWorld(Vector2 positionOnScreen);
 	extern Vector2 ConvertWorldToScreen(Vector2 positionInWorld);
 	extern Vector2 ConvertScreenToWorld(Vector2 positionOnScreen);
 

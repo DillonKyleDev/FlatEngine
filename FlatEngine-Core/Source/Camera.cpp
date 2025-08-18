@@ -76,7 +76,7 @@ namespace FlatEngine
 		if (m_b_shouldFollow && followTarget != nullptr && followTarget->HasComponent("Transform"))
 		{
 			Transform* cameraTransform = GetParent()->GetTransform();
-			Vector2 followPos = followTarget->GetTransform()->GetTruePosition();
+			Vector2 followPos = followTarget->GetTransform()->GetAbsolutePosition();
 			Vector2 currentPos = cameraTransform->GetPosition(); // Shouldn't have a parent if following so don't need GetTruePosition()
 
 			cameraTransform->SetPosition(Lerp(currentPos, followPos, m_followSmoothing));

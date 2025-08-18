@@ -261,4 +261,9 @@ namespace FlatEngine
 	{
 		Normalize();
 	}
+
+	void Vector2::RotateSelf(float degrees)
+	{
+		Rotate(degrees);
+	}
 }

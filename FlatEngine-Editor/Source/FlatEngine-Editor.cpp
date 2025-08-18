@@ -225,7 +225,8 @@ public:
 	{
 		if (m_b_recreateWindow)
 		{
-			FL::F_Window->ResizeWindow(1500, 850);
+			FL::F_Window->ResizeWindow(1920, 1040);
+			//FL::F_Window->SetFullscreen(true);
 			m_b_recreateWindow = false;
 		}
 

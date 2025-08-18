@@ -5,7 +5,7 @@
 function Awake() 
      Pocket[my_id] =
      {
-		-- Key value pairs here
+          gameManager = GetObjectByName("GameManager")
      }
      local data = GetInstanceData("Pocket", my_id)
 end
@@ -36,7 +36,10 @@ function OnBeginSensorTouch(touched)
           -- if (touchedParent:GetName() == "WhiteBall") then
           --      ResetWhiteBall()
           -- end                    
+          data.gameManager:GetAudio():Play("BallIn")
           touchedParent:GetAnimation():Play("Disappear")
+          local gameData = GetInstanceData("GameManager", data.gameManager:GetID())
+          gameData.score = gameData.score + 1
      end
 end
 

@@ -10,8 +10,10 @@ namespace FlatEngine
 		m_b_isPaused = false;
 		m_music = nullptr;
 		m_effect = nullptr;
-		m_musicVolume = 20;
-		m_effectVolume = 7;
+		m_musicVolume = F_musicVolume;
+		m_effectVolume = F_effectVolume;
+		m_effectChannel = 0;
+		m_b_loopMusic = false;
 		Mix_Volume(-1, m_effectVolume);
 		Mix_VolumeMusic(m_musicVolume);
 	}
@@ -23,24 +25,26 @@ namespace FlatEngine
 		m_effect = nullptr;
 	}
 
-	int Sound::getMusicVolume()
+	int Sound::GetMusicVolume()
 	{
 		return Mix_VolumeMusic(-1);
 	}
 
-	void Sound::setMusicVolume(int volume)
+	// Max volume is 128
+	void Sound::SetMusicVolume(int volume)
 	{
 		Mix_VolumeMusic(volume);
 	}
 
-	int Sound::getEffectVolume()
+	int Sound::GetEffectVolume()
 	{
 		return Mix_Volume(-1, -1);
 	}
 
-	void Sound::setEffectVolume(int volume)
+	// Max volume is 128
+	void Sound::SetEffectVolume(int volume)
 	{
-		Mix_Volume(-1, volume);
+		m_effectVolume = volume;
 	}
 
 	Mix_Music* Sound::LoadMusic(std::string path)
@@ -57,9 +61,11 @@ namespace FlatEngine
 
 	void Sound::PlayMusic()
 	{
+		SetMusicVolume(m_musicVolume);
+
 		if (Mix_PlayingMusic() == 0)
 		{
-			Mix_PlayMusic(m_music, -1);
+			Mix_PlayMusic(m_music, m_b_loopMusic);
 		}
 		else
 		{
@@ -101,14 +107,26 @@ namespace FlatEngine
 		return Mix_PlayingMusic();
 	}
 
-	void Sound::PlayEffect(int channel)
+	void Sound::PlayEffect()
 	{
 		// Play effect on channel, repeat 0 times
-		Mix_PlayChannel(channel, m_effect, 0);
+		m_effectChannel = GetNextAvailableEffectChannel();		
+		Mix_Volume(m_effectChannel, m_effectVolume);
+		Mix_PlayChannel(m_effectChannel, m_effect, 0);
 	}
 
-	void Sound::HaultChannel(int channel)
+	void Sound::HaultChannel()
 	{
-		Mix_HaltChannel(channel);
+		Mix_HaltChannel(m_effectChannel);
+	}
+
+	bool Sound::Loops()
+	{
+		return m_b_loopMusic;
+	}
+
+	void Sound::SetLoops(bool b_loops)
+	{
+		m_b_loopMusic = b_loops;
 	}
 }

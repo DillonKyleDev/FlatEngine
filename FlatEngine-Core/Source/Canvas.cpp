@@ -66,7 +66,7 @@ namespace FlatEngine
 	void Canvas::CalculateActiveEdges()
 	{
 		Transform* transform = GetParent()->GetTransform();
-		Vector2 position = transform->GetTruePosition();
+		Vector2 position = transform->GetAbsolutePosition();
 		Vector2 scale = transform->GetScale();
 
 		float activeLeft = F_gameViewCenter.x + ((position.x - (m_width / 2 * scale.x)) * F_gameViewGridStep.x);

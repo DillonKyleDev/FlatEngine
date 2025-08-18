@@ -12,12 +12,9 @@ namespace FlatEngine
 		SetType(T_Transform);
 		SetID(myID);
 		SetParentID(parentID);
-		m_positionOrigin = Vector2(0, 0);
 		m_position = Vector2(0, 0);
-		m_baseScale = Vector2(1, 1);
 		m_scale = Vector2(1, 1);		
 		m_rotation = 0;
-		m_rotationOrigin = 0;
 	}
 
 	Transform::~Transform()
@@ -31,8 +28,6 @@ namespace FlatEngine
 			{ "id", GetID() },
 			{ "_isCollapsed", IsCollapsed() },
 			{ "_isActive", IsActive() },
-			{ "xOrigin", m_positionOrigin.x },
-			{ "yOrigin", m_positionOrigin.y },
 			{ "xPos", m_position.x },
 			{ "yPos", m_position.y },
 			{ "rotation", m_rotation },
@@ -59,27 +54,7 @@ namespace FlatEngine
 		return rotation;
 	}
 
-	void Transform::SetInitialPosition(Vector2 initialPos)
-	{
-		m_position = initialPos;
-	}
-
-	void Transform::SetOrigin(Vector2 newOrigin)
-	{
-		m_positionOrigin = Vector2(newOrigin.x * m_baseScale.x, newOrigin.y * m_baseScale.y);
-
-		if (GetParent() != nullptr && GetParent()->HasComponent("Button"))
-		{
-			GetParent()->GetButton()->CalculateActiveEdges();
-		}
-	}
-
-	Vector2 Transform::GetOrigin()
-	{
-		return m_positionOrigin;
-	}
-
-	Vector2 Transform::GetTruePosition()
+	Vector2 Transform::GetAbsolutePosition()
 	{
 		Body* body = GetParent()->GetBody();
 
@@ -88,92 +63,57 @@ namespace FlatEngine
 			m_position = body->GetPosition();			
 		}
 
-		return m_positionOrigin + m_position;
+		Vector2 positionOrigin = Vector2();
+
+		if (GetParent()->GetParent() != nullptr)
+		{
+			positionOrigin = GetParent()->GetParent()->GetTransform()->GetAbsolutePosition();
+		}
+
+		return positionOrigin + m_position;
+	}
+
+	Vector2 Transform::GetPositionOrigin()
+	{
+		Body* body = GetParent()->GetBody();
+
+		Vector2 positionOrigin = Vector2();
+
+		if (GetParent()->GetParent() != nullptr)
+		{
+			positionOrigin = GetParent()->GetParent()->GetTransform()->GetAbsolutePosition();
+		}
+
+		return positionOrigin;
 	}
 
 	void Transform::SetPosition(Vector2 newPosition)
 	{
 		m_position = newPosition;
 
-		if (GetParent() != nullptr)
-		{
-			if (GetParent()->HasChildren())
-			{
-				for (long id : GetParent()->GetChildren())
-				{
-					GameObject* child = GetObjectByID(id);
-					child->GetTransform()->UpdateOrigin(GetTruePosition());
-				}
-			}
+		Body* body = GetParent()->GetBody();
 
-			if (GetParent()->GetBody() != nullptr)
-			{
-				GetParent()->GetBody()->SetPosition(newPosition);
-			}
+		if (body != nullptr)
+		{
+			body->SetPosition(newPosition);
 		}
 	}
 
-
-	void Transform::UpdateOrigin(Vector2 newOrigin)
+	Vector2 Transform::GetAbsoluteScale()
 	{
-		m_positionOrigin = Vector2(newOrigin.x * m_baseScale.x, newOrigin.y * m_baseScale.y);
-		UpdateChildOrigins(GetTruePosition());
-	}
+		Vector2 scaleOrigin = 1;
 
-	void Transform::UpdateChildOrigins(Vector2 newOrigin)
-	{
-		if (GetParent()->HasChildren())
+		if (GetParent()->GetParent() != nullptr)
 		{
-			for (long ID : GetParent()->GetChildren())
-			{
-				GameObject *child = GetObjectByID(ID);
-				Transform* childTransform = child->GetTransform();
-				childTransform->SetOrigin(newOrigin);
-				childTransform->UpdateChildOrigins(childTransform->GetTruePosition());
-			}
+			scaleOrigin = GetParent()->GetParent()->GetTransform()->GetAbsoluteScale();
 		}
-	}
 
-	void Transform::UpdateChildBaseScale(Vector2 baseScale)
-	{
-		if (baseScale.x != 0 && baseScale.y != 0)
-		{
-			if (GetParent()->HasChildren())
-			{
-				for (long ID : GetParent()->GetChildren())
-				{
-					GameObject* child = GetObjectByID(ID);					
-					Transform* childTransform = child->GetTransform();
-					childTransform->SetBaseScale(baseScale);
-					childTransform->UpdateChildBaseScale(childTransform->GetTotalScale());
-				}
-			}
-		}
-	}
-
-	Vector2 Transform::GetBaseScale()
-	{
-		return m_baseScale;
-	}
-
-	void Transform::SetBaseScale(Vector2 scale)
-	{
-		if (scale.x != 0 && scale.y != 0)
-		{
-			m_baseScale = scale;
-		}
-	}
-
-	Vector2 Transform::GetTotalScale()
-	{
-		return Vector2(m_baseScale.x * m_scale.x, m_baseScale.y * m_scale.y);
+		return scaleOrigin * m_scale;
 	}
 
 	void Transform::SetScale(Vector2 newScale)
 	{
-		m_scale = newScale;
-
-		//UpdateChildBaseScale(m_scale);
+		m_scale = newScale;		
 	}
 
 	void Transform::SetRotation(float newRotation)
@@ -215,7 +155,7 @@ namespace FlatEngine
 		return m_rotation;
 	}
 
-	float Transform::GetTrueRotation()
+	float Transform::GetAbsoluteRotation()
 	{
 		Body* body = GetParent()->GetBody();
 
@@ -226,9 +166,9 @@ namespace FlatEngine
 
 		float parentTrueRotation = 0;
 
-		if (GetParent() != nullptr)
+		if (GetParent()->GetParent() != nullptr)
 		{
-			parentTrueRotation = GetParent()->GetTransform()->GetTrueRotation();
+			parentTrueRotation = GetParent()->GetParent()->GetTransform()->GetAbsoluteRotation();
 		}
 
 		return m_rotation + parentTrueRotation;
@@ -236,7 +176,7 @@ namespace FlatEngine
 
 	void Transform::LookAt(Vector2 lookAt)
 	{
-		Vector2 slope = Vector2(lookAt.x - GetTruePosition().x, lookAt.y - GetTruePosition().y);
+		Vector2 slope = lookAt - GetAbsolutePosition();
 		float angle = atan(slope.y / slope.x) * 180.0f / (float)M_PI;
 		m_rotation = angle;
 	}

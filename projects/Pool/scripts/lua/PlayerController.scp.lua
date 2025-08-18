@@ -4,19 +4,17 @@
 function Awake() 
     PlayerController[my_id] = 
     {
-        -- gameScore = 0,
-        -- scoreText = GetObjectByName("CurrentScore"),
+        gameManager = GetObjectByName("GameManager"),
         mappingContext = GetMappingContext("MC_Player"),
         transform = this_object:GetTransform(),
         body = this_object:GetBody(),
         clickPos = Vector2:new(),
-        releasePos = Vector2:new()
+        releasePos = Vector2:new(),
     }    
 end 
 
 function Start()     
     local data = GetInstanceData("PlayerController", my_id)
-    -- GetObjectByName("Music"):GetAudio():Play("ThemeMusic")
 end 
 
 function Update()     
@@ -31,7 +29,9 @@ function handleMovement()
         data.clickPos = GetMousePosWorld()
     end
     if data.mappingContext:ActionPressed("IA_Aiming") then
-        SceneDrawLine(data.clickPos, GetMousePosWorld(), GetColor("white"), 1)
+        local difference = SubtractVectors(data.clickPos, GetMousePosWorld())
+        local endDraw = AddVectors(data.transform:GetPosition(), difference)
+        DrawLineInGame(data.transform:GetPosition(), endDraw, GetColor("white"), 4)
     end
     if data.mappingContext:ActionPressed("IA_ReleaseShot") then
         local forceMultiplier = 100
@@ -43,6 +43,13 @@ end
 -- each of these functions must be present in each Lua script file otherwise other script's implementations will be used with this object instead
 function OnBeginCollision(collidedWith, manifold)
     local data = GetInstanceData("PlayerController", my_id)
+    local relativeVelocity = SubtractVectors(collidedWith:GetLinearVelocity(), data.body:GetLinearVelocity())
+    local magnitude = ToInt(relativeVelocity:GetMagnitude() * 3)  
+
+    if (collidedWith:GetParent():GetName() == "Walls") then
+        data.gameManager:GetAudio():SetEffectVolume("Hit3", magnitude)
+        data.gameManager:GetAudio():Play("Hit3")
+    end
 end
 
 function OnEndCollision(collidedWith, manifold)

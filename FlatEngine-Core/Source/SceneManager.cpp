@@ -51,7 +51,10 @@ namespace FlatEngine
 			{
 				for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
 				{
-					sceneObjectsJsonArray.push_back(CreateJsonFromObject(iter->second));
+					if (!iter->second.IsPrefabChild())
+					{
+						sceneObjectsJsonArray.push_back(CreateJsonFromObject(iter->second));
+					}
 				}
 			}
 			else
@@ -119,6 +122,7 @@ namespace FlatEngine
 				m_loadedScene.SetName(GetFilenameFromPath(pointToPath, false));
 
 				json fileContentJson = json::parse(fileContent);
+				std::vector<json> prefabsJson = std::vector<json>();
 
 				try
 				{
@@ -131,7 +135,28 @@ namespace FlatEngine
 							try
 							{
 								json objectJson = fileContentJson.at("Scene GameObjects").at(i);
-								GameObject* loadedObject = CreateObjectFromJson(objectJson, &m_loadedScene);								
+
+								if (CheckJsonBool(objectJson, "_isPrefab", "GameObject"))
+								{
+									prefabsJson.push_back(objectJson);
+								}
+								else
+								{
+									CreateObjectFromJson(objectJson, &m_loadedScene);
+								}
+							}
+							catch (const json::out_of_range& e)
+							{
+								LogError(e.what());
+							}
+						}
+
+						// Create prefabs after regular objects so that prefab children don't steal "unused" GameObject IDs from regular objects and then get overwritten by those objects
+						for (json objectJson : prefabsJson)
+						{
+							try
+							{
+								CreateObjectFromJson(objectJson, &m_loadedScene);
 							}
 							catch (const json::out_of_range& e)
 							{

@@ -31,7 +31,8 @@ F_Colors = {
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	openFileButtonBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
 	openFileButtonHovered = Vector4:new(0.3, 0.3, 0.32, 1.0),
-	shapesScrollingBg = Vector4:new(0.1, 0.1, 0.12, 1.0),
+	-- shapesScrollingBg = Vector4:new(0.37, 0.51, 0.84, 1.0),
+	shapesScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
 	shapeBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
 	-- Colliders --
 	sensorActive = Vector4:new(1.0, 1.0, 0.27, 1.0),
@@ -70,7 +71,7 @@ F_Colors = {
 	chainColliderEndSegmentsActive = Vector4:new(1.0, 0.0, 0.0, 1.0),
 	chainColliderEndSegmentsActiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
 
-	rayCast = Vector4:new(0.76, 0.42, 0.0, 1.0),
+	rayCast = Vector4:new(0.8, 0.75, 0.05, 1.0),
 	-- Button Components
 	buttonComponentActive = Vector4:new(0.75, 0.06, 0.41, 1.0),
 	buttonComponentInactive = Vector4:new(0.75, 0.06, 0.41, 0.4),
@@ -193,6 +194,7 @@ F_Colors = {
 	navHighlight = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	navWindowDimBg = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	modalWindowDimBg = Vector4:new(0.2, 0.2, 0.2, 1.0),
+	dropTarget = Vector4:new(1.0, 0.95, 0.0, 1.0),
 	---------------------
 	--- Custom Colors ---
 	---------------------

@@ -76,14 +76,14 @@
     <Filter Include="..\projects">
       <UniqueIdentifier>{1A37B1AD-86EC-29A3-0FE1-237A7B9520A7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\projects\ClosedLoop">
-      <UniqueIdentifier>{BD07EC05-A901-1558-926E-AB687E077BC4}</UniqueIdentifier>
+    <Filter Include="..\projects\Pool">
+      <UniqueIdentifier>{43FC3170-2FF5-50C2-5827-3647447F30CE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\projects\ClosedLoop\scripts">
-      <UniqueIdentifier>{14F49A7C-001A-65E3-E95F-EAAED5248AAF}</UniqueIdentifier>
+    <Filter Include="..\projects\Pool\scripts">
+      <UniqueIdentifier>{9A0EB8F0-8633-0771-AF7E-EC009B02068F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\projects\ClosedLoop\scripts\cpp">
-      <UniqueIdentifier>{E6577A7A-D293-7DE4-3BA6-95DB270126FF}</UniqueIdentifier>
+    <Filter Include="..\projects\Pool\scripts\cpp">
+      <UniqueIdentifier>{6C450D95-5800-FD40-01B8-758BED5147D1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
@@ -507,8 +507,8 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp">
       <Filter>..\Vendor\includes\Sol2\include\sol</Filter>
     </ClInclude>
-    <ClInclude Include="..\projects\ClosedLoop\scripts\cpp\Player.h">
-      <Filter>..\projects\ClosedLoop\scripts\cpp</Filter>
+    <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h">
+      <Filter>..\projects\Pool\scripts\cpp</Filter>
     </ClInclude>
     <ClInclude Include="Source\Animation.h">
       <Filter>Source</Filter>
@@ -523,6 +523,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Body.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Box.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Button.h">
@@ -552,7 +555,13 @@
     <ClInclude Include="Source\CharacterController.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Circle.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Component.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DistanceJoint.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\ECSManager.h">
@@ -570,6 +579,9 @@
     <ClInclude Include="Source\GameObject.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Joint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Line.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -582,6 +594,12 @@
     <ClInclude Include="Source\Matrix.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\MotorJoint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MouseJoint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Physics.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -591,13 +609,16 @@
     <ClInclude Include="Source\PrefabManager.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\PrismaticJoint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\ProfilerProcess.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Project.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\RayCast.h">
+    <ClInclude Include="Source\RevoluteJoint.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene.h">
@@ -607,6 +628,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Script.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Shape.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Sound.h">
@@ -639,12 +663,15 @@
     <ClInclude Include="Source\Vector4.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\WeldJoint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\WheelJoint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\WindowManager.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Shape.h" />
-    <ClInclude Include="Source\Box.h" />
-    <ClInclude Include="Source\Circle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -683,8 +710,8 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp">
       <Filter>..\Vendor\includes\ImPlot</Filter>
     </ClCompile>
-    <ClCompile Include="..\projects\ClosedLoop\scripts\cpp\Player.cpp">
-      <Filter>..\projects\ClosedLoop\scripts\cpp</Filter>
+    <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp">
+      <Filter>..\projects\Pool\scripts\cpp</Filter>
     </ClCompile>
     <ClCompile Include="Source\Animation.cpp">
       <Filter>Source</Filter>
@@ -699,6 +726,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Body.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Box.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Button.cpp">
@@ -728,7 +758,13 @@
     <ClCompile Include="Source\CharacterController.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Circle.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Component.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DistanceJoint.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\ECSManager.cpp">
@@ -749,6 +785,9 @@
     <ClCompile Include="Source\ImGuiWrappersCore.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Joint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Line.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -764,6 +803,12 @@
     <ClCompile Include="Source\Matrix.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\MotorJoint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MouseJoint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Physics.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -771,6 +816,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\PrefabManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PrismaticJoint.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Profiler.cpp">
@@ -782,7 +830,7 @@
     <ClCompile Include="Source\Project.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\RayCast.cpp">
+    <ClCompile Include="Source\RevoluteJoint.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene.cpp">
@@ -792,6 +840,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Script.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shape.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Sound.cpp">
@@ -824,12 +875,15 @@
     <ClCompile Include="Source\Vector4.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\WeldJoint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WheelJoint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\WindowManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Shape.cpp" />
-    <ClCompile Include="Source\Box.cpp" />
-    <ClCompile Include="Source\Circle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

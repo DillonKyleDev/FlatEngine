@@ -5,6 +5,27 @@
 
 namespace FlatEngine
 {
+	int F_musicVolume = 2;
+	int F_effectVolume = 7;
+	int F_nextAvailableChannel = 0;
+	int F_totalAvailableChannels = 100;
+
+	int GetNextAvailableEffectChannel()
+	{
+		int nextChannel = F_nextAvailableChannel;
+		
+		if (F_nextAvailableChannel == F_totalAvailableChannels)
+		{
+			F_nextAvailableChannel = 0;
+		}
+		else
+		{
+			F_nextAvailableChannel++;
+		}
+
+		return nextChannel;
+	}
+
 	Audio::Audio(long myID, long parentID)
 	{
 		SetType(T_Audio);
@@ -126,6 +147,7 @@ namespace FlatEngine
 		return false;
 	}
 
+	// Sound files with .mp3 extension are created as Music, any other extension is created as a Sound
 	void Audio::AddSound(std::string soundName, std::string soundPath)
 	{
 		SoundData soundData;
@@ -214,6 +236,30 @@ namespace FlatEngine
 		}
 	}
 
+	// Max volume is 128
+	void Audio::SetEffectVolume(std::string soundName, int volume)
+	{
+		for (SoundData sound : m_sounds)
+		{
+			if (sound.name == soundName)
+			{				
+				sound.sound->SetEffectVolume(volume);
+			}
+		}
+	}
+
+	// Max volume is 128
+	void Audio::SetMusicVolume(std::string soundName, int volume)
+	{
+		for (SoundData sound : m_sounds)
+		{
+			if (sound.name == soundName)
+			{
+				sound.sound->SetMusicVolume(volume);
+			}
+		}
+	}
+
 	void Audio::StopAll()
 	{
 		for (SoundData sound : m_sounds)
@@ -222,7 +268,7 @@ namespace FlatEngine
 		}
 	}
 
-	void Audio::Play(std::string soundName, int channel)
+	void Audio::Play(std::string soundName)
 	{
 		for (SoundData sound : m_sounds)
 		{
@@ -234,32 +280,32 @@ namespace FlatEngine
 				}
 				else
 				{
-					sound.sound->PlayEffect(channel);
+					sound.sound->PlayEffect();
 				}
 			}
 		}
 	}
 
-	void Audio::Pause(std::string soundName, int channel)
+	void Audio::Pause(std::string soundName)
 	{
 		for (SoundData sound : m_sounds)
 		{
 			if (sound.name == soundName)
 			{
 				sound.sound->PauseMusic();
-				sound.sound->HaultChannel(channel);
+				sound.sound->HaultChannel();
 			}
 		}
 	}
 
-	void Audio::Stop(std::string soundName, int channel)
+	void Audio::Stop(std::string soundName)
 	{
 		for (SoundData sound : m_sounds)
 		{
 			if (sound.name == soundName)
 			{
 				sound.sound->StopMusic();
-				sound.sound->HaultChannel(channel);
+				sound.sound->HaultChannel();
 			}
 		}
 	}

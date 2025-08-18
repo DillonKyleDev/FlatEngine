@@ -12,7 +12,6 @@
 #include "Scene.h"
 #include "Animation.h"
 #include "CPPScript.h"
-#include "RayCast.h"
 #include "Physics.h"
 #include "Body.h"
 #include "Shape.h"
@@ -234,7 +233,7 @@ namespace FlatEngine
 			{
 				for (SoundData sound : audio.second.GetSounds())
 				{
-					sound.sound->setMusicVolume(volume);
+					sound.sound->SetMusicVolume(volume);
 				}
 			}
 		}
@@ -249,7 +248,7 @@ namespace FlatEngine
 			{
 				for (SoundData sound : audio.second.GetSounds())
 				{
-					sound.sound->setEffectVolume(volume);
+					sound.sound->SetEffectVolume(volume);
 				}
 			}
 		}
@@ -304,7 +303,7 @@ namespace FlatEngine
 						}
 						else
 						{
-							Mix_AllocateChannels(100);
+							Mix_AllocateChannels(F_totalAvailableChannels);
 							printf("SDL_mixer initialized...\n");
 						}
 
@@ -1352,6 +1351,13 @@ namespace FlatEngine
 		}
 	}
 
+	Vector2 Scene_GetMousePosWorld()
+	{
+		int x, y;
+		Uint32 buttons = SDL_GetMouseState(&x, &y);
+		return Scene_ConvertScreenToWorld(Vector2((float)x, (float)y));
+	}
+
 	Vector2 GetMousePosWorld()
 	{
 		int x, y;
@@ -2029,9 +2035,41 @@ namespace FlatEngine
 	// Start and End are in world coordinates
 	void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness)
 	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
+		PushWindowStyles();
+		ImGui::Begin("Scene View", 0, 16 | 8);
+		PopWindowStyles();
+		// {
+
+		Vector2 start = Scene_ConvertWorldToScreen(startingPoint);
+		Vector2 end = Scene_ConvertWorldToScreen(endingPoint);
+		F_Logger.DrawLine(start, end, color, thickness, ImGui::GetWindowDrawList());
+
+		// }
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+		ImGui::End(); // Scene View
+	}
+
+	// Start and End are in world coordinates
+	void DrawLineInGame(Vector2 startingPoint, Vector2 endingPoint, Vector4 color, float thickness)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
+		PushWindowStyles();
+		ImGui::Begin("Game View", 0, 16 | 8);
+		PopWindowStyles();
+		// {
+
 		Vector2 start = ConvertWorldToScreen(startingPoint);
 		Vector2 end = ConvertWorldToScreen(endingPoint);
-		F_Logger.DrawLine(start, end, color, thickness, ImGui::GetForegroundDrawList());
+		F_Logger.DrawLine(start, end, color, thickness, ImGui::GetWindowDrawList());
+
+		// }
+		ImGui::PopStyleVar();
+		ImGui::PopStyleVar();
+		ImGui::End(); // Game View
 	}
 
 	void DrawRectangleFromLines(Vector2* corners, Vector4 color, float thickness, ImDrawList* drawList)
@@ -2065,7 +2103,7 @@ namespace FlatEngine
 	}
 
 	// Converts from world grid space in Scene View to screen space
-	Vector2 ConvertWorldToScreen(Vector2 positionInWorld)
+	Vector2 Scene_ConvertWorldToScreen(Vector2 positionInWorld)
 	{
 		float x = F_sceneViewCenter->x + (positionInWorld.x * F_sceneViewGridStep->x);
 		float y = F_sceneViewCenter->y - (positionInWorld.y * F_sceneViewGridStep->x);
@@ -2074,10 +2112,28 @@ namespace FlatEngine
 	}
 
 	// Converts from screen space to world grid space in Scene View
-	Vector2 ConvertScreenToWorld(Vector2 positionOnScreen)
+	Vector2 Scene_ConvertScreenToWorld(Vector2 positionOnScreen)
 	{
 		float x = (positionOnScreen.x - F_sceneViewCenter->x) / F_sceneViewGridStep->x;
 		float y = (F_sceneViewCenter->y - positionOnScreen.y) / F_sceneViewGridStep->x;
+
+		return Vector2(x, y);
+	}
+
+	// Converts from world grid space in Game View to screen space
+	Vector2 ConvertWorldToScreen(Vector2 positionInWorld)
+	{
+		float x = F_gameViewCenter.x + (positionInWorld.x * F_gameViewGridStep.x);
+		float y = F_gameViewCenter.y - (positionInWorld.y * F_gameViewGridStep.x);
+
+		return Vector2(x, y);
+	}
+
+	// Converts from screen space to world grid space in Game View
+	Vector2 ConvertScreenToWorld(Vector2 positionOnScreen)
+	{
+		float x = (positionOnScreen.x - F_gameViewCenter.x) / F_gameViewGridStep.x;
+		float y = (F_gameViewCenter.y - positionOnScreen.y) / F_gameViewGridStep.x;
 
 		return Vector2(x, y);
 	}
@@ -3144,9 +3200,8 @@ namespace FlatEngine
 								float rotation = CheckJsonFloat(componentJson, "rotation", objectName);
 								transform->SetID(id);
 								transform->SetActive(b_isActive);
-								transform->SetCollapsed(b_isCollapsed);
-								transform->SetOrigin(Vector2(CheckJsonFloat(componentJson, "xOrigin", objectName), CheckJsonFloat(componentJson, "yOrigin", objectName)));
-								transform->SetInitialPosition(Vector2(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName)));
+								transform->SetCollapsed(b_isCollapsed);								
+								transform->SetPosition(Vector2(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName)));
 								transform->SetScale(Vector2(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName)));
 								transform->SetRotation(rotation);
 								objectRotation = rotation;

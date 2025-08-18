@@ -4,6 +4,8 @@
 #include "Capsule.h"
 #include "Polygon.h"
 #include "Chain.h"
+#include "Joint.h"
+#include "DistanceJoint.h"
 
 
 namespace FlatEngine
@@ -16,11 +18,11 @@ namespace FlatEngine
 
 		m_bodyID = b2BodyId();
 		m_bodyProps = Physics::BodyProps();		
-		m_boxes = std::vector<Box>();
-		m_circles = std::vector<Circle>();
-		m_capsules = std::vector<Capsule>();
-		m_polygons = std::vector<Polygon>();
-		m_chains = std::vector<Chain>();
+		m_boxes = std::list<Box>();
+		m_circles = std::list<Circle>();
+		m_capsules = std::list<Capsule>();
+		m_polygons = std::list<Polygon>();
+		m_chains = std::list<Chain>();
 		// Contacts
 		m_beginContactCallback = nullptr;
 		m_b_beginContactCallbackSet = false;
@@ -31,6 +33,8 @@ namespace FlatEngine
 		m_b_beginSensorTouchCallbackSet = false;
 		m_endSensorTouchCallback = nullptr;
 		m_b_endSensorTouchCallbackSet = false;
+
+		m_distanceJoints = std::list<DistanceJoint*>();
 	}
 
 	Body::~Body()
@@ -125,7 +129,16 @@ namespace FlatEngine
 
 	Body* Body::GetBodyFromShapeID(b2ShapeId shapeID)
 	{
-		return static_cast<Shape*>(b2Shape_GetUserData(shapeID))->GetParentBody();
+		Shape* shape = static_cast<Shape*>(b2Shape_GetUserData(shapeID));
+
+		if (b2Shape_IsValid(shape->GetShapeID()))
+		{
+			return shape->GetParentBody();
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	void Body::SetOnEndContact(void(*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID))
@@ -421,13 +434,15 @@ namespace FlatEngine
 	void Body::RemoveShape(b2ShapeId shapeID)
 	{
 		int toDelete = -1;
+		int counter = 0;
 
-		for (int i = 0; i < m_boxes.size(); i++)
+		for (Box box : m_boxes)
 		{
-			if (m_boxes[i].GetShapeID().index1 == shapeID.index1)
+			if (box.GetShapeID().index1 == shapeID.index1)
 			{
-				m_boxes[i].DestroyShape();
-				toDelete = i;
+				box.DestroyShape();
+				toDelete = counter;
+				break;
 			}
 		}
 		if (toDelete != -1)
@@ -436,11 +451,13 @@ namespace FlatEngine
 			toDelete = -1;
 		}
 
-		for (int i = 0; i < m_circles.size(); i++)
+		for (Circle circle : m_circles)
 		{
-			if (m_circles[i].GetShapeID().index1 == shapeID.index1)
+			if (circle.GetShapeID().index1 == shapeID.index1)
 			{
-				m_circles[i].DestroyShape();
+				circle.DestroyShape();
+				toDelete = counter;
+				break;
 			}
 		}
 		if (toDelete != -1)
@@ -449,12 +466,13 @@ namespace FlatEngine
 			toDelete = -1;
 		}
 
-		for (int i = 0; i < m_capsules.size(); i++)
+		for (Capsule capsule : m_capsules)
 		{
-			if (m_capsules[i].GetShapeID().index1 == shapeID.index1)
+			if (capsule.GetShapeID().index1 == shapeID.index1)
 			{
-				m_capsules[i].DestroyShape();
-				toDelete = i;
+				capsule.DestroyShape();
+				toDelete = counter;
+				break;
 			}
 		}
 		if (toDelete != -1)
@@ -463,12 +481,13 @@ namespace FlatEngine
 			toDelete = -1;
 		}
 
-		for (int i = 0; i < m_polygons.size(); i++)
+		for (Polygon polygon : m_polygons)
 		{
-			if (m_polygons[i].GetShapeID().index1 == shapeID.index1)
+			if (polygon.GetShapeID().index1 == shapeID.index1)
 			{
-				m_polygons[i].DestroyShape();
-				toDelete = i;
+				polygon.DestroyShape();
+				toDelete = counter;
+				break;
 			}
 		}
 		if (toDelete != -1)
@@ -481,14 +500,16 @@ namespace FlatEngine
 	void Body::RemoveChain(b2ChainId chainID)
 	{
 		int toDelete = -1;
+		int chainCounter = 0;
 
-		for (int i = 0; i < m_chains.size(); i++)
+		for (Chain chain : m_chains)
 		{
-			if (m_chains[i].GetChainID().index1 == chainID.index1)
+			if (chain.GetChainID().index1 == chainID.index1)
 			{
-				m_chains[i].DestroyShape();
-				toDelete = i;
+				chain.DestroyShape();
+				toDelete = chainCounter;
 			}
+			chainCounter++;
 		}
 		if (toDelete != -1)
 		{
@@ -496,27 +517,27 @@ namespace FlatEngine
 		}
 	}
 
-	std::vector<Box>& Body::GetBoxes()
+	std::list<Box>& Body::GetBoxes()
 	{
 		return m_boxes;
 	}
 
-	std::vector<Circle>& Body::GetCircles()
+	std::list<Circle>& Body::GetCircles()
 	{
 		return m_circles;
 	}
 
-	std::vector<Capsule>& Body::GetCapsules()
+	std::list<Capsule>& Body::GetCapsules()
 	{
 		return m_capsules;
 	}
 
-	std::vector<Polygon>& Body::GetPolygons()
+	std::list<Polygon>& Body::GetPolygons()
 	{
 		return m_polygons;
 	}
 
-	std::vector<Chain>& Body::GetChains()
+	std::list<Chain>& Body::GetChains()
 	{
 		return m_chains;
 	}
@@ -537,7 +558,7 @@ namespace FlatEngine
 		Box box = Box(this);
 		if (shapeProps.shape != Shape::BS_None)
 		{
-			box.SetProps(shapeProps);
+			box.SetShapeProps(shapeProps);
 		}
 		m_boxes.push_back(box);
 		m_boxes.back().CreateShape();
@@ -548,9 +569,9 @@ namespace FlatEngine
 		Circle circle = Circle(this);
 		if (shapeProps.shape != Shape::BS_None)
 		{
-			circle.SetProps(shapeProps);
-		}
-		m_circles.push_back(circle);
+			circle.SetShapeProps(shapeProps);
+		}		
+		m_circles.push_back(circle);		
 		m_circles.back().CreateShape();
 	}
 
@@ -559,7 +580,7 @@ namespace FlatEngine
 		Capsule capsule = Capsule(this);
 		if (shapeProps.shape != Shape::BS_None)
 		{
-			capsule.SetProps(shapeProps);
+			capsule.SetShapeProps(shapeProps);
 		}
 		m_capsules.push_back(capsule);
 		m_capsules.back().CreateShape();
@@ -570,7 +591,7 @@ namespace FlatEngine
 		Polygon polygon = Polygon(this);
 		if (shapeProps.shape != Shape::BS_None)
 		{
-			polygon.SetProps(shapeProps);
+			polygon.SetShapeProps(shapeProps);
 		}
 		m_polygons.push_back(polygon);
 		m_polygons.back().CreateShape();
@@ -581,9 +602,20 @@ namespace FlatEngine
 		Chain chain = Chain(this);
 		if (shapeProps.shape != Shape::BS_None)
 		{
-			chain.SetProps(shapeProps);
+			chain.SetShapeProps(shapeProps);
 		}
 		m_chains.push_back(chain);
 		m_chains.back().CreateShape();
+	}
+
+	void Body::AddJoint(Joint* joint)
+	{
+		switch (joint->GetJointType())
+		{
+		case Joint::JT_Distance:
+		{
+			m_distanceJoints.push_back(static_cast<DistanceJoint*>(joint));
+		}
+		}
 	}
 }

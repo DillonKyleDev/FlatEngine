@@ -106,6 +106,8 @@ namespace FlatGui
 			// {
 
 				long queuedForDelete = -1;
+				long parentToUnparent = -1;
+				long childToRemove = -1;
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("innerWindow"));
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(0, 0));
@@ -174,7 +176,7 @@ namespace FlatGui
 							const char* charName = name.c_str();
 							float indent = 0;
 
-							AddObjectToHierarchy(currentObject, charName, node_clicked, queuedForDelete, indent);
+							AddObjectToHierarchy(currentObject, charName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
 						}
 					}
 
@@ -238,12 +240,20 @@ namespace FlatGui
 				}
 			}
 
+			// Remove queued children
+			if (parentToUnparent != -1 && childToRemove != -1)
+			{
+				FL::GetObjectByID(parentToUnparent)->RemoveChild(childToRemove);
+				parentToUnparent = -1;
+				childToRemove = -1;
+			}
+
 		// }
 		FL::EndWindow(); // Hierarchy
 	}
 
 	// Add GameObject to Hierarchy viewport
-	void AddObjectToHierarchy(GameObject& currentObject, const char* charName, int& node_clicked, long& queuedForDelete, float indent)
+	void AddObjectToHierarchy(GameObject& currentObject, const char* charName, int& node_clicked, long& queuedForDelete, long& parentToUnparent, long& childToRemove, float indent)
 	{
 		ImGuiTreeNodeFlags nodeFlags;
 		long focusedObjectID = GetFocusedGameObjectID();
@@ -340,8 +350,8 @@ namespace FlatGui
 		{
 			size.x = 30;
 		}
-
-		ImGui::PushStyleColor(ImGuiCol_DragDropTarget, FL::GetColor("buttonHovered"));
+		
+		ImGui::PushStyleColor(ImGuiCol_DragDropTarget, FL::GetColor("dropTarget"));
 		ImGui::InvisibleButton(id.c_str(), size);
 		if (ImGui::BeginDragDropTarget())
 		{
@@ -356,11 +366,11 @@ namespace FlatGui
 				if (dropped->GetParentID() != -1)
 				{
 					GameObject *parent = FL::GetObjectByID(dropped->GetParentID());
-					parent->RemoveChild(dropped->GetID());
+					parentToUnparent = dropped->GetParentID();
+					childToRemove = dropped->GetID();
 				}
 				// Set parent ID of dropped object to -1
 				dropped->SetParentID(-1);
-				dropped->GetTransform()->SetOrigin(Vector2(0, 0));
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -395,6 +405,11 @@ namespace FlatGui
 		else
 		{
 			ImGui::TreeNodeEx((void*)(intptr_t)currentObject.GetID(), nodeFlags, charName);
+
+			if (FG_leafExpandedTracker.count(currentObject.GetID()))
+			{
+				FG_leafExpandedTracker.erase(currentObject.GetID());
+			}
 		}
 
 		// Don't change the background color of the tree node, change the background of the table row because it will fill the entire rect
@@ -433,7 +448,7 @@ namespace FlatGui
 		if (ImGui::GetIO().KeyCtrl && ImGui::IsItemClicked())
 		{
 			FL::Transform* transform = currentObject.GetTransform();
-			Vector2 position = transform->GetTruePosition();
+			Vector2 position = transform->GetAbsolutePosition();
 			FG_sceneViewScrolling = Vector2(position.x * -FG_sceneViewGridStep.x + (sceneViewDimensions.x / 2), position.y * FG_sceneViewGridStep.y + (sceneViewDimensions.y / 2));
 		}
 
@@ -556,8 +571,7 @@ namespace FlatGui
 				}
 				// Add dropped object to this object as a child
 				currentObject.AddChild(dropped->GetID());
-				dropped->SetParentID(currentObject.GetID());
-				dropped->GetTransform()->SetOrigin(currentObject.GetTransform()->GetTruePosition());
+				dropped->SetParentID(currentObject.GetID());				
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -600,7 +614,7 @@ namespace FlatGui
 					std::string name = child->GetName();
 					const char* childName = name.c_str();
 
-					AddObjectToHierarchy(*child, childName, node_clicked, queuedForDelete, indent);
+					AddObjectToHierarchy(*child, childName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
 				}
 			}
 

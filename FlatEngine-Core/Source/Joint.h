@@ -41,7 +41,7 @@ namespace FlatEngine
 			bool b_collideConnected = true;
 			b2BodyId bodyIDA = b2_nullBodyId;
 			b2BodyId bodyIDB = b2_nullBodyId;
-			Vector2 anchorA = Vector2(1, 1);
+			Vector2 anchorA = Vector2(0, 0);
 			Vector2 anchorB = Vector2(0, 0);
 		};
 

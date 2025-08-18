@@ -3528,29 +3528,6 @@
                             "width": 1.0,
                             "xOffset": 0.0,
                             "yOffset": 0.0
-                        },
-                        {
-                            "_enableContactEvents": true,
-                            "_enableSensorEvents": true,
-                            "_horizontal": false,
-                            "_isLoop": false,
-                            "_isSensor": false,
-                            "capsuleLength": 4.0,
-                            "cornerRadius": 0.0,
-                            "density": 1.0,
-                            "friction": 0.30000001192092896,
-                            "height": 1.0,
-                            "points": [],
-                            "radius": 1.0,
-                            "restitution": 0.30000001192092896,
-                            "rollingResistance": 0.0,
-                            "rotationOffsetCos": 1.0,
-                            "rotationOffsetSin": 0.0,
-                            "shape": 2,
-                            "tangentSpeed": 0.0,
-                            "width": 1.0,
-                            "xOffset": -2.0399999618530273,
-                            "yOffset": 0.0
                         }
                     ],
                     "type": "Body"

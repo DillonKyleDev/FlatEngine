@@ -73,22 +73,6 @@ namespace FlatEngine
 		{
 			b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
 			b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;	
-
-			Shape* shape1 = static_cast<Shape*>(b2Shape_GetUserData(beginEvent->shapeIdA));
-
-			if (b2Shape_IsValid(shape1->GetShapeID()))
-			{
-				shape1->GetParentBody();
-			}
-
-			Shape* shape2 = static_cast<Shape*>(b2Shape_GetUserData(beginEvent->shapeIdB));
-
-			if (b2Shape_IsValid(shape2->GetShapeID()))
-			{
-				shape2->GetParentBody();
-			}
-
-
 			Body::GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
 			Body::GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
 		}
@@ -266,7 +250,7 @@ namespace FlatEngine
 			material.tangentSpeed = shapeProps.tangentSpeed;
 
 			b2ChainDef chainDef = b2DefaultChainDef();
-			chainDef.userData = &shape;
+			chainDef.userData = shape;
 			chainDef.filter = filter;
 			chainDef.enableSensorEvents = shapeProps.b_enableSensorEvents;
 			chainDef.isLoop = shapeProps.b_isLoop;

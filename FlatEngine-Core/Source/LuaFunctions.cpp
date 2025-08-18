@@ -343,6 +343,13 @@ namespace FlatEngine
 			std::string prefix = "[LUA] " + truncatedName + " :";
 			LogLong(value, "", prefix);
 		};
+		F_Lua["LogVector2"] = [](Vector2 value)
+			{
+				std::string scriptName = F_Lua["calling_script_name"].get_or<std::string>("Script (Lua)");
+				std::string truncatedName = scriptName.substr(0, scriptName.size() - 6);
+				std::string prefix = "[LUA] " + truncatedName + " :";
+				LogVector2(value, "", prefix);
+			};
 		F_Lua["GetMappingContext"] = [](std::string contextName)
 		{
 			return GetMappingContext(contextName);
@@ -514,10 +521,7 @@ namespace FlatEngine
 			"AddButton", &GameObject::AddButtonLua,
 			"AddCanvas", &GameObject::AddCanvasLua,
 			"AddText", &GameObject::AddTextLua,
-			"AddBoxBody", &GameObject::AddBoxBody,
-			"AddCircleBody", & GameObject::AddCircleBody,
-			"AddCapsuleBody", & GameObject::AddCapsuleBody,
-			"AddPolygonBody", & GameObject::AddPolygonBody,
+			"AddBody", &GameObject::AddBody,
 			"AddCharacterController", &GameObject::AddCharacterControllerLua,
 			"AddTileMap", &GameObject::AddTileMapLua,
 

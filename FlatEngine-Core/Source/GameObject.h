@@ -70,11 +70,6 @@ namespace FlatEngine
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Body* AddBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		Box* AddBoxBody(Physics::BodyProps bodyProps, Shape::ShapeProps shapeProps, long ID = -1, bool b_active = true, bool b_collapsed = false);
-		Circle* AddCircleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		Capsule* AddCapsuleBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		Polygon* AddPolygonBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		Chain* AddChainBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 

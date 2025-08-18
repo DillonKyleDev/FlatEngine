@@ -44,29 +44,34 @@ namespace FlatEngine
 		//	LogString("HIT " + hit.GetParent()->GetName());
 		//}
 
-		Body* bodyA = GetParent()->GetBody();
-		Body* bodyB = GetObjectByName("BodyB")->GetBody();
-		
-		DistanceJoint distanceJoint = DistanceJoint();
-		distanceJoint.CreateJoint(bodyA, bodyB);
 
-		PrismaticJoint prismaticJoint = PrismaticJoint();
-		//prismaticJoint.CreateJoint(bodyA, bodyB);
 
-		RevoluteJoint revoluteJoint = RevoluteJoint();
-		//revoluteJoint.CreateJoint(bodyA, bodyB);
+		if (GetObjectByName("BodyB") != nullptr)
+		{
+			Body* bodyA = GetParent()->GetBody();
+			Body* bodyB = GetObjectByName("BodyB")->GetBody();
 
-		MouseJoint mouseJoint = MouseJoint();
-		//mouseJoint.CreateJoint(bodyA, bodyB);
+			DistanceJoint distanceJoint = DistanceJoint();
+			distanceJoint.CreateJoint(bodyA, bodyB);
 
-		WeldJoint weldJoint = WeldJoint();
-		//weldJoint.CreateJoint(bodyA, bodyB);
+			PrismaticJoint prismaticJoint = PrismaticJoint();
+			//prismaticJoint.CreateJoint(bodyA, bodyB);
 
-		MotorJoint motorJoint = MotorJoint();
-		//motorJoint.CreateJoint(bodyA, bodyB);
+			RevoluteJoint revoluteJoint = RevoluteJoint();
+			//revoluteJoint.CreateJoint(bodyA, bodyB);
 
-		WheelJoint wheelJoint = WheelJoint();
-		//wheelJoint.CreateJoint(bodyA, bodyB);
+			MouseJoint mouseJoint = MouseJoint();
+			//mouseJoint.CreateJoint(bodyA, bodyB);
+
+			WeldJoint weldJoint = WeldJoint();
+			//weldJoint.CreateJoint(bodyA, bodyB);
+
+			MotorJoint motorJoint = MotorJoint();
+			//motorJoint.CreateJoint(bodyA, bodyB);
+
+			WheelJoint wheelJoint = WheelJoint();
+			//wheelJoint.CreateJoint(bodyA, bodyB);
+		}
 
 
 	}

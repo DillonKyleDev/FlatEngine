@@ -2,6 +2,7 @@
 #include "FlatEngine.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "box2d.h"
 
 
 namespace FlatEngine 

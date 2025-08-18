@@ -135,10 +135,11 @@ namespace FlatEngine
 		{
 			return shape->GetParentBody();
 		}
-		else
+		else if (b2Chain_IsValid(shape->GetChainID()))
 		{
-			return nullptr;
+			return shape->GetParentBody();
 		}
+		return nullptr;
 	}
 
 	void Body::SetOnEndContact(void(*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID))

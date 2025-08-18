@@ -80,7 +80,7 @@
                     "_lockedXAxis": false,
                     "_lockedYAxis": false,
                     "angularDamping": 0.0,
-                    "bodyType": 2,
+                    "bodyType": 0,
                     "gravityScale": 0.0,
                     "id": 2,
                     "linearDamping": 0.0,
@@ -428,7 +428,7 @@
                     "type": "Transform",
                     "xPos": 3.344827651977539,
                     "xScale": 1.0,
-                    "yPos": -7.287355899810791,
+                    "yPos": -11.237356185913086,
                     "yScale": 1.0
                 },
                 {
@@ -475,7 +475,7 @@
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 3.344827651977539,
-            "spawnLocationY": -7.287355899810791,
+            "spawnLocationY": -11.237356185913086,
             "tags": [
                 {
                     "Ball": false

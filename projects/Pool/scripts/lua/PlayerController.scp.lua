@@ -25,7 +25,7 @@ end
 function handleMovement()
     local data = GetInstanceData("PlayerController", my_id)
 
-    if data.mappingContext:ActionPressed("IA_StartShot") then
+    if data.mappingContext:ActionPressed("IA_BeginShot") then
         data.clickPos = GetMousePosWorld()
     end
     if data.mappingContext:ActionPressed("IA_Aiming") then

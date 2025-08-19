@@ -21,8 +21,9 @@ namespace FlatEngine
 		~SceneManager();
 
 		void SetLoadedScene(Scene scene);
-		Scene* CreateNewScene();
+		Scene* CreateAndLoadNewScene();
 		void SaveScene(Scene* scene, std::string filePath);
+		void SaveTempScene();
 		void SaveCurrentScene();
 		bool LoadScene(std::string filePath, std::string pointTo = "");
 		Scene* GetLoadedScene();

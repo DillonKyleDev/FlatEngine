@@ -50,8 +50,17 @@ namespace FlatEngine
 	class Box;
 	class Circle;
 	class Capsule;
-	class Polygon;
+	//class Polygon;
 	class Chain;
+	class JointManager;
+	class Joint;
+	class DistanceJoint;
+	class PrismaticJoint;
+	class RevoluteJoint;
+	class MouseJoint;
+	class WeldJoint;
+	class MotorJoint;
+	class WheelJoint;
 	class TileMap;
 	class TileSet;
 }
@@ -83,6 +92,15 @@ using Box = FL::Box;
 using Circle = FL::Circle;
 using Capsule = FL::Capsule;
 using Chain = FL::Chain;
+using JointManager = FL::JointManager;
+using Joint = FL::Joint;
+using DistanceJoint = FL::DistanceJoint;
+using PrismaticJoint = FL::PrismaticJoint;
+using RevoluteJoint = FL::RevoluteJoint;
+using MouseJoint = FL::MouseJoint;
+using MotorJoint = FL::MotorJoint;
+using WheelJoint = FL::WheelJoint;
+using WeldJoint = FL::WeldJoint;
 using TileMap = FL::TileMap;
 using TileSet = FL::TileSet;
 
@@ -208,8 +226,7 @@ namespace FlatGui
 	extern void RenderTileSetEditorTile(std::pair<int, std::pair<Vector2, Vector2>> tile, Vector2 tileSize, Vector2& scrolling, Vector2 canvasP0, Vector2 canvasSize, Vector2& step, TileSet* tileSet);
 	extern void RenderCursorModeButtons();
 	extern void RenderGameTimeStats();
-	extern void RenderStatsOnGameView();
-	extern void RenderScriptEditor();
+	extern void RenderStatsOnGameView();	
 
 	// *** Don't forget to add flags to the window for preventing scrolling *** ImGuiWindowFlags flags = 8 | 16 or ImGuiWindowFlags_NoScrollbar 
 	extern void AddSceneViewMouseControls(std::string buttonID, Vector2 startPos, Vector2 size, Vector2& scrolling, Vector2 centerPoint, Vector2& gridStep, Uint32 rectColor = ImGui::GetColorU32(Vector4(0,0,0,0)), bool b_filled = false, ImGuiButtonFlags buttonFlags = 0, bool b_allowOverlap = true, bool b_weightedScroll = false, float zoomMultiplier = 1, float minGridStep = 5, float maxGridStep = 100);
@@ -228,8 +245,17 @@ namespace FlatGui
 	extern void RenderAudioComponent(Audio* audio);
 	extern void RenderTextComponent(Text* text);
 	extern void RenderCharacterControllerComponent(CharacterController* characterController);
-	extern void RenderBodyComponent(Body* body, ImDrawList* drawList);	
+	extern void RenderBodyComponent(Body* body);	
 	extern void RenderShapeComponentProps(Shape* shape, b2ShapeId& shapeToDelete, b2ChainId& chainToDelete);
+	extern void RenderJointManagerComponent(JointManager* jointManager);
+	extern void RenderJointComponentProps(Joint* joint, b2JointId& jointToDelete);
+	extern void RenderDistanceJointProps(DistanceJoint* joint);
+	extern void RenderPrismaticJointProps(PrismaticJoint* joint);
+	extern void RenderRevoluteJointProps(RevoluteJoint* joint);
+	extern void RenderMouseJointProps(MouseJoint* joint);
+	extern void RenderWeldJointProps(WeldJoint* joint);
+	extern void RenderMotorJointProps(MotorJoint* joint);
+	extern void RenderWheelJointProps(WheelJoint* joint);
 	extern void RenderTileMapComponent(TileMap* tileMap);
 
 	// SceneView

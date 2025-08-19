@@ -97,7 +97,7 @@ namespace FlatGui
 			float isPrefabIconColumnWidth = 25;
 			static float currentIndent = 10;
 			static bool b_allAreVisible = false;
-			std::map<long, GameObject>& sceneObjects = FL::GetSceneObjects();
+			std::vector<GameObject*> sceneObjects = FL::GetLoadedScene()->GetSortedHierarchyObjects();
 			std::map<long, GameObject>& persistantObjects = FL::GetPersistantObjects();
 
 			static int node_clicked = -1;
@@ -126,9 +126,9 @@ namespace FlatGui
 						FL::MoveScreenCursor(-1, 0);
 						if (FL::RenderImageButton("##SetAllInvisible", FL::GetTexture("show"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 						{
-							for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
+							for (GameObject* sceneObject : sceneObjects)
 							{
-								iter->second.SetActive(false);
+								sceneObject->SetActive(false);
 							}
 
 							b_allAreVisible = false;
@@ -139,11 +139,12 @@ namespace FlatGui
 						FL::MoveScreenCursor(-1, 0);
 						if (FL::RenderImageButton("##SetAllVisible", FL::GetTexture("hide"), Vector2(16, 16), 0, Vector2(4), FL::GetColor("button"), FL::GetColor("white"), FL::GetColor("buttonHovered"), FL::GetColor("buttonActive")))
 						{
-							for (std::map<long, GameObject>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
+							for (GameObject* sceneObject : sceneObjects)
 							{
-								iter->second.SetActive(true);
+								sceneObject->SetActive(false);
 							}
 							b_allAreVisible = true;
+
 						}
 					}
 
@@ -165,18 +166,16 @@ namespace FlatGui
 						ImGui::SetMouseCursor(0);
 					}
 
-					for (std::map<long, GameObject>::iterator object = sceneObjects.begin(); object != sceneObjects.end(); object++)
+					for (GameObject* sceneObject : sceneObjects)
 					{
 						// If this object does not have a parent we render it and all of its children.
-						if (object->second.GetParentID() == -1)
+						if (sceneObject->GetParentID() == -1)
 						{
-							// Get Object name
-							GameObject& currentObject = object->second;
-							std::string name = currentObject.GetName();
+							std::string name = sceneObject->GetName();
 							const char* charName = name.c_str();
 							float indent = 0;
 
-							AddObjectToHierarchy(currentObject, charName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
+							AddObjectToHierarchy(*sceneObject, charName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
 						}
 					}
 
@@ -343,22 +342,22 @@ namespace FlatGui
 		int index = -1;
 
 		std::string id = "##SwapDropSource" + std::to_string(index);
-		Vector2 cursorPos = ImGui::GetCursorPos();
+		Vector2 cursorPos = Vector2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 3);
 		Vector2 availSpace = ImGui::GetContentRegionAvail();
-		Vector2 size = Vector2(availSpace.x + 30 - cursorPos.x, 2);
+		Vector2 size = Vector2(availSpace.x + 30 - cursorPos.x, 6);
 		if (size.x < 30)
 		{
 			size.x = 30;
 		}
 		
 		ImGui::PushStyleColor(ImGuiCol_DragDropTarget, FL::GetColor("dropTarget"));
-		ImGui::InvisibleButton(id.c_str(), size);
+		FL::RenderInvisibleButton(id.c_str(), cursorPos, size);
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(FL::F_hierarchyTarget.c_str()))
 			{
 				IM_ASSERT(payload->DataSize == sizeof(int));
-				int ID = *(const int*)payload->Data;
+				long ID = *(const long*)payload->Data;
 
 				// Save Dropped Object
 				GameObject* dropped = FL::GetObjectByID(ID);

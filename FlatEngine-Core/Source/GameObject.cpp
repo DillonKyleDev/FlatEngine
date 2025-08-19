@@ -37,6 +37,7 @@ namespace FlatEngine
 		m_b_isActive = true;
 		m_childrenIDs = std::vector<long>();
 		m_b_persistant = false;
+		m_hierarchyPosition = 0;
 	}
 
 	GameObject::~GameObject()
@@ -569,6 +570,43 @@ namespace FlatEngine
 		return bodyPtr;
 	}
 
+	JointManager* GameObject::AddJointManager(long ID, bool b_active, bool b_collapsed)
+	{
+		long nextID = ID;
+		if (nextID == -1)
+		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		JointManager jointManager = JointManager(nextID, m_ID);
+		jointManager.SetCollapsed(b_collapsed);
+		jointManager.SetActive(b_active);
+
+		JointManager* jointManagerPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			jointManagerPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddJointManager(jointManager, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			jointManagerPtr = GetLoadedScene()->AddJointManager(jointManager, m_ID);
+		}
+
+		if (jointManagerPtr != nullptr)
+		{
+			m_components.push_back(jointManagerPtr);
+		}
+
+		return jointManagerPtr;
+	}
+
 	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
 	{
 		long nextID = ID;
@@ -807,7 +845,18 @@ namespace FlatEngine
 		}
 		return nullptr;
 	}
-
+	JointManager* GameObject::GetJointManager()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetJointManagerByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetJointManagerByOwner(m_ID);
+		}
+		return nullptr;
+	}
 	TileMap* GameObject::GetTileMap()
 	{
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
@@ -922,9 +971,19 @@ namespace FlatEngine
 	{
 		return m_b_persistant;
 	}
-	
+
 	GameObject *GameObject::GetParent()
 	{
 		return GetObjectByID(m_parentID);
+	}
+
+	void GameObject::SetHierarchyPosition(long position)
+	{
+		m_hierarchyPosition = position;
+	}
+
+	long GameObject::GetHierarchyPosition()
+	{
+		return m_hierarchyPosition;
 	}
 }

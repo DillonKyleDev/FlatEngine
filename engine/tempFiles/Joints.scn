@@ -395,7 +395,7 @@
                     "NpcTrigger": false
                 },
                 {
-                    "Player": false
+                    "Player": true
                 },
                 {
                     "PlayerDamage": false
@@ -428,7 +428,7 @@
                     "type": "Transform",
                     "xPos": 3.344827651977539,
                     "xScale": 1.0,
-                    "yPos": -11.237356185913086,
+                    "yPos": -20.187355041503906,
                     "yScale": 1.0
                 },
                 {
@@ -471,11 +471,11 @@
                 }
             ],
             "id": 2,
-            "name": "GameObject(2)",
+            "name": "Platform",
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 3.344827651977539,
-            "spawnLocationY": -11.237356185913086,
+            "spawnLocationY": -20.187355041503906,
             "tags": [
                 {
                     "Ball": false
@@ -530,6 +530,565 @@
                 },
                 {
                     "Terrain": true
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 7,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xPos": -8.0,
+                    "xScale": 1.0,
+                    "yPos": 4.400000095367432,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "distanceJoints": [
+                        {
+                            "_collideConnected": true,
+                            "_enableLimit": false,
+                            "_enableMotor": true,
+                            "_enableSpring": false,
+                            "anchorAX": 0.0,
+                            "anchorAY": 0.0,
+                            "anchorBX": 0.0,
+                            "anchorBY": 0.0,
+                            "bodyAID": 1,
+                            "bodyBID": 0,
+                            "dampingRatio": 0.5,
+                            "hertz": 2.0,
+                            "jointType": 1,
+                            "length": 4.0,
+                            "maxLength": 5.0,
+                            "maxMotorForce": 2.0,
+                            "minLength": 3.0,
+                            "motorSpeed": 10.0
+                        }
+                    ],
+                    "id": 8,
+                    "motorJoints": [],
+                    "mouseJoints": [
+                        {
+                            "_collideConnected": true,
+                            "anchorAX": 0.0,
+                            "anchorAY": 0.0,
+                            "anchorBX": 0.0,
+                            "anchorBY": 0.0,
+                            "bodyAID": 4,
+                            "bodyBID": 5,
+                            "dampingRatio": 0.5,
+                            "hertz": 2.0,
+                            "jointType": 4,
+                            "maxForce": 2000.0
+                        }
+                    ],
+                    "prismaticJoints": [
+                        {
+                            "_collideConnected": true,
+                            "_enableLimit": false,
+                            "_enableMotor": true,
+                            "_enableSpring": true,
+                            "anchorAX": 0.0,
+                            "anchorAY": 0.0,
+                            "anchorBX": 0.0,
+                            "anchorBY": 0.0,
+                            "bodyAID": 4,
+                            "bodyBID": 1,
+                            "dampingRatio": 0.5,
+                            "hertz": 2.0,
+                            "jointType": 3,
+                            "localAxisAX": 0.0,
+                            "localAxisAY": 0.0,
+                            "lowerTranslation": 1.0,
+                            "maxMotorForce": 2000.0,
+                            "motorSpeed": 10.0,
+                            "referenceAngle": 0.0,
+                            "targetTranslation": 0.0,
+                            "upperTranslation": 2.0
+                        }
+                    ],
+                    "revoluteJoints": [],
+                    "type": "JointManager",
+                    "weldJoints": [],
+                    "wheelJoints": []
+                }
+            ],
+            "id": 3,
+            "name": "JointManager",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": -8.0,
+            "spawnLocationY": 4.400000095367432,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 9,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xPos": 12.549999237060547,
+                    "xScale": 1.0,
+                    "yPos": 4.199999809265137,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.0,
+                    "bodyType": 2,
+                    "gravityScale": 1.0,
+                    "id": 10,
+                    "linearDamping": 0.0,
+                    "shapes": [
+                        {
+                            "_enableContactEvents": true,
+                            "_enableSensorEvents": true,
+                            "_horizontal": false,
+                            "_isLoop": false,
+                            "_isSensor": false,
+                            "capsuleLength": 4.0,
+                            "cornerRadius": 0.0,
+                            "density": 1.0,
+                            "friction": 0.30000001192092896,
+                            "height": 1.0,
+                            "points": [],
+                            "radius": 1.0,
+                            "restitution": 0.30000001192092896,
+                            "rollingResistance": 0.0,
+                            "rotationOffsetCos": 1.0,
+                            "rotationOffsetSin": 0.0,
+                            "shape": 2,
+                            "tangentSpeed": 0.0,
+                            "width": 1.0,
+                            "xOffset": 0.0,
+                            "yOffset": 0.0
+                        }
+                    ],
+                    "type": "Body"
+                }
+            ],
+            "id": 4,
+            "name": "BodyC",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 12.549999237060547,
+            "spawnLocationY": 4.199999809265137,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                }
+            ]
+        },
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": true
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 11,
+                    "rotation": 0.0,
+                    "type": "Transform",
+                    "xPos": 17.94999885559082,
+                    "xScale": 1.0,
+                    "yPos": 8.65000057220459,
+                    "yScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.0,
+                    "bodyType": 2,
+                    "gravityScale": 1.0,
+                    "id": 12,
+                    "linearDamping": 0.0,
+                    "shapes": [
+                        {
+                            "_enableContactEvents": true,
+                            "_enableSensorEvents": true,
+                            "_horizontal": false,
+                            "_isLoop": false,
+                            "_isSensor": false,
+                            "capsuleLength": 4.0,
+                            "cornerRadius": 0.0,
+                            "density": 1.0,
+                            "friction": 0.30000001192092896,
+                            "height": 1.0,
+                            "points": [],
+                            "radius": 1.0,
+                            "restitution": 0.30000001192092896,
+                            "rollingResistance": 0.0,
+                            "rotationOffsetCos": 1.0,
+                            "rotationOffsetSin": 0.0,
+                            "shape": 3,
+                            "tangentSpeed": 0.0,
+                            "width": 1.0,
+                            "xOffset": 0.0,
+                            "yOffset": 0.0
+                        }
+                    ],
+                    "type": "Body"
+                }
+            ],
+            "id": 5,
+            "name": "BodyD",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 17.94999885559082,
+            "spawnLocationY": 8.65000057220459,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": true
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
                 }
             ]
         }

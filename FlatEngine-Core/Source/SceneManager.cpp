@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "FlatEngine.h"
+#include "Project.h"
 
 #include <iostream>
 #include <fstream>
@@ -26,7 +27,7 @@ namespace FlatEngine
 		m_loadedScenePath = scene.GetPath();
 	}
 
-	Scene *SceneManager::CreateNewScene()
+	Scene *SceneManager::CreateAndLoadNewScene()
 	{
 		m_loadedScene = Scene();
 		return &m_loadedScene;
@@ -65,6 +66,16 @@ namespace FlatEngine
 			json newFileObject = json::object({ {"Scene GameObjects", sceneObjectsJsonArray } });
 			file_obj << newFileObject.dump(4).c_str() << std::endl;
 			file_obj.close();
+		}
+	}
+
+	void SceneManager::SaveTempScene()
+	{
+		std::string startedPersistantScenePath = GetLoadedProject().GetPersistantGameObjectsScenePath();
+		SaveScene(GetLoadedScene(), "..\\engine\\tempFiles\\" + GetLoadedScene()->GetName() + ".scn");
+		if (startedPersistantScenePath != "" && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			F_LoadedProject.SavePersistantScene("..\\engine\\tempFiles\\" + GetLoadedProject().GetPersistantGameObjectScene()->GetName() + ".scn");
 		}
 	}
 
@@ -179,6 +190,9 @@ namespace FlatEngine
 								}
 							}
 						}
+
+						m_loadedScene.SortSceneObjects();
+						m_loadedScene.CreateJoints();
 
 						F_Application->OnLoadScene(pointToPath);
 					}

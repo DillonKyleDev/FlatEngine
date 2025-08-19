@@ -87,7 +87,7 @@ namespace FlatGui
 
 	void Init()
 	{
-		FL::CreateNewScene();
+		FL::CreateAndLoadNewScene();
 	}
 
 	void SetupProfilerProcesses()
@@ -494,13 +494,6 @@ namespace FlatGui
 		RenderToolbar();
 
 		float startTime = (float)FL::GetEngineTime();
-
-		if (FG_b_showScriptEditor)
-		{
-			startTime = (float)FL::GetEngineTime();
-			RenderScriptEditor();
-			FL::AddProcessData("Script Editor", (float)FL::GetEngineTime() - startTime);
-		}
 
 		if (FG_b_showTileSetEditor)
 		{

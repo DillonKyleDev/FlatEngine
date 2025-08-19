@@ -115,7 +115,7 @@ namespace FlatGui
 						ImGui::CloseCurrentPopup();
 					}
 
-					if (!focusedObject->HasComponent("CharacterController"))
+					if (focusedObject->GetCharacterController() != nullptr)
 					{
 						if (ImGui::MenuItem("CharacterController"))
 						{
@@ -126,59 +126,20 @@ namespace FlatGui
 
 					if (focusedObject->GetBody() == nullptr)
 					{
-						if (!focusedObject->HasComponent("Body"))
+						if (ImGui::MenuItem("Body"))
 						{
-							if (ImGui::MenuItem("Body"))
-							{
-								focusedObject->AddBody();
-								ImGui::CloseCurrentPopup();
-							}
-						}
+							focusedObject->AddBody();
+							ImGui::CloseCurrentPopup();
+						}					
+					}
 
-						//if (!focusedObject->HasComponent("BoxBody"))
-						//{
-						//	if (ImGui::MenuItem("BoxBody"))
-						//	{
-						//		focusedObject->AddBoxBody();
-						//		ImGui::CloseCurrentPopup();
-						//	}
-						//}
-
-						//if (!focusedObject->HasComponent("CircleBody"))
-						//{
-						//	if (ImGui::MenuItem("CircleBody"))
-						//	{
-						//		focusedObject->AddCircleBody();
-						//		ImGui::CloseCurrentPopup();
-						//	}
-						//}
-
-						//if (!focusedObject->HasComponent("CapsuleBody"))
-						//{
-						//	if (ImGui::MenuItem("CapsuleBody"))
-						//	{
-						//		focusedObject->AddCapsuleBody();
-						//		ImGui::CloseCurrentPopup();
-						//	}
-						//}
-
-						//if (!focusedObject->HasComponent("PolygonBody"))
-						//{
-						//	if (ImGui::MenuItem("PolygonBody"))
-						//	{
-						//		focusedObject->AddPolygonBody();
-						//		ImGui::CloseCurrentPopup();
-						//	}
-						//}
-
-						//if (!focusedObject->HasComponent("ChainBody"))
-						//{
-						//	if (ImGui::MenuItem("ChainBody"))
-						//	{
-						//		focusedObject->AddChainBody();
-						//		ImGui::CloseCurrentPopup();
-						//	}
-						//}
+					if (focusedObject->GetJointManager() == nullptr)
+					{
+						if (ImGui::MenuItem("Joint Manager"))
+						{
+							focusedObject->AddJointManager();
+							ImGui::CloseCurrentPopup();
+						}						
 					}
 
 					if (!focusedObject->HasComponent("TileMap"))
@@ -425,16 +386,25 @@ namespace FlatGui
 						
 						Body* body = focusedObject->GetBody();
 						if (body != nullptr)
-						{
-							ImDrawList* drawList = ImGui::GetWindowDrawList();
-
+						{						
 							BeginComponent(body, queuedForDelete);
 							if (!body->IsCollapsed())
 							{
-								RenderBodyComponent(body, drawList);
+								RenderBodyComponent(body);
 							}
 							EndComponent(body);
 						}	
+
+						JointManager* jointManager = focusedObject->GetJointManager();
+						if (jointManager != nullptr)
+						{							
+							BeginComponent(jointManager, queuedForDelete);
+							if (!jointManager->IsCollapsed())
+							{
+								RenderJointManagerComponent(jointManager);
+							}
+							EndComponent(jointManager);
+						}
 						
 						TileMap* tileMap = focusedObject->GetTileMap();
 						if (tileMap != nullptr)

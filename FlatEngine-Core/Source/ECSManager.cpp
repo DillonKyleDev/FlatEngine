@@ -17,6 +17,7 @@
 #include "Capsule.h"
 #include "Polygon.h"
 #include "Chain.h"
+#include "JointManager.h"
 #include "CharacterController.h"
 #include "TileMap.h"
 #include "FlatEngine.h"
@@ -139,6 +140,12 @@ namespace FlatEngine
 	{
 		m_Buttons.emplace(ownerID, button);
 		return &m_Buttons.at(ownerID);
+	}
+
+	JointManager* ECSManager::AddJointManager(JointManager jointManager, long ownerID)
+	{
+		m_JointManagers.emplace(ownerID, jointManager);
+		return &m_JointManagers.at(ownerID);
 	}
 
 	CharacterController* ECSManager::AddCharacterController(CharacterController characterController, long ownerID)
@@ -270,6 +277,18 @@ namespace FlatEngine
 		if (m_Bodies.count(ownerID))
 		{
 			return &m_Bodies.at(ownerID);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	JointManager* ECSManager::GetJointManagerByOwner(long ownerID)
+	{
+		if (m_JointManagers.count(ownerID))
+		{
+			return &m_JointManagers.at(ownerID);
 		}
 		else
 		{
@@ -489,6 +508,17 @@ namespace FlatEngine
 		return b_success;
 	}
 
+	bool ECSManager::RemoveJointManager(long ownerID)
+	{
+		bool b_success = false;
+		if (m_JointManagers.count(ownerID))
+		{
+			m_JointManagers.erase(ownerID);
+			b_success = true;
+		}
+		return b_success;
+	}
+
 	bool ECSManager::RemoveCharacterController(long ownerID)
 	{
 		bool b_success = false;
@@ -554,6 +584,10 @@ namespace FlatEngine
 	std::map<long, Body>& ECSManager::GetBodies()
 	{
 		return m_Bodies;
+	}
+	std::map<long, JointManager>& ECSManager::GetJointManagers()
+	{
+		return m_JointManagers;
 	}
 	std::map<long, CharacterController> &ECSManager::GetCharacterControllers()
 	{

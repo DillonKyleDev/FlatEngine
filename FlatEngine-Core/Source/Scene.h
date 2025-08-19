@@ -17,6 +17,7 @@
 #include "Capsule.h"
 #include "Polygon.h"
 #include "Chain.h"
+#include "JointManager.h"
 
 #include <vector>
 #include <map>
@@ -31,6 +32,8 @@ namespace FlatEngine
 	public:
 		Scene();
 		~Scene();
+
+		static bool SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB);
 
 		void SetName(std::string name);
 		std::string GetName();
@@ -57,6 +60,9 @@ namespace FlatEngine
 		void SetNextComponentID(long nextID);
 		long GetNextComponentID();
 		void OnPrefabInstantiated();
+		void SortSceneObjects();
+		std::vector<GameObject*> GetSortedHierarchyObjects();
+		void CreateJoints();
 
 		// ECS Wrappers
 		void KeepNextComponentIDUpToDate(long ID);
@@ -68,13 +74,9 @@ namespace FlatEngine
 		Audio* AddAudio(Audio audio, long ownerID);
 		Text* AddText(Text text, long ownerID);		
 		Body* AddBody(Body boxBody, long ownerID);
-		Box* AddBoxBody(Body boxBody, long ownerID);
-		Circle* AddCircleBody(Circle circle, long ownerID);
-		Capsule* AddCapsuleBody(Capsule capsule, long ownerID);
-		Polygon* AddPolygonBody(Polygon polygon, long ownerID);
-		Chain* AddChainBody(Chain chain, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);
+		JointManager* AddJointManager(JointManager jointManager, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
 
@@ -90,6 +92,7 @@ namespace FlatEngine
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
 		Body* GetBodyByOwner(long ownerID);
+		JointManager* GetJointManagerByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
@@ -104,6 +107,7 @@ namespace FlatEngine
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
 		std::map<long, Body>& GetBodies();
+		std::map<long, JointManager>& GetJointManagers();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);
@@ -113,6 +117,7 @@ namespace FlatEngine
 		std::string m_name;
 		std::string m_path;
 		std::map<long, GameObject> m_sceneObjects;
+		std::vector<GameObject*> m_sortedHierarchyObjects;
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		ECSManager m_ECSManager;
 		long m_nextGameObjectID;

@@ -3,6 +3,14 @@
 #include "Animation.h"
 #include "CPPScript.h"
 #include "Physics.h"
+#include "Joint.h"
+#include "DistanceJoint.h"
+#include "PrismaticJoint.h"
+#include "RevoluteJoint.h"
+#include "MouseJoint.h"
+#include "WeldJoint.h"
+#include "MotorJoint.h"
+#include "WheelJoint.h"
 
 #include <stdio.h>
 #include <string>
@@ -74,6 +82,14 @@ namespace FlatEngine
 	class Physics;
 	class Body;
 	class Shape;
+	class Joint;
+	class DistanceJoint;
+	class PrismaticJoint;
+	class RevoluteJoint;
+	class MouseJoint;
+	class WeldJoint;
+	class MotorJoint;
+	class WheelJoint;
 
 	enum F_CURSOR_MODE {
 		TRANSLATE,
@@ -275,7 +291,7 @@ namespace FlatEngine
 
 	// Scene Management
 	extern Scene* GetLoadedScene();
-	extern Scene* CreateNewScene();
+	extern Scene* CreateAndLoadNewScene();
 	extern void SaveScene(Scene* scene, std::string filePath);
 	extern void SaveCurrentScene();
 	extern void QueueLoadScene(std::string scenePath);
@@ -317,7 +333,6 @@ namespace FlatEngine
 	extern void CreatePrefab(std::string path, GameObject& gameObject);
 	extern void InitializePrefabs();
 	extern GameObject *Instantiate(std::string prefabName, Vector2 position, Scene* scene, long parentID = -1, long ID = -1);
-	//extern std::map<std::string, Prefab> GetPrefabs();
 
 	// Logging Prettification
 	extern void LogError(std::string line = "", std::string from = "[C++]");
@@ -418,6 +433,14 @@ namespace FlatEngine
 	extern json CreateJsonFromObject(GameObject gameObject);
 	extern void RetrieveBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName);
 	extern void RetrieveShapeProps(Shape::ShapeProps& shapeProps, json componentJson, std::string objectName);
+	extern void RetrieveBaseJointProps(Joint::JointProps* jointProps, json jointJson, std::string objectName);
+	extern void RetrieveDistanceJointProps(DistanceJoint::DistanceJointProps& jointProps, json jointJson, std::string objectName);
+	extern void RetrievePrismaticJointProps(PrismaticJoint::PrismaticJointProps& jointProps, json jointJson, std::string objectName);
+	extern void RetrieveRevoluteJointProps(RevoluteJoint::RevoluteJointProps& jointProps, json jointJson, std::string objectName);
+	extern void RetrieveMouseJointProps(MouseJoint::MouseJointProps& jointProps, json jointJson, std::string objectName);
+	extern void RetrieveWeldJointProps(WeldJoint::WeldJointProps& jointProps, json jointJson, std::string objectName);
+	extern void RetrieveMotorJointProps(MotorJoint::MotorJointProps& jointProps, json jointJson, std::string objectName);
+	extern void RetrieveWheelJointProps(WheelJoint::WheelJointProps& jointProps, json jointJson, std::string objectName);
 	extern GameObject* CreateObjectFromJson(json objectJson, Scene* scene);
 	extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName);
 	extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName, std::string& errorMessage);

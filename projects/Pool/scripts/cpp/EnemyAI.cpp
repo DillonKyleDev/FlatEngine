@@ -51,25 +51,25 @@ namespace FlatEngine
 			Body* bodyA = GetParent()->GetBody();
 			Body* bodyB = GetObjectByName("BodyB")->GetBody();
 
-			DistanceJoint distanceJoint = DistanceJoint();
-			distanceJoint.CreateJoint(bodyA, bodyB);
+			//DistanceJoint distanceJoint = DistanceJoint();
+			//distanceJoint.CreateJoint(bodyA, bodyB);
 
-			PrismaticJoint prismaticJoint = PrismaticJoint();
+			//PrismaticJoint prismaticJoint = PrismaticJoint();
 			//prismaticJoint.CreateJoint(bodyA, bodyB);
 
-			RevoluteJoint revoluteJoint = RevoluteJoint();
+			//RevoluteJoint revoluteJoint = RevoluteJoint();
 			//revoluteJoint.CreateJoint(bodyA, bodyB);
 
-			MouseJoint mouseJoint = MouseJoint();
+			//MouseJoint mouseJoint = MouseJoint();
 			//mouseJoint.CreateJoint(bodyA, bodyB);
 
-			WeldJoint weldJoint = WeldJoint();
+			//WeldJoint weldJoint = WeldJoint();
 			//weldJoint.CreateJoint(bodyA, bodyB);
 
-			MotorJoint motorJoint = MotorJoint();
+			//MotorJoint motorJoint = MotorJoint();
 			//motorJoint.CreateJoint(bodyA, bodyB);
 
-			WheelJoint wheelJoint = WheelJoint();
+			//WheelJoint wheelJoint = WheelJoint();
 			//wheelJoint.CreateJoint(bodyA, bodyB);
 		}
 

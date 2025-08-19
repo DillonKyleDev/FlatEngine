@@ -25,6 +25,14 @@
 #include "Project.h"
 #include "TileMap.h"
 #include "TileSet.h"
+#include "Joint.h"
+#include "DistanceJoint.h"
+#include "PrismaticJoint.h"
+#include "RevoluteJoint.h"
+#include "MouseJoint.h"
+#include "MotorJoint.h"
+#include "WheelJoint.h"
+#include "WeldJoint.h"
 
 #include "box2D.h"
 #include "imgui.h"
@@ -1453,7 +1461,7 @@ namespace FlatGui
 		}
 	}
 
-	void RenderBodyComponent(Body* body, ImDrawList* drawList)
+	void RenderBodyComponent(Body* body)
 	{		
 		bool b_isActive = body->IsActive();
 		FL::Physics::BodyProps bodyProps = body->GetBodyProps();
@@ -1903,6 +1911,311 @@ namespace FlatGui
 		ImGui::EndChild();
 
 		ImGui::GetWindowDrawList()->AddRect({ shapeWindowPos.x , shapeWindowPos.y }, { shapeWindowPos.x + shapeWindowSize.x, shapeWindowPos.y + shapeWindowSize.y }, FL::GetColor32("componentBorder"), 0);
+	}
+
+	void RenderJointManagerComponent(JointManager* jointManager)
+	{
+		long ID = jointManager->GetID();
+		bool b_isActive = jointManager->IsActive();
+		
+		std::vector<Joint*> joints = jointManager->GetJoints();
+
+		if (RenderIsActiveCheckbox(b_isActive))
+		{
+			jointManager->SetActive(b_isActive);
+		}
+
+		FL::RenderButton("Add Joint", Vector2(ImGui::GetContentRegionAvail().x, 0));
+		if (ImGui::BeginPopupContextItem("##AddJoint", ImGuiPopupFlags_MouseButtonLeft))
+		{
+			FL::PushMenuStyles();
+
+			if (ImGui::MenuItem("Distance Joint"))
+			{				
+				jointManager->AddDistanceJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Prismatic Joint"))
+			{
+				jointManager->AddPrismaticJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Revolute Joint"))
+			{
+				jointManager->AddRevoluteJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Mouse Joint"))
+			{
+				jointManager->AddMouseJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Wheel Joint"))
+			{
+				jointManager->AddWheelJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Motor Joint"))
+			{
+				jointManager->AddMotorJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Wheel Joint"))
+			{
+				jointManager->AddWheelJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			if (ImGui::MenuItem("Weld Joint"))
+			{
+				jointManager->AddWeldJoint();
+				ImGui::CloseCurrentPopup();
+			}
+
+			FL::PopMenuStyles();
+			ImGui::EndMenu();
+		}
+
+		if (jointManager->GetJoints().size() > 0)
+		{
+			FL::MoveScreenCursor(0, 3);
+			ImGui::Text("Joints");
+			FL::MoveScreenCursor(0, 2);
+			ImGui::Separator();
+			FL::MoveScreenCursor(0, -3);
+
+			// For scrolling shapes section with background
+			std::string childID = "Joints_" + std::to_string(ID);
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("jointsScrollingBg"));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 5));
+			ImGui::BeginChild(childID.c_str(), Vector2(0, 300), FL::F_childFlags);
+			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+
+			// Border around components section
+			auto wPos = ImGui::GetWindowPos();
+			auto wSize = ImGui::GetWindowSize();
+			b2JointId jointToDelete = b2_nullJointId;			
+
+			std::vector<Joint*> joints = jointManager->GetJoints();
+
+			for (int i = 0; i < joints.size(); i++)
+			{
+				RenderJointComponentProps(joints[i], jointToDelete);
+
+				if (i != joints.size() - 1)
+				{
+					FL::MoveScreenCursor(0, 3);
+				}
+			}
+
+			if (b2Joint_IsValid(jointToDelete))
+			{
+				jointManager->RemoveJoint(jointToDelete);
+			}
+
+
+			ImGui::EndChild();
+
+			// Border around Shapes Section
+			ImGui::GetWindowDrawList()->AddRect({ wPos.x, wPos.y - 1 }, { wPos.x + wSize.x, wPos.y + wSize.y + 1 }, FL::GetColor32("componentSectionBorder"), 0);
+		}
+
+		//if (FL::PushTable("##JointManagerProps" + std::to_string(ID), 2))
+		//{
+		//	
+
+		//	FL::PopTable();
+		//}
+	}
+
+	void RenderJointComponentProps(Joint* joint, b2JointId& jointToDelete)
+	{		
+		b2JointId jointID = joint->GetJointID();		
+		Joint::JointType jointType = joint->GetJointType();
+		std::string jointTypeString = joint->GetJointString();
+		std::string ID = jointTypeString + " ID: " + std::to_string(jointID.index1);
+		Body* bodyA = joint->GetBodyA();
+		Body* bodyB = joint->GetBodyB();	
+		bool b_collideConnected = joint->CollideConnected();
+		Vector2 anchorA = joint->GetAnchorA();
+		Vector2 anchorB = joint->GetAnchorB();
+
+		DistanceJoint* distanceJoint = static_cast<DistanceJoint*>(joint);
+		PrismaticJoint* prismaticJoint = static_cast<PrismaticJoint*>(joint);
+		RevoluteJoint* revoluteJoint = static_cast<RevoluteJoint*>(joint);
+		MouseJoint* mouseJoint = static_cast<MouseJoint*>(joint);
+		WeldJoint* weldJoint = static_cast<WeldJoint*>(joint);
+		MotorJoint* motorJoint = static_cast<MotorJoint*>(joint);
+		WheelJoint* wheelJoint = static_cast<WheelJoint*>(joint);
+
+		//bool b_isSensor = shapeProps.b_isSensor;
+		//float restitution = shapeProps.restitution;
+		//float friction = shapeProps.friction;
+		//float density = shapeProps.density;
+		//Vector2 dimensions = shapeProps.dimensions;
+		//float cornerRadius = shapeProps.cornerRadius;
+		//float radius = shapeProps.radius;
+		//float capsuleLength = shapeProps.capsuleLength;
+		//bool b_horizontal = shapeProps.b_horizontal;
+		//std::vector<Vector2> points = shapeProps.points;
+		//int pointCount = (int)points.size();
+		//bool b_showPoints = shape->ShowPoints();
+		//bool b_editingPoints = shape->IsEditingPoints();
+		//bool b_isLoop = shapeProps.b_isLoop;
+		//float tangentSpeed = shapeProps.tangentSpeed;
+		//float rollingResistance = shapeProps.rollingResistance;
+		//bool b_enableSensorEvents = shapeProps.b_enableSensorEvents;
+		//bool b_enableContactEvents = shapeProps.b_enableContactEvents;
+
+		std::string childID = "Joint_" + ID;
+		ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("jointBg"));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 3));
+		ImGui::BeginChild(childID.c_str(), Vector2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize);
+		ImGui::PopStyleVar();
+		ImGui::PopStyleColor();
+
+		// Border around each joint
+		auto shapeWindowPos = ImGui::GetWindowPos();
+		auto shapeWindowSize = ImGui::GetWindowSize();
+
+		FL::RenderSectionHeader(ID);
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);
+		FL::MoveScreenCursor(0, -3);
+
+		std::string trashcanID = "##trashIcon-" + ID;
+
+		if (FL::RenderImageButton(trashcanID.c_str(), FL::GetTexture("trash")))
+		{
+			jointToDelete = jointID;
+		}
+
+		FL::MoveScreenCursor(0, 3);
+
+		int droppedObjectID = -1;
+		std::string openedPath = "";
+		std::string bodyAName = "";
+		std::string bodyBName = "";
+
+		if (bodyA != nullptr)
+		{
+			bodyAName = bodyA->GetParent()->GetName();
+		}
+		if (bodyB != nullptr)
+		{
+			bodyBName = bodyB->GetParent()->GetName();
+		}
+
+		switch (jointType)
+		{
+		case Joint::JT_Distance:
+			
+			break;
+		case Joint::JT_Prismatic:
+			
+			break;
+		case Joint::JT_Revolute:
+			
+			break;
+		case Joint::JT_Mouse:
+			
+			break;
+		case Joint::JT_Wheel:
+			
+			break;
+		case Joint::JT_Weld:
+			
+			break;
+		case Joint::JT_Motor:
+			
+			break;
+		default:
+			break;
+		}
+
+		if (FL::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::F_hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
+		{
+			if (droppedObjectID >= 0)
+			{
+				joint->SetBodyA(FL::GetObjectByID(droppedObjectID)->GetBody());
+			}
+		}
+		if (FL::DropInput("##InputBodyB" + ID, "BodyB", bodyBName, FL::F_hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
+		{
+			if (droppedObjectID >= 0)
+			{
+				joint->SetBodyB(FL::GetObjectByID(droppedObjectID)->GetBody());
+			}
+		}
+
+		if (FL::PushTable("##JointProps" + ID, 2))
+		{
+			if (FL::RenderFloatDragTableRow("##AnchorAX" + ID, "Anchor A x-pos", anchorA.x, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				joint->SetAnchorA(anchorA);
+			}
+			if (FL::RenderFloatDragTableRow("##AnchorAY" + ID, "Anchor A y-pos", anchorA.y, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				joint->SetAnchorA(anchorA);
+			}
+			if (FL::RenderFloatDragTableRow("##AnchorBX" + ID, "Anchor B x-pos", anchorB.x, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				joint->SetAnchorB(anchorB);
+			}
+			if (FL::RenderFloatDragTableRow("##AnchorBY" + ID, "Anchor B y-pos", anchorB.y, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				joint->SetAnchorB(anchorB);
+			}
+			FL::PopTable();
+		}
+
+		if (FL::RenderButton("Create Joint"))
+		{
+			joint->CreateJoint();
+		}
+
+		ImGui::EndChild();
+	}
+
+	void RenderDistanceJointProps(DistanceJoint* joint)
+	{
+
+	}
+
+	void RenderPrismaticJointProps(PrismaticJoint* joint)
+	{
+
+	}
+
+	void RenderRevoluteJointProps(RevoluteJoint* joint)
+	{
+
+	}
+
+	void RenderMouseJointProps(MouseJoint* joint)
+	{
+
+	}
+
+	void RenderWeldJointProps(WeldJoint* joint)
+	{
+
+	}
+
+	void RenderMotorJointProps(MotorJoint* joint)
+	{
+
+	}
+
+	void RenderWheelJointProps(WheelJoint* joint)
+	{
+
 	}
 
 	void RenderTileMapComponent(TileMap* tileMap)

@@ -330,7 +330,7 @@ namespace FlatEngine
 		{
 		case Joint::JointType::JT_Distance:
 		{
-			DistanceJointProps* distanceProps = static_cast<DistanceJointProps*>(jointProps);
+			DistanceJoint::DistanceJointProps* distanceProps = static_cast<DistanceJoint::DistanceJointProps*>(jointProps);
 			b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
 			distanceJointDef.base = jointDef;
 			distanceJointDef.length = b2Distance(anchorA, anchorB);
@@ -348,7 +348,7 @@ namespace FlatEngine
 		}
 		case Joint::JointType::JT_Revolute:
 		{
-			RevoluteJointProps* revoluteProps = static_cast<RevoluteJointProps*>(jointProps);
+			RevoluteJoint::RevoluteJointProps* revoluteProps = static_cast<RevoluteJoint::RevoluteJointProps*>(jointProps);
 			b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
 			revoluteJointDef.base = jointDef;
 			revoluteJointDef.dampingRatio = revoluteProps->dampingRatio;
@@ -367,7 +367,7 @@ namespace FlatEngine
 		}
 		case Joint::JointType::JT_Prismatic:
 		{
-			PrismaticJointProps* prismaticProps = static_cast<PrismaticJointProps*>(jointProps);
+			PrismaticJoint::PrismaticJointProps* prismaticProps = static_cast<PrismaticJoint::PrismaticJointProps*>(jointProps);
 			b2PrismaticJointDef prismaticJointDef = b2DefaultPrismaticJointDef();
 			prismaticJointDef.base = jointDef;
 			prismaticJointDef.dampingRatio = prismaticProps->dampingRatio;
@@ -386,7 +386,7 @@ namespace FlatEngine
 		}
 		case Joint::JointType::JT_Mouse:
 		{
-			MouseJointProps* mouseProps = static_cast<MouseJointProps*>(jointProps);
+			MouseJoint::MouseJointProps* mouseProps = static_cast<MouseJoint::MouseJointProps*>(jointProps);
 			b2MouseJointDef mouseJointDef = b2DefaultMouseJointDef();
 			mouseJointDef.base = jointDef;			
 			mouseJointDef.dampingRatio = mouseProps->dampingRatio;
@@ -398,7 +398,7 @@ namespace FlatEngine
 		}
 		case Joint::JointType::JT_Weld:
 		{
-			WeldJointProps* weldProps = static_cast<WeldJointProps*>(jointProps);
+			WeldJoint::WeldJointProps* weldProps = static_cast<WeldJoint::WeldJointProps*>(jointProps);
 			b2WeldJointDef weldJointDef = b2DefaultWeldJointDef();
 			weldJointDef.base = jointDef;
 			weldJointDef.angularDampingRatio = weldProps->angularDampingRatio;
@@ -410,7 +410,7 @@ namespace FlatEngine
 		}
 		case Joint::JointType::JT_Motor:
 		{
-			MotorJointProps* motorProps = static_cast<MotorJointProps*>(jointProps);
+			MotorJoint::MotorJointProps* motorProps = static_cast<MotorJoint::MotorJointProps*>(jointProps);
 			b2MotorJointDef motorJointDef = b2DefaultMotorJointDef();
 			motorJointDef.base = jointDef;
 			motorJointDef.angularDampingRatio = motorProps->angularDampingRatio;
@@ -430,7 +430,7 @@ namespace FlatEngine
 		}
 		case Joint::JointType::JT_Wheel:
 		{
-			WheelJointProps* wheelProps = static_cast<WheelJointProps*>(jointProps);
+			WheelJoint::WheelJointProps* wheelProps = static_cast<WheelJoint::WheelJointProps*>(jointProps);
 			b2WheelJointDef wheelJointDef = b2DefaultWheelJointDef();
 			wheelJointDef.base = jointDef;
 			wheelJointDef.dampingRatio = wheelProps->dampingRatio;

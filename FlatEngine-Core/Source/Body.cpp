@@ -224,8 +224,9 @@ namespace FlatEngine
 	void Body::SetPosition(Vector2 position)
 	{
 		m_bodyProps = GetLiveProps();
-		m_bodyProps.position = position;				
-		RecreateBody();		
+		m_bodyProps.position = position;	
+		b2Body_SetTransform(m_bodyID, Vector2::GetB2Vev2(position), GetB2Rotation());
+		//RecreateBody();		
 	}
 
 	Vector2 Body::GetPosition()

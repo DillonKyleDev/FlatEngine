@@ -113,6 +113,10 @@ namespace FlatEngine
 			return "Body";
 			break;
 
+		case T_JointManager:
+			return "Body";
+			break;
+
 		default:
 			return "Null";
 		}

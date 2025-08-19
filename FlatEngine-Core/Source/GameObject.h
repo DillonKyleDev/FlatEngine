@@ -28,6 +28,7 @@ namespace FlatEngine
 	class Capsule;
 	class Polygon;	
 	class Chain;
+	class JointManager;
 
 	class GameObject
 	{
@@ -70,6 +71,7 @@ namespace FlatEngine
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Body* AddBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
+		JointManager* AddJointManager(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
@@ -99,6 +101,7 @@ namespace FlatEngine
 		Text* GetText();
 		CharacterController* GetCharacterController();
 		Body* GetBody();
+		JointManager* GetJointManager();
 		TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		
 
@@ -115,6 +118,8 @@ namespace FlatEngine
 		bool IsActive();
 		void SetPersistant(bool b_persistant);
 		bool IsPersistant();
+		void SetHierarchyPosition(long position);
+		long GetHierarchyPosition();
 
 	private:
 		std::string m_name;
@@ -129,5 +134,6 @@ namespace FlatEngine
 		std::vector<Component*> m_components;
 		std::vector<long> m_childrenIDs;
 		bool m_b_persistant;
+		long m_hierarchyPosition;
 	};
 }

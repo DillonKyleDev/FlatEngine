@@ -31,9 +31,11 @@ F_Colors = {
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	openFileButtonBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
 	openFileButtonHovered = Vector4:new(0.3, 0.3, 0.32, 1.0),
-	-- shapesScrollingBg = Vector4:new(0.37, 0.51, 0.84, 1.0),
+
 	shapesScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
 	shapeBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
+	jointsScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
+	jointBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
 	-- Colliders --
 	sensorActive = Vector4:new(1.0, 1.0, 0.27, 1.0),
 	sensorInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),

@@ -758,8 +758,8 @@ namespace FlatEngine
 
 	std::string CreateNewSceneFile(std::string filename, std::string path)
 	{
-		Scene* newScene = CreateNewScene();
-		newScene->SetName(filename);
+		Scene newScene = Scene();
+		newScene.SetName(filename);
 		std::string filePath = "";
 
 		if (path == "")
@@ -771,16 +771,16 @@ namespace FlatEngine
 			filePath = path + "\\" + filename + ".scn";
 		}
 
-		newScene->SetPath(filePath);
+		newScene.SetPath(filePath);
 
-		SaveScene(newScene, filePath);
+		SaveScene(&newScene, filePath);
 
 		return filePath;
 	}
 
-	Scene *CreateNewScene()
+	Scene * CreateAndLoadNewScene()
 	{
-		return F_SceneManager.CreateNewScene();
+		return F_SceneManager.CreateAndLoadNewScene();
 	}
 
 	std::string GetLoadedScenePath()
@@ -3116,6 +3116,53 @@ namespace FlatEngine
 		shapeProps.points = points;
 	}
 
+	void RetrieveBaseJointProps(Joint::JointProps* jointProps, json jointJson, std::string objectName)
+	{
+		jointProps->jointType = (Joint::JointType)CheckJsonInt(jointJson, "jointType", objectName);
+		jointProps->b_collideConnected = CheckJsonBool(jointJson, "_collideConnected", objectName);
+		jointProps->bodyAID = CheckJsonLong(jointJson, "bodyAID", objectName);
+		jointProps->bodyBID = CheckJsonLong(jointJson, "bodyBID", objectName);
+		jointProps->anchorA.x = CheckJsonFloat(jointJson, "anchorAX", objectName);
+		jointProps->anchorA.y = CheckJsonFloat(jointJson, "anchorAY", objectName);
+		jointProps->anchorB.x = CheckJsonFloat(jointJson, "anchorBX", objectName);
+		jointProps->anchorB.y = CheckJsonFloat(jointJson, "anchorAY", objectName);
+	}
+
+	void RetrieveDistanceJointProps(DistanceJoint::DistanceJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
+	void RetrievePrismaticJointProps(PrismaticJoint::PrismaticJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
+	void RetrieveRevoluteJointProps(RevoluteJoint::RevoluteJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
+	void RetrieveMouseJointProps(MouseJoint::MouseJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
+	void RetrieveWeldJointProps(WeldJoint::WeldJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
+	void RetrieveMotorJointProps(MotorJoint::MotorJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
+	void RetrieveWheelJointProps(WheelJoint::WheelJointProps& jointProps, json jointJson, std::string objectName)
+	{
+
+	}
+
 	GameObject *CreateObjectFromJson(json objectJson, Scene* scene)
 	{
 		GameObject *loadedObject;
@@ -3437,6 +3484,137 @@ namespace FlatEngine
 										}
 									}
 								}											
+							}
+							else if (type == "JointManager")
+							{
+								JointManager* newJointManager = loadedObject->AddJointManager(id, b_isActive, b_isCollapsed);
+
+								if (JsonContains(componentJson, "distanceJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("distanceJoints").size(); i++)
+									{
+										try
+										{											
+											json jointJson = componentJson.at("distanceJoints").at(i);											
+											DistanceJoint::DistanceJointProps jointProps = DistanceJoint::DistanceJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrieveDistanceJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddDistanceJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+								if (JsonContains(componentJson, "prismaticJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("prismaticJoints").size(); i++)
+									{
+										try
+										{
+											json jointJson = componentJson.at("prismaticJoints").at(i);											
+											PrismaticJoint::PrismaticJointProps jointProps = PrismaticJoint::PrismaticJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrievePrismaticJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddPrismaticJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+								if (JsonContains(componentJson, "revoluteJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("revoluteJoints").size(); i++)
+									{
+										try
+										{
+											json jointJson = componentJson.at("revoluteJoints").at(i);
+											RevoluteJoint::RevoluteJointProps jointProps = RevoluteJoint::RevoluteJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrieveRevoluteJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddRevoluteJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+								if (JsonContains(componentJson, "mouseJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("mouseJoints").size(); i++)
+									{
+										try
+										{
+											json jointJson = componentJson.at("mouseJoints").at(i);
+											MouseJoint::MouseJointProps jointProps = MouseJoint::MouseJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrieveMouseJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddMouseJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+								if (JsonContains(componentJson, "weldJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("weldJoints").size(); i++)
+									{
+										try
+										{
+											json jointJson = componentJson.at("weldJoints").at(i);
+											WeldJoint::WeldJointProps jointProps = WeldJoint::WeldJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrieveWeldJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddWeldJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+								if (JsonContains(componentJson, "motorJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("motorJoints").size(); i++)
+									{
+										try
+										{
+											json jointJson = componentJson.at("motorJoints").at(i);
+											MotorJoint::MotorJointProps jointProps = MotorJoint::MotorJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrieveMotorJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddMotorJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+								if (JsonContains(componentJson, "wheelJoints", objectName))
+								{
+									for (int i = 0; i < componentJson.at("wheelJoints").size(); i++)
+									{
+										try
+										{
+											json jointJson = componentJson.at("wheelJoints").at(i);
+											WheelJoint::WheelJointProps jointProps = WheelJoint::WheelJointProps();
+											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
+											RetrieveWheelJointProps(jointProps, jointJson, objectName);
+											newJointManager->AddWheelJoint(jointProps);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
 							}
 							else if (type == "TileMap")
 							{

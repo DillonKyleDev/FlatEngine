@@ -38,6 +38,11 @@ namespace FlatEngine
 	{
 	}
 
+	bool Scene::SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB)
+	{
+		return gameObjectA->GetHierarchyPosition() < gameObjectB->GetHierarchyPosition();
+	}
+
     void Scene::SetName(std::string newName)
     {
 		m_name = newName;
@@ -71,13 +76,10 @@ namespace FlatEngine
 	GameObject* Scene::AddSceneObject(GameObject sceneObject)
 	{
 		long id = sceneObject.GetID();
+		sceneObject.SetHierarchyPosition((int)m_sceneObjects.size());
 		m_sceneObjects.emplace(id, sceneObject);
 		KeepNextGameObjectIDUpToDate(id);
-
-		//if (sceneObject.HasComponent("BoxCollider") || (sceneObject.HasComponent("TileMap") && sceneObject.GetTileMap()->GetCollisionAreas().size() > 0))
-		//{
-		//	UpdateColliderPairs();
-		//}
+		SortSceneObjects();
 
 		return &m_sceneObjects.at(id);
 	}
@@ -303,7 +305,38 @@ namespace FlatEngine
 
 	void Scene::OnPrefabInstantiated()
 	{		
-		//UpdateColliderPairs();
+
+	}
+
+	void Scene::SortSceneObjects()
+	{
+		m_sortedHierarchyObjects.clear();
+
+		for (std::map<long, GameObject>::iterator iter = m_sceneObjects.begin(); iter != m_sceneObjects.end(); iter++)
+		{
+			m_sortedHierarchyObjects.push_back(&(iter->second));
+		}
+
+		std::sort(m_sortedHierarchyObjects.begin(), m_sortedHierarchyObjects.end(), SortHierarchyObjects);
+	}
+
+	std::vector<GameObject*> Scene::GetSortedHierarchyObjects()
+	{
+		return m_sortedHierarchyObjects;
+	}
+
+	void Scene::CreateJoints()
+	{
+		for (std::map<long, JointManager>::iterator iter = GetJointManagers().begin(); iter != GetJointManagers().end(); iter++)
+		{
+			for (Joint* joint : iter->second.GetJoints())
+			{
+				if (joint->HasValidBodies())
+				{
+					joint->CreateJoint();
+				}
+			}
+		}
 	}
 
 	void Scene::KeepNextComponentIDUpToDate(long ID)
@@ -372,6 +405,12 @@ namespace FlatEngine
 	{
 		KeepNextComponentIDUpToDate(button.GetID());
 		return m_ECSManager.AddButton(button, ownerID);
+	}
+
+	JointManager* Scene::AddJointManager(JointManager jointManager, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(jointManager.GetID());
+		return m_ECSManager.AddJointManager(jointManager, ownerID);
 	}
 
 	CharacterController* Scene::AddCharacterController(CharacterController characterController, long ownerID)
@@ -448,6 +487,11 @@ namespace FlatEngine
 		return m_ECSManager.GetBodyByOwner(ownerID);
 	}
 
+	JointManager* Scene::GetJointManagerByOwner(long ownerID)
+	{
+		return m_ECSManager.GetJointManagerByOwner(ownerID);
+	}
+
 	CharacterController* Scene::GetCharacterControllerByOwner(long ownerID)
 	{
 		return m_ECSManager.GetCharacterControllerByOwner(ownerID);
@@ -501,6 +545,10 @@ namespace FlatEngine
 	std::map<long, Body>& Scene::GetBodies()
 	{
 		return m_ECSManager.GetBodies();
+	}
+	std::map<long, JointManager>& Scene::GetJointManagers()
+	{
+		return m_ECSManager.GetJointManagers();
 	}
 	std::map<long, CharacterController>& Scene::GetCharacterControllers()
 	{

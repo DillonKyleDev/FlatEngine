@@ -4,6 +4,7 @@
 
 F_Tags = {
     "Ball",
+    "Cup",
     "Table",
     "Pocket",
     "PocketBlocker",

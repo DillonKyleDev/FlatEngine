@@ -30,10 +30,11 @@ Now you should be able to go into the build location and open the FlatEngine-Run
 This project is in active development.
 
 This is a hobby project.
-It will likely crash eventually so save often. THERE IS NO AUTOSAVE.
+It will likely crash eventually so save often. THERE IS NO AUTOSAVE. However, when loading into a new scene, or when starting the game loop, FlatEngine2D saves a temporary copy of your scene in `engine/tempFiles`. The engine will then load this copy once you stop the game loop, preserving changes made after last save but before starting the game loop.
 Things will change with updates.
 Your results and the usefulness of FlatEngine may vary.
 Some key systems are not optimized.
+The Box2D implementation is only partly complete and the components section has yet to be updated to reflect the changes. Expect ReadMe documentation changes to accompany the next major release of FlatEngine2D.
 
 --------------------------------------------------------------------------------------
 Quick links:

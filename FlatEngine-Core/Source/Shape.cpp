@@ -50,9 +50,9 @@ namespace FlatEngine
 		m_parentBody = parentBody;
 		m_b_editingPoints = false;
 		m_b_showPoints = false;
-		m_b_drawInGame = true;
+		m_b_drawInGame = false;
 		m_inGameDrawColor = GetColor("boxColliderActive");
-		m_inGameDrawThickness = 3.0f;
+		m_inGameDrawThickness = 2.0f;
 	}
 
 	Shape::~Shape()

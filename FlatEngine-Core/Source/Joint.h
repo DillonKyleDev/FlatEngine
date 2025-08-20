@@ -41,7 +41,7 @@ namespace FlatEngine
 			long bodyAID = -1;
 			long bodyBID = -1;
 			JointType jointType = JT_None;
-			bool b_collideConnected = true;
+			bool b_collideConnected = false;
 			Vector2 anchorA = Vector2(0, 0);
 			Vector2 anchorB = Vector2(0, 0);
 		};

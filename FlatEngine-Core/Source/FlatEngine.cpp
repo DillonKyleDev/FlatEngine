@@ -2105,10 +2105,17 @@ namespace FlatEngine
 	// Converts from world grid space in Scene View to screen space
 	Vector2 Scene_ConvertWorldToScreen(Vector2 positionInWorld)
 	{
-		float x = F_sceneViewCenter->x + (positionInWorld.x * F_sceneViewGridStep->x);
-		float y = F_sceneViewCenter->y - (positionInWorld.y * F_sceneViewGridStep->x);
+		if (F_sceneViewCenter != nullptr && F_sceneViewGridStep != nullptr)
+		{
+			float x = F_sceneViewCenter->x + (positionInWorld.x * F_sceneViewGridStep->x);
+			float y = F_sceneViewCenter->y - (positionInWorld.y * F_sceneViewGridStep->x);
 
-		return Vector2(x, y);
+			return Vector2(x, y);
+		}
+		else
+		{
+			return Vector2(0, 0);
+		}
 	}
 
 	// Converts from screen space to world grid space in Scene View

@@ -50,6 +50,9 @@ namespace FlatEngine
 		m_parentBody = parentBody;
 		m_b_editingPoints = false;
 		m_b_showPoints = false;
+		m_b_drawInGame = true;
+		m_inGameDrawColor = GetColor("boxColliderActive");
+		m_inGameDrawThickness = 3.0f;
 	}
 
 	Shape::~Shape()
@@ -197,6 +200,7 @@ namespace FlatEngine
 			b2DestroyChain(m_chainID);
 		}
 		m_shapeID = b2_nullShapeId;
+		m_chainID = b2_nullChainId;
 	}
 
 	bool Shape::PointInShape(Vector2 point)
@@ -362,5 +366,35 @@ namespace FlatEngine
 	void Shape::SetEditingPoints(bool b_editingPoints)
 	{
 		m_b_editingPoints = b_editingPoints;
+	}
+
+	void Shape::SetDrawInGame(bool b_drawInGame)
+	{
+		m_b_drawInGame = b_drawInGame;
+	}
+
+	bool Shape::DrawInGame()
+	{
+		return m_b_drawInGame;
+	}
+
+	void Shape::SetInGameDrawColor(Vector4 drawColor)
+	{
+		m_inGameDrawColor = drawColor;
+	}
+
+	Vector4 Shape::GetInGameDrawColor()
+	{
+		return m_inGameDrawColor;
+	}
+
+	void Shape::SetInGameDraThickness(float thickness)
+	{
+		m_inGameDrawThickness = thickness;
+	}
+
+	float Shape::GetInGameDraThickness()
+	{
+		return m_inGameDrawThickness;
 	}
 }

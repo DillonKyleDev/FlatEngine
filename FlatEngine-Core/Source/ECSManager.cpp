@@ -17,7 +17,7 @@
 #include "Capsule.h"
 #include "Polygon.h"
 #include "Chain.h"
-#include "JointManager.h"
+#include "JointMaker.h"
 #include "CharacterController.h"
 #include "TileMap.h"
 #include "FlatEngine.h"
@@ -68,6 +68,12 @@ namespace FlatEngine
 			iterator->second.Cleanup();
 		}
 		m_Bodies.clear();
+
+		for (std::map<long, JointMaker>::iterator iterator = m_JointMakers.begin(); iterator != m_JointMakers.end(); iterator++)
+		{
+			iterator->second.Cleanup();
+		}
+		m_JointMakers.clear();
 	}
 
 	Transform* ECSManager::AddTransform(Transform transform, long ownerID)
@@ -142,10 +148,10 @@ namespace FlatEngine
 		return &m_Buttons.at(ownerID);
 	}
 
-	JointManager* ECSManager::AddJointManager(JointManager jointManager, long ownerID)
+	JointMaker* ECSManager::AddJointMaker(JointMaker jointMaker, long ownerID)
 	{
-		m_JointManagers.emplace(ownerID, jointManager);
-		return &m_JointManagers.at(ownerID);
+		m_JointMakers.emplace(ownerID, jointMaker);
+		return &m_JointMakers.at(ownerID);
 	}
 
 	CharacterController* ECSManager::AddCharacterController(CharacterController characterController, long ownerID)
@@ -284,11 +290,11 @@ namespace FlatEngine
 		}
 	}
 
-	JointManager* ECSManager::GetJointManagerByOwner(long ownerID)
+	JointMaker* ECSManager::GetJointMakerByOwner(long ownerID)
 	{
-		if (m_JointManagers.count(ownerID))
+		if (m_JointMakers.count(ownerID))
 		{
-			return &m_JointManagers.at(ownerID);
+			return &m_JointMakers.at(ownerID);
 		}
 		else
 		{
@@ -508,12 +514,12 @@ namespace FlatEngine
 		return b_success;
 	}
 
-	bool ECSManager::RemoveJointManager(long ownerID)
+	bool ECSManager::RemoveJointMaker(long ownerID)
 	{
 		bool b_success = false;
-		if (m_JointManagers.count(ownerID))
+		if (m_JointMakers.count(ownerID))
 		{
-			m_JointManagers.erase(ownerID);
+			m_JointMakers.erase(ownerID);
 			b_success = true;
 		}
 		return b_success;
@@ -585,9 +591,9 @@ namespace FlatEngine
 	{
 		return m_Bodies;
 	}
-	std::map<long, JointManager>& ECSManager::GetJointManagers()
+	std::map<long, JointMaker>& ECSManager::GetJointMakers()
 	{
-		return m_JointManagers;
+		return m_JointMakers;
 	}
 	std::map<long, CharacterController> &ECSManager::GetCharacterControllers()
 	{

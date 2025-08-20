@@ -6,39 +6,86 @@
 
 namespace FlatEngine
 {
-	Joint::Joint(JointProps* jointProps)
+	Joint::Joint(BaseProps baseProps)
 	{
-		m_jointID = b2_nullJointId;		
-		m_bodyA = nullptr;
-		m_bodyB = nullptr;
-		m_b2BodyAID = b2_nullBodyId;
-		m_b2BodyBID = b2_nullBodyId;
-		m_bodyAID = jointProps->bodyAID;
-		m_bodyBID = jointProps->bodyBID;
-		m_b_collideConnected = jointProps->b_collideConnected;
-		m_anchorA = jointProps->anchorA;
-		m_anchorB = jointProps->anchorB;
+		m_b2JointID = b2_nullJointId;
+		m_jointID = 0;
+		m_jointString = "";
+		m_baseProps = baseProps;
+		CreateJoint();
 	}
 
 	Joint::~Joint()
 	{
 	}
 
-	void Joint::SetBodyA(Body* bodyA) 
-	{ 
-		m_bodyA = bodyA; 
-		m_bodyAID = bodyA->GetParentID(); 
-	};
-
-	void Joint::SetBodyB(Body* bodyB)
+	json Joint::GetBasePropsData()
 	{
-		m_bodyB = bodyB;
-		m_bodyBID = bodyB->GetParentID();
-	};
+		json jsonData = {
+			{ "jointType", (int)m_baseProps.jointType },
+			{ "bodyAID", m_baseProps.bodyAID },
+			{ "bodyBID", m_baseProps.bodyBID },
+			{ "_collideConnected", m_baseProps.b_collideConnected },
+			{ "anchorAX", m_baseProps.anchorA.x },
+			{ "anchorAY", m_baseProps.anchorA.y },
+			{ "anchorBX", m_baseProps.anchorB.x },
+			{ "anchorBY", m_baseProps.anchorB.y }
+		};
+
+		return jsonData;
+	}
+
+
+	void Joint::SetJointID(long jointID)
+	{
+		m_jointID = jointID;
+	}
+
+	long Joint::GetJointID()
+	{
+		return m_jointID;
+	}
+
+	void Joint::SetB2JointID(b2JointId jointID)
+	{
+		m_b2JointID = jointID;
+	}
+
+	b2JointId Joint::GetB2JointID()
+	{
+		return m_b2JointID;
+	}
+
+	Joint::BaseProps Joint::GetBaseProps()
+	{
+		return m_baseProps;
+	}
+
+	void Joint::SetBodyAID(long bodyAID)
+	{ 
+		if (bodyAID == m_baseProps.bodyBID)
+		{
+			m_baseProps.bodyBID = -1;
+		}
+		
+		m_baseProps.bodyAID = bodyAID;
+		RecreateJoint();
+	}
+
+	void Joint::SetBodyBID(long bodyBID)
+	{			
+		if (bodyBID == m_baseProps.bodyAID)
+		{
+			m_baseProps.bodyAID = -1;
+		}
+
+		m_baseProps.bodyBID = bodyBID;
+		RecreateJoint();
+	}
 
 	Joint::JointType Joint::GetJointType()
 	{
-		return m_jointType;
+		return m_baseProps.jointType;
 	}
 
 	std::string Joint::GetJointString()
@@ -46,71 +93,73 @@ namespace FlatEngine
 		return m_jointString;
 	}
 
-	void Joint::SetJointID(b2JointId jointID)
-	{
-		m_jointID = jointID;
-	}
-
-	b2JointId Joint::GetJointID()
-	{
-		return m_jointID;
-	}
-
 	Body* Joint::GetBodyA()
 	{
-		return m_bodyA;
+		if (GetObjectByID(m_baseProps.bodyAID) != nullptr)
+		{
+			return GetObjectByID(m_baseProps.bodyAID)->GetBody();
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	Body* Joint::GetBodyB()
 	{
-		return m_bodyB;
+		if (GetObjectByID(m_baseProps.bodyBID) != nullptr)
+		{
+			return GetObjectByID(m_baseProps.bodyBID)->GetBody();
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	bool Joint::HasValidBodies()
 	{
-		return (m_bodyAID != -1 && m_bodyBID != -1);
+		return (m_baseProps.bodyAID != -1 && m_baseProps.bodyBID != -1);
 	}
 
 	void Joint::SetAnchorA(Vector2 anchorA)
 	{
-		m_anchorA = anchorA;
+		m_baseProps.anchorA = anchorA;
+		RecreateJoint();
 	}
 
 	void Joint::SetAnchorB(Vector2 anchorB)
 	{
-		m_anchorB = anchorB;
+		m_baseProps.anchorB = anchorB;
+		RecreateJoint();
 	}
 
 	bool Joint::CollideConnected()
 	{
-		return m_b_collideConnected;
+		return m_baseProps.b_collideConnected;
+		RecreateJoint();
 	}
 
 	Vector2 Joint::GetAnchorA()
 	{
-		return m_anchorA;
+		return m_baseProps.anchorA;
 	}
 
 	Vector2 Joint::GetAnchorB()
 	{
-		return m_anchorB;
+		return m_baseProps.anchorB;
 	}
 
 	void Joint::CreateJoint()
 	{
-		if (m_bodyAID != -1 && m_bodyBID != -1)
-		{
-			m_bodyA = GetObjectByID(m_bodyAID)->GetBody();
-			m_bodyB = GetObjectByID(m_bodyBID)->GetBody();
-		}
+		DestroyJoint();
 
-		if (m_bodyA != nullptr && m_bodyB != nullptr)
+		GameObject* objectA = GetObjectByID(m_baseProps.bodyAID);
+		GameObject* objectB = GetObjectByID(m_baseProps.bodyBID);
+
+		if (objectA != nullptr && objectB != nullptr && objectA->HasComponent("Body") && objectB->HasComponent("Body"))
 		{
-			F_Physics->CreateJoint(m_bodyA, m_bodyB, this);
-		}
-		else
-		{
-			LogError("Could not create Joint in class Joint: BodyA and/or BodyB were nullptr.");
+			F_Physics->CreateJoint(GetObjectByID(m_baseProps.bodyAID)->GetBody(), GetObjectByID(m_baseProps.bodyBID)->GetBody(), this);
 		}
 	}
 
@@ -118,32 +167,32 @@ namespace FlatEngine
 	{
 		if (bodyA != nullptr && bodyB != nullptr)
 		{
-			m_bodyA = bodyA;
-			m_bodyB = bodyB;
+			F_Physics->CreateJoint(bodyA, bodyB, this);
 		}
+	}
 
-		if (m_bodyA != nullptr && m_bodyB != nullptr)
-		{
-			F_Physics->CreateJoint(m_bodyA, m_bodyB, this);
-		}
-		else
-		{
-			LogError("Could not create Joint in class Joint: BodyA and/or BodyB were nullptr.");
-		}
+	void Joint::RecreateJoint()
+	{
+		DestroyJoint();
+		CreateJoint();
 	}
 
 	void Joint::DestroyJoint()
 	{
-		b2DestroyJoint(m_jointID);
+		if (b2Joint_IsValid(m_b2JointID))
+		{
+			b2DestroyJoint(m_b2JointID);
+			m_b2JointID = b2_nullJointId;
+		}
 	}
 
 	Vector2 Joint::GetConstraintForce()
 	{
-		return b2Joint_GetConstraintForce(m_jointID);
+		return b2Joint_GetConstraintForce(m_b2JointID);
 	}
 
 	float Joint::GetConstraintTorque()
 	{
-		return b2Joint_GetConstraintTorque(m_jointID);
+		return b2Joint_GetConstraintTorque(m_b2JointID);
 	}
 }

@@ -722,7 +722,7 @@ namespace FlatGui
 					
 			if (self.GetID() != focusedObjectID)
 			{
-				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers);
+				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 4);
 
 				float selectObjectWidth = (float)FL::GetTextureObject("selectGameObject")->GetWidth();
 				float selectObjectHeight = (float)FL::GetTextureObject("selectGameObject")->GetHeight();
@@ -1145,6 +1145,8 @@ namespace FlatGui
 							colorLight = FL::GetColor("polygonColliderInactiveLight");
 						}
 					}
+
+					//ImGui::GetWindowDrawList()->AddPolyline();
 
 					for (int i = 0; i < pointCount; i++)
 					{

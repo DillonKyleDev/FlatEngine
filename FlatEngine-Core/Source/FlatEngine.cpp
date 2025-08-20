@@ -3116,51 +3116,106 @@ namespace FlatEngine
 		shapeProps.points = points;
 	}
 
-	void RetrieveBaseJointProps(Joint::JointProps* jointProps, json jointJson, std::string objectName)
+	void RetrieveBaseJointProps(Joint::BaseProps& jointProps, json jointJson, std::string objectName)
 	{
-		jointProps->jointType = (Joint::JointType)CheckJsonInt(jointJson, "jointType", objectName);
-		jointProps->b_collideConnected = CheckJsonBool(jointJson, "_collideConnected", objectName);
-		jointProps->bodyAID = CheckJsonLong(jointJson, "bodyAID", objectName);
-		jointProps->bodyBID = CheckJsonLong(jointJson, "bodyBID", objectName);
-		jointProps->anchorA.x = CheckJsonFloat(jointJson, "anchorAX", objectName);
-		jointProps->anchorA.y = CheckJsonFloat(jointJson, "anchorAY", objectName);
-		jointProps->anchorB.x = CheckJsonFloat(jointJson, "anchorBX", objectName);
-		jointProps->anchorB.y = CheckJsonFloat(jointJson, "anchorAY", objectName);
+		jointProps.jointType = (Joint::JointType)CheckJsonInt(jointJson, "jointType", objectName);
+		jointProps.b_collideConnected = CheckJsonBool(jointJson, "_collideConnected", objectName);
+		jointProps.bodyAID = CheckJsonLong(jointJson, "bodyAID", objectName);
+		jointProps.bodyBID = CheckJsonLong(jointJson, "bodyBID", objectName);
+		jointProps.anchorA.x = CheckJsonFloat(jointJson, "anchorAX", objectName);
+		jointProps.anchorA.y = CheckJsonFloat(jointJson, "anchorAY", objectName);
+		jointProps.anchorB.x = CheckJsonFloat(jointJson, "anchorBX", objectName);
+		jointProps.anchorB.y = CheckJsonFloat(jointJson, "anchorAY", objectName);
 	}
 
 	void RetrieveDistanceJointProps(DistanceJoint::DistanceJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.b_enableLimit = CheckJsonBool(jointJson, "_enableLimit", objectName);
+		jointProps.b_enableMotor = CheckJsonBool(jointJson, "_enableMotor", objectName);
+		jointProps.b_enableSpring = CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.dampingRatio = CheckJsonFloat(jointJson, "dampingRatio", objectName);
+		jointProps.hertz = CheckJsonFloat(jointJson, "hertz", objectName);
+		jointProps.minLength = CheckJsonFloat(jointJson, "minLength", objectName);
+		jointProps.maxLength = CheckJsonFloat(jointJson, "maxLength", objectName);		
+		jointProps.length = CheckJsonFloat(jointJson, "length", objectName);
+		jointProps.maxMotorForce = CheckJsonFloat(jointJson, "maxMotorForce", objectName);
+		jointProps.motorSpeed = CheckJsonFloat(jointJson, "motorSpeed", objectName);
 	}
 
 	void RetrievePrismaticJointProps(PrismaticJoint::PrismaticJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.b_enableLimit = CheckJsonBool(jointJson, "_enableLimit", objectName);
+		jointProps.b_enableMotor = CheckJsonBool(jointJson, "_enableMotor", objectName);
+		jointProps.b_enableSpring = CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.dampingRatio = CheckJsonFloat(jointJson, "dampingRatio", objectName);
+		jointProps.hertz = CheckJsonFloat(jointJson, "hertz", objectName);
+		jointProps.localAxisA = Vector2(CheckJsonFloat(jointJson, "localAxisAX", objectName), CheckJsonFloat(jointJson, "localAxisAY", objectName));
+		jointProps.lowerTranslation = CheckJsonFloat(jointJson, "lowerTranslation", objectName);
+		jointProps.upperTranslation = CheckJsonFloat(jointJson, "upperTranslation", objectName);
+		jointProps.targetTranslation = CheckJsonFloat(jointJson, "targetTranslation", objectName);
+		jointProps.maxMotorForce = CheckJsonFloat(jointJson, "maxMotorForce", objectName);
+		jointProps.motorSpeed = CheckJsonFloat(jointJson, "motorSpeed", objectName);
 	}
 
 	void RetrieveRevoluteJointProps(RevoluteJoint::RevoluteJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.b_enableLimit = CheckJsonBool(jointJson, "_enableLimit", objectName);
+		jointProps.b_enableMotor = CheckJsonBool(jointJson, "_enableMotor", objectName);
+		jointProps.b_enableSpring = CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.dampingRatio = CheckJsonFloat(jointJson, "dampingRatio", objectName);
+		jointProps.hertz = CheckJsonFloat(jointJson, "hertz", objectName);
+		jointProps.drawSize = CheckJsonFloat(jointJson, "drawSize", objectName);
+		jointProps.lowerAngle = CheckJsonFloat(jointJson, "lowerAngle", objectName);
+		jointProps.upperAngle = CheckJsonFloat(jointJson, "upperAngle", objectName);
+		jointProps.maxMotorTorque = CheckJsonFloat(jointJson, "maxMotorForce", objectName);
+		jointProps.motorSpeed = CheckJsonFloat(jointJson, "motorSpeed", objectName);
+		jointProps.referenceAngle = CheckJsonFloat(jointJson, "referenceAngle", objectName);
+		jointProps.targetAngle = CheckJsonFloat(jointJson, "targetAngle", objectName);		
 	}
 
 	void RetrieveMouseJointProps(MouseJoint::MouseJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.dampingRatio = CheckJsonFloat(jointJson, "dampingRatio", objectName);
+		jointProps.hertz = CheckJsonFloat(jointJson, "hertz", objectName);
+		jointProps.maxForce = CheckJsonFloat(jointJson, "maxForce", objectName);
 	}
 
 	void RetrieveWeldJointProps(WeldJoint::WeldJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.angularDampingRatio = CheckJsonBool(jointJson, "angularDampingRatio", objectName);
+		jointProps.angularHertz = CheckJsonBool(jointJson, "angularHertz", objectName);
+		jointProps.linearDampingRatio = CheckJsonBool(jointJson, "linearDampingRatio", objectName);
+		jointProps.linearHertz = CheckJsonFloat(jointJson, "linearHertz", objectName);
+		jointProps.referenceAngle = CheckJsonFloat(jointJson, "referenceAngle", objectName);
 	}
 
 	void RetrieveMotorJointProps(MotorJoint::MotorJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.angleBetween = CheckJsonBool(jointJson, "angleBetween", objectName);
+		jointProps.angularDampingRatio = CheckJsonBool(jointJson, "angularDampingRatio", objectName);
+		jointProps.angularHertz = CheckJsonBool(jointJson, "angularHertz", objectName);
+		jointProps.angularVelocity = CheckJsonFloat(jointJson, "angularVelocity", objectName);
+		jointProps.linearDampingRatio = CheckJsonFloat(jointJson, "linearDampingRatio", objectName);
+		jointProps.linearHertz = CheckJsonFloat(jointJson, "linearHertz", objectName);
+		jointProps.linearVelocity = CheckJsonFloat(jointJson, "linearVelocity", objectName);
+		jointProps.maxSpringForce = CheckJsonFloat(jointJson, "maxSpringForce", objectName);
+		jointProps.maxVelocityForce = CheckJsonFloat(jointJson, "maxVelocityForce", objectName);
+		jointProps.maxVelocityTorque = CheckJsonFloat(jointJson, "maxVelocityTorque", objectName);
+		jointProps.relativeTransformPos = Vector2(CheckJsonFloat(jointJson, "relativeTransformPosX", objectName), CheckJsonFloat(jointJson, "relativeTransformPosY", objectName));		
 	}
 
 	void RetrieveWheelJointProps(WheelJoint::WheelJointProps& jointProps, json jointJson, std::string objectName)
 	{
-
+		jointProps.b_enableLimit = CheckJsonBool(jointJson, "_enableLimit", objectName);
+		jointProps.b_enableMotor = CheckJsonBool(jointJson, "_enableMotor", objectName);
+		jointProps.b_enableSpring = CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.dampingRatio = CheckJsonFloat(jointJson, "dampingRatio", objectName);
+		jointProps.hertz = CheckJsonFloat(jointJson, "hertz", objectName);
+		jointProps.localAxisA = Vector2(CheckJsonFloat(jointJson, "localAxisAX", objectName), CheckJsonFloat(jointJson, "localAxisAY", objectName));
+		jointProps.lowerTranslation = CheckJsonFloat(jointJson, "lowerTranslation", objectName);
+		jointProps.upperTranslation = CheckJsonFloat(jointJson, "upperTranslation", objectName);
+		jointProps.maxMotorTorque = CheckJsonFloat(jointJson, "maxMotorForce", objectName);
+		jointProps.motorSpeed = CheckJsonFloat(jointJson, "motorSpeed", objectName);
 	}
 
 	GameObject *CreateObjectFromJson(json objectJson, Scene* scene)
@@ -3485,9 +3540,9 @@ namespace FlatEngine
 									}
 								}											
 							}
-							else if (type == "JointManager")
+							else if (type == "JointMaker")
 							{
-								JointManager* newJointManager = loadedObject->AddJointManager(id, b_isActive, b_isCollapsed);
+								JointMaker* newJointMaker = loadedObject->AddJointMaker(id, b_isActive, b_isCollapsed);
 
 								if (JsonContains(componentJson, "distanceJoints", objectName))
 								{
@@ -3495,11 +3550,13 @@ namespace FlatEngine
 									{
 										try
 										{											
-											json jointJson = componentJson.at("distanceJoints").at(i);											
+											json basePropsJson = componentJson.at("distanceJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("distanceJoints").at(i)["jointProps"];
 											DistanceJoint::DistanceJointProps jointProps = DistanceJoint::DistanceJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrieveDistanceJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddDistanceJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrieveDistanceJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddDistanceJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{
@@ -3512,12 +3569,14 @@ namespace FlatEngine
 									for (int i = 0; i < componentJson.at("prismaticJoints").size(); i++)
 									{
 										try
-										{
-											json jointJson = componentJson.at("prismaticJoints").at(i);											
+										{												
+											json basePropsJson = componentJson.at("prismaticJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("prismaticJoints").at(i)["jointProps"];
 											PrismaticJoint::PrismaticJointProps jointProps = PrismaticJoint::PrismaticJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrievePrismaticJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddPrismaticJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrievePrismaticJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddPrismaticJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{
@@ -3530,12 +3589,14 @@ namespace FlatEngine
 									for (int i = 0; i < componentJson.at("revoluteJoints").size(); i++)
 									{
 										try
-										{
-											json jointJson = componentJson.at("revoluteJoints").at(i);
+										{											
+											json basePropsJson = componentJson.at("revoluteJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("revoluteJoints").at(i)["jointProps"];
 											RevoluteJoint::RevoluteJointProps jointProps = RevoluteJoint::RevoluteJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrieveRevoluteJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddRevoluteJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrieveRevoluteJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddRevoluteJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{
@@ -3548,12 +3609,14 @@ namespace FlatEngine
 									for (int i = 0; i < componentJson.at("mouseJoints").size(); i++)
 									{
 										try
-										{
-											json jointJson = componentJson.at("mouseJoints").at(i);
+										{											
+											json basePropsJson = componentJson.at("mouseJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("mouseJoints").at(i)["jointProps"];
 											MouseJoint::MouseJointProps jointProps = MouseJoint::MouseJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrieveMouseJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddMouseJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrieveMouseJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddMouseJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{
@@ -3566,12 +3629,14 @@ namespace FlatEngine
 									for (int i = 0; i < componentJson.at("weldJoints").size(); i++)
 									{
 										try
-										{
-											json jointJson = componentJson.at("weldJoints").at(i);
+										{											
+											json basePropsJson = componentJson.at("weldJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("weldJoints").at(i)["jointProps"];
 											WeldJoint::WeldJointProps jointProps = WeldJoint::WeldJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrieveWeldJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddWeldJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrieveWeldJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddWeldJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{
@@ -3584,12 +3649,14 @@ namespace FlatEngine
 									for (int i = 0; i < componentJson.at("motorJoints").size(); i++)
 									{
 										try
-										{
-											json jointJson = componentJson.at("motorJoints").at(i);
+										{											
+											json basePropsJson = componentJson.at("motorJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("motorJoints").at(i)["jointProps"];
 											MotorJoint::MotorJointProps jointProps = MotorJoint::MotorJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrieveMotorJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddMotorJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrieveMotorJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddMotorJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{
@@ -3602,12 +3669,14 @@ namespace FlatEngine
 									for (int i = 0; i < componentJson.at("wheelJoints").size(); i++)
 									{
 										try
-										{
-											json jointJson = componentJson.at("wheelJoints").at(i);
+										{											
+											json basePropsJson = componentJson.at("wheelJoints").at(i)["baseProps"];
+											json jointPropsJson = componentJson.at("wheelJoints").at(i)["jointProps"];
 											WheelJoint::WheelJointProps jointProps = WheelJoint::WheelJointProps();
-											RetrieveBaseJointProps(&jointProps, jointJson, objectName);
-											RetrieveWheelJointProps(jointProps, jointJson, objectName);
-											newJointManager->AddWheelJoint(jointProps);
+											Joint::BaseProps baseProps = Joint::BaseProps();
+											RetrieveBaseJointProps(baseProps, basePropsJson, objectName);
+											RetrieveWheelJointProps(jointProps, jointPropsJson, objectName);
+											newJointMaker->AddWheelJoint(baseProps, jointProps);
 										}
 										catch (const json::out_of_range& e)
 										{

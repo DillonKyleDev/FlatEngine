@@ -23,13 +23,10 @@ namespace FlatEngine
 			float targetAngle = 0.0f;
 		};
 
-        RevoluteJoint(RevoluteJointProps jointProps);
+        RevoluteJoint(BaseProps baseProps, RevoluteJointProps jointProps);
         ~RevoluteJoint();
 		json GetJointData();
-        JointProps* GetJointProps();
-
-		void SetBodyA(Body* bodyA);
-		void SetBodyB(Body* bodyB);
+        RevoluteJointProps& GetJointProps();
 
     private:
         RevoluteJointProps m_jointProps;

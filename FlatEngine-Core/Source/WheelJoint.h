@@ -21,13 +21,10 @@ namespace FlatEngine
 			float motorSpeed = 10.0f;
 		};
 
-        WheelJoint(WheelJointProps jointProps);
+        WheelJoint(BaseProps baseProps, WheelJointProps jointProps);
         ~WheelJoint();
 		json GetJointData();
-        JointProps* GetJointProps();
-
-		void SetBodyA(Body* bodyA);
-		void SetBodyB(Body* bodyB);
+		WheelJointProps& GetJointProps();
 
     private:
         WheelJointProps m_jointProps;

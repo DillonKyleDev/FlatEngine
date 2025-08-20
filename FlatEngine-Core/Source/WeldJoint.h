@@ -16,13 +16,10 @@ namespace FlatEngine
             float referenceAngle = 0.0f;
         };
 
-        WeldJoint(WeldJointProps jointProps);
+        WeldJoint(BaseProps baseProps, WeldJointProps jointProps);
         ~WeldJoint();
         json GetJointData();
-        JointProps* GetJointProps();
-
-        void SetBodyA(Body* bodyA);
-        void SetBodyB(Body* bodyB);
+        WeldJointProps& GetJointProps();
 
     private:
         WeldJointProps m_jointProps;

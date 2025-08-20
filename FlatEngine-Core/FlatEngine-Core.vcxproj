@@ -281,7 +281,7 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h" />
-    <ClInclude Include="Source\JointManager.h" />
+    <ClInclude Include="Source\JointMaker.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\AssetManager.h" />
@@ -351,7 +351,7 @@
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp" />
     <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp" />
     <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp" />
-    <ClCompile Include="Source\JointManager.cpp" />
+    <ClCompile Include="Source\JointMaker.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\AssetManager.cpp" />

@@ -9,7 +9,7 @@ namespace FlatEngine
     class DistanceJoint : public Joint
     {
     public:
-		struct DistanceJointProps : public Joint::JointProps {
+		struct DistanceJointProps : public Joint::JointProps {			
 			float dampingRatio = 0.5f;
 			bool b_enableLimit = false;
 			bool b_enableMotor = true;
@@ -22,15 +22,26 @@ namespace FlatEngine
 			float motorSpeed = 10.0f;
 		};
 
-        DistanceJoint(DistanceJointProps jointProps);
+        DistanceJoint(BaseProps baseProps, DistanceJointProps jointProps);
         ~DistanceJoint();
 		json GetJointData();
-        JointProps* GetJointProps();
-		
-		void SetBodyA(Body* bodyA);
-		void SetBodyB(Body* bodyB);
+		DistanceJointProps& GetJointProps();
 
 		void SetJointProps(DistanceJointProps jointProps);
+		void SetLength(float length);
+		float GetLength();
+		void SetLengthRange(float minLength, float maxLength);
+		void SetEnableSpring(bool b_enableSpring);
+		void SetSpringHertz(float hertz);
+		float GetSpringHertz();
+		void SetSpringDampingRatio(float springDampingRatio);
+		float GetSpringDampingRatio();
+		void SetEnableMotor(bool b_enableMotor);
+		void SetMotorSpeed(float motorSpeed);
+		float GetMotorSpeed();
+		void SetMaxMotorForce(float maxMotorForce);
+		float GetMotorForce();
+		void SetEnableLimit(bool b_enableLimit);
 
     private:
         DistanceJointProps m_jointProps;

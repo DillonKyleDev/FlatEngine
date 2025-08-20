@@ -12,6 +12,7 @@
 #include "TileMap.h"
 #include "TileSet.h"
 #include "Project.h"
+#include "Vector4.h"
 
 #include "imgui.h"
 
@@ -88,7 +89,7 @@ namespace FlatEngine
 		Scene* persistantObjectScene = GetLoadedProject().GetPersistantGameObjectScene();
 		std::map<long, GameObject> persistantObjects = std::map<long, GameObject>();
 		Camera* primaryCamera = GetPrimaryCamera();
-		Transform* cameraTransform = nullptr;
+		Transform* cameraTransform = nullptr;		
 
 		if (loadedScene != nullptr)
 		{
@@ -175,7 +176,7 @@ namespace FlatEngine
 		Text* text = self.GetText();
 		Button* button = self.GetButton();
 		Canvas* canvas = self.GetCanvas();
-
+		Body* body = self.GetBody();
 
 		if (transform != nullptr && transform->IsActive())
 		{
@@ -374,6 +375,203 @@ namespace FlatEngine
 			{
 				// Active Edges depends on gameViewCenter, which can change with every call to Game_RenderView(), so we recalculate
 				canvas->CalculateActiveEdges();
+			}
+
+			if (body != nullptr)
+			{
+				std::list<Box>& boxes = body->GetBoxes();
+				std::list<Circle> circles = body->GetCircles();
+				std::list<Capsule>& capsules = body->GetCapsules();
+				std::list<FL::Polygon>& polygons = body->GetPolygons();
+				std::list<Chain>& chains = body->GetChains();
+
+				for (Box& box : boxes)
+				{
+					bool b_isActive = body->IsActive();
+					bool b_drawBoxInGame = box.DrawInGame();
+
+					if (b_drawBoxInGame && b_isActive)
+					{
+						FL::Physics::BodyProps bodyProps = body->GetBodyProps();
+						Shape::ShapeProps shapeProps = box.GetShapeProps();
+						Vector4 drawColor = box.GetInGameDrawColor();
+						float thickness = box.GetInGameDraThickness();
+						
+						box.UpdateCorners();
+
+						std::vector<Vector2> cornersVec = box.GetCornersScreen();
+						Vector2 corners[4] = {
+							cornersVec[0],
+							cornersVec[1],
+							cornersVec[2],
+							cornersVec[3]
+						};
+
+						drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+						FL::DrawRectangleFromLines(corners, drawColor, thickness, drawList);
+						FL::DrawRectangleFromLines(corners, Vector4(drawColor.x, drawColor.y, drawColor.z, 0.35f), thickness + 2, drawList);
+					}
+				}
+
+				for (Circle& circle : circles)
+				{
+					bool b_isActive = body->IsActive();
+					bool b_drawBoxInGame = circle.DrawInGame();
+
+					if (b_drawBoxInGame && b_isActive)
+					{
+						Vector4 drawColor = circle.GetInGameDrawColor();
+						float thickness = circle.GetInGameDraThickness();
+						FL::Physics::BodyProps bodyProps = body->GetBodyProps();
+						Shape::ShapeProps shapeProps = circle.GetShapeProps();
+						bool b_isSensor = shapeProps.b_isSensor;
+						float radius = shapeProps.radius * F_gameViewGridStep.x;
+						Vector2 offset = shapeProps.positionOffset;
+						Vector2 center = ConvertWorldToScreen(position + Vector2::Rotate(offset, rotation));
+
+						drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+						FL::DrawCircle(center, radius, Vector4(drawColor.x, drawColor.y, drawColor.z, 0.35f), drawList, thickness + 2);
+						FL::DrawCircle(center, radius, drawColor, drawList);										
+					}
+				}
+
+				for (Capsule& capsule : capsules)
+				{
+					bool b_isActive = body->IsActive();
+					bool b_drawBoxInGame = capsule.DrawInGame();
+
+					if (b_drawBoxInGame && b_isActive)
+					{
+						Vector4 color = capsule.GetInGameDrawColor();
+						Vector4 colorLight = Vector4(color.x, color.y, color.z, 0.35f);
+						float thickness = capsule.GetInGameDraThickness();
+						FL::Physics::BodyProps bodyProps = body->GetBodyProps();
+						Shape::ShapeProps shapeProps = capsule.GetShapeProps();
+						bool b_isSensor = shapeProps.b_isSensor;
+						b2Capsule capsuleShape = b2Shape_GetCapsule(capsule.GetShapeID());
+						float length = shapeProps.capsuleLength;
+						float radius = shapeProps.radius;
+						float radiusScreen = radius * F_gameViewGridStep.x;
+						Vector2 offset = shapeProps.positionOffset;
+						float rotation = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));
+
+						Vector2 center1 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center1)));
+						Vector2 center2 = ConvertWorldToScreen(Vector2(b2Body_GetWorldPoint(body->GetBodyID(), capsuleShape.center2)));
+						Vector2 difference = center2 - center1;
+						Vector2 diffN = Vector2::Normalize(difference);
+						Vector2 diffNR = diffN * radiusScreen;
+						Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
+						Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
+
+						drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+						FL::DrawCircle(center1, radiusScreen, colorLight, drawList, thickness + 2.0f);
+						FL::DrawCircle(center1, radiusScreen, color, drawList);
+
+						FL::DrawCircle(center2, radiusScreen, colorLight, drawList, thickness + 2.0f);
+						FL::DrawCircle(center2, radiusScreen, color, drawList);
+
+						FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, thickness + 2.0f, drawList);
+						FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, thickness + 2.0f, drawList);
+						FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, thickness + 2.0f, drawList);
+						FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, thickness + 2.0f, drawList);
+
+						// Sides
+						FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, colorLight, thickness + 2.0f, drawList);
+						FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, thickness, drawList);
+
+						FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, colorLight, thickness + 2.0f, drawList);
+						FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, thickness, drawList);
+					}
+				}
+
+				for (FL::Polygon& polygon : polygons)
+				{					
+					bool b_isActive = body->IsActive();
+					bool b_drawBoxInGame = polygon.DrawInGame();
+
+					if (b_drawBoxInGame && b_isActive)
+					{
+						Vector4 color = polygon.GetInGameDrawColor();
+						Vector4 colorLight = Vector4(color.x, color.y, color.z, 0.35f);
+						float thickness = polygon.GetInGameDraThickness();
+						FL::Physics::BodyProps& bodyProps = body->GetBodyProps();
+						Shape::ShapeProps& shapeProps = polygon.GetShapeProps();
+						bool b_isSensor = shapeProps.b_isSensor;
+						bool b_isLoop = shapeProps.b_isLoop;
+						std::vector<Vector2>& points = shapeProps.points;
+						int pointCount = (int)points.size();
+						float cornerRadius = shapeProps.cornerRadius;
+						int minPolygonBodyVertices = 3;
+						int maxPolygonBodyVertices = 8;
+						bool b_editingPoints = polygon.IsEditingPoints();
+
+						for (int i = 0; i < pointCount; i++)
+						{
+							Vector2 rPerpStart = points[i] + Vector2::Rotate(Vector2::Normalize(points[FL::Fmod(i + 1, pointCount)] - points[i]) * cornerRadius, -90);
+							Vector2 rPerpEnd = rPerpStart + (points[FL::Fmod(i + 1, pointCount)] - points[i]);
+							Vector2 rotatedStart = Vector2::Rotate(rPerpStart, rotation);
+							Vector2 rotatedEnd = Vector2::Rotate(rPerpEnd, rotation);
+							Vector2 lineStart = FL::ConvertWorldToScreen(position + rotatedStart);
+							Vector2 lineEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
+
+							FL::DrawLine(lineStart, lineEnd, colorLight, thickness + 2.0f, drawList);
+							FL::DrawLine(lineStart, lineEnd, color, thickness, drawList);
+
+							if (cornerRadius > 0)
+							{
+								Vector2 rotatedCircleStart = Vector2::Rotate(points[i], rotation);
+								Vector2 rotatedCircleEnd = Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation);
+								Vector2 circleStart = FL::ConvertWorldToScreen(position + rotatedStart);
+								Vector2 circleEnd = FL::ConvertWorldToScreen(position + rotatedEnd);
+
+								FL::DrawCircle(circleStart, cornerRadius * F_gameViewGridStep.x, colorLight, drawList, thickness + 2.0f);
+								FL::DrawCircle(circleStart, cornerRadius * F_gameViewGridStep.x, color, drawList, thickness);
+
+								FL::DrawLine(circleStart, circleEnd, colorLight, thickness + 2.0f, drawList);
+								FL::DrawLine(circleStart, circleEnd, color, thickness, drawList);
+							}
+						}
+					}
+				}
+
+				for (Chain& chain : chains)
+				{
+					bool b_isActive = body->IsActive();
+					bool b_drawBoxInGame = chain.DrawInGame();
+
+					if (b_drawBoxInGame && b_isActive)
+					{
+						FL::Physics::BodyProps& bodyProps = body->GetBodyProps();
+						Shape::ShapeProps& shapeProps = chain.GetShapeProps();
+						bool b_isLoop = shapeProps.b_isLoop;
+						std::vector<Vector2>& points = shapeProps.points;
+						int pointCount = (int)points.size();
+						int minChainBodyVertices = 4;
+						bool b_editingPoints = chain.IsEditingPoints();
+
+						Vector4 color = chain.GetInGameDrawColor();
+						Vector4 colorLight = Vector4(color.x, color.y, color.z, 0.35f);
+						float thickness = chain.GetInGameDraThickness();
+
+						for (int i = 0; i < pointCount; i++)
+						{
+							if (i < pointCount - 1 || b_isLoop)
+							{
+								Vector2 start = FL::ConvertWorldToScreen(position + Vector2::Rotate(points[i], rotation));
+								Vector2 end = FL::ConvertWorldToScreen(position + Vector2::Rotate(points[FL::Fmod(i + 1, pointCount)], rotation));
+
+								if (b_isLoop || (i > 0 && i < pointCount - 2))
+								{
+									FL::DrawLine(start, end, colorLight, thickness + 2.0f, drawList);
+									FL::DrawLine(start, end, color, thickness, drawList);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	}

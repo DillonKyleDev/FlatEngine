@@ -97,10 +97,6 @@ namespace FlatEngine
 			return "Text";
 			break;
 
-		case T_RayCast:
-			return "RayCast";
-			break;
-
 		case T_CharacterController:
 			return "CharacterController";
 			break;
@@ -113,8 +109,8 @@ namespace FlatEngine
 			return "Body";
 			break;
 
-		case T_JointManager:
-			return "Body";
+		case T_JointMaker:
+			return "JointMaker";
 			break;
 
 		default:

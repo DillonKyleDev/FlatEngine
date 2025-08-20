@@ -33,6 +33,7 @@
 #include "MotorJoint.h"
 #include "WheelJoint.h"
 #include "WeldJoint.h"
+#include "JointMaker.h"
 
 #include "box2D.h"
 #include "imgui.h"
@@ -1913,16 +1914,16 @@ namespace FlatGui
 		ImGui::GetWindowDrawList()->AddRect({ shapeWindowPos.x , shapeWindowPos.y }, { shapeWindowPos.x + shapeWindowSize.x, shapeWindowPos.y + shapeWindowSize.y }, FL::GetColor32("componentBorder"), 0);
 	}
 
-	void RenderJointManagerComponent(JointManager* jointManager)
+	void RenderJointMakerComponent(JointMaker* jointMaker)
 	{
-		long ID = jointManager->GetID();
-		bool b_isActive = jointManager->IsActive();
+		long ID = jointMaker->GetID();
+		bool b_isActive = jointMaker->IsActive();
 		
-		std::vector<Joint*> joints = jointManager->GetJoints();
+		std::vector<Joint*> joints = jointMaker->GetJoints();
 
 		if (RenderIsActiveCheckbox(b_isActive))
 		{
-			jointManager->SetActive(b_isActive);
+			jointMaker->SetActive(b_isActive);
 		}
 
 		FL::RenderButton("Add Joint", Vector2(ImGui::GetContentRegionAvail().x, 0));
@@ -1932,49 +1933,49 @@ namespace FlatGui
 
 			if (ImGui::MenuItem("Distance Joint"))
 			{				
-				jointManager->AddDistanceJoint();
+				jointMaker->AddDistanceJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Prismatic Joint"))
 			{
-				jointManager->AddPrismaticJoint();
+				jointMaker->AddPrismaticJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Revolute Joint"))
 			{
-				jointManager->AddRevoluteJoint();
+				jointMaker->AddRevoluteJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Mouse Joint"))
 			{
-				jointManager->AddMouseJoint();
+				jointMaker->AddMouseJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Wheel Joint"))
 			{
-				jointManager->AddWheelJoint();
+				jointMaker->AddWheelJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Motor Joint"))
 			{
-				jointManager->AddMotorJoint();
+				jointMaker->AddMotorJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Wheel Joint"))
 			{
-				jointManager->AddWheelJoint();
+				jointMaker->AddWheelJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
 			if (ImGui::MenuItem("Weld Joint"))
 			{
-				jointManager->AddWeldJoint();
+				jointMaker->AddWeldJoint();
 				ImGui::CloseCurrentPopup();
 			}
 
@@ -1982,7 +1983,7 @@ namespace FlatGui
 			ImGui::EndMenu();
 		}
 
-		if (jointManager->GetJoints().size() > 0)
+		if (jointMaker->GetJoints().size() > 0)
 		{
 			FL::MoveScreenCursor(0, 3);
 			ImGui::Text("Joints");
@@ -2001,9 +2002,9 @@ namespace FlatGui
 			// Border around components section
 			auto wPos = ImGui::GetWindowPos();
 			auto wSize = ImGui::GetWindowSize();
-			b2JointId jointToDelete = b2_nullJointId;			
+			long jointToDelete = -1;			
 
-			std::vector<Joint*> joints = jointManager->GetJoints();
+			std::vector<Joint*> joints = jointMaker->GetJoints();
 
 			for (int i = 0; i < joints.size(); i++)
 			{
@@ -2015,9 +2016,9 @@ namespace FlatGui
 				}
 			}
 
-			if (b2Joint_IsValid(jointToDelete))
+			if (jointToDelete != -1)
 			{
-				jointManager->RemoveJoint(jointToDelete);
+				jointMaker->RemoveJoint(jointToDelete);
 			}
 
 
@@ -2027,7 +2028,7 @@ namespace FlatGui
 			ImGui::GetWindowDrawList()->AddRect({ wPos.x, wPos.y - 1 }, { wPos.x + wSize.x, wPos.y + wSize.y + 1 }, FL::GetColor32("componentSectionBorder"), 0);
 		}
 
-		//if (FL::PushTable("##JointManagerProps" + std::to_string(ID), 2))
+		//if (FL::PushTable("##JointMakerProps" + std::to_string(ID), 2))
 		//{
 		//	
 
@@ -2035,44 +2036,17 @@ namespace FlatGui
 		//}
 	}
 
-	void RenderJointComponentProps(Joint* joint, b2JointId& jointToDelete)
+	void RenderJointComponentProps(Joint* joint, long& jointToDelete)
 	{		
-		b2JointId jointID = joint->GetJointID();		
+		long jointID = joint->GetJointID();		
 		Joint::JointType jointType = joint->GetJointType();
 		std::string jointTypeString = joint->GetJointString();
-		std::string ID = jointTypeString + " ID: " + std::to_string(jointID.index1);
+		std::string ID = jointTypeString + " ID: " + std::to_string(jointID);
 		Body* bodyA = joint->GetBodyA();
 		Body* bodyB = joint->GetBodyB();	
 		bool b_collideConnected = joint->CollideConnected();
 		Vector2 anchorA = joint->GetAnchorA();
 		Vector2 anchorB = joint->GetAnchorB();
-
-		DistanceJoint* distanceJoint = static_cast<DistanceJoint*>(joint);
-		PrismaticJoint* prismaticJoint = static_cast<PrismaticJoint*>(joint);
-		RevoluteJoint* revoluteJoint = static_cast<RevoluteJoint*>(joint);
-		MouseJoint* mouseJoint = static_cast<MouseJoint*>(joint);
-		WeldJoint* weldJoint = static_cast<WeldJoint*>(joint);
-		MotorJoint* motorJoint = static_cast<MotorJoint*>(joint);
-		WheelJoint* wheelJoint = static_cast<WheelJoint*>(joint);
-
-		//bool b_isSensor = shapeProps.b_isSensor;
-		//float restitution = shapeProps.restitution;
-		//float friction = shapeProps.friction;
-		//float density = shapeProps.density;
-		//Vector2 dimensions = shapeProps.dimensions;
-		//float cornerRadius = shapeProps.cornerRadius;
-		//float radius = shapeProps.radius;
-		//float capsuleLength = shapeProps.capsuleLength;
-		//bool b_horizontal = shapeProps.b_horizontal;
-		//std::vector<Vector2> points = shapeProps.points;
-		//int pointCount = (int)points.size();
-		//bool b_showPoints = shape->ShowPoints();
-		//bool b_editingPoints = shape->IsEditingPoints();
-		//bool b_isLoop = shapeProps.b_isLoop;
-		//float tangentSpeed = shapeProps.tangentSpeed;
-		//float rollingResistance = shapeProps.rollingResistance;
-		//bool b_enableSensorEvents = shapeProps.b_enableSensorEvents;
-		//bool b_enableContactEvents = shapeProps.b_enableContactEvents;
 
 		std::string childID = "Joint_" + ID;
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("jointBg"));
@@ -2098,8 +2072,7 @@ namespace FlatGui
 
 		FL::MoveScreenCursor(0, 3);
 
-		int droppedObjectID = -1;
-		std::string openedPath = "";
+		int droppedObjectID = -1;		
 		std::string bodyAName = "";
 		std::string bodyBName = "";
 
@@ -2112,45 +2085,20 @@ namespace FlatGui
 			bodyBName = bodyB->GetParent()->GetName();
 		}
 
-		switch (jointType)
-		{
-		case Joint::JT_Distance:
-			
-			break;
-		case Joint::JT_Prismatic:
-			
-			break;
-		case Joint::JT_Revolute:
-			
-			break;
-		case Joint::JT_Mouse:
-			
-			break;
-		case Joint::JT_Wheel:
-			
-			break;
-		case Joint::JT_Weld:
-			
-			break;
-		case Joint::JT_Motor:
-			
-			break;
-		default:
-			break;
-		}
+		FL::MoveScreenCursor(0, 3.0f);
 
 		if (FL::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::F_hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
 		{
 			if (droppedObjectID >= 0)
 			{
-				joint->SetBodyA(FL::GetObjectByID(droppedObjectID)->GetBody());
+				joint->SetBodyAID(droppedObjectID);
 			}
 		}
 		if (FL::DropInput("##InputBodyB" + ID, "BodyB", bodyBName, FL::F_hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
 		{
 			if (droppedObjectID >= 0)
 			{
-				joint->SetBodyB(FL::GetObjectByID(droppedObjectID)->GetBody());
+				joint->SetBodyBID(droppedObjectID);
 			}
 		}
 
@@ -2175,9 +2123,31 @@ namespace FlatGui
 			FL::PopTable();
 		}
 
-		if (FL::RenderButton("Create Joint"))
+		switch (jointType)
 		{
-			joint->CreateJoint();
+		case Joint::JT_Distance:
+			RenderDistanceJointProps(static_cast<DistanceJoint*>(joint));
+			break;
+		case Joint::JT_Prismatic:
+			RenderPrismaticJointProps(static_cast<PrismaticJoint*>(joint));
+			break;
+		case Joint::JT_Revolute:
+			RenderRevoluteJointProps(static_cast<RevoluteJoint*>(joint));
+			break;
+		case Joint::JT_Mouse:
+			RenderMouseJointProps(static_cast<MouseJoint*>(joint));
+			break;
+		case Joint::JT_Wheel:
+			RenderWheelJointProps(static_cast<WheelJoint*>(joint));
+			break;
+		case Joint::JT_Weld:
+			RenderWeldJointProps(static_cast<WeldJoint*>(joint));
+			break;
+		case Joint::JT_Motor:
+			RenderMotorJointProps(static_cast<MotorJoint*>(joint));
+			break;
+		default:
+			break;
 		}
 
 		ImGui::EndChild();
@@ -2185,12 +2155,155 @@ namespace FlatGui
 
 	void RenderDistanceJointProps(DistanceJoint* joint)
 	{
+		long ID = joint->GetJointID();
+		DistanceJoint::DistanceJointProps jointProps = joint->GetJointProps();
+		float dampingRatio = jointProps.dampingRatio;
+		bool b_enableLimit = jointProps.b_enableLimit;
+		bool b_enableMotor = jointProps.b_enableMotor;
+		bool b_enableSpring = jointProps.b_enableSpring;
+		float hertz = jointProps.hertz;
+		float minLength = jointProps.minLength;
+		float maxLength = jointProps.maxLength;
+		float length = jointProps.length;
+		float maxMotorForce = jointProps.maxMotorForce;
+		float motorSpeed = jointProps.motorSpeed;
 
+		if (FL::RenderCheckbox("Enable Spring##" + ID, b_enableSpring))
+		{
+			joint->SetEnableSpring(b_enableSpring);
+		}
+		if (FL::RenderCheckbox("Enable Motor##" + ID, b_enableMotor))
+		{
+			joint->SetEnableMotor(b_enableMotor);
+		}
+		if (FL::RenderCheckbox("Enable Limit##" + ID, b_enableLimit))
+		{
+			joint->SetEnableLimit(b_enableLimit);			
+		}
+
+		if (FL::PushTable("##DistanceJointProps" + ID, 2))
+		{
+			if (FL::RenderFloatDragTableRow("##Length" + ID, "Length", length, 0.1f, 0, FLT_MAX))
+			{
+				joint->SetLength(length);
+			}
+			if (FL::RenderFloatDragTableRow("##MinLength" + ID, "Min Length", minLength, 0.1f, 0, FLT_MAX))
+			{
+				joint->SetLengthRange(minLength, maxLength);
+			}
+			if (FL::RenderFloatDragTableRow("##MaxLength" + ID, "Max Length", maxLength, 0.1f, 0, FLT_MAX))
+			{
+				joint->SetLengthRange(minLength, maxLength);
+			}
+
+			// Spring
+			if (b_enableSpring)
+			{
+				if (FL::RenderFloatDragTableRow("##DampingRatio" + ID, "Spring Damping Ratio", dampingRatio, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetSpringDampingRatio(dampingRatio);
+				}
+				if (FL::RenderFloatDragTableRow("##SpringHertz" + ID, "Spring Hertz", hertz, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetSpringHertz(hertz);
+				}
+			}
+			// Motor
+			if (b_enableMotor)
+			{
+				if (FL::RenderFloatDragTableRow("##MotorSpeed" + ID, "Motor Speed", motorSpeed, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetMotorSpeed(motorSpeed);
+				}
+				if (FL::RenderFloatDragTableRow("##MaxMotorForce" + ID, "Max Motor Force", maxMotorForce, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetMaxMotorForce(maxMotorForce);
+				}
+			}
+			FL::PopTable();
+		}
+
+		FL::MoveScreenCursor(0, 3.0f);
 	}
 
 	void RenderPrismaticJointProps(PrismaticJoint* joint)
 	{
+		long ID = joint->GetJointID();
+		PrismaticJoint::PrismaticJointProps jointProps = joint->GetJointProps();
+		float dampingRatio = jointProps.dampingRatio;
+		bool b_enableLimit = jointProps.b_enableLimit;
+		bool b_enableMotor = jointProps.b_enableMotor;
+		bool b_enableSpring = jointProps.b_enableSpring;
+		float hertz = jointProps.hertz;
+		Vector2 localAxisA = jointProps.localAxisA;
+		float lowerTranslation = jointProps.lowerTranslation;
+		float upperTranslation = jointProps.upperTranslation;
+		float maxMotorForce = jointProps.maxMotorForce;
+		float motorSpeed = jointProps.motorSpeed;
+		float targetTranslation = jointProps.targetTranslation;
 
+
+		if (FL::RenderCheckbox("Enable Spring##" + ID, b_enableSpring))
+		{
+			joint->SetEnableSpring(b_enableSpring);
+		}
+		if (FL::RenderCheckbox("Enable Motor##" + ID, b_enableMotor))
+		{
+			joint->SetEnableMotor(b_enableMotor);
+		}
+		if (FL::RenderCheckbox("Enable Limit##" + ID, b_enableLimit))
+		{
+			joint->SetEnableLimit(b_enableLimit);
+		}
+
+		if (FL::PushTable("##DistanceJointProps" + ID, 2))
+		{
+			// if (b_enableLimits) <-- Probably
+			if (FL::RenderFloatDragTableRow("##LowerTranslation" + ID, "Lower Translation", lowerTranslation, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				joint->SetTranslationRange(lowerTranslation, upperTranslation);
+			}
+			if (FL::RenderFloatDragTableRow("##UpperTranslation" + ID, "Upper Translation", upperTranslation, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				joint->SetTranslationRange(lowerTranslation, upperTranslation);
+			}
+			//if (FL::RenderFloatDragTableRow("##TranslationTarget" + ID, "Local Axis X", localAxisA.x, 0.1f, -FLT_MAX, FLT_MAX))
+			//{				
+			//	//joint->SetLocalAxisA(localAxisA);
+			//}
+			//if (FL::RenderFloatDragTableRow("##LocalAxisAY" + ID, "Local Axis Y", localAxisA.y, 0.1f, -FLT_MAX, FLT_MAX))
+			//{
+			//	//joint->SetLocalAxisA(localAxisA);
+			//}
+
+			// Spring
+			if (b_enableSpring)
+			{
+				if (FL::RenderFloatDragTableRow("##DampingRatio" + ID, "Spring Damping Ratio", dampingRatio, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetSpringDampingRatio(dampingRatio);
+				}
+				if (FL::RenderFloatDragTableRow("##SpringHertz" + ID, "Spring Hertz", hertz, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetSpringHertz(hertz);
+				}
+			}
+			// Motor
+			if (b_enableMotor)
+			{
+				if (FL::RenderFloatDragTableRow("##MotorSpeed" + ID, "Motor Speed", motorSpeed, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetMotorSpeed(motorSpeed);
+				}
+				if (FL::RenderFloatDragTableRow("##MaxMotorForce" + ID, "Max Motor Force", maxMotorForce, 0.1f, 0, FLT_MAX))
+				{
+					joint->SetMaxMotorForce(maxMotorForce);
+				}
+			}
+			FL::PopTable();
+		}
+
+		FL::MoveScreenCursor(0, 3.0f);
 	}
 
 	void RenderRevoluteJointProps(RevoluteJoint* joint)

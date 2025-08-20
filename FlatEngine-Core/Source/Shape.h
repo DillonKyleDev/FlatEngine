@@ -1,5 +1,6 @@
 #pragma once
 #include "Vector2.h"
+#include "Vector4.h"
 
 #include <string>
 #include "json.hpp"
@@ -91,6 +92,13 @@ namespace FlatEngine
 		bool IsEditingPoints();
 		void SetEditingPoints(bool b_editingPoints);
 
+		void SetDrawInGame(bool b_drawInGame);
+		bool DrawInGame();
+		void SetInGameDrawColor(Vector4 drawColor);
+		Vector4 GetInGameDrawColor();
+		void SetInGameDraThickness(float thickness);
+		float GetInGameDraThickness();
+
 	private:
 		b2ShapeId m_shapeID;
 		b2ChainId m_chainID;
@@ -98,5 +106,8 @@ namespace FlatEngine
 		ShapeProps m_shapeProps;
 		bool m_b_showPoints;
 		bool m_b_editingPoints;
+		bool m_b_drawInGame;
+		Vector4 m_inGameDrawColor;
+		float m_inGameDrawThickness;
 	};
 }

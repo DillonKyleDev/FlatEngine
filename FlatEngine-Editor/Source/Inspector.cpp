@@ -133,11 +133,11 @@ namespace FlatGui
 						}					
 					}
 
-					if (focusedObject->GetJointManager() == nullptr)
+					if (focusedObject->GetJointMaker() == nullptr)
 					{
-						if (ImGui::MenuItem("Joint Manager"))
+						if (ImGui::MenuItem("JointMaker"))
 						{
-							focusedObject->AddJointManager();
+							focusedObject->AddJointMaker();
 							ImGui::CloseCurrentPopup();
 						}						
 					}
@@ -395,15 +395,15 @@ namespace FlatGui
 							EndComponent(body);
 						}	
 
-						JointManager* jointManager = focusedObject->GetJointManager();
-						if (jointManager != nullptr)
+						JointMaker* jointMaker = focusedObject->GetJointMaker();
+						if (jointMaker != nullptr)
 						{							
-							BeginComponent(jointManager, queuedForDelete);
-							if (!jointManager->IsCollapsed())
+							BeginComponent(jointMaker, queuedForDelete);
+							if (!jointMaker->IsCollapsed())
 							{
-								RenderJointManagerComponent(jointManager);
+								RenderJointMakerComponent(jointMaker);
 							}
-							EndComponent(jointManager);
+							EndComponent(jointMaker);
 						}
 						
 						TileMap* tileMap = focusedObject->GetTileMap();

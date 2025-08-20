@@ -346,11 +346,11 @@ namespace FlatGui
 						}
 						ImGui::EndMenu();
 					}
-					if (ImGui::MenuItem("Joint Manager"))
+					if (ImGui::MenuItem("Joint Maker"))
 					{
 						GameObject* newObject = FL::CreateGameObject(-1);
-						JointManager* jointManager = newObject->AddJointManager();						
-						newObject->SetName("JointManager(" + std::to_string(newObject->GetID()) + ")");
+						JointMaker* jointMaker = newObject->AddJointMaker();						
+						newObject->SetName("JointMaker(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
 					if (ImGui::MenuItem("TileMap"))

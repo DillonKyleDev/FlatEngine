@@ -672,7 +672,7 @@
     <ClInclude Include="Source\WindowManager.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\JointManager.h" />
+    <ClInclude Include="Source\JointMaker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -885,7 +885,7 @@
     <ClCompile Include="Source\WindowManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\JointManager.cpp" />
+    <ClCompile Include="Source\JointMaker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

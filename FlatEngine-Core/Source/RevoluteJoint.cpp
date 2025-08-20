@@ -4,12 +4,11 @@
 
 namespace FlatEngine
 {
-	RevoluteJoint::RevoluteJoint(RevoluteJointProps jointProps) : Joint(&jointProps)
+	RevoluteJoint::RevoluteJoint(BaseProps baseProps, RevoluteJointProps jointProps) : Joint(baseProps)
 	{
 		m_jointProps = jointProps;
 		m_jointString = "Revolute Joint";
-		m_jointProps.jointType = JT_Revolute;
-		m_jointType = JT_Revolute;
+		m_baseProps.jointType = JT_Revolute;
 	}
 
 	RevoluteJoint::~RevoluteJoint()
@@ -18,17 +17,9 @@ namespace FlatEngine
 
 	json RevoluteJoint::GetJointData()
 	{
+		json jointData = json::object();
+
 		json jsonData = {
-			// Base Joint Props
-			{ "jointType", (int)m_jointType },
-			{ "bodyAID", m_bodyAID },
-			{ "bodyBID", m_bodyBID },
-			{ "_collideConnected", m_b_collideConnected },
-			{ "anchorAX", m_anchorA.x },
-			{ "anchorAY", m_anchorA.y },
-			{ "anchorBX", m_anchorB.x },
-			{ "anchorBY", m_anchorB.y },
-			// Distance Joint Props
 			{ "dampingRatio", m_jointProps.dampingRatio },
 			{ "_enableLimit", m_jointProps.b_enableLimit },
 			{ "_enableMotor", m_jointProps.b_enableMotor },
@@ -43,23 +34,14 @@ namespace FlatEngine
 			{ "targetAngle", m_jointProps.targetAngle }
 		};
 
-		return jsonData;
+		jointData.emplace("baseProps", GetBasePropsData());
+		jointData.emplace("jointProps", jsonData);
+
+		return jointData;
 	}
 
-	Joint::JointProps* RevoluteJoint::GetJointProps()
+	RevoluteJoint::RevoluteJointProps& RevoluteJoint::GetJointProps()
 	{
-		return &m_jointProps;
-	}
-
-	void RevoluteJoint::SetBodyA(Body* bodyA)
-	{
-		Joint::SetBodyA(bodyA);
-		m_jointProps.bodyAID = bodyA->GetParentID();
-	}
-
-	void RevoluteJoint::SetBodyB(Body* bodyB)
-	{
-		Joint::SetBodyB(bodyB);
-		m_jointProps.bodyBID = bodyB->GetParentID();
+		return m_jointProps;
 	}
 }

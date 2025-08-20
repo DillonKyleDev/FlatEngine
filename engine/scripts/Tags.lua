@@ -20,5 +20,6 @@ F_Tags = {
     "EnvironmentalDamage",
     "Projectile",
     "InteractableObject",
-    "Collectable"
+    "Collectable",
+    "Wall",
 }

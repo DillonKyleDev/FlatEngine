@@ -4,12 +4,11 @@
 
 namespace FlatEngine
 {
-	WeldJoint::WeldJoint(WeldJointProps jointProps) : Joint(&jointProps)
+	WeldJoint::WeldJoint(BaseProps baseProps, WeldJointProps jointProps) : Joint(baseProps)
 	{
 		m_jointProps = jointProps;
 		m_jointString = "Weld Joint";
-		m_jointProps.jointType = JT_Weld;
-		m_jointType = JT_Weld;
+		m_baseProps.jointType = JT_Weld;
 	}
 
 	WeldJoint::~WeldJoint()
@@ -18,17 +17,9 @@ namespace FlatEngine
 
 	json WeldJoint::GetJointData()
 	{
+		json jointData = json::object();
+
 		json jsonData = {
-			// Base Joint Props
-			{ "jointType", (int)m_jointType },
-			{ "bodyAID", m_bodyAID },
-			{ "bodyBID", m_bodyBID },
-			{ "_collideConnected", m_b_collideConnected },
-			{ "anchorAX", m_anchorA.x },
-			{ "anchorAY", m_anchorA.y },
-			{ "anchorBX", m_anchorB.x },
-			{ "anchorBY", m_anchorB.y },
-			// Distance Joint Props
 			{ "angularDampingRatio", m_jointProps.angularDampingRatio },
 			{ "angularHertz", m_jointProps.angularHertz },
 			{ "linearDampingRatio", m_jointProps.linearDampingRatio },
@@ -36,23 +27,14 @@ namespace FlatEngine
 			{ "referenceAngle", m_jointProps.referenceAngle }
 		};
 
-		return jsonData;
+		jointData.emplace("baseProps", GetBasePropsData());
+		jointData.emplace("jointProps", jsonData);
+
+		return jointData;
 	}
 
-	Joint::JointProps* WeldJoint::GetJointProps()
+	WeldJoint::WeldJointProps& WeldJoint::GetJointProps()
 	{
-		return &m_jointProps;
-	}
-
-	void WeldJoint::SetBodyA(Body* bodyA)
-	{
-		Joint::SetBodyA(bodyA);
-		m_jointProps.bodyAID = bodyA->GetParentID();
-	}
-
-	void WeldJoint::SetBodyB(Body* bodyB)
-	{
-		Joint::SetBodyB(bodyB);
-		m_jointProps.bodyBID = bodyB->GetParentID();
+		return m_jointProps;
 	}
 }

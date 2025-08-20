@@ -15,11 +15,10 @@ namespace FlatEngine
 		T_Animation,
 		T_Audio,
 		T_Text,
-		T_RayCast,
 		T_CharacterController,
 		T_TileMap,
 		T_Body,
-		T_JointManager
+		T_JointMaker
 	};
 
 	class GameObject;

@@ -570,7 +570,7 @@ namespace FlatEngine
 		return bodyPtr;
 	}
 
-	JointManager* GameObject::AddJointManager(long ID, bool b_active, bool b_collapsed)
+	JointMaker* GameObject::AddJointMaker(long ID, bool b_active, bool b_collapsed)
 	{
 		long nextID = ID;
 		if (nextID == -1)
@@ -585,26 +585,26 @@ namespace FlatEngine
 			}
 		}
 
-		JointManager jointManager = JointManager(nextID, m_ID);
-		jointManager.SetCollapsed(b_collapsed);
-		jointManager.SetActive(b_active);
+		JointMaker jointMaker = JointMaker(nextID, m_ID);
+		jointMaker.SetCollapsed(b_collapsed);
+		jointMaker.SetActive(b_active);
 
-		JointManager* jointManagerPtr = nullptr;
+		JointMaker* jointMakerPtr = nullptr;
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
-			jointManagerPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddJointManager(jointManager, m_ID);
+			jointMakerPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddJointMaker(jointMaker, m_ID);
 		}
 		else if (GetLoadedScene() != nullptr)
 		{
-			jointManagerPtr = GetLoadedScene()->AddJointManager(jointManager, m_ID);
+			jointMakerPtr = GetLoadedScene()->AddJointMaker(jointMaker, m_ID);
 		}
 
-		if (jointManagerPtr != nullptr)
+		if (jointMakerPtr != nullptr)
 		{
-			m_components.push_back(jointManagerPtr);
+			m_components.push_back(jointMakerPtr);
 		}
 
-		return jointManagerPtr;
+		return jointMakerPtr;
 	}
 
 	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
@@ -845,15 +845,15 @@ namespace FlatEngine
 		}
 		return nullptr;
 	}
-	JointManager* GameObject::GetJointManager()
+	JointMaker* GameObject::GetJointMaker()
 	{
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetJointManagerByOwner(m_ID);
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetJointMakerByOwner(m_ID);
 		}
 		else if (GetLoadedScene() != nullptr)
 		{
-			return GetLoadedScene()->GetJointManagerByOwner(m_ID);
+			return GetLoadedScene()->GetJointMakerByOwner(m_ID);
 		}
 		return nullptr;
 	}

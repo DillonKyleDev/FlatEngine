@@ -17,7 +17,7 @@
 #include "Capsule.h"
 #include "Polygon.h"
 #include "Chain.h"
-#include "JointManager.h"
+#include "JointMaker.h"
 
 #include <vector>
 #include <map>
@@ -76,7 +76,7 @@ namespace FlatEngine
 		Body* AddBody(Body boxBody, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);
-		JointManager* AddJointManager(JointManager jointManager, long ownerID);
+		JointMaker* AddJointMaker(JointMaker jointMaker, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
 
@@ -92,7 +92,7 @@ namespace FlatEngine
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
 		Body* GetBodyByOwner(long ownerID);
-		JointManager* GetJointManagerByOwner(long ownerID);
+		JointMaker* GetJointMakerByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
@@ -107,7 +107,7 @@ namespace FlatEngine
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();
 		std::map<long, Body>& GetBodies();
-		std::map<long, JointManager>& GetJointManagers();
+		std::map<long, JointMaker>& GetJointMakers();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		std::map<long, TileMap>& GetTileMaps();		
 		void SetPersistantScene(bool b_persistant);

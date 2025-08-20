@@ -26,7 +26,7 @@ namespace FlatEngine
 	class Button;	
 	class CharacterController;
 	class TileMap;
-	class JointManager;
+	class JointMaker;
 
 	class ECSManager
 	{
@@ -45,7 +45,7 @@ namespace FlatEngine
 		Body* AddBody(Body body, long ownerID);
 		Animation* AddAnimation(Animation animation, long ownerID);
 		Button* AddButton(Button button, long ownerID);		
-		JointManager* AddJointManager(JointManager jointManager, long ownerID);
+		JointMaker* AddJointMaker(JointMaker jointMaker, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);	
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
 
@@ -60,7 +60,7 @@ namespace FlatEngine
 		bool RemoveBody(long ownerID);
 		bool RemoveAnimation(long ownerID);
 		bool RemoveButton(long ownerID);
-		bool RemoveJointManager(long ownerID);
+		bool RemoveJointMaker(long ownerID);
 		bool RemoveCharacterController(long ownerID);
 		bool RemoveTileMap(long ownerID);
 
@@ -74,7 +74,7 @@ namespace FlatEngine
 		Animation* GetAnimationByOwner(long ownerID);
 		Button* GetButtonByOwner(long ownerID);
 		Body* GetBodyByOwner(long ownerID);
-		JointManager* GetJointManagerByOwner(long ownerID);
+		JointMaker* GetJointMakerByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
 
@@ -89,7 +89,7 @@ namespace FlatEngine
 		std::map<long, Audio>& GetAudios();
 		std::map<long, Text>& GetTexts();		
 		std::map<long, Body>& GetBodies();
-		std::map<long, JointManager>& GetJointManagers();
+		std::map<long, JointMaker>& GetJointMakers();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		std::map<long, TileMap>& GetTileMaps();		
 
@@ -105,7 +105,7 @@ namespace FlatEngine
 		std::map<long, Audio> m_Audios;
 		std::map<long, Text> m_Texts;				
 		std::map<long, Body> m_Bodies;
-		std::map<long, JointManager> m_JointManagers;
+		std::map<long, JointMaker> m_JointMakers;
 		std::map<long, CharacterController> m_CharacterControllers;
 		std::map<long, TileMap> m_TileMaps;		
 	};

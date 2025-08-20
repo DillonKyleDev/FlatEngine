@@ -35,27 +35,32 @@ namespace FlatEngine
 			JT_Wheel
 		};
 
-		struct JointProps {
+		struct JointProps {};
+
+		struct BaseProps : public JointProps{
 			long bodyAID = -1;
 			long bodyBID = -1;
 			JointType jointType = JT_None;
 			bool b_collideConnected = true;
 			Vector2 anchorA = Vector2(0, 0);
 			Vector2 anchorB = Vector2(0, 0);
-			b2BodyId b2BodyAID = b2_nullBodyId;
-			b2BodyId b2BodyBID = b2_nullBodyId;
 		};
-		
-		Joint(JointProps* jointProps);
+
+		Joint(BaseProps baseProps = BaseProps());
 		~Joint();
+		json GetBasePropsData();
+		void SetJointID(long jointID);
+		long GetJointID();
 		virtual json GetJointData() { return json::object(); };
-		virtual void SetBodyA(Body* bodyA);
-		virtual void SetBodyB(Body* bodyB);
+		//virtual JointProps& GetJointProps() { return; };
+		BaseProps GetBaseProps();
+		void SetBodyAID(long bodyAID);
+		void SetBodyBID(long bodyBID);
 		JointType GetJointType();
 		std::string GetJointString();
 
-		void SetJointID(b2JointId jointID);
-		b2JointId GetJointID();
+		void SetB2JointID(b2JointId jointID);
+		b2JointId GetB2JointID();
 		Body* GetBodyA();
 		Body* GetBodyB();		
 		bool HasValidBodies();
@@ -64,7 +69,6 @@ namespace FlatEngine
 		Vector2 GetAnchorB();
 		void SetAnchorA(Vector2 anchorA);
 		void SetAnchorB(Vector2 anchorB);
-		virtual JointProps* GetJointProps() { return nullptr; };
 		void CreateJoint();
 		void CreateJoint(Body* bodyA, Body* bodyB);
 		void RecreateJoint();
@@ -74,17 +78,9 @@ namespace FlatEngine
 		float GetConstraintTorque();
 
 	private:
-		b2JointId m_jointID;
-		JointType m_jointType;
+		b2JointId m_b2JointID;
+		long m_jointID;
 		std::string m_jointString;
-		long m_bodyAID;
-		long m_bodyBID;
-		Body* m_bodyA;
-		Body* m_bodyB;
-		bool m_b_collideConnected;
-		Vector2 m_anchorA;
-		Vector2 m_anchorB;
-		b2BodyId m_b2BodyAID;
-		b2BodyId m_b2BodyBID;
+		BaseProps m_baseProps;
 	};
 }

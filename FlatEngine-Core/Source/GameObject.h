@@ -28,7 +28,7 @@ namespace FlatEngine
 	class Capsule;
 	class Polygon;	
 	class Chain;
-	class JointManager;
+	class JointMaker;
 
 	class GameObject
 	{
@@ -71,7 +71,7 @@ namespace FlatEngine
 		Audio* AddAudio(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Text* AddText(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		Body* AddBody(Physics::BodyProps bodyProps = Physics::BodyProps(), long ID = -1, bool b_active = true, bool b_collapsed = false);
-		JointManager* AddJointManager(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		JointMaker* AddJointMaker(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
@@ -101,7 +101,7 @@ namespace FlatEngine
 		Text* GetText();
 		CharacterController* GetCharacterController();
 		Body* GetBody();
-		JointManager* GetJointManager();
+		JointMaker* GetJointMaker();
 		TileMap* GetTileMap();
 		std::vector<Component*> GetComponents();		
 

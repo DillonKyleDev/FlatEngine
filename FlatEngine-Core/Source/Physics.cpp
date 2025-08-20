@@ -311,137 +311,137 @@ namespace FlatEngine
 
 	void Physics::CreateJoint(Body* bodyA, Body* bodyB, Joint* joint)
 	{
-		Joint::JointProps* jointProps = joint->GetJointProps();
+		Joint::BaseProps baseProps = joint->GetBaseProps();
 		b2JointId jointID = b2_nullJointId;
 		b2JointDef jointDef;
 		jointDef.userData = joint;
 		jointDef.bodyIdA = bodyA->GetBodyID();
 		jointDef.bodyIdB = bodyB->GetBodyID();			
-		jointDef.localFrameA.p = Vector2::GetB2Vev2(jointProps->anchorA);
+		jointDef.localFrameA.p = Vector2::GetB2Vev2(baseProps.anchorA);
 		jointDef.localFrameA.q = bodyA->GetB2Rotation();
-		jointDef.localFrameB.p = Vector2::GetB2Vev2(jointProps->anchorB);
+		jointDef.localFrameB.p = Vector2::GetB2Vev2(baseProps.anchorB);
 		jointDef.localFrameB.q = bodyB->GetB2Rotation();
-		jointDef.collideConnected = jointProps->b_collideConnected;
+		jointDef.collideConnected = baseProps.b_collideConnected;
 
-		b2Vec2 anchorA = b2Body_GetWorldPoint(jointDef.bodyIdA, Vector2::GetB2Vev2(jointProps->anchorA));
-		b2Vec2 anchorB = b2Body_GetWorldPoint(jointDef.bodyIdB, Vector2::GetB2Vev2(jointProps->anchorB));
+		b2Vec2 anchorA = b2Body_GetWorldPoint(jointDef.bodyIdA, Vector2::GetB2Vev2(baseProps.anchorA));
+		b2Vec2 anchorB = b2Body_GetWorldPoint(jointDef.bodyIdB, Vector2::GetB2Vev2(baseProps.anchorB));
 
 		switch (joint->GetJointType())
 		{
 		case Joint::JointType::JT_Distance:
 		{
-			DistanceJoint::DistanceJointProps* distanceProps = static_cast<DistanceJoint::DistanceJointProps*>(jointProps);
+			DistanceJoint::DistanceJointProps distanceProps = static_cast<DistanceJoint*>(joint)->GetJointProps();
 			b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
 			distanceJointDef.base = jointDef;
-			distanceJointDef.length = b2Distance(anchorA, anchorB);
-			distanceJointDef.enableSpring = distanceProps->b_enableSpring;
-			distanceJointDef.enableLimit = distanceProps->b_enableLimit;
-			distanceJointDef.enableMotor = distanceProps->b_enableMotor;
-			distanceJointDef.dampingRatio = distanceProps->dampingRatio;
-			distanceJointDef.hertz = distanceProps->hertz;
-			distanceJointDef.minLength = distanceProps->minLength;
-			distanceJointDef.maxLength = distanceProps->maxLength;
-			distanceJointDef.motorSpeed = distanceProps->motorSpeed;
-			distanceJointDef.maxMotorForce = distanceProps->maxMotorForce;
+			distanceJointDef.length = distanceProps.length;
+			distanceJointDef.enableSpring = distanceProps.b_enableSpring;
+			distanceJointDef.enableLimit = distanceProps.b_enableLimit;
+			distanceJointDef.enableMotor = distanceProps.b_enableMotor;
+			distanceJointDef.dampingRatio = distanceProps.dampingRatio;
+			distanceJointDef.hertz = distanceProps.hertz;
+			distanceJointDef.minLength = distanceProps.minLength;
+			distanceJointDef.maxLength = distanceProps.maxLength;
+			distanceJointDef.motorSpeed = distanceProps.motorSpeed;
+			distanceJointDef.maxMotorForce = distanceProps.maxMotorForce;
 			jointID = b2CreateDistanceJoint(m_worldID, &distanceJointDef);
 			break;
 		}
 		case Joint::JointType::JT_Revolute:
 		{
-			RevoluteJoint::RevoluteJointProps* revoluteProps = static_cast<RevoluteJoint::RevoluteJointProps*>(jointProps);
+			RevoluteJoint::RevoluteJointProps revoluteProps = static_cast<RevoluteJoint*>(joint)->GetJointProps();
 			b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
 			revoluteJointDef.base = jointDef;
-			revoluteJointDef.dampingRatio = revoluteProps->dampingRatio;
-			revoluteJointDef.enableLimit = revoluteProps->b_enableLimit;
-			revoluteJointDef.enableSpring = revoluteProps->b_enableSpring;
-			revoluteJointDef.enableMotor = revoluteProps->b_enableMotor;
-			revoluteJointDef.dampingRatio = revoluteProps->dampingRatio;
-			revoluteJointDef.hertz = revoluteProps->hertz;
-			revoluteJointDef.lowerAngle = revoluteProps->lowerAngle;
-			revoluteJointDef.upperAngle = revoluteProps->upperAngle;
-			revoluteJointDef.maxMotorTorque = revoluteProps->maxMotorTorque;
-			revoluteJointDef.motorSpeed = revoluteProps->motorSpeed;
-			revoluteJointDef.targetAngle = revoluteProps->targetAngle;			
+			revoluteJointDef.dampingRatio = revoluteProps.dampingRatio;
+			revoluteJointDef.enableLimit = revoluteProps.b_enableLimit;
+			revoluteJointDef.enableSpring = revoluteProps.b_enableSpring;
+			revoluteJointDef.enableMotor = revoluteProps.b_enableMotor;
+			revoluteJointDef.dampingRatio = revoluteProps.dampingRatio;
+			revoluteJointDef.hertz = revoluteProps.hertz;
+			revoluteJointDef.lowerAngle = revoluteProps.lowerAngle;
+			revoluteJointDef.upperAngle = revoluteProps.upperAngle;
+			revoluteJointDef.maxMotorTorque = revoluteProps.maxMotorTorque;
+			revoluteJointDef.motorSpeed = revoluteProps.motorSpeed;
+			revoluteJointDef.targetAngle = revoluteProps.targetAngle;			
 			jointID = b2CreateRevoluteJoint(m_worldID, &revoluteJointDef);
 			break;
 		}
 		case Joint::JointType::JT_Prismatic:
 		{
-			PrismaticJoint::PrismaticJointProps* prismaticProps = static_cast<PrismaticJoint::PrismaticJointProps*>(jointProps);
+			PrismaticJoint::PrismaticJointProps prismaticProps = static_cast<PrismaticJoint*>(joint)->GetJointProps();
 			b2PrismaticJointDef prismaticJointDef = b2DefaultPrismaticJointDef();
 			prismaticJointDef.base = jointDef;
-			prismaticJointDef.dampingRatio = prismaticProps->dampingRatio;
-			prismaticJointDef.enableLimit = prismaticProps->b_enableLimit;
-			prismaticJointDef.enableSpring = prismaticProps->b_enableSpring;
-			prismaticJointDef.enableMotor = prismaticProps->b_enableMotor;
-			prismaticJointDef.dampingRatio = prismaticProps->dampingRatio;
-			prismaticJointDef.hertz = prismaticProps->hertz;
-			prismaticJointDef.lowerTranslation = prismaticProps->lowerTranslation;
-			prismaticJointDef.upperTranslation = prismaticProps->upperTranslation;
-			prismaticJointDef.targetTranslation = prismaticProps->targetTranslation;
-			prismaticJointDef.motorSpeed = prismaticProps->motorSpeed;
-			prismaticJointDef.maxMotorForce = prismaticProps->maxMotorForce;
+			prismaticJointDef.dampingRatio = prismaticProps.dampingRatio;
+			prismaticJointDef.enableLimit = prismaticProps.b_enableLimit;
+			prismaticJointDef.enableSpring = prismaticProps.b_enableSpring;
+			prismaticJointDef.enableMotor = prismaticProps.b_enableMotor;
+			prismaticJointDef.dampingRatio = prismaticProps.dampingRatio;
+			prismaticJointDef.hertz = prismaticProps.hertz;
+			prismaticJointDef.lowerTranslation = prismaticProps.lowerTranslation;
+			prismaticJointDef.upperTranslation = prismaticProps.upperTranslation;
+			prismaticJointDef.targetTranslation = prismaticProps.targetTranslation;
+			prismaticJointDef.motorSpeed = prismaticProps.motorSpeed;
+			prismaticJointDef.maxMotorForce = prismaticProps.maxMotorForce;
 			jointID = b2CreatePrismaticJoint(m_worldID, &prismaticJointDef);
 			break;
 		}
 		case Joint::JointType::JT_Mouse:
 		{
-			MouseJoint::MouseJointProps* mouseProps = static_cast<MouseJoint::MouseJointProps*>(jointProps);
+			MouseJoint::MouseJointProps mouseProps = static_cast<MouseJoint*>(joint)->GetJointProps();
 			b2MouseJointDef mouseJointDef = b2DefaultMouseJointDef();
 			mouseJointDef.base = jointDef;			
-			mouseJointDef.dampingRatio = mouseProps->dampingRatio;
-			mouseJointDef.maxForce = mouseProps->maxForce;						
-			mouseJointDef.dampingRatio = mouseProps->dampingRatio;
-			mouseJointDef.hertz = mouseProps->hertz;			
+			mouseJointDef.dampingRatio = mouseProps.dampingRatio;
+			mouseJointDef.maxForce = mouseProps.maxForce;						
+			mouseJointDef.dampingRatio = mouseProps.dampingRatio;
+			mouseJointDef.hertz = mouseProps.hertz;			
 			jointID = b2CreateMouseJoint(m_worldID, &mouseJointDef);
 			break;
 		}
 		case Joint::JointType::JT_Weld:
 		{
-			WeldJoint::WeldJointProps* weldProps = static_cast<WeldJoint::WeldJointProps*>(jointProps);
+			WeldJoint::WeldJointProps weldProps = static_cast<WeldJoint*>(joint)->GetJointProps();
 			b2WeldJointDef weldJointDef = b2DefaultWeldJointDef();
 			weldJointDef.base = jointDef;
-			weldJointDef.angularDampingRatio = weldProps->angularDampingRatio;
-			weldJointDef.angularHertz = weldProps->angularHertz;
-			weldJointDef.linearDampingRatio = weldProps->linearDampingRatio;
-			weldJointDef.linearHertz = weldProps->linearHertz;
+			weldJointDef.angularDampingRatio = weldProps.angularDampingRatio;
+			weldJointDef.angularHertz = weldProps.angularHertz;
+			weldJointDef.linearDampingRatio = weldProps.linearDampingRatio;
+			weldJointDef.linearHertz = weldProps.linearHertz;
 			jointID = b2CreateWeldJoint(m_worldID, &weldJointDef);
 			break;
 		}
 		case Joint::JointType::JT_Motor:
 		{
-			MotorJoint::MotorJointProps* motorProps = static_cast<MotorJoint::MotorJointProps*>(jointProps);
+			MotorJoint::MotorJointProps motorProps = static_cast<MotorJoint*>(joint)->GetJointProps();
 			b2MotorJointDef motorJointDef = b2DefaultMotorJointDef();
 			motorJointDef.base = jointDef;
-			motorJointDef.angularDampingRatio = motorProps->angularDampingRatio;
-			motorJointDef.angularHertz = motorProps->angularHertz;
-			motorJointDef.angularVelocity = motorProps->angularVelocity;
-			motorJointDef.linearDampingRatio = motorProps->linearDampingRatio;
-			motorJointDef.linearHertz = motorProps->linearHertz;
-			motorJointDef.linearVelocity = Vector2::GetB2Vev2(motorProps->linearVelocity);
-			motorJointDef.maxSpringForce = motorProps->maxSpringForce;
-			motorJointDef.maxSpringTorque = motorProps->maxSpringTorque;
-			motorJointDef.maxVelocityForce = motorProps->maxVelocityForce;
-			motorJointDef.maxVelocityTorque = motorProps->maxVelocityTorque;
-			motorJointDef.relativeTransform.p = Vector2::GetB2Vev2(motorProps->relativeTransformPos);
-			motorJointDef.relativeTransform.q = b2MakeRot(motorProps->angleBetween);
+			motorJointDef.angularDampingRatio = motorProps.angularDampingRatio;
+			motorJointDef.angularHertz = motorProps.angularHertz;
+			motorJointDef.angularVelocity = motorProps.angularVelocity;
+			motorJointDef.linearDampingRatio = motorProps.linearDampingRatio;
+			motorJointDef.linearHertz = motorProps.linearHertz;
+			motorJointDef.linearVelocity = Vector2::GetB2Vev2(motorProps.linearVelocity);
+			motorJointDef.maxSpringForce = motorProps.maxSpringForce;
+			motorJointDef.maxSpringTorque = motorProps.maxSpringTorque;
+			motorJointDef.maxVelocityForce = motorProps.maxVelocityForce;
+			motorJointDef.maxVelocityTorque = motorProps.maxVelocityTorque;
+			motorJointDef.relativeTransform.p = Vector2::GetB2Vev2(motorProps.relativeTransformPos);
+			motorJointDef.relativeTransform.q = b2MakeRot(motorProps.angleBetween);
 			jointID = b2CreateMotorJoint(m_worldID, &motorJointDef);
 			break;
 		}
 		case Joint::JointType::JT_Wheel:
 		{
-			WheelJoint::WheelJointProps* wheelProps = static_cast<WheelJoint::WheelJointProps*>(jointProps);
+			WheelJoint::WheelJointProps wheelProps = static_cast<WheelJoint*>(joint)->GetJointProps();
 			b2WheelJointDef wheelJointDef = b2DefaultWheelJointDef();
 			wheelJointDef.base = jointDef;
-			wheelJointDef.dampingRatio = wheelProps->dampingRatio;
-			wheelJointDef.enableLimit = wheelProps->b_enableLimit;
-			wheelJointDef.enableMotor = wheelProps->b_enableMotor;
-			wheelJointDef.enableSpring = wheelProps->b_enableSpring;
-			wheelJointDef.hertz = wheelProps->hertz;
-			wheelJointDef.lowerTranslation = wheelProps->lowerTranslation;
-			wheelJointDef.upperTranslation = wheelProps->upperTranslation;
-			wheelJointDef.maxMotorTorque = wheelProps->maxMotorTorque;
-			wheelJointDef.motorSpeed = wheelProps->motorSpeed;
+			wheelJointDef.dampingRatio = wheelProps.dampingRatio;
+			wheelJointDef.enableLimit = wheelProps.b_enableLimit;
+			wheelJointDef.enableMotor = wheelProps.b_enableMotor;
+			wheelJointDef.enableSpring = wheelProps.b_enableSpring;
+			wheelJointDef.hertz = wheelProps.hertz;
+			wheelJointDef.lowerTranslation = wheelProps.lowerTranslation;
+			wheelJointDef.upperTranslation = wheelProps.upperTranslation;
+			wheelJointDef.maxMotorTorque = wheelProps.maxMotorTorque;
+			wheelJointDef.motorSpeed = wheelProps.motorSpeed;
 			jointID = b2CreateWheelJoint(m_worldID, &wheelJointDef);
 			break;
 		}
@@ -451,7 +451,7 @@ namespace FlatEngine
 
 		if (b2Joint_IsValid(jointID))
 		{
-			joint->SetJointID(jointID);
+			joint->SetB2JointID(jointID);
 		}
 	}
 }

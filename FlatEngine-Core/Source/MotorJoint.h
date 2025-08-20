@@ -23,13 +23,10 @@ namespace FlatEngine
 			float angleBetween = 0.0f;
 		};
 
-        MotorJoint(MotorJointProps jointProps);
+        MotorJoint(BaseProps baseProps, MotorJointProps jointProps);
         ~MotorJoint();
 		json GetJointData();
-        JointProps* GetJointProps();
-
-		void SetBodyA(Body* bodyA);
-		void SetBodyB(Body* bodyB);
+		MotorJointProps& GetJointProps();
 
     private:
         MotorJointProps m_jointProps;

@@ -327,7 +327,7 @@ namespace FlatEngine
 
 	void Scene::CreateJoints()
 	{
-		for (std::map<long, JointManager>::iterator iter = GetJointManagers().begin(); iter != GetJointManagers().end(); iter++)
+		for (std::map<long, JointMaker>::iterator iter = GetJointMakers().begin(); iter != GetJointMakers().end(); iter++)
 		{
 			for (Joint* joint : iter->second.GetJoints())
 			{
@@ -407,10 +407,10 @@ namespace FlatEngine
 		return m_ECSManager.AddButton(button, ownerID);
 	}
 
-	JointManager* Scene::AddJointManager(JointManager jointManager, long ownerID)
+	JointMaker* Scene::AddJointMaker(JointMaker jointMaker, long ownerID)
 	{
-		KeepNextComponentIDUpToDate(jointManager.GetID());
-		return m_ECSManager.AddJointManager(jointManager, ownerID);
+		KeepNextComponentIDUpToDate(jointMaker.GetID());
+		return m_ECSManager.AddJointMaker(jointMaker, ownerID);
 	}
 
 	CharacterController* Scene::AddCharacterController(CharacterController characterController, long ownerID)
@@ -487,9 +487,9 @@ namespace FlatEngine
 		return m_ECSManager.GetBodyByOwner(ownerID);
 	}
 
-	JointManager* Scene::GetJointManagerByOwner(long ownerID)
+	JointMaker* Scene::GetJointMakerByOwner(long ownerID)
 	{
-		return m_ECSManager.GetJointManagerByOwner(ownerID);
+		return m_ECSManager.GetJointMakerByOwner(ownerID);
 	}
 
 	CharacterController* Scene::GetCharacterControllerByOwner(long ownerID)
@@ -546,9 +546,9 @@ namespace FlatEngine
 	{
 		return m_ECSManager.GetBodies();
 	}
-	std::map<long, JointManager>& Scene::GetJointManagers()
+	std::map<long, JointMaker>& Scene::GetJointMakers()
 	{
-		return m_ECSManager.GetJointManagers();
+		return m_ECSManager.GetJointMakers();
 	}
 	std::map<long, CharacterController>& Scene::GetCharacterControllers()
 	{

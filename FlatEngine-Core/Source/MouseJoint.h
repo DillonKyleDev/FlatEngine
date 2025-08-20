@@ -14,13 +14,10 @@ namespace FlatEngine
             float maxForce = 2000.0f;
         };
 
-        MouseJoint(MouseJointProps jointProps);
+        MouseJoint(BaseProps baseProps, MouseJointProps jointProps);
         ~MouseJoint();
         json GetJointData();
-        JointProps* GetJointProps();
-
-        void SetBodyA(Body* bodyA);
-        void SetBodyB(Body* bodyB);
+        MouseJointProps& GetJointProps();
 
     private:
         MouseJointProps m_jointProps;

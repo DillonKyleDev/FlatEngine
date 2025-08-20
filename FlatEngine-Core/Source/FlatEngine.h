@@ -433,7 +433,7 @@ namespace FlatEngine
 	extern json CreateJsonFromObject(GameObject gameObject);
 	extern void RetrieveBodyProps(Physics::BodyProps& bodyProps, json componentJson, std::string objectName);
 	extern void RetrieveShapeProps(Shape::ShapeProps& shapeProps, json componentJson, std::string objectName);
-	extern void RetrieveBaseJointProps(Joint::JointProps* jointProps, json jointJson, std::string objectName);
+	extern void RetrieveBaseJointProps(Joint::BaseProps& baseProps, json jointJson, std::string objectName);
 	extern void RetrieveDistanceJointProps(DistanceJoint::DistanceJointProps& jointProps, json jointJson, std::string objectName);
 	extern void RetrievePrismaticJointProps(PrismaticJoint::PrismaticJointProps& jointProps, json jointJson, std::string objectName);
 	extern void RetrieveRevoluteJointProps(RevoluteJoint::RevoluteJointProps& jointProps, json jointJson, std::string objectName);

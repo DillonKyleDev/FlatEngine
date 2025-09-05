@@ -18,7 +18,8 @@ namespace FlatEngine
 		T_CharacterController,
 		T_TileMap,
 		T_Body,
-		T_JointMaker
+		T_JointMaker,
+		T_Mesh
 	};
 
 	class GameObject;

@@ -278,7 +278,19 @@ namespace FlatEngine
 		}
 	}
 
-	SDL_Texture* AssetManager::GetTexture(std::string textureName)
+	//SDL_Texture* AssetManager::GetTexture(std::string textureName)
+	//{
+	//	if (m_textures.count(textureName))
+	//	{
+	//		return m_textures.at(textureName)->GetTexture();
+	//	}
+	//	else
+	//	{
+	//		return m_errorTexture->GetTexture();
+	//	}
+	//}
+
+	VkDescriptorSet AssetManager::GetTexture(std::string textureName)
 	{
 		if (m_textures.count(textureName))
 		{

@@ -340,7 +340,7 @@ namespace FlatEngine
 	{
 		for (Shape* shape : GetShapes())
 		{
-			shape->CreateShape();
+			shape->CreateBodyShape();
 		}
 	}
 

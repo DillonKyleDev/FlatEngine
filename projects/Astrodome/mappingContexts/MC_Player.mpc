@@ -1,0 +1,11 @@
+{
+    "mappings": {
+        "Mouse: Left Click": {
+            "doubleAction": "",
+            "downAction": "Snap",
+            "holdAction": "",
+            "upAction": ""
+        }
+    },
+    "name": "MC_Player"
+}

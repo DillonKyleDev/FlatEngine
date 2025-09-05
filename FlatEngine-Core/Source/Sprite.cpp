@@ -94,14 +94,30 @@ namespace FlatEngine
 		return m_offset;
 	}
 
-	SDL_Texture* Sprite::GetTexture()
+	//SDL_Texture* Sprite::GetTexture()
+	//{
+	//	return m_texture.GetTexture();
+	//}
+
+	VkDescriptorSet Sprite::GetTexture()
 	{
 		return m_texture.GetTexture();
 	}
 
 	void Sprite::SetScale(Vector2 newScale)
-	{
-		m_scale = newScale;		
+	{		
+		Vector2 oldScale = m_scale;
+		m_scale = newScale;
+
+		if ((oldScale.x == 0 || oldScale.y == 0) && (newScale.x != 0 && newScale.y != 0))
+		{
+			SetTexture(m_path);
+		}
+
+		if (m_scale.x == 0 || m_scale.y == 0)
+		{
+			m_texture.FreeTexture();
+		}
 	}
 
 	Vector2 Sprite::GetScale()

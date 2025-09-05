@@ -20,6 +20,7 @@
 #include "JointMaker.h"
 #include "CharacterController.h"
 #include "TileMap.h"
+#include "Mesh.h"
 #include "FlatEngine.h"
 
 namespace FL = FlatEngine;
@@ -42,6 +43,8 @@ namespace FlatEngine
 		m_Bodies = std::map<long, Body>();
 		m_CharacterControllers = std::map<long, CharacterController>();		
 		m_TileMaps = std::map<long, TileMap>();
+		m_Meshes = std::map<long, Mesh>();
+		m_MeshesByMaterial = std::map<std::string, std::vector<Mesh>>();
 	}
 
 	ECSManager::~ECSManager()
@@ -163,8 +166,13 @@ namespace FlatEngine
 	TileMap* ECSManager::AddTileMap(TileMap tileMap, long ownerID)
 	{
 		m_TileMaps.emplace(ownerID, tileMap);
-		return &m_TileMaps.at(ownerID);
-		return nullptr;
+		return &m_TileMaps.at(ownerID);		
+	}
+
+	Mesh* ECSManager::AddMesh(Mesh mesh, long ownerID)
+	{
+		m_Meshes.emplace(ownerID, mesh);
+		return &m_Meshes.at(ownerID);		
 	}
 
 	// Get Components
@@ -319,6 +327,18 @@ namespace FlatEngine
 		if (m_TileMaps.count(ownerID))
 		{
 			return &m_TileMaps.at(ownerID);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	Mesh* ECSManager::GetMeshByOwner(long ownerID)
+	{
+		if (m_Meshes.count(ownerID))
+		{
+			return &m_Meshes.at(ownerID);
 		}
 		else
 		{
@@ -547,6 +567,17 @@ namespace FlatEngine
 		return b_success;
 	}
 
+	bool ECSManager::RemoveMesh(long ownerID)
+	{
+		bool b_success = false;
+		if (m_Meshes.count(ownerID))
+		{
+			m_Meshes.erase(ownerID);
+			b_success = true;
+		}
+		return b_success;
+	}
+
 	std::map<long, Transform> &ECSManager::GetTransforms()
 	{
 		return m_Transforms;
@@ -602,5 +633,13 @@ namespace FlatEngine
 	std::map<long, TileMap>& ECSManager::GetTileMaps()
 	{
 		return m_TileMaps;
+	}
+	std::map<long, Mesh>& ECSManager::GetMeshes()
+	{
+		return m_Meshes;
+	}
+	std::map<std::string, std::vector<Mesh>>& ECSManager::GetMeshesByMaterial()
+	{
+		return m_MeshesByMaterial;
 	}
 }

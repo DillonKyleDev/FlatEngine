@@ -21,7 +21,8 @@ namespace FlatEngine
 		std::string GetData();
 
 		void SetTexture(std::string path);
-		SDL_Texture* GetTexture();
+		//SDL_Texture* GetTexture();
+		VkDescriptorSet GetTexture();
 		void SetScale(Vector2 newScale);
 		Vector2 GetScale();
 		int GetTextureWidth();

@@ -140,7 +140,7 @@ public:
 			if (!GameLoopStarted())
 			{
 				frameStart = FL::GetEngineTime();
-			}
+			}			
 
 			EndRender();
 

@@ -5,7 +5,6 @@
 #include "Application.h"
 #include "GameLoop.h"
 #include "AssetManager.h"
-#include "WindowManager.h"
 #include "Project.h"
 #include "Process.h"
 #include "GameObject.h"
@@ -18,7 +17,6 @@
 #include <SDL_mixer.h>
 #include <string>
 #include <memory>
-#include "implot.h"
 
 
 namespace FL = FlatEngine;
@@ -199,6 +197,11 @@ public:
 				frameStart = FL::GetEngineTime();
 			}
 
+			if (FL::GetPrimaryCamera() != nullptr)
+			{
+				FL::GetPrimaryCamera()->Update();
+			}
+
 			EndRender();
 
 
@@ -225,7 +228,8 @@ public:
 	{
 		if (m_b_recreateWindow)
 		{
-			FL::F_Window->ResizeWindow(1920, 1040);
+			//FL::F_Window->ResizeWindow(1920, 1040);
+			//FL::F_Window->ResizeWindow(800, 600);
 			//FL::F_Window->SetFullscreen(true);
 			m_b_recreateWindow = false;
 		}
@@ -233,7 +237,26 @@ public:
 		Application::BeginRender();
 
 
-		// Application specific rendering
+		//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+		//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
+		//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		//FlatEngine::PushWindowStyles();
+		//ImGui::Begin("Scene View", &FlatGui::FG_b_showSceneView, 16 | 8); // Window flags 	ImGuiWindowFlags_NoScrollWithMouse
+		//FlatEngine::PopWindowStyles();
+		// {
+		
+			// Application specific rendering
+			//if (FL::F_VulkanManager->viewportDescriptorSets.size() > 0)
+			//{
+			//	ImVec2 size = ImGui::GetContentRegionAvail();
+			//	ImGui::Image(FL::F_VulkanManager->viewportDescriptorSets[FL::VM_currentFrame], size);
+			//}
+
+		// }
+		//ImGui::End();
+		//ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
 
 
 		// Render the project selection screen
@@ -339,5 +362,6 @@ std::shared_ptr<FL::Application> FL::CreateApplication(int argc, char** argv)
 {
 	std::shared_ptr<EditorApplication> EditorApp = std::make_shared<EditorApplication>();
 	EditorApp->SetWindowDimensions(800, 500);
+	//EditorApp->SetWindowDimensions(1800, 1000);
 	return EditorApp;
 }

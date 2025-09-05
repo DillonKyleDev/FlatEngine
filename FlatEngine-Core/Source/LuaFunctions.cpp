@@ -541,7 +541,7 @@ namespace FlatEngine
 			"SetPosition", &Transform::SetPosition,
 			"GetPosition", &Transform::GetPosition,
 			"GetAbsolutePosition", &Transform::GetAbsolutePosition,
-			"SetRotation", &Transform::SetRotation,
+			"SetRotation", &Transform::SetZRotation,
 			"GetRotation", &Transform::GetRotation,
 			"GetAbsoluteRotation", &Transform::GetAbsoluteRotation,
 			"SetScale", &Transform::SetScale,

@@ -5,6 +5,8 @@
 
 namespace FlatEngine
 {
+	class Vector3;
+
 	class Vector2 : public ImVec2
 	{
 	public:
@@ -27,15 +29,16 @@ namespace FlatEngine
 		void SetY(float newY);
 		void _xy(float newX, float newY);
 		Vector2 operator=(ImVec2& toCopy);
+		Vector2 operator=(Vector2 toCopy);
+		Vector2 operator=(Vector3 toCopy);
 		Vector2 operator*(ImVec2& right);
 		Vector2 operator*(Vector2& right);
 		Vector2 operator*(float scalar);
-		Vector2 operator+(const Vector2& right);
-		Vector2 operator-(const Vector2& right);
-		Vector2 NormalizeCardinal();
+		Vector2 operator+(Vector2 right);
+		Vector2 operator-(Vector2 right);
+		bool operator==(Vector2 right);
+		bool operator!=(Vector2 right);
 		void Normalize();
-		bool operator==(const Vector2& right);
-		bool operator!=(const Vector2& right);
 		float Dot(Vector2 with);
 		float AmountProjectedOnto(Vector2 projectedTo);
 		Vector2 ProjectedOnto(Vector2 projectedTo);

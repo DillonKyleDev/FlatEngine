@@ -12,6 +12,8 @@
 #include "TileMap.h"
 #include "TileSet.h"
 #include "Project.h"
+#include "Vector2.h"
+#include "Vector3.h"
 #include "Vector4.h"
 
 #include "imgui.h"
@@ -178,6 +180,8 @@ namespace FlatEngine
 		Canvas* canvas = self.GetCanvas();
 		Body* body = self.GetBody();
 
+		/*
+		
 		if (transform != nullptr && transform->IsActive())
 		{
 			Vector2 position = transform->GetAbsolutePosition();
@@ -203,7 +207,7 @@ namespace FlatEngine
 
 			if (sprite != nullptr && sprite->GetTexture() != nullptr && sprite->IsActive())
 			{
-				SDL_Texture* spriteTexture = sprite->GetTexture();
+				VkDescriptorSet spriteTexture = sprite->GetTexture();
 				float textureWidth = (float)sprite->GetTextureWidth();
 				float textureHeight = (float)sprite->GetTextureHeight();
 				Vector2 spriteScale = sprite->GetScale();
@@ -319,7 +323,7 @@ namespace FlatEngine
 									usedTileSet = FL::GetTileSet(tileSetName);
 								}
 
-								SDL_Texture* texture = tile.tileSetTexture;
+								VkDescriptorSet texture = tile.tileSetTexture;
 								int textureWidth = usedTileSet->GetTexture()->GetWidth();
 								int textureHeight = usedTileSet->GetTexture()->GetHeight();
 								Vector2 uvStart = Vector2(tile.uvStart.x / textureWidth, tile.uvStart.y / textureHeight);
@@ -574,5 +578,7 @@ namespace FlatEngine
 				}
 			}
 		}
+
+		*/
 	}
 }

@@ -1,7 +1,10 @@
 #include "Vector2.h"
+#include "Vector3.h"
 #include "Matrix.h"
 
 #include <cmath>
+
+# define M_PI 3.14159265358979323846
 
 
 namespace FlatEngine
@@ -55,12 +58,10 @@ namespace FlatEngine
 			return Vector2(0, 0);
 		}
 
-		float hypotenuse = std::sqrt((vec.x * vec.x) + (vec.y * vec.y));
+		float magnitude = vec.GetMagnitude();
 
-		temp.x = vec.x / hypotenuse;
-		temp.y = vec.y / hypotenuse;
-
-		float newhypotenuse = std::sqrt((vec.x * vec.x) + (vec.y * vec.y));
+		temp.x = vec.x / magnitude;
+		temp.y = vec.y / magnitude;
 
 		return temp;
 	}
@@ -141,6 +142,22 @@ namespace FlatEngine
 		return *this;
 	}
 
+	Vector2  Vector2::operator=(Vector2 right)
+	{
+		x = right.x;
+		y = right.y;
+
+		return *this;
+	}
+
+	Vector2  Vector2::operator=(Vector3 right)
+	{
+		x = right.x;
+		y = right.y;
+
+		return *this;
+	}
+
 	Vector2 Vector2::operator*(ImVec2& right)
 	{
 		return Vector2(x * right.x, y * right.y);
@@ -156,12 +173,12 @@ namespace FlatEngine
 		return Vector2(x * scalar, y * scalar);
 	}
 
-	Vector2 Vector2::operator+(const Vector2& right)
+	Vector2 Vector2::operator+(Vector2 right)
 	{
 		return Vector2(x + right.x, y + right.y);
 	}
 
-	Vector2 Vector2::operator-(const Vector2& right)
+	Vector2 Vector2::operator-(Vector2 right)
 	{
 		return Vector2(x - right.x, y - right.y);
 	}
@@ -171,45 +188,12 @@ namespace FlatEngine
 		*this = Normalize(*this);
 	}
 
-	Vector2 Vector2::NormalizeCardinal()
-	{
-		// Normalize X
-		if (x > 0)
-		{
-			x = 1;
-		}
-		else if (x < 0)
-		{
-			x = -1;
-		}
-		else
-		{
-			x = 0;
-		}
-
-		// Normalize Y
-		if (y > 0)
-		{
-			y = 1;
-		}
-		else if (y < 0)
-		{
-			y = -1;
-		}
-		else
-		{
-			y = 0;
-		}
-
-		return *this;
-	}
-
-	bool Vector2::operator==(const Vector2& right)
+	bool Vector2::operator==(Vector2 right)
 	{
 		return (x == right.x && y == right.y);
 	}
 
-	bool Vector2::operator!=(const Vector2& right)
+	bool Vector2::operator!=(Vector2 right)
 	{
 		return !(x == right.x && y == right.y);
 	}

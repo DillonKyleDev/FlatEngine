@@ -44,7 +44,8 @@ namespace FlatEngine
 		void DestroyBody(b2BodyId bodyID);
 		void RecreateBody(Body* parentBody);
 
-		void CreateShape(Body* parentBody, Shape* shape);
+		void CreateShape(Shape* shape);
+		void CreateBodyShape(Body* parentBody, Shape* shape);
 		void DestroyShape(b2ShapeId shapeID);
 		void RecreateShape(Shape* shape);
 

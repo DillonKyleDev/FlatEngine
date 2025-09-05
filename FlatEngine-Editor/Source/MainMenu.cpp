@@ -8,7 +8,6 @@
 #include "Vector2.h"
 #include "PrefabManager.h"
 #include "TagList.h"
-#include "WindowManager.h"
 
 #include "imgui.h"
 
@@ -40,7 +39,7 @@ namespace FlatGui
 				if (ImGui::MenuItem("Project Select"))
 				{					
 					FL::F_b_projectSelected = false;					
-					FL::F_Window->ResizeWindow(800, 500);
+					//FL::F_Window->ResizeWindow(800, 500);
 					RecreateProjectNameTexts();
 				}
 				ImGui::Separator();
@@ -209,6 +208,11 @@ namespace FlatGui
 				if (ImGui::MenuItem("Mapping Context Editor", NULL, FG_b_showMappingContextEditor))
 				{
 					FG_b_showMappingContextEditor = !FG_b_showMappingContextEditor;
+					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
+				}
+				if (ImGui::MenuItem("Material Editor", NULL, FG_b_showMaterialEditor))
+				{
+					FG_b_showMaterialEditor = !FG_b_showMaterialEditor;
 					SaveProject(FL::F_LoadedProject, FL::F_LoadedProject.GetPath());
 				}
 

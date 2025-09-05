@@ -8,6 +8,9 @@
 using json = nlohmann::json;
 using namespace nlohmann::literals;
 
+struct b2Polygon;
+struct b2Cirlce;
+struct b2Capsule;
 
 namespace FlatEngine
 {
@@ -68,6 +71,7 @@ namespace FlatEngine
 		void SetShapeProps(ShapeProps shapeProps);
 		ShapeProps& GetShapeProps();
 		void CreateShape();
+		void CreateBodyShape();
 		void RecreateShape();
 		void DestroyShape();
 		bool PointInShape(Vector2 point);
@@ -83,6 +87,12 @@ namespace FlatEngine
 		void SetFriction(float friction);
 		void SetPositionOffset(Vector2 positionOffset);
 		void SetRotationOffset(float rotationOffset);
+		void SetB2Polygon(b2Polygon shape);
+		void SetB2Circle(b2Circle shape);
+		void SetB2Capsule(b2Capsule shape);
+		b2Polygon GetB2Polygon();
+		b2Circle GetB2Circle();
+		b2Capsule GetB2Capsule();
 
 		// for PolygonBody and ChainBody
 		virtual void SetPoints(std::vector<Vector2> points) {};
@@ -109,5 +119,9 @@ namespace FlatEngine
 		bool m_b_drawInGame;
 		Vector4 m_inGameDrawColor;
 		float m_inGameDrawThickness;
+
+		b2Polygon m_polygon;
+		b2Circle m_circle;
+		b2Capsule m_capsule;
 	};
 }

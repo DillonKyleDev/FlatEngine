@@ -39,6 +39,12 @@ project "FlatEngine-Runtime"
       "../Vendor/includes/Box2D/include",
    }
 
+   externalincludedirs 
+   {
+    "../Vendor/includes/Vulkan/include",
+    "../Vendor/includes/GLM/glm"
+   }
+
    libdirs 
    {
         "../Vendor/includes/SDL2/lib/x64",
@@ -46,7 +52,7 @@ project "FlatEngine-Runtime"
         "../Vendor/includes/SDL2_Text/lib/x64",
         "../Vendor/includes/SDL2_Mixer/lib/x64",
         "../Vendor/includes/Lua",
-        "../Vendor/includes/Box2D/lib",
+        "../Vendor/includes/Box2D/lib"
    }
 
    links

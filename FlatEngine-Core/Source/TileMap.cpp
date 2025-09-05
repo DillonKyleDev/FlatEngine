@@ -457,7 +457,7 @@ namespace FlatEngine
 			std::shared_ptr<Texture> tileTexture = tileSet->GetTexture();
 			if (tileTexture != nullptr)
 			{
-				SDL_Texture* texture = tileTexture->GetTexture();
+				VkDescriptorSet texture = tileTexture->GetTexture();
 				Vector2 uvStart = tileSet->GetIndexUVs(tileSetIndex).first;
 				Vector2 uvEnd = tileSet->GetIndexUVs(tileSetIndex).second;
 

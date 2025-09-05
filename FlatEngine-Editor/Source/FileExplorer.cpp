@@ -1,6 +1,7 @@
 #include "FlatGui.h"
 #include "FlatEngine.h"
 #include "Project.h"
+#include "Material.h"
 
 #include "imgui.h"
 
@@ -103,6 +104,7 @@ namespace FlatGui
 			static bool b_openSceneModal = false;
 			static bool b_openAnimationModal = false;
 			static bool b_openMappingContextModal = false;
+			static bool b_openMaterialModal = false;
 			static bool b_openTileSetModal = false;
 
 			if (FL::RenderInputModal("Create Lua Script", "Enter a name for the Lua script", newFileName, b_openLuaModal))
@@ -120,6 +122,13 @@ namespace FlatGui
 			if (FL::RenderInputModal("Create Mapping Context", "Enter a name for the Mapping Context", newFileName, b_openMappingContextModal))
 			{
 				FL::CreateNewMappingContextFile(newFileName, FG_currentDirectory);
+			}
+			if (FL::RenderInputModal("Create Material", "Enter a name for the Material", newFileName, b_openMaterialModal))
+			{
+				std::shared_ptr<Material> newMaterial = FL::F_VulkanManager->CreateNewMaterialFile(newFileName, FG_currentDirectory);
+				FL::F_VulkanManager->AddMaterial(newMaterial);
+				FL::F_selectedMaterialName = newFileName;
+				FG_b_showMaterialEditor = true;
 			}
 			if (FL::RenderInputModal("Create TileSet", "Enter a name for the TileSet", newFileName, b_openTileSetModal))
 			{
@@ -173,6 +182,11 @@ namespace FlatGui
 									b_openMappingContextModal = true;
 									ImGui::CloseCurrentPopup();
 								}
+								if (ImGui::MenuItem("Material"))
+								{
+									b_openMaterialModal = true;
+									ImGui::CloseCurrentPopup();
+								}
 								if (ImGui::MenuItem("TileSet"))
 								{
 									b_openTileSetModal = true;
@@ -221,21 +235,23 @@ namespace FlatGui
 
 	void RenderDirNodes(std::string dir)
 	{
+		int IDCounter = 0;
 		for (const auto& entry : std::filesystem::directory_iterator(dir))
 		{
 			bool b_isDirectory = std::filesystem::is_directory(entry.path());
 
-			RenderDirNode(entry.path());
+			RenderDirNode(entry.path(), IDCounter);
+			IDCounter++;
 		}
 	}
 
-	void RenderDirNode(std::filesystem::path fs_filepath)
+	void RenderDirNode(std::filesystem::path fs_filepath, int IDCounter)
 	{
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
 
 		ImGuiTreeNodeFlags nodeFlags;
-		std::string treeID = fs_filepath.string() + "_node";				
+		std::string treeID = fs_filepath.string() + "_node_" + std::to_string(IDCounter);
 		bool b_nodeOpen = false;		
 		std::error_code err;
 		bool b_isDirectory = std::filesystem::is_directory(fs_filepath, err);		
@@ -291,7 +307,7 @@ namespace FlatGui
 				ImGui::SetNextItemOpen(false);
 			}
 
-			b_nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)treeID.c_str(), nodeFlags, fs_filepath.filename().string().c_str());
+			b_nodeOpen = ImGui::TreeNodeEx(treeID.c_str(), nodeFlags, fs_filepath.filename().string().c_str());
 			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
 			{
 				// save last location
@@ -325,7 +341,7 @@ namespace FlatGui
 		else
 		{			
 			ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor32("textLight"));
-			ImGui::TreeNodeEx((void*)(intptr_t)treeID.c_str(), nodeFlags, fs_filepath.filename().string().c_str());
+			ImGui::TreeNodeEx(treeID.c_str(), nodeFlags, fs_filepath.filename().string().c_str());
 			ImGui::PopStyleColor();
 		}
 	}
@@ -375,6 +391,7 @@ namespace FlatGui
 		float verticalSpacing = 10;
 		int maxIconsPerRow = (int)(availableWidth / (iconButtonSize.x + horizontalSpacing) - 1);
 		int iconsThisRow = 0;		
+		int IDCounter = 0;
 
 		if (std::filesystem::is_directory(std::filesystem::path(FG_currentDirectory)))
 		{
@@ -390,7 +407,8 @@ namespace FlatGui
 
 				if (entry.path().extension() != ".prj" && entry.path().extension() != ".git")
 				{
-					RenderFileIcon(entry, currentPos);
+					RenderFileIcon(entry, currentPos, IDCounter);
+					IDCounter++;
 
 					if (iconsThisRow != maxIconsPerRow)
 					{
@@ -406,13 +424,13 @@ namespace FlatGui
 		}
 	}
 
-	void RenderFileIcon(std::filesystem::path fs_filepath, Vector2 currentPos)
+	void RenderFileIcon(std::filesystem::path fs_filepath, Vector2 currentPos, int IDCounter)
 	{
 		std::string extension = fs_filepath.extension().string();
 		std::string icon;
 		Vector2 filenamePadding = Vector2(5, 15);
 		std::shared_ptr<Texture> thumbnail;
-		SDL_Texture* texture = nullptr;		
+		VkDescriptorSet texture = nullptr;
 		Vector2 dimensions;
 		std::string openIn = "";
 		std::filesystem::path stem = fs_filepath.stem();
@@ -470,6 +488,14 @@ namespace FlatGui
 		{
 			icon = "prefabFile";
 		}
+		else if (extension == ".mat")
+		{
+			icon = "materialFile";
+		}
+		else if (extension == ".obj")
+		{
+			icon = "objFile";
+		}
 		else
 		{
 			icon = "unmarkedFile";
@@ -520,7 +546,7 @@ namespace FlatGui
 			}
 		}
 
-		std::string buttonID = "FileIcon-" + fs_filepath.string();
+		std::string buttonID = "FileIcon-" + fs_filepath.string() + "_" + std::to_string(IDCounter);
 		int imageXOffset = (int)(((maxThumbnailSize.x - dimensions.x) / 2) + horizontalThumbnailPadding);
 		int imageYOffset = (int)(((maxThumbnailSize.y - dimensions.y) / 2) + topThumbnailPadding);
 		int textBoxXOffset = (int)(iconButtonSize.x - iconButtonTextBoxSize.x) / 2;
@@ -689,10 +715,16 @@ namespace FlatGui
 		{
 			LoadProject(fs_filepath.string());
 		}
-		// Project file
+		// TileSet file
 		else if (extension == ".tls")
 		{
 			FL::F_selectedTileSetToEdit = FL::GetFilenameFromPath(fs_filepath.string());
+		}
+		// Material file
+		else if (extension == ".mat")
+		{
+			FG_b_showMaterialEditor = true;
+			FL::F_selectedMaterialName = FL::GetFilenameFromPath(fs_filepath.string());
 		}
 	}
 }

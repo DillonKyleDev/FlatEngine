@@ -1,0 +1,41 @@
+{
+    "mappings": {
+        "Keyboard: a": {
+            "doubleAction": "",
+            "downAction": "",
+            "holdAction": "MoveCameraLeft",
+            "upAction": ""
+        },
+        "Keyboard: d": {
+            "doubleAction": "",
+            "downAction": "",
+            "holdAction": "MoveCameraRight",
+            "upAction": ""
+        },
+        "Keyboard: e": {
+            "doubleAction": "",
+            "downAction": "",
+            "holdAction": "MoveCameraUp",
+            "upAction": ""
+        },
+        "Keyboard: q": {
+            "doubleAction": "",
+            "downAction": "",
+            "holdAction": "MoveCameraDown",
+            "upAction": ""
+        },
+        "Keyboard: s": {
+            "doubleAction": "",
+            "downAction": "",
+            "holdAction": "MoveCameraBack",
+            "upAction": ""
+        },
+        "Keyboard: w": {
+            "doubleAction": "",
+            "downAction": "",
+            "holdAction": "MoveCameraForward",
+            "upAction": ""
+        }
+    },
+    "name": "EngineContext"
+}

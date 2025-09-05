@@ -12,7 +12,7 @@ namespace FlatEngine
 	class Capsule : public Shape
 	{		
 	public:
-		Capsule(Body* parentBody);
+		Capsule(Body* parentBody = nullptr);
 		~Capsule();
 
 		void SetCapsuleLength(float length);

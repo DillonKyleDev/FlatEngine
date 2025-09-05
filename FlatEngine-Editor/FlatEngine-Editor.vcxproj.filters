@@ -1,31 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="scripts">
-      <UniqueIdentifier>{6D076287-D9E6-E022-E2FE-6BF94E5D4784}</UniqueIdentifier>
+    <Filter Include="Source">
+      <UniqueIdentifier>{56EB95D1-428D-C0A7-2B48-D4FB178947F8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor">
+      <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\includes">
+      <UniqueIdentifier>{39AB7AF9-A536-E8BD-AE47-6BB21A5244BE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\includes\ImGui">
+      <UniqueIdentifier>{23E74E6A-8F53-0A65-5847-A2C2C4722CCD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\includes\ImGui\ImGui_Docking">
+      <UniqueIdentifier>{CBDBC141-3795-2CEC-C0F4-46C62CADE25B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\FlatGui.h" />
+    <ClInclude Include="Source\FlatGui.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Animator.cpp" />
-    <ClCompile Include="Source\FlatEngine-Editor.cpp" />
-    <ClCompile Include="Source\FlatGui.cpp" />
-    <ClCompile Include="Source\Hierarchy.cpp" />
-    <ClCompile Include="Source\ImGuiWrappersEditor.cpp" />
-    <ClCompile Include="Source\Inspector.cpp" />
-    <ClCompile Include="Source\Log.cpp" />
-    <ClCompile Include="Source\MainMenu.cpp" />
-    <ClCompile Include="Source\MappingContextEditor.cpp" />
-    <ClCompile Include="Source\Profiler.cpp" />
-    <ClCompile Include="Source\SceneView.cpp" />
-    <ClCompile Include="Source\Settings.cpp" />
-    <ClCompile Include="Source\Toolbar.cpp" />
-    <ClCompile Include="Source\FileExplorer.cpp" />
-    <ClCompile Include="Source\ScriptEditor.cpp" />
-    <ClCompile Include="Source\TileSetEditor.cpp" />
-    <ClCompile Include="Source\ProjectHub.cpp" />
-    <ClCompile Include="Source\PersistantObjectHierarchy.cpp" />
+    <ClCompile Include="Source\Animator.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FileExplorer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FlatEngine-Editor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FlatGui.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Hierarchy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGuiWrappersEditor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Inspector.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Log.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MainMenu.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MappingContextEditor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PersistantObjectHierarchy.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Profiler.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ProjectHub.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneView.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ScriptEditor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Settings.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TileSetEditor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Toolbar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialEditor.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

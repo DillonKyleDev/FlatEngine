@@ -146,8 +146,8 @@ namespace FlatEngine
 		
 		if (transform != nullptr)
 		{
-			Vector2 position = transform->GetAbsolutePosition();
-			Vector2 scale = transform->GetAbsoluteScale();
+			Vector3 position = transform->GetAbsolutePosition();
+			Vector3 scale = transform->GetAbsoluteScale();
 
 			float activeLeft = F_gameViewCenter.x + ((position.x - (m_activeWidth / 2 * scale.x) + m_activeOffset.x * scale.x) * F_gameViewGridStep.x);
 			float activeRight = F_gameViewCenter.x + ((position.x + (m_activeWidth / 2 * scale.x) + m_activeOffset.x * scale.x) * F_gameViewGridStep.x);

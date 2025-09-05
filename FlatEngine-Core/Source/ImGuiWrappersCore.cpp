@@ -479,15 +479,18 @@ namespace FlatEngine
 			ImGui::SameLine(0, 5);			
 		}
 
-		float textLength = label.size() * ImGui::GetFont()->FontSize;
+		float size = 14;
+		float maxWidth = 0;
+		float wrapWidth = 0;
+		ImGui::GetFont()->CalcTextSizeA(size, maxWidth, wrapWidth, label.c_str());
 
 		if (b_canOpenFiles && inputWidth == -1)
 		{
-			inputWidth = ImGui::GetContentRegionAvail().x - 31 - textLength;
+			inputWidth = ImGui::GetContentRegionAvail().x - 31 - size;
 		}
 		else if (b_canOpenFiles)
 		{
-			inputWidth -= 31 - textLength;
+			inputWidth -= 31 - size;
 		}
 		else if (inputWidth == -1)
 		{
@@ -495,7 +498,7 @@ namespace FlatEngine
 		}
 		else
 		{
-			inputWidth -= textLength;
+			inputWidth -= size;
 		}
 
 
@@ -630,7 +633,7 @@ namespace FlatEngine
 		ImGui::SetCursorScreenPos(Vector2(inputStart.x + 3, inputStart.y + 1));
 		ImGui::Text(displayValue.c_str());
 
-		RenderInvisibleButton("##DropInputOpenFilesdropTarget", inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
+		RenderInvisibleButton("##DropInputOpenFilesdropTarget" + ID, inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
 		ImGui::PopStyleVar();
 		if (toolTip != "" && ImGui::IsItemHovered())
 		{
@@ -877,7 +880,7 @@ namespace FlatEngine
 		return b_isClicked;
 	}
 
-	bool RenderImageButton(std::string ID, SDL_Texture* texture, Vector2 size, float rounding, Vector2 padding, Vector4 bgColor, Vector4 tint, Vector4 hoverColor, Vector4 activeColor, Vector2 uvStart, Vector2 uvEnd)
+	bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size, float rounding, Vector2 padding, Vector4 bgColor, Vector4 tint, Vector4 hoverColor, Vector4 activeColor, Vector2 uvStart, Vector2 uvEnd)
 	{
 		ImGui::PushStyleColor(ImGuiCol_Button, bgColor);
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);

@@ -34,6 +34,9 @@
 #include "WheelJoint.h"
 #include "WeldJoint.h"
 #include "JointMaker.h"
+#include "Mesh.h"
+#include "Vector3.h"
+#include "Model.h"
 
 #include "box2D.h"
 #include "imgui.h"
@@ -182,18 +185,23 @@ namespace FlatGui
 
 	void RenderTransformComponent(Transform* transform)
 	{
-		Vector2 position = transform->GetPosition();
-		float rotation = transform->GetRotation();
+		Vector3 position = transform->GetPosition();
+		Vector3 rotation = transform->GetRotations();
 		if (transform->GetParent()->GetBody() != nullptr)
 		{
 			position = transform->GetParent()->GetBody()->GetPosition();
-			rotation = transform->GetParent()->GetBody()->GetRotation();
+			rotation.z = transform->GetParent()->GetBody()->GetRotation();
 		}
 		float xPos = position.x;
 		float yPos = position.y;
-		Vector2 scale = transform->GetScale();
+		float zPos = position.z;
+		Vector3 scale = transform->GetScale();
 		float xScale = scale.x;
 		float yScale = scale.y;
+		float zScale = scale.z;
+		float xRotation = rotation.x;
+		float yRotation = rotation.y;
+		float zRotation = rotation.z;
 		
 		bool b_isActive = transform->IsActive();
 		long ID = transform->GetID();
@@ -205,30 +213,49 @@ namespace FlatGui
 		
 		if (FL::PushTable("##TransformProperties" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##xPosition" + std::to_string(ID), "X Position", xPos, 0.1f, -FLT_MAX, FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##XPosition" + std::to_string(ID), "X Position", xPos, 0.1f, -FLT_MAX, FLT_MAX))
 			{
-				transform->SetPosition(Vector2(xPos, yPos));
+				transform->SetPosition(Vector3(xPos, yPos, zPos));
 			}
-			if (FL::RenderFloatDragTableRow("##yPosition" + std::to_string(ID), "Y Position", yPos, 0.1f, -FLT_MAX, FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##YPosition" + std::to_string(ID), "Y Position", yPos, 0.1f, -FLT_MAX, FLT_MAX))
 			{
-				transform->SetPosition(Vector2(xPos, yPos));
+				transform->SetPosition(Vector3(xPos, yPos, zPos));
 			}	
-			if (FL::RenderFloatDragTableRow("##rotation" + std::to_string(ID), "Rotation", rotation, 0.5f, -FLT_MAX, FLT_MAX))
+			if (FL::RenderFloatDragTableRow("##ZPosition" + std::to_string(ID), "Z Position", zPos, 0.1f, -FLT_MAX, FLT_MAX))
 			{
-				transform->SetRotation(rotation);
+				transform->SetPosition(Vector3(xPos, yPos, zPos));
 			}
-			if (FL::RenderFloatDragTableRow("##xScaleDrag" + std::to_string(ID), "X Scale", xScale, 0.1f, 0.001f, 1000))
+			if (FL::RenderFloatDragTableRow("#XZRotation" + std::to_string(ID), "X Rotation", xRotation, 0.5f, -FLT_MAX, FLT_MAX))
+			{
+				transform->SetXRotation(xRotation);
+			}
+			if (FL::RenderFloatDragTableRow("##YRotation" + std::to_string(ID), "Y Rotation", yRotation, 0.5f, -FLT_MAX, FLT_MAX))
+			{
+				transform->SetYRotation(yRotation);
+			}
+			if (FL::RenderFloatDragTableRow("##ZRotation" + std::to_string(ID), "Z Rotation", zRotation, 0.5f, -FLT_MAX, FLT_MAX))
+			{
+				transform->SetZRotation(zRotation);
+			}
+			if (FL::RenderFloatDragTableRow("##XScaleDrag" + std::to_string(ID), "X Scale", xScale, 0.1f, 0.001f, 1000))
 			{
 				if (xScale > 0)
 				{
-					transform->SetScale(Vector2(xScale, yScale));
+					transform->SetScale(Vector3(xScale, yScale, zScale));
 				}
 			}
-			if (FL::RenderFloatDragTableRow("##yScaleDrag" + std::to_string(ID), "Y Scale", yScale, 0.1f, 0.001f, 1000))
+			if (FL::RenderFloatDragTableRow("##YScaleDrag" + std::to_string(ID), "Y Scale", yScale, 0.1f, 0.001f, 1000))
 			{
 				if (yScale > 0)
 				{
-					transform->SetScale(Vector2(xScale, yScale));
+					transform->SetScale(Vector3(xScale, yScale, zScale));
+				}
+			}
+			if (FL::RenderFloatDragTableRow("##ZScaleDrag" + std::to_string(ID), "Z Scale", zScale, 0.1f, 0.001f, 1000))
+			{
+				if (zScale > 0)
+				{
+					transform->SetScale(Vector3(xScale, yScale, zScale));
 				}
 			}
 			FL::PopTable();
@@ -291,19 +318,13 @@ namespace FlatGui
 		
 		if (FL::PushTable("##SpriteProperties" + std::to_string(ID), 2))
 		{
-			if (FL::RenderFloatDragTableRow("##xSpriteScaleDrag" + std::to_string(ID), "X Scale", xScale, 0.1f, 0.001f, 1000))
+			if (FL::RenderFloatDragTableRow("##xSpriteScaleDrag" + std::to_string(ID), "X Scale", xScale, 0.1f, -FLT_MAX, FLT_MAX))
 			{
-				if (xScale > 0)
-				{
-					sprite->SetScale(Vector2(xScale, yScale));
-				}
+				sprite->SetScale(Vector2(xScale, yScale));
 			}
-			if (FL::RenderFloatDragTableRow("##ySpriteScaleDrag" + std::to_string(ID), "Y Scale", yScale, 0.1f, 0.001f, 1000))
+			if (FL::RenderFloatDragTableRow("##ySpriteScaleDrag" + std::to_string(ID), "Y Scale", yScale, 0.1f, -FLT_MAX, FLT_MAX))
 			{
-				if (yScale > 0)
-				{
-					sprite->SetScale(Vector2(xScale, yScale));
-				}
+				sprite->SetScale(Vector2(xScale, yScale));
 			}
 			if (FL::RenderFloatDragTableRow("##xSpriteOffsetDrag" + std::to_string(ID), "X Offset", xOffset, 0.1f, -FLT_MAX, FLT_MAX))
 			{
@@ -430,6 +451,10 @@ namespace FlatGui
 		long toFollowID = camera->GetToFollowID();
 		GameObject* followingObject = FL::GetObjectByID(toFollowID);
 
+		float nearClippingDistance = camera->GetNearClippingDistance();
+		float farClippingDistance = camera->GetFarClippingDistance();
+		float perspectiveAngle = camera->GetPerspectiveAngle();
+
 		if (toFollowID != -1 && followingObject != nullptr)
 		{
 			followingName = FL::GetObjectByID(toFollowID)->GetName();
@@ -459,6 +484,18 @@ namespace FlatGui
 			if (FL::RenderFloatDragTableRow("##cameraZoom" + std::to_string(ID), "Camera zoom", zoom, 0.1f, 1, 100))
 			{
 				camera->SetZoom(zoom);
+			}
+			if (FL::RenderFloatDragTableRow("##nearClip" + std::to_string(ID), "Near Clip", nearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				camera->SetNearClipping(nearClippingDistance);
+			}
+			if (FL::RenderFloatDragTableRow("##farClip" + std::to_string(ID), "Far Clip", farClippingDistance, 0.1f, -FLT_MAX, FLT_MAX))
+			{
+				camera->SetFarClippingDistance(farClippingDistance);
+			}
+			if (FL::RenderFloatDragTableRow("##perspectiveAngle" + std::to_string(ID), "Perspective Angle", perspectiveAngle, 0.1f, -180.0, 180))
+			{
+				camera->SetPerspectiveAngle(perspectiveAngle);
 			}
 			if (FL::RenderFloatDragTableRow("##cameraFollowSmoothing" + std::to_string(ID), "Follow smoothing", followSmoothing, 0.01f, 0, 1))
 			{
@@ -1432,7 +1469,12 @@ namespace FlatGui
 		float maxAcceleration = characterController->GetMaxAcceleration();								
 		float maxSpeed = characterController->GetMaxSpeed();
 		float airControl = characterController->GetAirControl();
-		bool b_isMoving = characterController->IsMoving();	
+		bool b_isMoving = characterController->IsMoving();
+		Capsule& capsule = characterController->GetCapsule();
+		Shape::ShapeProps shapeProps = capsule.GetShapeProps();
+		float radius = shapeProps.radius;
+		float capsuleLength = shapeProps.capsuleLength;
+		bool b_horizontal = shapeProps.b_horizontal;
 		long ID = characterController->GetID();
 		std::string isMovingString = "false";
 		if (characterController->IsMoving())
@@ -1441,7 +1483,9 @@ namespace FlatGui
 		}
 
 		if (RenderIsActiveCheckbox(b_isActive))
+		{
 			characterController->SetActive(b_isActive);
+		}
 
 		if (FL::PushTable("##CharacterControllerProps" + std::to_string(ID), 2))
 		{
@@ -1458,7 +1502,24 @@ namespace FlatGui
 				characterController->SetAirControl(airControl);
 			}
 			FL::RenderTextTableRow("##IsMoving" + std::to_string(ID), "Is Moving", isMovingString);
+			if (FL::RenderFloatDragTableRow("##CharacterControllerShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+			{
+				capsule.SetRadius(radius);
+			}
+			if (FL::RenderFloatDragTableRow("##CharacterControllerCapsuleLength" + ID, "Length", capsuleLength, 0.01f, 0.01f, FLT_MAX))
+			{
+				capsule.SetCapsuleLength(capsuleLength);
+			}
+			if (FL::RenderFloatDragTableRow("##CharacterControllerCapsuleHeight" + ID, "Radii", radius, 0.01f, 0.01f, FLT_MAX))
+			{
+				capsule.SetRadius(radius);
+			}
 			FL::PopTable();
+		}
+
+		if (FL::RenderCheckbox(" Horizontal", b_horizontal))
+		{
+			capsule.SetHorizontal(b_horizontal);
 		}
 	}
 
@@ -2505,7 +2566,7 @@ namespace FlatGui
 				if (selectedTileSet->GetTexture() != nullptr)
 				{
 					Vector2 currentPos = ImGui::GetCursorScreenPos();
-					SDL_Texture* texture = selectedTileSet->GetTexture()->GetTexture();
+					VkDescriptorSet texture = selectedTileSet->GetTexture()->GetTexture();
 					int textureWidth = selectedTileSet->GetTexture()->GetWidth();
 					int textureHeight = selectedTileSet->GetTexture()->GetHeight();
 					Vector2 uvStart;
@@ -2651,6 +2712,137 @@ namespace FlatGui
 		//{			
 		//	FL::MoveScreenCursor(0, 5);
 		//}
+	}
+
+	void RenderMeshComponent(Mesh* mesh)
+	{
+		bool b_isActive = mesh->IsActive();		
+		long ID = mesh->GetID();
+		Model& model = mesh->GetModel();
+		std::string modelPath = model.GetModelPath();
+		std::string modelFileName = FL::GetFilenameFromPath(modelPath, true);
+		std::shared_ptr<Material> material = mesh->GetMaterial();
+		std::string materialName = "";
+
+		if (material != nullptr)
+		{
+			materialName = material->GetName();					
+		}
+
+		if (RenderIsActiveCheckbox(b_isActive))
+		{
+			mesh->SetActive(b_isActive);
+		}
+
+		int droppedObjValue = -1;
+		std::string openedObjPath = "";
+		if (FL::DropInputCanOpenFiles("##InputObjFilePath", "Model", modelFileName, FL::F_fileExplorerTarget, droppedObjValue, openedObjPath, "Drop .obj files here from File Explorer"))
+		{
+			if (droppedObjValue >= 0)
+			{
+				std::filesystem::path fsPath(FL::F_selectedFiles[droppedObjValue - 1]);
+				if (fsPath.extension() == ".obj")
+				{
+					model.SetModelPath(fsPath.string());
+					if (mesh->GetMaterial() != nullptr)
+					{
+						mesh->CreateResources();
+					}
+				}
+				else
+				{
+					FL::LogError("File must be of type .obj to drop here.");
+				}
+			}
+			else if (droppedObjValue == -2)
+			{
+				model.SetModelPath("");
+			}
+			else if (openedObjPath != "")
+			{
+				model.SetModelPath(openedObjPath);
+				if (mesh->GetMaterial() != nullptr)
+				{
+					mesh->CreateResources();
+				}
+			}
+		}
+
+		int droppedMaterialValue = -1;
+		std::string openedMaterialPath = "";
+		if (FL::DropInputCanOpenFiles("##InputMaterialFilePath", "Material", materialName, FL::F_fileExplorerTarget, droppedMaterialValue, openedMaterialPath, "Drop .mat files here from File Explorer"))
+		{
+			if (droppedMaterialValue >= 0)
+			{
+				std::filesystem::path fsPath(FL::F_selectedFiles[droppedMaterialValue - 1]);
+				if (fsPath.extension() == ".mat")
+				{					
+					mesh->SetMaterial(FL::GetFilenameFromPath(fsPath.string()));
+					mesh->CreateResources();
+
+					//model.SetModelPath(fsPath.string());
+					//if (mesh->GetMaterial() != nullptr)
+					//{
+					//	mesh->CreateResources();
+					//}
+				}
+				else
+				{
+					FL::LogError("File must be of type .obj to drop here.");
+				}
+			}
+			else if (droppedMaterialValue == -2)
+			{
+				model.SetModelPath("");
+			}
+			else if (openedMaterialPath != "")
+			{				
+				mesh->SetMaterial(FL::GetFilenameFromPath(openedMaterialPath));
+				mesh->CreateResources();
+			}
+		}
+
+		if (material != nullptr)
+		{
+			std::vector<Texture>& meshTextures = mesh->GetTextures();
+			meshTextures.resize(material->GetTextureCount());
+
+			int textureCounter = 0;
+			for (int i = 0; i < meshTextures.size(); i++)
+			{
+				int droppedTextureValue = -1;
+				std::string openedTexturePath = "";
+				std::string textureName = FL::GetFilenameFromPath(meshTextures[i].GetTexturePath());
+				if (FL::DropInputCanOpenFiles("##InputMaterialTextureFilePath" + std::to_string(textureCounter), "Texture", textureName, FL::F_fileExplorerTarget, droppedTextureValue, openedTexturePath, "Drop image files here from File Explorer"))
+				{
+					if (droppedTextureValue >= 0)
+					{
+						std::filesystem::path fsPath(FL::F_selectedFiles[droppedTextureValue - 1]);
+						if (fsPath.extension() == ".png")
+						{
+							FL::LogString(fsPath.string());
+							meshTextures[i].LoadFromFile(fsPath.string());
+							mesh->CreateResources(); // Creates descriptor sets using new texture path
+						}
+						else
+						{
+							FL::LogError("File must be of type .png to drop here.");
+						}
+					}
+					else if (droppedTextureValue == -2)
+					{
+						//model.SetModelPath("");
+					}
+					else if (openedTexturePath != "")
+					{
+						FL::LogString(openedTexturePath);
+						meshTextures[i].LoadFromFile(openedTexturePath);
+						mesh->CreateResources(); // Creates descriptor sets using new texture path
+					}
+				}
+				textureCounter++;
+			}
+		}
 	}
 
 	void BeginToolTip(std::string title)

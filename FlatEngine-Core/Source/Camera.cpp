@@ -2,6 +2,9 @@
 #include "FlatEngine.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "MappingContext.h"
+
+#include "glm.hpp"
 
 
 namespace FlatEngine 
@@ -15,10 +18,16 @@ namespace FlatEngine
 		m_width = 50;
 		m_height = 30;
 		m_zoom = 10;
+		m_lookDirection = Vector3(0.0f, 1.0f, 0.0f);
+		m_nearClippingDistance = 0.1f;
+		m_farClippingDistance = 100.0f;
+		m_perspectiveAngle = 90.0f;
 		m_frustrumColor = Vector4(255,255,255,255);
 		m_b_shouldFollow = false;
 		m_toFollowID = -1;
 		m_followSmoothing = 0.1f;
+		m_horizontalViewAngle = 0;
+		m_verticalViewAngle = 0;
 	}
 
 	Camera::~Camera()
@@ -72,15 +81,15 @@ namespace FlatEngine
 
 	void Camera::Follow()
 	{
-		GameObject *followTarget = GetObjectByID(m_toFollowID);
-		if (m_b_shouldFollow && followTarget != nullptr && followTarget->HasComponent("Transform"))
-		{
-			Transform* cameraTransform = GetParent()->GetTransform();
-			Vector2 followPos = followTarget->GetTransform()->GetAbsolutePosition();
-			Vector2 currentPos = cameraTransform->GetPosition(); // Shouldn't have a parent if following so don't need GetTruePosition()
+		//GameObject *followTarget = GetObjectByID(m_toFollowID);
+		//if (m_b_shouldFollow && followTarget != nullptr && followTarget->HasComponent("Transform"))
+		//{
+		//	Transform* cameraTransform = GetParent()->GetTransform();
+		//	Vector2 followPos = followTarget->GetTransform()->GetAbsolutePosition();
+		//	Vector2 currentPos = cameraTransform->GetPosition(); // Shouldn't have a parent if following so don't need GetTruePosition()
 
-			cameraTransform->SetPosition(Lerp(currentPos, followPos, m_followSmoothing));
-		}
+		//	cameraTransform->SetPosition(Lerp(currentPos, followPos, m_followSmoothing));
+		//}
 	}
 
 	void Camera::SetShouldFollow(bool b_shouldFollow)
@@ -126,6 +135,80 @@ namespace FlatEngine
 		return m_zoom;
 	}
 
+	void Camera::SetLookDirection(Vector3 lookDir)
+	{
+		m_lookDirection = lookDir;
+	}
+
+	Vector3 Camera::GetLookDirection()
+	{
+		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_horizontalViewAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_verticalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::vec4 cameraLookDir = horCameraRotationMatrix * vertCameraRotationMatrix * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+		
+		return Vector3(cameraLookDir.x, cameraLookDir.y, cameraLookDir.z);		
+	}
+
+	float Camera::GetNearClippingDistance()
+	{
+		return m_nearClippingDistance;
+	}
+
+	void Camera::SetNearClipping(float nearDistance)
+	{
+		m_nearClippingDistance = nearDistance;
+	}
+
+	float Camera::GetFarClippingDistance()
+	{
+		return m_farClippingDistance;
+	}
+
+	void Camera::SetFarClippingDistance(float farDistance)
+	{
+		m_farClippingDistance = farDistance;
+	}
+
+	float Camera::GetPerspectiveAngle()
+	{
+		return m_perspectiveAngle;
+	}
+
+	void Camera::SetPerspectiveAngle(float angle)
+	{
+		m_perspectiveAngle = angle;
+	}
+
+	void Camera::SetHorizontalViewAngle(float angle)
+	{
+		m_horizontalViewAngle = angle;
+	}
+
+	void Camera::SetVerticalViewAngle(float angle)
+	{
+		m_verticalViewAngle = angle;
+	}
+
+	float Camera::GetHorizontalViewAngle()
+	{
+		return m_horizontalViewAngle;
+	}
+
+	float Camera::GetVerticalViewAngle()
+	{
+		return m_verticalViewAngle;
+	}
+
+	void Camera::AddToHorizontalViewAngle(float toAdd)
+	{
+		m_horizontalViewAngle += toAdd;
+	}
+
+	void Camera::AddToVerticalViewAngle(float toAdd)
+	{
+		m_verticalViewAngle += toAdd;
+	}
+
 	void Camera::SetDimensions(float newWidth, float newHeight)
 	{
 		m_width = newWidth;
@@ -140,5 +223,67 @@ namespace FlatEngine
 	float Camera::GetHeight()
 	{
 		return m_height;
+	}
+
+	void Camera::AddVelocity(Vector3 velocity)
+	{
+		m_velocity.x += velocity.x;
+		m_velocity.y += velocity.y;
+		m_velocity.z += velocity.z;
+	}
+
+	Vector3 Camera::GetVelocity()
+	{
+		return m_velocity;
+	}
+
+	void Camera::Update()
+	{
+		if (F_b_sceneViewRightClicked)
+		{
+			MappingContext* engineContext = GetMappingContext("EngineContext");
+			Vector3 lookDir = GetPrimaryCamera()->GetLookDirection();
+			Vector2 xyPlane = Vector2(lookDir.x, lookDir.y);
+			Vector2 leftDir = Vector2::Rotate(xyPlane, 90);
+			Vector2 rightDir = Vector2::Rotate(xyPlane, -90);
+			Vector3 upDir = Vector3(rightDir.x, rightDir.y, 0).Cross(lookDir);
+			Vector3 downDir = Vector3(leftDir.x, leftDir.y, 0).Cross(lookDir);
+			float moveDamping = 0.005f;
+
+			if (engineContext->ActionPressed("MoveCameraLeft"))
+			{
+				GetPrimaryCamera()->AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
+			}
+			if (engineContext->ActionPressed("MoveCameraRight"))
+			{
+				GetPrimaryCamera()->AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
+			}
+			if (engineContext->ActionPressed("MoveCameraForward"))
+			{
+				GetPrimaryCamera()->AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraBack"))
+			{
+				GetPrimaryCamera()->AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraUp"))
+			{
+				GetPrimaryCamera()->AddVelocity(Vector3(upDir.x * moveDamping, upDir.y * moveDamping, upDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraDown"))
+			{
+				GetPrimaryCamera()->AddVelocity(Vector3(downDir.x * moveDamping, downDir.y * moveDamping, downDir.z * moveDamping));
+			}
+		}
+
+		if (m_velocity != 0)
+		{
+			Transform* transform = GetParent()->GetTransform();
+			Vector3 position = transform->GetPosition();
+			transform->SetPosition(position + m_velocity);
+			m_velocity.x *= 0.95f;
+			m_velocity.y *= 0.95f;
+			m_velocity.z *= 0.95f;
+		}
 	}
 }

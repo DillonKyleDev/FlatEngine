@@ -9,7 +9,7 @@ namespace FlatEngine
     class Box : public Shape
     {
     public:
-        Box(Body* parentBody);
+        Box(Body* parentBody = nullptr);
         ~Box();
 
         void SetDimensions(Vector2 dimensions);

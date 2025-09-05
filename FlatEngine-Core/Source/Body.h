@@ -16,12 +16,6 @@ namespace FlatEngine
 
 	class Body : public Component
 	{
-		friend class BoxBody;
-		friend class CircleBody;
-		friend class CapsuleBody;
-		friend class PolygonBody;
-		friend class ChainBody;
-
 	public:
 		Body(long myID = -1, long parentID = -1);
 		~Body();
@@ -103,8 +97,8 @@ namespace FlatEngine
 		std::list<Polygon> m_polygons;
 		std::list<Chain> m_chains;
 		std::list<DistanceJoint*> m_distanceJoints;
-
 		Physics::BodyProps m_bodyProps;			
+
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);
 		bool m_b_beginContactCallbackSet;

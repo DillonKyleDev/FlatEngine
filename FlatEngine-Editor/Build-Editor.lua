@@ -8,6 +8,7 @@ project "FlatEngine-Editor"
    files { 
         "Source/**.h",
         "Source/**.cpp",
+        -- "../Vendor/includes/ImGui/ImGui_Docking/imgui.h",
     }
 
    includedirs
@@ -25,12 +26,18 @@ project "FlatEngine-Editor"
       "../Vendor/includes/SDL2_Text/include",
       "../Vendor/includes/SDL2_Mixer/include",
       "../Vendor/includes/Json_Formatter",
-      "../Vendor/includes/ImPlot",
+    --   "../Vendor/includes/ImPlot",
       "../Vendor/includes/ImSequencer",
       "../Vendor/includes/Lua",
       "../Vendor/includes/Sol2/include",
       "../Vendor/includes/Sol2/include/sol",
       "../Vendor/includes/Box2D/include",
+   }
+
+   externalincludedirs 
+   {
+    "../Vendor/includes/Vulkan/include",
+    "../Vendor/includes/GLM/glm",
    }
 
    libdirs 
@@ -39,7 +46,7 @@ project "FlatEngine-Editor"
         "../Vendor/includes/SDL2_Image/lib/x64",
         "../Vendor/includes/SDL2_Text/lib/x64",
         "../Vendor/includes/SDL2_Mixer/lib/x64",
-        "../Vendor/includes/ImPlot",
+        -- "../Vendor/includes/ImPlot",
         "../Vendor/includes/ImSequencer",
         "../Vendor/includes/Lua",
         "../Vendor/includes/Box2D/lib",

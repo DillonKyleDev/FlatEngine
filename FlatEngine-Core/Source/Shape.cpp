@@ -180,7 +180,12 @@ namespace FlatEngine
 
 	void Shape::CreateShape()
 	{
-		F_Physics->CreateShape(m_parentBody, this);
+		F_Physics->CreateShape(this);
+	}
+
+	void Shape::CreateBodyShape()
+	{
+		F_Physics->CreateBodyShape(m_parentBody, this);
 	}
 
 	void Shape::RecreateShape()
@@ -347,6 +352,38 @@ namespace FlatEngine
 		m_shapeProps.rotationOffset = b2MakeRot(DegreesToRadians(Transform::ClampRotation(rotationOffset)));
 		RecreateShape();
 	}
+
+	void Shape::SetB2Polygon(b2Polygon shape)
+	{
+		m_polygon = shape;
+	}
+
+	void Shape::SetB2Circle(b2Circle shape)
+	{
+		m_circle = shape;
+	}
+
+	void Shape::SetB2Capsule(b2Capsule shape)
+	{
+		m_capsule = shape;
+	}
+
+	b2Polygon Shape::GetB2Polygon()
+	{
+		return m_polygon;
+	}
+
+	b2Circle Shape::GetB2Circle()
+	{
+		return m_circle;
+	}
+
+	b2Capsule Shape::GetB2Capsule()
+	{
+		return m_capsule;
+	}
+
+
 
 	bool Shape::ShowPoints()
 	{

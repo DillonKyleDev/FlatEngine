@@ -11,6 +11,9 @@
 #include "Script.h"
 #include "TileSet.h"
 
+#include "vulkan/vulkan_core.h"
+#include <glm.hpp>
+
 #include <fstream>
 
 
@@ -441,7 +444,7 @@ namespace FlatEngine
 							TileSet* tileSet = GetTileSet(tileSetName);
 							if (tileSet != nullptr)
 							{
-								SDL_Texture* texture = tileSet->GetTexture()->GetTexture();
+								VkDescriptorSet texture = tileSet->GetTexture()->GetTexture();
 								Vector2 uvStart = tileSet->GetIndexUVs(tileSetIndex).first;
 								Vector2 uvEnd = tileSet->GetIndexUVs(tileSetIndex).second;
 
@@ -605,17 +608,17 @@ namespace FlatEngine
 						Transform* transform = self->GetTransform();
 						transform->SetActive(transformData->b_isActive);
 						transform->SetCollapsed(transformData->b_isCollapsed);
-						transform->SetScale(transformData->scale);
-						transform->SetRotation(transformData->rotation);						
+						//transform->SetScale(transformData->scale);
+						transform->SetZRotation(transformData->rotation);						
 
 						if (parentID != -1)
 						{
-							Vector2 parentPosition = GetObjectByID(parentID)->GetTransform()->GetAbsolutePosition();							
-							transform->SetPosition(transformData->position);
+							Vector3 parentPosition = GetObjectByID(parentID)->GetTransform()->GetAbsolutePosition();							
+							//transform->SetPosition(transformData->position);
 						}
 						else
 						{							
-							transform->SetPosition(spawnLocation);
+							//transform->SetPosition(spawnLocation);
 						}
 					}
 					else if (prefab.components.at(componentID)->type == "Sprite")

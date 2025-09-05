@@ -11,6 +11,7 @@
 #include "Canvas.h"
 #include "CharacterController.h"
 #include "TileMap.h"
+#include "Mesh.h"
 #include "Project.h"
 
 
@@ -215,7 +216,7 @@ namespace FlatEngine
 			if (parent != nullptr && parent->HasComponent("Transform"))
 			{
 				Transform* parentTransform = parent->GetTransform();
-				Vector2 parentTruePosition = parentTransform->GetAbsolutePosition();				
+				Vector3 parentTruePosition = parentTransform->GetAbsolutePosition();				
 			}
 		}
 
@@ -526,7 +527,7 @@ namespace FlatEngine
 
 	Body* GameObject::AddBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
 	{
-		Vector2 position = GetTransform()->GetPosition();
+		Vector3 position = GetTransform()->GetPosition();
 		float rotation = GetTransform()->GetRotation();
 
 		long nextID = ID;
@@ -677,6 +678,42 @@ namespace FlatEngine
 			m_components.push_back(tileMapPtr);
 		}
 		return tileMapPtr;
+	}
+
+	Mesh* GameObject::AddMesh(long ID, bool b_active, bool b_collapsed)
+	{
+		long nextID = ID;
+		if (nextID == -1)
+		{
+			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			{
+				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
+			}
+			else if (GetLoadedScene() != nullptr)
+			{
+				nextID = GetLoadedScene()->GetNextComponentID();
+			}
+		}
+
+		Mesh mesh = Mesh(nextID, m_ID);
+		mesh.SetActive(b_active);
+		mesh.SetCollapsed(b_collapsed);
+
+		Mesh* meshPtr = nullptr;
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			meshPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddMesh(mesh, m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			meshPtr = GetLoadedScene()->AddMesh(mesh, m_ID);
+		}
+
+		if (meshPtr != nullptr)
+		{
+			m_components.push_back(meshPtr);
+		}
+		return meshPtr;
 	}
 
 	Component* GameObject::GetComponent(ComponentTypes type)
@@ -866,6 +903,19 @@ namespace FlatEngine
 		else if (GetLoadedScene() != nullptr)
 		{
 			return GetLoadedScene()->GetTileMapByOwner(m_ID);
+		}
+		return nullptr;
+	}
+
+	Mesh* GameObject::GetMesh()
+	{
+		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		{
+			return GetLoadedProject().GetPersistantGameObjectScene()->GetMeshByOwner(m_ID);
+		}
+		else if (GetLoadedScene() != nullptr)
+		{
+			return GetLoadedScene()->GetMeshByOwner(m_ID);
 		}
 		return nullptr;
 	}

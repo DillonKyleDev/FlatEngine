@@ -27,6 +27,8 @@ F_Textures = {
 	unmarkedFile = "..\\engine\\images\\fileTypes\\file.png",
 	tileSetFile = "..\\engine\\images\\fileTypes\\tileSetFile.png",
 	prefabFile = "..\\engine\\images\\fileTypes\\prefabFile.png",
+	materialFile = "..\\engine\\images\\fileTypes\\materialFile.png",
+	objFile = "..\\engine\\images\\fileTypes\\objFile.png",
 	-- Scene View
 	translate = "..\\engine\\images\\icons\\translate.png",
 	scale = "..\\engine\\images\\icons\\scale.png",

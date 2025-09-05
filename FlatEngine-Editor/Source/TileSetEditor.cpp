@@ -121,7 +121,7 @@ namespace FlatGui
 				{
 					std::shared_ptr<Texture> texture = currentTileSet->GetTexture();
 					Vector2 tileSize = Vector2((float)currentTileSet->GetTileWidth(), (float)currentTileSet->GetTileHeight());
-					SDL_Texture* tileTexture = texture->GetTexture();
+					VkDescriptorSet tileTexture = texture->GetTexture();
 					float textureWidth = (float)texture->GetWidth();
 					float textureHeight = (float)texture->GetHeight();
 					Vector2 pivotOffset = Vector2(textureWidth / 2, 0);

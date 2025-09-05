@@ -1,10 +1,15 @@
 #pragma once
 #include "Component.h"
 #include "Vector2.h"
+#include "Capsule.h"
 
 #include <string>
 
-namespace FlatEngine {
+
+namespace FlatEngine 
+{
+	class Body;	
+
 	class CharacterController : public Component
 	{
 	public:
@@ -12,7 +17,9 @@ namespace FlatEngine {
 		~CharacterController();
 		std::string GetData();
 
-		void MoveToward(Vector2 direction);
+		Capsule& GetCapsule();
+		void Move(Vector2 direction);
+		void MoveToward(Vector2 position);
 		void SetMaxAcceleration(float speed);
 		float GetMaxAcceleration();
 		void SetMaxSpeed(float newMaxSpeed);
@@ -23,6 +30,7 @@ namespace FlatEngine {
 		bool IsMoving();
 
 	private:
+		Capsule m_capsule;
 		float m_maxAcceleration;
 		float m_maxSpeed;
 		float m_airControl;
@@ -30,5 +38,3 @@ namespace FlatEngine {
 		bool m_b_isMoving;
 	};
 }
-
-

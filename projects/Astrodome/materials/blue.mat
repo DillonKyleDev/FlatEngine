@@ -1,0 +1,6 @@
+{
+    "fragmentShaderPath": "../projects/Astrodome/shaders/compiledShaders/frag2.spv",
+    "name": "blue",
+    "textureCount": 1,
+    "vertexShaderPath": "../projects/Astrodome/shaders/compiledShaders/vert2.spv"
+}

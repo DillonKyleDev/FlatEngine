@@ -11,7 +11,7 @@ using MappingContext = FL::MappingContext;
 
 namespace FlatGui 
 {
-	std::string fileName = "";
+	std::string newMappingContextFileName = "";
 	bool b_openCreateContextModal = false;
 
 
@@ -234,10 +234,10 @@ namespace FlatGui
 			
 
 			// Create new Mapping Context modal
-			if (FL::RenderInputModal("Create New Mapping Context", "Enter a name for the new Mapping Context", fileName, b_openCreateContextModal))
+			if (FL::RenderInputModal("Create New Mapping Context", "Enter a name for the new Mapping Context", newMappingContextFileName, b_openCreateContextModal))
 			{
-				FL::CreateNewMappingContextFile(fileName);
-				FL::F_selectedMappingContextName = fileName;
+				FL::CreateNewMappingContextFile(newMappingContextFileName);
+				FL::F_selectedMappingContextName = newMappingContextFileName;
 				FG_b_showMappingContextEditor = true;
 			}
 

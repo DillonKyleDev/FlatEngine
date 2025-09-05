@@ -76,6 +76,8 @@ namespace FlatEngine
 			float transformSpeed = 0.1f;
 			InterpType scaleInterpType = I_Lerp;
 			float scaleSpeed = 0.1f;
+			float rotation = 0.0f;
+			float rotationSpeed = 0.1f;
 			float xPos = 0;
 			float yPos = 0;
 			float xScale = 1;
@@ -83,6 +85,7 @@ namespace FlatEngine
 
 			bool b_posAnimated = false;
 			bool b_scaleAnimated = false;
+			bool b_rotationAnimated = false;
 		};
 		struct S_Sprite : public S_Property {
 			InterpType interpType = I_Lerp;

@@ -18,6 +18,7 @@
 #include "Polygon.h"
 #include "Chain.h"
 #include "JointMaker.h"
+#include "Mesh.h"
 
 #include <vector>
 #include <map>
@@ -79,6 +80,7 @@ namespace FlatEngine
 		JointMaker* AddJointMaker(JointMaker jointMaker, long ownerID);
 		CharacterController* AddCharacterController(CharacterController characterController, long ownerID);
 		TileMap* AddTileMap(TileMap tileMap, long ownerID);
+		Mesh* AddMesh(Mesh mesh, long ownerID);
 
 		void RemoveComponent(Component* component, long ownerID = -1);
 
@@ -95,6 +97,7 @@ namespace FlatEngine
 		JointMaker* GetJointMakerByOwner(long ownerID);
 		CharacterController* GetCharacterControllerByOwner(long ownerID);
 		TileMap* GetTileMapByOwner(long ownerID);
+		Mesh* GetMeshByOwner(long ownerID);
 
 		std::map<long, Transform> &GetTransforms();
 		std::map<long, Sprite>& GetSprites();
@@ -110,6 +113,8 @@ namespace FlatEngine
 		std::map<long, JointMaker>& GetJointMakers();
 		std::map<long, CharacterController>& GetCharacterControllers();
 		std::map<long, TileMap>& GetTileMaps();		
+		std::map<long, Mesh>& GetMeshes();
+		std::map<std::string, std::vector<Mesh>>& GetMeshesByMaterial();
 		void SetPersistantScene(bool b_persistant);
 		bool IsPersistantScene();
 

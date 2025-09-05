@@ -32,7 +32,7 @@ namespace FlatGui
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
 
 		FlatEngine::PushWindowStyles();
-		ImGui::Begin("Scene View", &FG_b_showSceneView, 16 | 8); // Window flags 	ImGuiWindowFlags_NoScrollWithMouse
+		ImGui::Begin("Scene View", &FG_b_showSceneView); // Window flags 	ImGuiWindowFlags_NoScrollWithMouse
 		FlatEngine::PopWindowStyles();
 		// {
 		
@@ -68,11 +68,16 @@ namespace FlatGui
 			Vector2 centerOffset = Vector2(SCENE_VIEWPORT_WIDTH / 2, SCENE_VIEWPORT_HEIGHT / 2);
 			bool b_weightedScroll = false;
 
+
+			if (FL::F_VulkanManager->viewportDescriptorSets.size() > 0)
+			{
+				ImVec2 size = ImGui::GetContentRegionAvail();
+				ImGui::Image(FL::F_VulkanManager->viewportDescriptorSets[FL::VM_currentFrame], size);
+			}
+
 			// Need both the center of the viewport and the center of the world to reference when drawing imagese to the scene view
-
 			AddSceneViewMouseControls("SceneViewCanvas", currentPos, canvas_sz, FG_sceneViewScrolling, FG_sceneViewCenter, FG_sceneViewGridStep);
-
-			RenderGridView(FG_sceneViewCenter, FG_sceneViewScrolling, b_weightedScroll, canvas_p0, canvas_p1, canvas_sz, FG_sceneViewGridStep, centerOffset);
+			//RenderGridView(FG_sceneViewCenter, FG_sceneViewScrolling, b_weightedScroll, canvas_p0, canvas_p1, canvas_sz, FG_sceneViewGridStep, centerOffset);
 
 
 			// Drop Target
@@ -113,20 +118,19 @@ namespace FlatGui
 				persistantObjects = FL::GetLoadedProject().GetPersistantGameObjectScene()->GetSceneObjects();
 			}
 
+			//RenderViewObjects(sceneObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
+			//RenderViewObjects(persistantObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
+			//RenderTransformArrowWidget();
 
-			RenderViewObjects(sceneObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
-			RenderViewObjects(persistantObjects, FG_sceneViewCenter, canvas_p0, canvas_sz, FG_sceneViewGridStep.x);
-			RenderTransformArrowWidget();
 
-
-			// For centering on focused GameObject
-			GameObject* lockedObject = FL::GetObjectByID(FG_sceneViewLockedObjectID);
-			if (FG_b_sceneViewLockedOnObject && lockedObject != nullptr)
-			{
-				Transform* transform = lockedObject->GetTransform();
-				Vector2 position = transform->GetAbsoluteScale();
-				FG_sceneViewScrolling = Vector2(position.x * -FG_sceneViewGridStep.x + (ImGui::GetWindowWidth() / 2), position.y * FG_sceneViewGridStep.y + (ImGui::GetWindowHeight() / 2));
-			}
+			//// For centering on focused GameObject
+			//GameObject* lockedObject = FL::GetObjectByID(FG_sceneViewLockedObjectID);
+			//if (FG_b_sceneViewLockedOnObject && lockedObject != nullptr)
+			//{
+			//	Transform* transform = lockedObject->GetTransform();
+			//	Vector2 position = transform->GetAbsoluteScale();
+			//	FG_sceneViewScrolling = Vector2(position.x * -FG_sceneViewGridStep.x + (ImGui::GetWindowWidth() / 2), position.y * FG_sceneViewGridStep.y + (ImGui::GetWindowHeight() / 2));
+			//}
 
 			// Cursor mode select
 			ImGui::SetCursorScreenPos(canvas_p0);

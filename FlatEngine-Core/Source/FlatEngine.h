@@ -11,7 +11,9 @@
 #include "WeldJoint.h"
 #include "MotorJoint.h"
 #include "WheelJoint.h"
+#include "VulkanManager.h"
 
+#include <glm.hpp>
 #include <stdio.h>
 #include <string>
 #include <map>
@@ -24,15 +26,14 @@
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
-#include "json.hpp"
 #include <ctime>
 
+#include "json.hpp"
 using json = nlohmann::json;
 using namespace nlohmann::literals;
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol.hpp>
-#include <map>
 
 
 /*
@@ -90,6 +91,7 @@ namespace FlatEngine
 	class WeldJoint;
 	class MotorJoint;
 	class WheelJoint;
+	class VulkanManager;
 
 	enum F_CURSOR_MODE {
 		TRANSLATE,
@@ -102,23 +104,25 @@ namespace FlatEngine
 		TILE_MOVE,
 	};
 
-	extern std::shared_ptr<WindowManager> F_Window;
+	// Vulkan
+	extern std::shared_ptr<VulkanManager> F_VulkanManager;	
+	extern Vector2 AddImageToDrawList(VkDescriptorSet texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offset, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation = 0, ImU32 addColor = 1, Vector2 uvStart = Vector2(0, 0), Vector2 uvEnd = Vector2(1, 1));
+	extern std::map<long, Mesh>& GetMeshes();
+
 	extern std::shared_ptr<Application> F_Application;
 	extern sol::state F_Lua;
 	extern std::unique_ptr<Physics> F_Physics;
 	extern std::map<std::string, sol::protected_function> F_LoadedSceneScriptFiles;
 	extern std::map<std::string, sol::protected_function> F_LoadedPersistantScriptFiles;
-
 	extern long F_FocusedGameObjectID;
-
 	extern std::vector<std::string> F_TagsAvailable;
-
 	extern bool F_b_projectSelected;
-
 	extern std::string F_RuntimeDirectoriesLuaFilepath;
 	extern std::string F_EditorDirectoriesLuaFilepath;
-
 	extern F_CURSOR_MODE F_CursorMode;
+	extern std::vector<std::string> F_KeyBindingsAvailable;
+	extern bool F_b_loadNewScene;
+	extern std::string F_sceneToBeLoaded;
 	extern bool F_b_closeProgram;
 	extern bool F_b_closeProgramQueued;
 
@@ -132,15 +136,11 @@ namespace FlatEngine
 	extern std::vector<std::string> F_selectedFiles;
 	extern std::vector<MappingContext> F_MappingContexts;
 	extern std::string F_selectedMappingContextName;
+	extern std::string F_selectedMaterialName;
 	extern std::shared_ptr<PrefabManager> F_PrefabManager;
 	extern std::vector<TileSet> F_TileSets;
 	extern std::string F_selectedTileSetToEdit;
-	extern std::pair<std::string, int> F_tileSetAndIndexOnBrush;
-
-	extern std::vector<std::string> F_KeyBindingsAvailable;
-
-	extern bool F_b_loadNewScene;
-	extern std::string F_sceneToBeLoaded;
+	extern std::pair<std::string, int> F_tileSetAndIndexOnBrush;	
 
 	// Drag/Drop IDs
 	extern std::string F_fileExplorerTarget;
@@ -188,6 +188,7 @@ namespace FlatEngine
 	extern Vector2 F_gameViewGridStep;
 
 	extern Camera* F_primaryCamera;
+	extern bool F_b_sceneViewRightClicked;
 
 	// Scene View
 	extern Vector2* F_sceneViewCenter;
@@ -200,8 +201,8 @@ namespace FlatEngine
 	extern void FreeFonts();
 	extern std::string GetDir(std::string dirName);
 	extern std::string GetFilePath(std::string fileName);
-	extern std::shared_ptr<Texture>& GetTextureObject(std::string textureName);
-	extern SDL_Texture* GetTexture(std::string textureName);
+	extern std::shared_ptr<Texture>& GetTextureObject(std::string textureName);	
+	extern VkDescriptorSet GetTexture(std::string textureName);
 	extern Vector4 GetColor(std::string colorName);
 	extern Uint32 GetColor32(std::string colorName);
 
@@ -312,8 +313,7 @@ namespace FlatEngine
 	extern long GetNextComponentID();
 	extern long GetNextGameObjectID();
 
-	// SDL
-	extern Vector2 AddImageToDrawList(SDL_Texture* texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offset, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation = 0, ImU32 addColor = GetColor32("white"), Vector2 uvStart = Vector2(0, 0), Vector2 uvEnd = Vector2(1, 1));
+	// SDL	
 	extern void SetMusicVolume(int volume);
 	extern void SetEffectsVolume(int volume);
 	extern int GetNextAvailableEffectChannel();
@@ -494,7 +494,7 @@ namespace FlatEngine
 	extern bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string tooltip = "", float inputWidth = -1);
 	extern bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string tooltip = "", float inputWidth = -1);
 	extern bool RenderButton(std::string text, Vector2 size = Vector2(0, 0), float rounding = 1, Vector4 color = GetColor("button"), Vector4 hoverColor = GetColor("buttonHovered"), Vector4 activeColor = GetColor("buttonActive"));
-	extern bool RenderImageButton(std::string ID, SDL_Texture* texture, Vector2 size = Vector2(16, 16), float rounding = 1, Vector2 padding = Vector2(1, 1), Vector4 bgColor = GetColor("imageButton"), Vector4 tint = GetColor("imageButtonTint"), Vector4 hoverColor = GetColor("imageButtonHovered"), Vector4 activeColor = GetColor("imageButtonActive"), Vector2 uvStart = Vector2(0,0), Vector2 uvEnd = Vector2(1, 1));
+	extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16, 16), float rounding = 1, Vector2 padding = Vector2(1, 1), Vector4 bgColor = GetColor("imageButton"), Vector4 tint = GetColor("imageButtonTint"), Vector4 hoverColor = GetColor("imageButtonHovered"), Vector4 activeColor = GetColor("imageButtonActive"), Vector2 uvStart = Vector2(0,0), Vector2 uvEnd = Vector2(1, 1));
 	extern bool RenderDragFloat(std::string text, float width, float& value, float increment, float min, float max, ImGuiSliderFlags flags = 0, std::string bgColor = "");
 	extern bool RenderDragInt(std::string text, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags = 0, std::string bgColor = "");
 	extern bool RenderSliderFloat(std::string label, float& value, float increment = 0.1f, float min = 0.0f, float max = 1000, float width = -1, int digitsAfterDecimal = 3);

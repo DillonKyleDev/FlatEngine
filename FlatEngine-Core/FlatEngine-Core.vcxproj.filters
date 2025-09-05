@@ -37,8 +37,8 @@
     <Filter Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts">
       <UniqueIdentifier>{4A6F2B12-B635-882E-FF90-16916B96F692}</UniqueIdentifier>
     </Filter>
-    <Filter Include="..\Vendor\includes\ImPlot">
-      <UniqueIdentifier>{C847A805-340A-DC8F-7DBA-6A1CE9BBB46D}</UniqueIdentifier>
+    <Filter Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\single_file">
+      <UniqueIdentifier>{A16EE80C-0D56-D302-1644-D57E82AA76C5}</UniqueIdentifier>
     </Filter>
     <Filter Include="..\Vendor\includes\Lua">
       <UniqueIdentifier>{15BAF602-01B4-1F55-EA20-B665D6B985C1}</UniqueIdentifier>
@@ -114,6 +114,9 @@
     <ClInclude Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdlrenderer2.h">
       <Filter>..\Vendor\includes\ImGui\Backends</Filter>
     </ClInclude>
+    <ClInclude Include="..\Vendor\includes\ImGui\Backends\imgui_impl_vulkan.h">
+      <Filter>..\Vendor\includes\ImGui\Backends</Filter>
+    </ClInclude>
     <ClInclude Include="..\Vendor\includes\ImGui\ImGui_Docking\imconfig.h">
       <Filter>..\Vendor\includes\ImGui\ImGui_Docking</Filter>
     </ClInclude>
@@ -135,11 +138,8 @@
     <ClInclude Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\cpp\imgui_stdlib.h">
       <Filter>..\Vendor\includes\ImGui\ImGui_Docking\misc\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Vendor\includes\ImPlot\implot.h">
-      <Filter>..\Vendor\includes\ImPlot</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Vendor\includes\ImPlot\implot_internal.h">
-      <Filter>..\Vendor\includes\ImPlot</Filter>
+    <ClInclude Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\single_file\imgui_single_file.h">
+      <Filter>..\Vendor\includes\ImGui\ImGui_Docking\misc\single_file</Filter>
     </ClInclude>
     <ClInclude Include="..\Vendor\includes\Lua\lauxlib.h">
       <Filter>..\Vendor\includes\Lua</Filter>
@@ -510,6 +510,9 @@
     <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h">
       <Filter>..\projects\Pool\scripts\cpp</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Allocator.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Animation.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -579,7 +582,19 @@
     <ClInclude Include="Source\GameObject.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\GraphicsPipeline.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Helper.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImGuiManager.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Joint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\JointMaker.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Line.h">
@@ -588,16 +603,31 @@
     <ClInclude Include="Source\Logger.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\LogicalDevice.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\MappingContext.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Material.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Matrix.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mesh.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Model.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\MotorJoint.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\MouseJoint.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PhysicalDevice.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Physics.h">
@@ -616,6 +646,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Project.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RenderPass.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\RevoluteJoint.h">
@@ -639,6 +672,9 @@
     <ClInclude Include="Source\Sprite.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Structs.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\TagList.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -657,10 +693,19 @@
     <ClInclude Include="Source\Transform.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ValidationLayers.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Vector2.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Vector3.h">
+      <Filter>Source</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Vector4.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\VulkanManager.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\WeldJoint.h">
@@ -669,16 +714,18 @@
     <ClInclude Include="Source\WheelJoint.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\WindowManager.h">
+    <ClInclude Include="Source\WinSys.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\JointMaker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
       <Filter>..\Vendor\includes\ImGui\Backends</Filter>
     </ClCompile>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdlrenderer2.cpp">
+      <Filter>..\Vendor\includes\ImGui\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_vulkan.cpp">
       <Filter>..\Vendor\includes\ImGui\Backends</Filter>
     </ClCompile>
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\imgui.cpp">
@@ -702,17 +749,11 @@
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts\binary_to_compressed_c.cpp">
       <Filter>..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts</Filter>
     </ClCompile>
-    <ClCompile Include="..\Vendor\includes\ImPlot\implot.cpp">
-      <Filter>..\Vendor\includes\ImPlot</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Vendor\includes\ImPlot\implot_demo.cpp">
-      <Filter>..\Vendor\includes\ImPlot</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Vendor\includes\ImPlot\implot_items.cpp">
-      <Filter>..\Vendor\includes\ImPlot</Filter>
-    </ClCompile>
     <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp">
       <Filter>..\projects\Pool\scripts\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Allocator.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Animation.cpp">
       <Filter>Source</Filter>
@@ -783,10 +824,22 @@
     <ClCompile Include="Source\GameView.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\GraphicsPipeline.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Helper.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGuiManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\ImGuiWrappersCore.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Joint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\JointMaker.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Line.cpp">
@@ -795,19 +848,34 @@
     <ClCompile Include="Source\Logger.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\LogicalDevice.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\LuaFunctions.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\MappingContext.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Material.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Matrix.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mesh.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Model.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\MotorJoint.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\MouseJoint.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PhysicalDevice.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Physics.cpp">
@@ -829,6 +897,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Project.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RenderPass.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\RevoluteJoint.cpp">
@@ -870,10 +941,19 @@
     <ClCompile Include="Source\Transform.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ValidationLayers.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Vector2.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Vector3.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Vector4.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\VulkanManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\WeldJoint.cpp">
@@ -882,10 +962,9 @@
     <ClCompile Include="Source\WheelJoint.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\WindowManager.cpp">
+    <ClCompile Include="Source\WinSys.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\JointMaker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

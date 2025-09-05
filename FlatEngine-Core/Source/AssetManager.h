@@ -6,7 +6,9 @@
 #include <map>
 #include <string>
 #include <memory>
-#include <string>
+
+#include "vulkan/vulkan_core.h"
+#include <glm.hpp>
 
 
 
@@ -34,7 +36,8 @@ namespace FlatEngine
 		Vector4 GetColor(std::string colorName);
 		Uint32 GetColor32(std::string colorName);
 		std::shared_ptr<Texture>& GetTextureObject(std::string textureName);
-		SDL_Texture* GetTexture(std::string textureName);		
+		//SDL_Texture* GetTexture(std::string textureName);		
+		VkDescriptorSet GetTexture(std::string textureName);
 	private:
 		std::string m_rootPath;
 		std::map<std::string, std::string> m_directories;

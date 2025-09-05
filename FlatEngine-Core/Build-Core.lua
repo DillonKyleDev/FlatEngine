@@ -13,7 +13,7 @@ project "FlatEngine-Core"
         "../Vendor/includes/ImGui/Backends/**",
         "../Vendor/includes/ImGui/ImGui_Docking/**.h",
         "../Vendor/includes/ImGui/ImGui_Docking/**.cpp",
-        "../Vendor/includes/ImPlot/**",
+        -- "../Vendor/includes/ImPlot/**",
         "../Vendor/includes/Lua/**",
         "../Vendor/includes/Sol2/**",
         "../Vendor/includes/Box2D/**",
@@ -26,8 +26,18 @@ project "FlatEngine-Core"
       "../Vendor/includes/Box2D/include",
     }
 
+    libdirs 
+    {
+     "../Vendor/includes/Vulkan/Lib",
+     "../Vendor/includes/GLM/glm",
+    }
+
     externalincludedirs 
     { 
+        "../Vendor/includes/Vulkan/include",
+        "../Vendor/includes/GLM/glm",
+        "../Vendor/includes/Stb_image",
+        "../Vendor/includes/tinyobjloader",
         "../Vendor/includes/ImGui/Backends",
         "../Vendor/includes/ImGui/ImGui_Docking",
         "../Vendor/includes/ImGui/ImGui_Docking/misc/debuggers",
@@ -40,13 +50,18 @@ project "FlatEngine-Core"
         "../Vendor/includes/SDL2_Mixer/include",
         "../Vendor/includes/SDL2_Mixer/lib/x64",
         "../Vendor/includes/Json_Formatter",
-        "../Vendor/includes/ImPlot",
+        -- "../Vendor/includes/ImPlot",
         "../Vendor/includes/ImSequencer",
         "../Vendor/includes/Lua",
         "../Vendor/includes/Sol2",
         "../Vendor/includes/Sol2/include",
         "../Vendor/includes/Sol2/include/sol",
         "../Vendor/includes/Box2D/include",
+    }
+
+    links
+    {
+     "vulkan-1.lib",
     }
 
 

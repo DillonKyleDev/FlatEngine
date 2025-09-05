@@ -7,7 +7,7 @@
 #include "Scene.h"
 
 #include <deque>
-#include "implot.h"
+//#include "implot.h"
 
 
 namespace FL = FlatEngine;
@@ -43,7 +43,7 @@ namespace FlatGui
 				ImGui::TableSetupColumn("Time (ms)", ImGuiTableColumnFlags_WidthFixed, 100.0f);
 				ImGui::TableSetupColumn("Visualization");
 				ImGui::TableHeadersRow();
-				ImPlot::PushColormap(ImPlotColormap_Cool);
+				//ImPlot::PushColormap(ImPlotColormap_Cool);
 
 				if (FL::F_ProfilerProcesses.size() > 0)
 				{
@@ -67,7 +67,7 @@ namespace FlatGui
 							ImGui::Text("%.0f ms", rawDataVector.front());
 							ImGui::TableSetColumnIndex(2);
 							ImGui::PushID(processCounter);
-							Sparkline("##spark", dataArray, 100, 0, 10.0f, offset, ImPlot::GetColormapColor((int)rawDataVector.front()), Vector2(-1, 35));
+							//Sparkline("##spark", dataArray, 100, 0, 10.0f, offset, ImPlot::GetColormapColor((int)rawDataVector.front()), Vector2(-1, 35));
 							ImGui::PopID();
 						}
 
@@ -75,7 +75,7 @@ namespace FlatGui
 					}
 				}
 
-				ImPlot::PopColormap();
+				//ImPlot::PopColormap();
 				ImGui::EndTable();
 			}
 
@@ -84,16 +84,16 @@ namespace FlatGui
 
 	void Sparkline(const char* ID, const float* values, int count, float min, float max, int offset, const Vector4& color, const Vector2& size) 
 	{
-		ImPlot::PushStyleVar(ImPlotStyleVar_PlotPadding, Vector2(0, 0));
-		if (ImPlot::BeginPlot(ID, size, ImPlotFlags_CanvasOnly)) 
-		{
-			ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
-			ImPlot::SetupAxesLimits(0, count - 1, min, max, ImGuiCond_Always);
-			ImPlot::SetNextLineStyle(color);
-			ImPlot::SetNextFillStyle(color, 0.25);
-			ImPlot::PlotLine(ID, values, count, 1, 0, ImPlotLineFlags_Shaded, offset);
-			ImPlot::EndPlot();
-		}
-		ImPlot::PopStyleVar();
+		//ImPlot::PushStyleVar(ImPlotStyleVar_PlotPadding, Vector2(0, 0));
+		//if (ImPlot::BeginPlot(ID, size, ImPlotFlags_CanvasOnly)) 
+		//{
+		//	ImPlot::SetupAxes(nullptr, nullptr, ImPlotAxisFlags_NoDecorations, ImPlotAxisFlags_NoDecorations);
+		//	ImPlot::SetupAxesLimits(0, count - 1, min, max, ImGuiCond_Always);
+		//	ImPlot::SetNextLineStyle(color);
+		//	ImPlot::SetNextFillStyle(color, 0.25);
+		//	ImPlot::PlotLine(ID, values, count, 1, 0, ImPlotLineFlags_Shaded, offset);
+		//	ImPlot::EndPlot();
+		//}
+		//ImPlot::PopStyleVar();
 	}
 }

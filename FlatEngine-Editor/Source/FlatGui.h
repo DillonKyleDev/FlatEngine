@@ -25,6 +25,7 @@ namespace FL = FlatEngine;
 namespace FlatEngine 
 {
 	class Vector2;
+	class Vector3;
 	class Vector4;
 	class GameObject;
 	class TagList;
@@ -63,9 +64,13 @@ namespace FlatEngine
 	class WheelJoint;
 	class TileMap;
 	class TileSet;
+	class Mesh;
+	class Model;
+	class Material;
 }
 
 using Vector2 = FL::Vector2;
+using Vector3 = FL::Vector3;
 using Vector4 = FL::Vector4;
 using GameObject = FL::GameObject;
 using TagList = FL::TagList;
@@ -104,6 +109,9 @@ using WheelJoint = FL::WheelJoint;
 using WeldJoint = FL::WeldJoint;
 using TileMap = FL::TileMap;
 using TileSet = FL::TileSet;
+using Mesh = FL::Mesh;
+using Model = FL::Model;
+using Material = FL::Material;
 
 namespace FlatGui
 {
@@ -184,6 +192,7 @@ namespace FlatGui
 	extern bool FG_b_showProfiler;
 	extern bool FG_b_showMappingContextEditor;
 	extern bool FG_b_showSettings;
+	extern bool FG_b_showMaterialEditor;
 
 	extern void Init();
 
@@ -208,6 +217,7 @@ namespace FlatGui
 	extern void RenderProfiler();
 	extern void RenderInputAction(FL::MappingContext* context, FL::ActionMapping& actionMapping, float width);
 	extern void RenderMappingContextEditor();
+	extern void RenderMaterialEditor();
 	extern void RenderSettings();
 	extern void Cleanup();
 	extern void RenderGridView(Vector2& centerPoint, Vector2& scrolling, bool b_weightedScroll, Vector2 canvasP0, Vector2 canvasP1, Vector2 canvasSize, Vector2& gridStep, Vector2 centerOffset, bool b_showAxis = true);
@@ -219,9 +229,9 @@ namespace FlatGui
 	extern void RenderFileExplorer();
 	extern void RenderFilesTopBar();
 	extern void RenderDirNodes(std::string dir);
-	extern void RenderDirNode(std::filesystem::path fsPath);
+	extern void RenderDirNode(std::filesystem::path fsPath, int IDCounter);
 	extern void RenderDirItems();
-	extern void RenderFileIcon(std::filesystem::path fsPath, Vector2 currentPos);
+	extern void RenderFileIcon(std::filesystem::path fsPath, Vector2 currentPos, int IDCounter);
 	extern void OpenFileContextually(std::filesystem::path fsPath);
 	extern void RenderTileSetEditor();
 	extern void RenderTileSetEditorTile(std::pair<int, std::pair<Vector2, Vector2>> tile, Vector2 tileSize, Vector2& scrolling, Vector2 canvasP0, Vector2 canvasSize, Vector2& step, TileSet* tileSet);
@@ -258,6 +268,7 @@ namespace FlatGui
 	extern void RenderMotorJointProps(MotorJoint* joint);
 	extern void RenderWheelJointProps(WheelJoint* joint);
 	extern void RenderTileMapComponent(TileMap* tileMap);
+	extern void RenderMeshComponent(Mesh* mesh);
 
 	// SceneView
 	extern void RenderSceneViewTooltip();

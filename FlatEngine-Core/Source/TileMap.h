@@ -13,7 +13,8 @@ namespace FlatEngine
     struct Tile {
         Vector2 tileCoord;
         std::string tileSetName;
-        SDL_Texture* tileSetTexture;
+        //SDL_Texture* tileSetTexture;
+        VkDescriptorSet tileSetTexture;
         int tileSetIndex;
         Vector2 uvStart;
         Vector2 uvEnd;

@@ -4,7 +4,6 @@
 #include "Text.h"
 #include "Texture.h"
 #include "Vector2.h"
-#include "WindowManager.h"
 
 #include <ctime>
 #include <memory>

@@ -425,6 +425,12 @@ namespace FlatEngine
 		return m_ECSManager.AddTileMap(tileMap, ownerID);
 	}
 
+	Mesh* Scene::AddMesh(Mesh mesh, long ownerID)
+	{
+		KeepNextComponentIDUpToDate(mesh.GetID());
+		return m_ECSManager.AddMesh(mesh, ownerID);
+	}
+
 	void Scene::RemoveComponent(Component* component, long ownerID)
 	{
 		if (component != nullptr)
@@ -502,6 +508,11 @@ namespace FlatEngine
 		return m_ECSManager.GetTileMapByOwner(ownerID);
 	}
 
+	Mesh* Scene::GetMeshByOwner(long ownerID)
+	{
+		return m_ECSManager.GetMeshByOwner(ownerID);
+	}
+
 	std::map<long, Transform> &Scene::GetTransforms()
 	{
 		return m_ECSManager.GetTransforms();
@@ -557,5 +568,13 @@ namespace FlatEngine
 	std::map<long, TileMap>& Scene::GetTileMaps()
 	{
 		return m_ECSManager.GetTileMaps();
+	}
+	std::map<long, Mesh>& Scene::GetMeshes()
+	{
+		return m_ECSManager.GetMeshes();
+	}
+	std::map<std::string, std::vector<Mesh>>& Scene::GetMeshesByMaterial()
+	{
+		return m_ECSManager.GetMeshesByMaterial();
 	}
 }

@@ -3,6 +3,8 @@
 #include "Transform.h"
 #include "GameObject.h"
 #include "box2d.h"
+#include "Body.h"
+#include "Capsule.h"
 
 
 namespace FlatEngine 
@@ -11,7 +13,9 @@ namespace FlatEngine
 	{
 		SetType(T_CharacterController);
 		SetID(myID);
-		SetParentID(parentID);
+		SetParentID(parentID);		
+		m_capsule = Capsule();
+		m_capsule.CreateShape();
 		m_maxAcceleration = 0.5f;
 		m_maxSpeed = 10.0f;
 		m_airControl = 0.2f;
@@ -39,7 +43,17 @@ namespace FlatEngine
 		return data;
 	}
 
-	void CharacterController::MoveToward(Vector2 direction)
+	Capsule& CharacterController::GetCapsule()
+	{
+		return m_capsule;
+	}
+
+	void CharacterController::Move(Vector2 direction)
+	{
+
+	}
+
+	void CharacterController::MoveToward(Vector2 position)
 	{
 
 	}

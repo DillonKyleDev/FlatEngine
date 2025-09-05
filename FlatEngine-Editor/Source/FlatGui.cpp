@@ -33,6 +33,7 @@ using Component = FL::Component;
 using MappingContext = FL::MappingContext;
 using Transform = FL::Transform;
 using Sprite = FL::Sprite;
+using CharacterController = FL::CharacterController;
 using Camera = FL::Camera;
 using Canvas = FL::Canvas;
 using Text = FL::Text;
@@ -368,6 +369,8 @@ namespace FlatGui
 		FG_sceneViewGridStep = gridStep;
 		FL::F_sceneViewGridStep = &FG_sceneViewGridStep;
 
+		FL::F_VulkanManager->InitializeMaterials();
+
 		if (FL::F_LoadedProject.GetFocusedGameObjectID() != -1 && FL::GetObjectByID(FL::F_LoadedProject.GetFocusedGameObjectID()) != nullptr)
 		{
 			SetFocusedGameObjectID(FL::F_LoadedProject.GetFocusedGameObjectID());
@@ -485,10 +488,10 @@ namespace FlatGui
 
 	void AddViewports()
 	{		
-		if (FG_b_showDemoWindow)
-		{
-			ImGui::ShowDemoWindow(&FG_b_showDemoWindow);
-		}
+		//if (FG_b_showDemoWindow)
+		//{
+		//	ImGui::ShowDemoWindow(&FG_b_showDemoWindow);
+		//}
 
 		MainMenuBar();
 		RenderToolbar();
@@ -572,18 +575,23 @@ namespace FlatGui
 			FL::AddProcessData("Log", (float)FL::GetEngineTime() - startTime);
 		}
 	
-		//if (FG_b_showProfiler)
-		//{
-		//	startTime = (float)FL::GetEngineTime();
-		//	RenderProfiler();
-		//	FL::AddProcessData("Profiler", (float)FL::GetEngineTime() - startTime);
-		//}
+		////if (FG_b_showProfiler)
+		////{
+		////	startTime = (float)FL::GetEngineTime();
+		////	RenderProfiler();
+		////	FL::AddProcessData("Profiler", (float)FL::GetEngineTime() - startTime);
+		////}
 
 		if (FG_b_showMappingContextEditor)
 		{
 			startTime = (float)FL::GetEngineTime();
 			RenderMappingContextEditor();
 			FL::AddProcessData("Mapping Context Editor", (float)FL::GetEngineTime() - startTime);
+		}
+
+		if (FG_b_showMaterialEditor)
+		{			
+			RenderMaterialEditor();			
 		}
 
 		if (FG_b_showSettings)
@@ -703,6 +711,7 @@ namespace FlatGui
 		Transform* transform = self.GetTransform();
 		Animation* animation = self.GetAnimation();
 		Sprite* sprite = self.GetSprite();
+		CharacterController* characterController = self.GetCharacterController();
 		Camera* camera = self.GetCamera();
 		Button* button = self.GetButton();
 		Canvas* canvas = self.GetCanvas();
@@ -712,6 +721,7 @@ namespace FlatGui
 
 		bool b_spriteButtonAdded = false;
 
+		/*
 
 		if (transform != nullptr)
 		{
@@ -745,7 +755,7 @@ namespace FlatGui
 			if (sprite != nullptr && sprite->GetTexture() != nullptr && sprite->IsActive())
 			{
 				b_spriteButtonAdded = true;
-				SDL_Texture* spriteTexture = sprite->GetTexture();
+				VkDescriptorSet spriteTexture = sprite->GetTexture();
 				float spriteTextureWidth = (float)sprite->GetTextureWidth();
 				float spriteTextureHeight = (float)sprite->GetTextureHeight();
 				Vector2 spriteScale = sprite->GetScale();
@@ -753,7 +763,7 @@ namespace FlatGui
 				bool b_spriteScalesWithZoom = true;
 				int renderOrder = sprite->GetRenderOrder();
 				Vector4 tintColor = sprite->GetTintColor();
-				std::string invisibleButtonID = "GameObjectSelectorButton_" + std::to_string(sprite->GetID());	
+				std::string invisibleButtonID = "GameObjectSelectorButtonSprite_" + std::to_string(sprite->GetID());	
 				ImGuiIO& inputOutput = ImGui::GetIO();
 
 				spriteScale.x *= scale.x;
@@ -778,10 +788,66 @@ namespace FlatGui
 					drawSplitter->SetCurrentChannel(drawList, 0);
 				}
 
-				if (spriteScale.x > 0 && spriteScale.y > 0 && spriteTexture != nullptr)
+				if (spriteScale.x != 0 && spriteScale.y != 0 && spriteTexture != nullptr)
 				{
 					FL::AddImageToDrawList(spriteTexture, position, centerPoint, spriteTextureWidth, spriteTextureHeight, offset, spriteScale, b_spriteScalesWithZoom, gridStep, drawList, rotation, ImGui::GetColorU32(tintColor));
 				}
+			}
+
+			if (characterController != nullptr)
+			{
+				Capsule& capsule = characterController->GetCapsule();
+				b2Capsule b2Capsule = capsule.GetB2Capsule();
+				bool b_isActive = characterController->IsActive();				
+				Shape::ShapeProps shapeProps = capsule.GetShapeProps();
+				bool b_isSensor = shapeProps.b_isSensor;				
+				float length = shapeProps.capsuleLength;
+				float radius = shapeProps.radius;
+				float radiusScreen = radius * FG_sceneViewGridStep.x;
+				Vector2 offset = shapeProps.positionOffset;
+				float rotation = FL::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));
+
+				Vector2 center1 = Scene_ConvertWorldToScreen(position + b2Capsule.center1);
+				Vector2 center2 = Scene_ConvertWorldToScreen(position + b2Capsule.center2);
+				Vector2 difference = center2 - center1;
+				Vector2 diffN = Vector2::Normalize(difference);
+				Vector2 diffNR = diffN * radiusScreen;
+				Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
+				Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
+
+				Vector4 color;
+				Vector4 colorLight;
+
+				if (b_isActive)
+				{
+					color = FL::GetColor("capsuleColliderActive");
+					colorLight = FL::GetColor("capsuleColliderActiveLight");				
+				}
+				else
+				{
+					color = FL::GetColor("capsuleColliderInactive");
+					colorLight = FL::GetColor("capsuleColliderInactiveLight");
+				}
+
+				drawSplitter->SetCurrentChannel(drawList, FL::F_maxSpriteLayers + 2);
+
+				FL::DrawCircle(center1, radiusScreen, colorLight, drawList, 2.0f);
+				FL::DrawCircle(center1, radiusScreen, color, drawList);
+
+				FL::DrawCircle(center2, radiusScreen, colorLight, drawList, 2.0f);
+				FL::DrawCircle(center2, radiusScreen, color, drawList);
+
+				FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, 2.0f, drawList);
+				FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, 2.0f, drawList);
+				FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, 2.0f, drawList);
+				FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, 2.0f, drawList);
+
+				// Sides
+				FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, colorLight, 2.0f, drawList);
+				FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, 1.0f, drawList);
+
+				FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, colorLight, 2.0f, drawList);
+				FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, 1.0f, drawList);
 			}
 
 			if (text != nullptr && text->IsActive())
@@ -793,7 +859,7 @@ namespace FlatGui
 				int renderOrder = text->GetRenderOrder();				
 				bool b_spriteScalesWithZoom = true;
 				Vector4 tintColor = text->GetColor();
-				std::string invisibleButtonID = "GameObjectSelectorButton_" + std::to_string(text->GetID());
+				std::string invisibleButtonID = "GameObjectSelectorButtonText_" + std::to_string(text->GetID());
 				ImGuiIO& inputOutput = ImGui::GetIO();
 				
 				Vector2 newScale = Vector2(scale.x * FL::F_spriteScaleMultiplier, scale.y * FL::F_spriteScaleMultiplier);
@@ -1673,7 +1739,7 @@ namespace FlatGui
 								float gridWidthsInATile = tileWidth / FL::F_pixelsPerGridSpace;
 								float gridHeightsInATile = tileHeight / FL::F_pixelsPerGridSpace;
 
-								SDL_Texture* texture = tile.tileSetTexture;
+								VkDescriptorSet texture = tile.tileSetTexture;
 								float textureWidth = (float)usedTileSet->GetTexture()->GetWidth();
 								float textureHeight = (float)usedTileSet->GetTexture()->GetHeight();
 								Vector2 uvStart = Vector2(tile.uvStart.x / textureWidth, tile.uvStart.y / textureHeight);
@@ -1700,6 +1766,8 @@ namespace FlatGui
 				}
 			}
 		}
+
+		*/
 	}
 
 	bool RenderAddPointWidget(Body* body, Shape* shape, Vector2 midPoint, int startIndex)
@@ -1709,7 +1777,7 @@ namespace FlatGui
 		float rotation = body->GetRotation();		
 
 		std::vector<Vector2> points = shape->GetShapeProps().points;			
-		SDL_Texture* chainAddJointTexture = FL::GetTexture("addJoint");		
+		VkDescriptorSet chainAddJointTexture = FL::GetTexture("addJoint");
 		float textureWidth = (float)FL::GetTextureObject("addJoint")->GetWidth();
 		float textureHeight = (float)FL::GetTextureObject("addJoint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
@@ -1762,7 +1830,7 @@ namespace FlatGui
 		Vector2 position = body->GetPosition();
 
 		std::vector<Vector2> points = shape->GetShapeProps().points;		
-		SDL_Texture* chainJointTexture = FL::GetTexture("joint");		
+		VkDescriptorSet chainJointTexture = FL::GetTexture("joint");		
 		float textureWidth = (float)FL::GetTextureObject("joint")->GetWidth();
 		float textureHeight = (float)FL::GetTextureObject("joint")->GetHeight();
 		Vector2 jointOffset = { textureWidth / 2, textureHeight / 2 };
@@ -1844,7 +1912,7 @@ namespace FlatGui
 				position = body->GetPosition();
 			}
 
-			SDL_Texture* arrowToRender = FL::GetTexture("transformArrow");
+			VkDescriptorSet arrowToRender = FL::GetTexture("transformArrow");
 			// * 3 because the texture is so small. If we change the scale, it will change the render starting position. We only want to change the render ending position so we adjust dimensions only
 			float arrowWidth = (float)FL::GetTextureObject("transformArrow")->GetWidth() * 3;
 			float arrowHeight = (float)FL::GetTextureObject("transformArrow")->GetHeight() * 3;
@@ -1901,21 +1969,21 @@ namespace FlatGui
 				transformOffsetFromMouse = position - FL::Scene_GetMousePosWorld();
 			}
 
-			if (b_baseActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-			{			
-				Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
-				transform->SetPosition(newPosition - transform->GetPositionOrigin());
-			}
-			else if (b_xActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-			{
-				Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
-				transform->SetPosition(Vector2(newPosition.x - transform->GetPositionOrigin().x, position.y - transform->GetPositionOrigin().x));
-			}
-			else if (b_yActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
-			{
-				Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
-				transform->SetPosition(Vector2(position.x - transform->GetPositionOrigin().x, newPosition.y - transform->GetPositionOrigin().y));
-			}
+			//if (b_baseActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			//{			
+			//	Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
+			//	transform->SetPosition(newPosition - transform->GetPositionOrigin());
+			//}
+			//else if (b_xActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			//{
+			//	Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
+			//	transform->SetPosition(Vector2(newPosition.x - transform->GetPositionOrigin().x, position.y - transform->GetPositionOrigin().x));
+			//}
+			//else if (b_yActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left))
+			//{
+			//	Vector2 newPosition = FL::Scene_GetMousePosWorld() + transformOffsetFromMouse;
+			//	transform->SetPosition(Vector2(position.x - transform->GetPositionOrigin().x, newPosition.y - transform->GetPositionOrigin().y));
+			//}
 
 
 			// Draw channel maxSpriteLayers + 3 for Upper UI Transform Arrow			
@@ -1925,13 +1993,9 @@ namespace FlatGui
 
 	void AddSceneViewMouseControls(std::string buttonID, Vector2 startPos, Vector2 size, Vector2 &scrolling, Vector2 centerPoint, Vector2 &gridStep, Uint32 rectColor, bool b_filled, ImGuiButtonFlags buttonFlags, bool b_allowOverlap, bool b_weightedScroll, float zoomMultiplier, float minGridStep, float maxGridStep)
 	{
-		int sdl_x;
-		int sdl_y;
-		SDL_GetMouseState(&sdl_x, &sdl_y);
-		Vector2 sdlState = Vector2((float)sdl_x, (float)sdl_y);
 		Vector2 mouseDelta = Vector2(0, 0);
-		static Vector2 mouseLastPos = sdlState;
-		ImGui::GetIO().MousePos = sdlState;
+		Vector2 mousePos = ImGui::GetIO().MousePos;
+		static Vector2 lastMousePos = ImGui::GetIO().MousePos;
 
 		if (size.x > 0 && size.y > 0)
 		{
@@ -1959,14 +2023,21 @@ namespace FlatGui
 			const float mouse_threshold_for_pan = 0.0f;
 			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
 			{
-				mouseLastPos = sdlState;
+				lastMousePos = mousePos;
+				FL::F_b_sceneViewRightClicked = true;
 			}
 			if (b_isActive && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
 			{
-				mouseDelta = Vector2(sdlState.x - mouseLastPos.x, sdlState.y - mouseLastPos.y);
+				mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);
 				scrolling.x += mouseDelta.x;
 				scrolling.y += mouseDelta.y;
-				mouseLastPos = sdlState;
+				lastMousePos = mousePos;	
+				FL::GetPrimaryCamera()->AddToHorizontalViewAngle(-mouseDelta.x * 0.25f);
+				FL::GetPrimaryCamera()->AddToVerticalViewAngle(mouseDelta.y * 0.25f);
+			}
+			if (ImGui::IsItemDeactivated())
+			{				
+				FL::F_b_sceneViewRightClicked = false;
 			}
 
 			// Show cursor position in scene view when pressing Alt

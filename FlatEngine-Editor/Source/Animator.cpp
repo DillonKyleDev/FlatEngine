@@ -517,9 +517,9 @@ namespace FlatGui
 					
 					if (FL::GetTexture("keyFrame") != nullptr)
 					{
-						Vector2 pipStartingPoint = FL::AddImageToDrawList(FL::GetTexture("keyFrame"), pipPosition, zeroPoint, 12, 12, Vector2(6, 6), Vector2(1, 1), b_spriteScalesWithZoom, animatorGridgridStep, draw_list);
+						//Vector2 pipStartingPoint = FL::AddImageToDrawList(FL::GetTexture("keyFrame"), pipPosition, zeroPoint, 12, 12, Vector2(6, 6), Vector2(1, 1), b_spriteScalesWithZoom, animatorGridgridStep, draw_list);
 
-						ImGui::SetCursorScreenPos(pipStartingPoint);
+						//ImGui::SetCursorScreenPos(pipStartingPoint);
 						std::string pipID = ID + std::to_string(counter) + "-KeyFramePip";
 						ImGui::InvisibleButton(pipID.c_str(), Vector2(12, 12), ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
 						const bool b_isClicked = ImGui::IsItemClicked();
@@ -1014,6 +1014,7 @@ namespace FlatGui
 						float yPos = transform->yPos;
 						float xScale = transform->xScale;
 						float yScale = transform->yScale;
+						float rotation = transform->rotation;
 						static ImGuiSliderFlags flags = ImGuiSliderFlags_::ImGuiSliderFlags_None;
 
 						ImGui::PushItemWidth(ImGui::GetContentRegionMax().x / 3 - 5);
@@ -1022,7 +1023,7 @@ namespace FlatGui
 						ImGui::SameLine();
 
 						ImGui::BeginDisabled(!transform->b_posAnimated);
-						if (FL::PushTable("##TransformAnimationKeyframe", 2))
+						if (FL::PushTable("##TransformAnimationKeyframePosition", 2))
 						{
 							if (FL::RenderFloatDragTableRow("##xPositionKeyframeDrag", "X Position", xPos, 0.1f, -FLT_MAX, -FLT_MAX))
 							{
@@ -1040,7 +1041,7 @@ namespace FlatGui
 						ImGui::SameLine();
 
 						ImGui::BeginDisabled(!transform->b_scaleAnimated);
-						if (FL::PushTable("##TransformAnimationKeyframe", 2))
+						if (FL::PushTable("##TransformAnimationKeyframeScale", 2))
 						{
 							if (FL::RenderFloatDragTableRow("##xScaleDragKeyframeDrag", "X Scale", xScale, 0.1f, 0.001f, 1000))
 							{
@@ -1053,7 +1054,23 @@ namespace FlatGui
 							FL::PopTable();
 						}
 						ImGui::EndDisabled();
+
+						FL::RenderCheckbox("##transformRotationAnimated", transform->b_rotationAnimated);
+						ImGui::SameLine();
+
+						ImGui::BeginDisabled(!transform->b_rotationAnimated);
+						if (FL::PushTable("##TransformAnimationKeyframeRotation", 2))
+						{
+							if (FL::RenderFloatDragTableRow("##RotationDragKeyframeDrag", "Rotation", rotation, 0.1f, -180.0f, 180.0f))
+							{
+								transform->rotation = rotation;
+							}
+							FL::PopTable();
+						}
+						ImGui::EndDisabled();
+
 						ImGui::Separator();
+
 
 
 						static int current_interp = 0;						

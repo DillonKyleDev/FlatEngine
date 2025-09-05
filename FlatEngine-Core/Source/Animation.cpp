@@ -192,13 +192,14 @@ namespace FlatEngine
 					{
 						static Vector2 lastFramePosition = Vector2(0, 0);
 						static Vector2 lastFrameScale = Vector2(0, 0);
+						static float lastFrameRotation = 0.0f;
 						float keyframeTime = (*frame)->time;
 						Transform* transform = GetParent()->GetTransform();
 						std::shared_ptr<S_Transform> thisFrameProps = (*frame);
 						std::vector<std::shared_ptr<S_Transform>>::iterator lastFrame = frame;
 						bool b_posAnimated = thisFrameProps->b_posAnimated;
 						bool b_scaleAnimated = thisFrameProps->b_scaleAnimated;
-
+						bool b_rotationAnimated = thisFrameProps->b_rotationAnimated;
 						float lastFrameTime = 0;
 						if (transformFrameCounter > 0 && props->transformProps.size() > 1)
 						{
@@ -210,11 +211,15 @@ namespace FlatEngine
 						{
 							if (b_posAnimated)
 							{
-								transform->SetPosition(Vector2(thisFrameProps->xPos, thisFrameProps->yPos));
+								transform->SetPosition(Vector3(thisFrameProps->xPos, thisFrameProps->yPos, 1));
 							}
 							if (b_scaleAnimated)
 							{
-								transform->SetScale(Vector2(thisFrameProps->xScale, thisFrameProps->yScale));
+								transform->SetScale(Vector3(thisFrameProps->xScale, thisFrameProps->yScale, 1));
+							}
+							if (b_rotationAnimated)
+							{
+								transform->SetZRotation(thisFrameProps->rotation);
 							}
 							(*frame)->b_fired = true;
 						}
@@ -225,6 +230,7 @@ namespace FlatEngine
 							float percentDone = (float)(ellapsedTime - animData.startTime - lastFrameTime) / (keyframeTime - lastFrameTime);
 							lastFramePosition = Vector2(lastFrameProps->xPos, lastFrameProps->yPos);
 							lastFrameScale = Vector2(lastFrameProps->xScale, lastFrameProps->yScale);
+							lastFrameRotation = lastFrameProps->rotation;
 
 							switch (thisFrameProps->transformInterpType)
 							{
@@ -234,7 +240,7 @@ namespace FlatEngine
 								{
 									float correctedX = (lastFramePosition.x + (thisFrameProps->xPos - lastFramePosition.x) * percentDone);
 									float correctedY = (lastFramePosition.y + (thisFrameProps->yPos - lastFramePosition.y) * percentDone);
-									transform->SetPosition(Vector2(correctedX, correctedY));
+									transform->SetPosition(Vector3(correctedX, correctedY, 1));
 								}
 								if (b_scaleAnimated)
 								{
@@ -242,8 +248,13 @@ namespace FlatEngine
 									float correctedYScale = (lastFrameScale.y + (thisFrameProps->yScale - lastFrameScale.y) * percentDone);
 									if (correctedXScale != 0 && correctedYScale != 0)
 									{
-										transform->SetScale(Vector2(correctedXScale, correctedYScale));
+										transform->SetScale(Vector3(correctedXScale, correctedYScale, 1));
 									}
+								}
+								if (b_rotationAnimated)
+								{
+									float correctedRotation = (lastFrameRotation + (thisFrameProps->rotation - lastFrameRotation) * percentDone);
+									transform->SetZRotation(correctedRotation);
 								}
 								break;
 							}

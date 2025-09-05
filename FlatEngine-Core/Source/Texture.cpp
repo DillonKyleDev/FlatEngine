@@ -1,6 +1,9 @@
 #include "Texture.h"
 #include "FlatEngine.h"
-#include "WindowManager.h"
+#include "VulkanManager.h"
+
+#include "imgui_impl_vulkan.h"
+#include <stdexcept>
 
 
 namespace FlatEngine
@@ -8,10 +11,16 @@ namespace FlatEngine
 	Texture::Texture(std::string path)
 	{
 		m_path = path;
-		m_texture = NULL;
-		m_surface = NULL;
 		m_textureWidth = 0;
 		m_textureHeight = 0;
+		m_allocationIndex = -1;
+		m_descriptorSets = std::vector<VkDescriptorSet>(2, {});
+		m_imageView = VK_NULL_HANDLE;
+		m_image = VK_NULL_HANDLE;
+		m_textureImageMemory = VK_NULL_HANDLE;
+		m_textureSampler = VK_NULL_HANDLE;
+		m_mipLevels = 1;
+
 		if (path != "")
 		{
 			LoadFromFile(path);
@@ -19,9 +28,16 @@ namespace FlatEngine
 	}
 
 	Texture::~Texture()
+	{		
+	}
+
+	void Texture::Cleanup(LogicalDevice& logicalDevice)
 	{
-		FreeTexture();
-		FreeSurface();
+		FreeTexture();		
+		vkDestroySampler(logicalDevice.GetDevice(), m_textureSampler, nullptr);
+		vkFreeMemory(logicalDevice.GetDevice(), m_textureImageMemory, nullptr);
+		vkDestroyImage(logicalDevice.GetDevice(), m_image, nullptr);
+		vkDestroyImageView(logicalDevice.GetDevice(), m_imageView, nullptr);
 	}
 
 	bool Texture::LoadFromFile(std::string path)
@@ -31,128 +47,83 @@ namespace FlatEngine
 		if (path != "")
 		{
 			FreeTexture();
-			SDL_Texture* newTexture = NULL;
+
+			// JUST FOR GETTING TEXTURE DIMENSIONS, todo: figure out how to get them without using SDL surface
 			SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-
-			if (loadedSurface == NULL)
+			if (loadedSurface != nullptr)
 			{
-				LogError("Unable to load image %s! SDL_image Error: %s\n" + path + IMG_GetError());
-			}
-			else
-			{
-				// Color key image **Whatever color you put in here it will treat as transparent**
-				SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 255, 0));
-
-				// Create texture from surface pixels
-				newTexture = SDL_CreateTextureFromSurface(F_Window->GetRenderer(), loadedSurface);
-				if (newTexture == NULL)
-				{
-					LogError("Unable to create texture from %s! SDL Error: %s\n" + path + SDL_GetError());
-				}
-				else
-				{
-					m_textureWidth = loadedSurface->w;
-					m_textureHeight = loadedSurface->h;
-				}
-
-				SDL_FreeSurface(loadedSurface);
+				m_textureWidth = loadedSurface->w;
+				m_textureHeight = loadedSurface->h;
 			}
 
-			m_texture = newTexture;
-			return m_texture != NULL;
-		}
-		else return false;
-	}
-
-	bool Texture::LoadSurface(std::string path, SDL_Surface* screenSurface)
-	{
-		FreeSurface();
-
-		//The final optimized image
-		SDL_Surface* optimizedSurface = NULL;		
-		SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-
-		if (loadedSurface == NULL)
-		{
-			LogError("Unable to create texture from %s! SDL Error: %s\n" + path + SDL_GetError());
+			F_VulkanManager->CreateImGuiTexture(*this, m_descriptorSets);			
+			return m_allocationIndex != -1;
 		}
 		else
 		{
-			//Convert surface to screen format
-			optimizedSurface = SDL_ConvertSurface(loadedSurface, screenSurface->format, 0);
-			if (m_surface == NULL)
-			{
-				printf("Unable to optimize image %s! SDL Error: %s\n", path.c_str(), SDL_GetError());
-			}
-
-			SDL_FreeSurface(loadedSurface);
+			return false;
 		}
-
-		m_surface = optimizedSurface;
-		return m_surface != NULL;
 	}
 
-	//Creates image from font string
+	int& Texture::GetAllocationIndex()
+	{
+		return m_allocationIndex;
+	}
+
+	void Texture::SetAllocationIndex(int index)
+	{
+		m_allocationIndex = index;
+	}
+
 	bool Texture::LoadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font)
 	{
-		FreeSurface();		
-		SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
-		//TTF_RenderText_Solid_Wrapped(); For wrapped text
+		//FreeSurface();		
+		//SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
 
-		if (textSurface == NULL)
-		{
-			printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-		}
-		else
-		{
-			m_texture = SDL_CreateTextureFromSurface(F_Window->GetRenderer(), textSurface);
+		//if (textSurface == NULL)
+		//{
+		//	printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		//}
+		//else
+		//{
+		//	if (m_texture == NULL)
+		//	{
+		//		printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+		//	}
+		//	else
+		//	{
+		//		m_textureWidth = textSurface->w;
+		//		m_textureHeight = textSurface->h;
+		//	}
 
-			if (m_texture == NULL)
-			{
-				printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
-			}
-			else
-			{
-				m_textureWidth = textSurface->w;
-				m_textureHeight = textSurface->h;
-			}
+		//	SDL_FreeSurface(textSurface);
+		//}
 
-			SDL_FreeSurface(textSurface);
-		}
-
-		return m_texture != NULL;
+		return true;
 	}
-
 
 	void Texture::FreeTexture()
 	{			
-		if (m_texture != NULL)
+		if (m_allocationIndex != -1)
 		{
-			SDL_DestroyTexture(m_texture);
-			m_texture = NULL;
+			F_VulkanManager->FreeImGuiTexture(m_allocationIndex);
+			m_descriptorSets.clear();
+			m_descriptorSets.resize(VM_MAX_FRAMES_IN_FLIGHT);
 			m_textureWidth = 0;
 			m_textureHeight = 0;
 		}
 	}
 
-	SDL_Texture* Texture::GetTexture()
+	VkDescriptorSet Texture::GetTexture()
 	{
-		return m_texture;
-	}
-
-	void Texture::FreeSurface()
-	{
-		if (m_surface != NULL)
-		{
-			SDL_FreeSurface(m_surface);
-			m_surface = NULL;
-		}
+		return m_descriptorSets[VM_currentFrame];
 	}
 
 	int Texture::GetWidth()
 	{
 		return m_textureWidth;
 	}
+
 	int Texture::GetHeight()
 	{
 		return m_textureHeight;
@@ -162,5 +133,55 @@ namespace FlatEngine
 	{
 		m_textureWidth = width;
 		m_textureHeight = height;
+	}
+
+	void Texture::SetTexturePath(std::string path)
+	{
+		m_path = path;
+	}
+
+	std::string Texture::GetTexturePath()
+	{
+		return m_path;
+	}
+
+	VkImageView& Texture::GetImageView()
+	{
+		return m_imageView;
+	}
+
+	VkImage& Texture::GetImage()
+	{
+		return m_image;
+	}
+
+	VkDeviceMemory& Texture::GetTextureImageMemory()
+	{
+		return m_textureImageMemory;
+	}
+
+	VkSampler& Texture::GetTextureSampler()
+	{
+		return m_textureSampler;
+	}
+
+	uint32_t Texture::GetMipLevels()
+	{
+		return m_mipLevels;
+	}
+
+	void Texture::CreateTextureImage(WinSys& winSystem, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+	{
+		VkImage newImage = winSystem.CreateTextureImage(m_path, m_mipLevels, commandPool, physicalDevice, logicalDevice, m_textureImageMemory);
+		WinSys::CreateImageView(m_imageView, newImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels, logicalDevice);
+		WinSys::CreateTextureSampler(m_textureSampler, m_mipLevels, physicalDevice, logicalDevice);
+	}
+
+	void Texture::ConfigureImageResources(VkImage& image, VkImageView& imageView, VkDeviceMemory& textureImageMemory, VkSampler& textureSampler)
+	{
+		m_image = image;
+		m_imageView = imageView;
+		m_textureImageMemory = textureImageMemory;
+		m_textureSampler = textureSampler;
 	}
 }

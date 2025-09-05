@@ -29,6 +29,7 @@ namespace FlatEngine
 	class Polygon;	
 	class Chain;
 	class JointMaker;
+	class Mesh;
 
 	class GameObject
 	{
@@ -74,6 +75,7 @@ namespace FlatEngine
 		JointMaker* AddJointMaker(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Mesh* AddMesh(long ID = -1, bool b_active = true, bool b_collapsed = false);
 
 		Sprite* AddSpriteLua() { return AddSprite(-1, true, false); };
 		Camera* AddCameraLua() { return AddCamera(-1, true, false); };
@@ -85,6 +87,8 @@ namespace FlatEngine
 		Text* AddTextLua() { return AddText(-1, true, false); };
 		CharacterController* AddCharacterControllerLua() { return AddCharacterController(-1, true, false); };
 		TileMap* AddTileMapLua() { return AddTileMap(-1, true, false); };
+		Body* AddBodyLua() { return AddBody(Physics::BodyProps(), -1, true, false); };
+		Mesh* AddMeshLua() { return AddMesh(-1, true, false); };
 
 		Component* GetComponent(ComponentTypes type);
 		bool HasComponent(ComponentTypes type);
@@ -103,6 +107,7 @@ namespace FlatEngine
 		Body* GetBody();
 		JointMaker* GetJointMaker();
 		TileMap* GetTileMap();
+		Mesh* GetMesh();
 		std::vector<Component*> GetComponents();		
 
 		void SetParentID(long parentID);

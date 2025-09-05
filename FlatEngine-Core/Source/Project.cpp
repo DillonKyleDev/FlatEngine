@@ -1,6 +1,5 @@
 #include "Project.h"
 #include "FlatEngine.h"
-#include "WindowManager.h"
 
 #include "SDL_mixer.h"
 #include "json.hpp"
@@ -341,7 +340,7 @@ namespace FlatEngine
 	void Project::SetFullscreen(bool b_fullscreen)
 	{
 		m_b_fullscreen = b_fullscreen;
-		F_Window->SetFullscreen(m_b_fullscreen);
+		//F_Window->SetFullscreen(m_b_fullscreen);
 	}
 
 	bool Project::IsFullscreen()
@@ -360,7 +359,7 @@ namespace FlatEngine
 		}
 
 		// vsync disabled -- 1 to activate
-		SDL_RenderSetVSync(F_Window->GetRenderer(), interval);
+		//SDL_RenderSetVSync(F_Window->GetRenderer(), interval);
 	}
 
 	bool Project::IsVsyncEnabled()

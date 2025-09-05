@@ -113,6 +113,10 @@ namespace FlatEngine
 			return "JointMaker";
 			break;
 
+		case T_Mesh:
+			return "Mesh";
+			break;
+
 		default:
 			return "Null";
 		}

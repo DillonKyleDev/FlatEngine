@@ -140,7 +140,92 @@ namespace FlatEngine
 		parentBody->SetBodyID(bodyID);
 	}
 
-	void Physics::CreateShape(Body* parentBody, Shape* shape)
+	void Physics::CreateShape(Shape* shape)
+	{
+		Shape::ShapeProps shapeProps = shape->GetShapeProps();
+		b2Vec2 center = b2Vec2(shapeProps.positionOffset.x, shapeProps.positionOffset.y);
+		b2Rot rotationOffset = shapeProps.rotationOffset;
+		float cornerRadius = shapeProps.cornerRadius;
+
+		switch (shapeProps.shape)
+		{
+		case Shape::ShapeType::BS_Box:
+		{
+			b2Polygon box;
+			box = b2MakeOffsetRoundedBox(shapeProps.dimensions.x / 2, shapeProps.dimensions.y / 2, center, rotationOffset, cornerRadius);
+			shape->SetB2Polygon(box);
+
+			break;
+		}
+		case Shape::ShapeType::BS_Circle:
+		{
+			b2Circle circle;
+			circle.center = center;
+			circle.radius = shapeProps.radius;
+			shape->SetB2Circle(circle);
+
+			break;
+		}
+		case Shape::ShapeType::BS_Capsule:
+		{
+			b2Capsule capsule;
+			float center1Value = ((shapeProps.capsuleLength / 2) - shapeProps.radius) * -1;
+			float center2Value = (shapeProps.capsuleLength / 2) - shapeProps.radius;
+			b2Vec2 center1 = b2Vec2(0, 0);
+			b2Vec2 center2 = b2Vec2(0, 0);
+
+			if (shapeProps.b_horizontal)
+			{
+				center1.x = center1Value;
+				center2.x = center2Value;
+			}
+			else
+			{
+				center1.y = center1Value;
+				center2.y = center2Value;
+			}
+
+			capsule.center1 = center1 + center;
+			capsule.center2 = center2 + center;
+			capsule.radius = shapeProps.radius;
+
+			shape->SetB2Capsule(capsule);
+
+			break;
+		}
+		case Shape::ShapeType::BS_Polygon:
+		{
+			std::vector<b2Vec2> points;
+			float cornerRadius = shapeProps.cornerRadius;
+
+			for (Vector2 point : shapeProps.points)
+			{
+				points.push_back(b2Vec2(point.x, point.y));
+			}
+
+			if (points.size() > 0)
+			{
+				b2Hull hull = b2ComputeHull(&points[0], (int)points.size());
+
+				if (hull.count == 0)
+				{
+					LogError("Hull not successfully created.");
+				}
+				else
+				{
+					b2Polygon polygon = b2MakePolygon(&hull, cornerRadius);		
+					shape->SetB2Polygon(polygon);
+				}
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	void Physics::CreateBodyShape(Body* parentBody, Shape* shape)
 	{
 		b2BodyId bodyID = parentBody->GetBodyID();			
 		Shape::ShapeProps shapeProps = shape->GetShapeProps();

@@ -15,6 +15,7 @@
 #include "CharacterController.h"
 #include "Component.h"
 #include "TileMap.h"
+#include "Mesh.h"
 
 #include "imgui.h"
 
@@ -115,7 +116,7 @@ namespace FlatGui
 						ImGui::CloseCurrentPopup();
 					}
 
-					if (focusedObject->GetCharacterController() != nullptr)
+					if (!focusedObject->HasComponent("CharacterController"))
 					{
 						if (ImGui::MenuItem("CharacterController"))
 						{
@@ -131,6 +132,15 @@ namespace FlatGui
 							focusedObject->AddBody();
 							ImGui::CloseCurrentPopup();
 						}					
+					}
+
+					if (!focusedObject->HasComponent("Mesh"))
+					{
+						if (ImGui::MenuItem("Mesh"))
+						{
+							focusedObject->AddMesh();
+							ImGui::CloseCurrentPopup();
+						}
 					}
 
 					if (focusedObject->GetJointMaker() == nullptr)
@@ -394,6 +404,17 @@ namespace FlatGui
 							}
 							EndComponent(body);
 						}	
+
+						Mesh* mesh = focusedObject->GetMesh();
+						if (mesh != nullptr)
+						{
+							BeginComponent(mesh, queuedForDelete);
+							if (!mesh->IsCollapsed())
+							{
+								RenderMeshComponent(mesh);
+							}
+							EndComponent(mesh);
+						}
 
 						JointMaker* jointMaker = focusedObject->GetJointMaker();
 						if (jointMaker != nullptr)

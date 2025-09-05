@@ -271,7 +271,7 @@ namespace FlatGui
 				FL::CreatePrefab(FL::GetDir("prefabs") + "/" + newPrefabName + ".prf", currentObject);
 				currentObject.SetIsPrefab(true);
 				currentObject.SetPrefabName(newPrefabName);
-				currentObject.SetPrefabSpawnLocation(currentObject.GetTransform()->GetPosition());
+				//currentObject.SetPrefabSpawnLocation(currentObject.GetTransform()->GetPosition());
 			}
 		}
 
@@ -339,9 +339,10 @@ namespace FlatGui
 		// Render actual gameObject
 		ImGui::TableSetColumnIndex(1);
 
-		int index = -1;
+		static int index = 0;
 
-		std::string id = "##SwapDropSource" + std::to_string(index);
+		std::string id = "##SwapDropSourceBefore" + std::to_string(currentObject.GetID()) + std::to_string(index);
+		index++;
 		Vector2 cursorPos = Vector2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 3);
 		Vector2 availSpace = ImGui::GetContentRegionAvail();
 		Vector2 size = Vector2(availSpace.x + 30 - cursorPos.x, 6);
@@ -398,12 +399,12 @@ namespace FlatGui
 			}
 
 			ImGui::SetNextItemOpen(FG_leafExpandedTracker.at(currentObject.GetID()));
-			b_nodeOpen = ImGui::TreeNodeEx((void*)(intptr_t)currentObject.GetID(), nodeFlags, charName);
+			b_nodeOpen = ImGui::TreeNodeEx(std::to_string(currentObject.GetID()).c_str(), nodeFlags, charName);
 			FG_leafExpandedTracker.at(currentObject.GetID()) = b_nodeOpen;
 		}
 		else
 		{
-			ImGui::TreeNodeEx((void*)(intptr_t)currentObject.GetID(), nodeFlags, charName);
+			ImGui::TreeNodeEx(std::to_string(currentObject.GetID()).c_str(), nodeFlags, charName);
 
 			if (FG_leafExpandedTracker.count(currentObject.GetID()))
 			{
@@ -431,25 +432,25 @@ namespace FlatGui
 
 
 			// Get Scene View Dimensions from its ImGui window
-			Vector2 sceneViewDimensions;
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
-			FL::PushWindowStyles();
-			ImGui::Begin("Scene View", 0, 16 | 8);
-			sceneViewDimensions = Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-			ImGui::End();
-			FL::PopWindowStyles();
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
+			//Vector2 sceneViewDimensions;
+			//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+			//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
+			//FL::PushWindowStyles();
+			//ImGui::Begin("Scene View", 0, 16 | 8);
+			//sceneViewDimensions = Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+			//ImGui::End();
+			//FL::PopWindowStyles();
+			//ImGui::PopStyleVar();
+			//ImGui::PopStyleVar();
 
 
-		// Control click a Hierarchy item to focus on it in the Scene View
-		if (ImGui::GetIO().KeyCtrl && ImGui::IsItemClicked())
-		{
-			FL::Transform* transform = currentObject.GetTransform();
-			Vector2 position = transform->GetAbsolutePosition();
-			FG_sceneViewScrolling = Vector2(position.x * -FG_sceneViewGridStep.x + (sceneViewDimensions.x / 2), position.y * FG_sceneViewGridStep.y + (sceneViewDimensions.y / 2));
-		}
+		//// Control click a Hierarchy item to focus on it in the Scene View
+		//if (ImGui::GetIO().KeyCtrl && ImGui::IsItemClicked())
+		//{
+		//	FL::Transform* transform = currentObject.GetTransform();
+		//	Vector2 position = transform->GetAbsolutePosition();
+		//	FG_sceneViewScrolling = Vector2(position.x * -FG_sceneViewGridStep.x + (sceneViewDimensions.x / 2), position.y * FG_sceneViewGridStep.y + (sceneViewDimensions.y / 2));
+		//}
 
 		// Hold Alt key and hover object in Hierarchy for ToolTip with information about that GameObject
 		if (ImGui::IsItemHovered() && ImGui::GetIO().KeyAlt)

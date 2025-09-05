@@ -1,5 +1,6 @@
 #include "FlatEngine.h"
-#include "WindowManager.h"
+#include "VulkanManager.h"
+#include "WinSys.h"
 #include "PrefabManager.h"
 #include "Logger.h"
 #include "Line.h"
@@ -21,7 +22,6 @@
 #include <filesystem>
 #include <cmath>
 #include <shobjidl.h> 
-#include "implot.h"
 #include "imgui_internal.h"
 #include <random>
 #include <memory>
@@ -42,8 +42,9 @@
 
 namespace FlatEngine
 {	
-	std::shared_ptr<WindowManager> F_Window = std::make_shared<WindowManager>();
+	//std::shared_ptr<WindowManager> F_Window = std::make_shared<WindowManager>();
 	std::shared_ptr<Application> F_Application = std::make_shared<Application>();
+	std::shared_ptr<VulkanManager> F_VulkanManager = std::make_shared<VulkanManager>();
 	AssetManager F_AssetManager = AssetManager();
 	std::vector<std::string> F_selectedFiles = std::vector<std::string>();
 
@@ -102,6 +103,7 @@ namespace FlatEngine
 	// Scene View
 	Vector2* F_sceneViewCenter = nullptr;
 	Vector2* F_sceneViewGridStep = nullptr;
+	bool F_b_sceneViewRightClicked = false;
 
 
 	bool LoadFonts()
@@ -143,7 +145,12 @@ namespace FlatEngine
 	}
 
 	// Get SDL_Texture* using name given in Textures.lua file
-	SDL_Texture* GetTexture(std::string textureName)
+	//SDL_Texture* GetTexture(std::string textureName)
+	//{
+	//	return F_AssetManager.GetTexture(textureName);
+	//}
+
+	VkDescriptorSet GetTexture(std::string textureName)
 	{
 		return F_AssetManager.GetTexture(textureName);
 	}
@@ -160,68 +167,68 @@ namespace FlatEngine
 		return F_AssetManager.GetColor32(colorName);
 	}
 
-	Vector2 AddImageToDrawList(SDL_Texture* texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offsetPx, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation, ImU32 addColor, Vector2 uvStart, Vector2 uvEnd)
-	{
-		// Changing the scale here because sprites render too large
-		Vector2 newScale = Vector2(scale.x * F_spriteScaleMultiplier, scale.y * F_spriteScaleMultiplier);
+	//Vector2 AddImageToDrawList(SDL_Texture* texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offsetPx, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation, ImU32 addColor, Vector2 uvStart, Vector2 uvEnd)
+	//{
+	//	// Changing the scale here because sprites render too large
+	//	Vector2 newScale = Vector2(scale.x * F_spriteScaleMultiplier, scale.y * F_spriteScaleMultiplier);
 
-		float scalingXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - (offsetPx.x * newScale.x * zoomMultiplier);
-		float scalingYStart = relativeCenterPoint.y - (positionInGrid.y * zoomMultiplier) - (offsetPx.y * newScale.y * zoomMultiplier);
-		float scalingXEnd = scalingXStart + (textureWidthPx * newScale.x * zoomMultiplier);
-		float scalingYEnd = scalingYStart + (textureHeightPx * newScale.y * zoomMultiplier);
+	//	float scalingXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - (offsetPx.x * newScale.x * zoomMultiplier);
+	//	float scalingYStart = relativeCenterPoint.y - (positionInGrid.y * zoomMultiplier) - (offsetPx.y * newScale.y * zoomMultiplier);
+	//	float scalingXEnd = scalingXStart + (textureWidthPx * newScale.x * zoomMultiplier);
+	//	float scalingYEnd = scalingYStart + (textureHeightPx * newScale.y * zoomMultiplier);
 
-		float unscaledXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - offsetPx.x * scale.x;
-		float unscaledYStart = relativeCenterPoint.y + (-positionInGrid.y * zoomMultiplier) - offsetPx.y * scale.y;
+	//	float unscaledXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - offsetPx.x * scale.x;
+	//	float unscaledYStart = relativeCenterPoint.y + (-positionInGrid.y * zoomMultiplier) - offsetPx.y * scale.y;
 
-		Vector2 renderStart;
-		Vector2 renderEnd;
+	//	Vector2 renderStart;
+	//	Vector2 renderEnd;
 
-		if (b_scalesWithZoom)
-		{
-			renderStart = Vector2(scalingXStart, scalingYStart);
-			renderEnd = Vector2(scalingXEnd, scalingYEnd);
+	//	if (b_scalesWithZoom)
+	//	{
+	//		renderStart = Vector2(scalingXStart, scalingYStart);
+	//		renderEnd = Vector2(scalingXEnd, scalingYEnd);
 
-			// FOR DEBUGGING - draw white box around where the texture should be
-			//DrawRectangle(renderStart, renderEnd, Vector2(0,0), Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), F_whiteColor, 2, draw_list);
-		}
-		else
-		{
-			renderStart = Vector2(unscaledXStart, unscaledYStart);
-			renderEnd = Vector2(renderStart.x + textureWidthPx * scale.x, renderStart.y + textureHeightPx * scale.y);
-		}
+	//		// FOR DEBUGGING - draw white box around where the texture should be
+	//		//DrawRectangle(renderStart, renderEnd, Vector2(0,0), Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), F_whiteColor, 2, draw_list);
+	//	}
+	//	else
+	//	{
+	//		renderStart = Vector2(unscaledXStart, unscaledYStart);
+	//		renderEnd = Vector2(renderStart.x + textureWidthPx * scale.x, renderStart.y + textureHeightPx * scale.y);
+	//	}
 
-		if (rotation != 0)
-		{
-			Vector2 topLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
-			Vector2 topRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
-			Vector2 bottomRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
-			Vector2 bottomLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
+	//	if (rotation != 0)
+	//	{
+	//		Vector2 topLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
+	//		Vector2 topRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
+	//		Vector2 bottomRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
+	//		Vector2 bottomLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
 
-			Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
-			Vector2 pos[4] =
-			{
-				center + topLeft,
-				center + topRight,
-				center + bottomRight,
-				center + bottomLeft
-			};
-			Vector2 uvs[4] =
-			{
-				Vector2(0.0f, 0.0f),
-				Vector2(1.0f, 0.0f),
-				Vector2(1.0f, 1.0f),
-				Vector2(0.0f, 1.0f)
-			};
+	//		Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
+	//		Vector2 pos[4] =
+	//		{
+	//			center + topLeft,
+	//			center + topRight,
+	//			center + bottomRight,
+	//			center + bottomLeft
+	//		};
+	//		Vector2 uvs[4] =
+	//		{
+	//			Vector2(0.0f, 0.0f),
+	//			Vector2(1.0f, 0.0f),
+	//			Vector2(1.0f, 1.0f),
+	//			Vector2(0.0f, 1.0f)
+	//		};
 
-			drawList->AddImageQuad(texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], addColor);
-		}
-		else
-		{
-			drawList->AddImage((void*)texture, renderStart, renderEnd, uvStart, uvEnd, addColor);
-		}
+	//		drawList->AddImageQuad(texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], addColor);
+	//	}
+	//	else
+	//	{
+	//		drawList->AddImage((void*)texture, renderStart, renderEnd, uvStart, uvEnd, addColor);
+	//	}
 
-		return renderStart;
-	}
+	//	return renderStart;
+	//}
 
 
 	void SetMusicVolume(int volume)
@@ -265,8 +272,15 @@ namespace FlatEngine
 			printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 			b_success = false;
 		}
-		else
+
+		//// Initialize Vulkan/GLFW + ImGui
+		if (!F_VulkanManager->Init(windowWidth, windowHeight))
 		{
+			printf("Window initialization failed...\n");
+			b_success = false;
+		}
+		else
+		{			
 			printf("SDL initialized... - Video - Audio - Joystick -\n");
 
 			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"))
@@ -274,8 +288,8 @@ namespace FlatEngine
 				printf("Warning: Linear texture filtering not enabled!\n");
 			}
 
-			if (F_Window->Init("FlatEngine", windowWidth, windowHeight))
-			{
+			//if (F_Window->Init("FlatEngine", windowWidth, windowHeight))
+			//{
 				printf("Window initialized...\n");
 
 				int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF | IMG_INIT_WEBP | IMG_INIT_JXL;
@@ -318,7 +332,7 @@ namespace FlatEngine
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
 						F_AssetManager.CollectTextures();	                   // Collect and create Texture icons from Textures.lua
 						F_AssetManager.CollectTags();
-						SetupImGui();
+						//SetupImGui();
 						SetImGuiColors();
 
 						printf("Engine Assets initialized...\n");
@@ -327,17 +341,91 @@ namespace FlatEngine
 						LogSeparator();					
 					}
 				}
-			}
+			//}
 		}
 
 		return b_success;
+	}
+
+	// Vulkan
+	Vector2 AddImageToDrawList(VkDescriptorSet texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offsetPx, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation, ImU32 addColor, Vector2 uvStart, Vector2 uvEnd)
+	{
+		// Changing the scale here because sprites render too large
+		Vector2 newScale = Vector2(scale.x * F_spriteScaleMultiplier, scale.y * F_spriteScaleMultiplier);
+
+		float scalingXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - (offsetPx.x * newScale.x * zoomMultiplier);
+		float scalingYStart = relativeCenterPoint.y - (positionInGrid.y * zoomMultiplier) - (offsetPx.y * newScale.y * zoomMultiplier);
+		float scalingXEnd = scalingXStart + (textureWidthPx * newScale.x * zoomMultiplier);
+		float scalingYEnd = scalingYStart + (textureHeightPx * newScale.y * zoomMultiplier);
+
+		float unscaledXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - offsetPx.x * scale.x;
+		float unscaledYStart = relativeCenterPoint.y + (-positionInGrid.y * zoomMultiplier) - offsetPx.y * scale.y;
+
+		Vector2 renderStart;
+		Vector2 renderEnd;
+
+		if (b_scalesWithZoom)
+		{
+			renderStart = Vector2(scalingXStart, scalingYStart);
+			renderEnd = Vector2(scalingXEnd, scalingYEnd);
+
+			// FOR DEBUGGING - draw white box around where the texture should be
+			//DrawRectangle(renderStart, renderEnd, Vector2(0,0), Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), F_whiteColor, 2, draw_list);
+		}
+		else
+		{
+			renderStart = Vector2(unscaledXStart, unscaledYStart);
+			renderEnd = Vector2(renderStart.x + textureWidthPx * scale.x, renderStart.y + textureHeightPx * scale.y);
+		}
+
+		if (rotation != 0)
+		{
+			float cosA = cosf(rotation * 2.0f * (float)M_PI / 360.0f);
+			float sinA = sinf(rotation * 2.0f * (float)M_PI / 360.0f);
+
+			Vector2 topLeft = ImRotate(Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), cosA, sinA);
+			Vector2 topRight = ImRotate(Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), cosA, sinA);
+			Vector2 bottomRight = ImRotate(Vector2(+(renderEnd.x - renderStart.x) / 2, (renderEnd.y - renderStart.y) / 2), cosA, sinA);
+			Vector2 bottomLeft = ImRotate(Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), cosA, sinA);
+
+			Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
+			Vector2 pos[4] =
+			{
+				Vector2(center.x + topLeft.x, center.y + topLeft.y),
+				Vector2(center.x + topRight.x, center.y + topRight.y),
+				Vector2(center.x + bottomRight.x, center.y + bottomRight.y),
+				Vector2(center.x + bottomLeft.x, center.y + bottomLeft.y),
+			};
+			Vector2 uvs[4] =
+			{
+				Vector2(0.0f, 0.0f),
+				Vector2(1.0f, 0.0f),
+				Vector2(1.0f, 1.0f),
+				Vector2(0.0f, 1.0f)
+			};
+
+			// Render sprite to viewport
+			drawList->AddImageQuad(texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], addColor);
+		}
+		else
+		{
+			// Render sprite to viewport
+			drawList->AddImage((void*)texture, renderStart, renderEnd, uvStart, uvEnd, addColor);
+		}
+
+		return renderStart;
+	}
+
+	std::map<long, Mesh>& GetMeshes()
+	{
+		return GetLoadedScene()->GetMeshes();
 	}
 
 	void SetupImGui()
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImPlot::CreateContext();
+		//ImPlot::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls for imgui ui nav
@@ -351,8 +439,8 @@ namespace FlatEngine
 		style.SeparatorTextAlign = Vector2(0.5f, 0.0f);
 		style.SeparatorTextBorderSize = 1;
 
-		ImGui_ImplSDL2_InitForSDLRenderer(F_Window->GetWindow(), F_Window->GetRenderer());
-		ImGui_ImplSDLRenderer2_Init(F_Window->GetRenderer());
+		//ImGui_ImplSDL2_InitForSDLRenderer(F_Window->GetWindow(), F_Window->GetRenderer());
+		//ImGui_ImplSDLRenderer2_Init(F_Window->GetRenderer());
 		SetImGuiColors();
 
 		printf("ImGui initialized...\n");
@@ -445,17 +533,17 @@ namespace FlatEngine
 
 	void RestartImGui()
 	{
-		QuitImGui();
+		//QuitImGui();
 		SetupImGui();
 		SetImGuiColors();
 	}
 
 	void QuitImGui()
 	{
-		ImGui_ImplSDLRenderer2_Shutdown();
-		ImGui_ImplSDL2_Shutdown();
-		ImPlot::DestroyContext();
-		ImGui::DestroyContext();
+		//ImGui_ImplSDLRenderer2_Shutdown();
+		//ImGui_ImplSDL2_Shutdown();
+		//ImPlot::DestroyContext();
+		//ImGui::DestroyContext();
 	}
 
 	void CloseProgram()
@@ -935,7 +1023,7 @@ namespace FlatEngine
 		{
 			GameObject* newObject = CreateGameObject();
 			newObject->SetName(GetFilenameFromPath(filePath) + "(" + std::to_string(newObject->GetID()) + ")");
-			newObject->GetTransform()->SetPosition(position);
+			newObject->GetTransform()->SetPosition(Vector3(position.x, position.y, 0));
 			newObject->AddSprite()->SetTexture(filePath);
 			return newObject;
 		}
@@ -1072,6 +1160,9 @@ namespace FlatEngine
 		{
 			AddMappingContext(path);
 		}
+
+		// Add FlatEngine context
+		AddMappingContext("../engine/mappingContexts/EngineContext.mpc");
 	}
 
 	MappingContext* GetMappingContext(std::string contextName)
@@ -1104,7 +1195,6 @@ namespace FlatEngine
 		}
 		firedKeys.clear();
 
-
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
@@ -1120,7 +1210,7 @@ namespace FlatEngine
 				{
 					case SDL_WINDOWEVENT_CLOSE:
 					{
-						if (event.window.windowID == SDL_GetWindowID(F_Window->GetWindow()))
+						if (event.window.windowID == SDL_GetWindowID(F_VulkanManager->GetWinSystem().GetWindow()))
 						{
 							quit = true;
 						}
@@ -1152,6 +1242,15 @@ namespace FlatEngine
 					HandleContextEvents(context, event, firedKeys);
 				}
 			}
+			else
+			{
+				MappingContext* context = GetMappingContext("EngineContext");
+
+				if (context != nullptr)
+				{
+					HandleContextEvents(*context, event, firedKeys);
+				}
+			}
 		}
 	}
 
@@ -1162,39 +1261,52 @@ namespace FlatEngine
 		{
 			// Scene View keybinds
 			if (true)
-			{
+			{				
 				switch (event.key.keysym.sym)
 				{
-				//case SDLK_1:
-				//	F_CursorMode = F_CURSOR_MODE::TRANSLATE;
+				case SDLK_UP:
+					GetPrimaryCamera()->AddToVerticalViewAngle(-2.0f);
+					break;
+
+				case SDLK_DOWN:
+					GetPrimaryCamera()->AddToVerticalViewAngle(2.0f);
+					break;
+
+				case SDLK_LEFT:
+					GetPrimaryCamera()->AddToHorizontalViewAngle(2.0f);					
+					break;
+
+				case SDLK_RIGHT:				
+					GetPrimaryCamera()->AddToHorizontalViewAngle(-2.0f);
+					break;
+
+				//case SDLK_a:
+
+				//	if (F_b_sceneViewRightClicked)
+				//	{
+				//		GetPrimaryCamera()->AddVelocity(Vector3(leftDir.x * 0.01f, leftDir.y * 0.01f, 0));
+				//	}
 				//	break;
 
-				//case SDLK_2:
-				//	F_CursorMode = F_CURSOR_MODE::SCALE;
+				//case SDLK_d:
+				//	if (F_b_sceneViewRightClicked)
+				//	{
+				//		GetPrimaryCamera()->AddVelocity(Vector3(rightDir.x * 0.01f, rightDir.y * 0.01f, 0));
+				//	}
 				//	break;
 
-				//case SDLK_3:
-				//	F_CursorMode = F_CURSOR_MODE::ROTATE;
+				//case SDLK_w:
+				//	if (F_b_sceneViewRightClicked)
+				//	{
+				//		GetPrimaryCamera()->AddVelocity(Vector3(lookDir.x * 0.01f, lookDir.y * 0.01f, lookDir.z * 0.01f));
+				//	}
 				//	break;
 
-				//case SDLK_4:
-				//	F_CursorMode = F_CURSOR_MODE::TILE_BRUSH;
-				//	break;
-
-				//case SDLK_5:
-				//	F_CursorMode = F_CURSOR_MODE::TILE_ERASE;
-				//	break;
-
-				//case SDLK_6:
-				//	F_CursorMode = F_CURSOR_MODE::TILE_COLLIDER_DRAW;
-				//	break;
-
-				//case SDLK_7:
-				//	F_CursorMode = F_CURSOR_MODE::TILE_MULTISELECT;
-				//	break;
-
-				//case SDLK_8:
-				//	F_CursorMode = F_CURSOR_MODE::TILE_MOVE;
+				//case SDLK_s:
+				//	if (F_b_sceneViewRightClicked)
+				//	{
+				//		GetPrimaryCamera()->AddVelocity(Vector3(-lookDir.x * 0.01f, -lookDir.y * 0.01f, -lookDir.z * 0.01f));
+				//	}
 				//	break;
 
 				case SDLK_DELETE:
@@ -1208,7 +1320,10 @@ namespace FlatEngine
 
 				case SDLK_SPACE:
 					PauseGameLoop();
-					break;				
+					break;	
+
+				default:
+					break;
 				}
 			}
 		}
@@ -1353,23 +1468,17 @@ namespace FlatEngine
 
 	Vector2 Scene_GetMousePosWorld()
 	{
-		int x, y;
-		Uint32 buttons = SDL_GetMouseState(&x, &y);
-		return Scene_ConvertScreenToWorld(Vector2((float)x, (float)y));
+		return Scene_ConvertScreenToWorld(ImGui::GetIO().MousePos);
 	}
 
 	Vector2 GetMousePosWorld()
 	{
-		int x, y;
-		Uint32 buttons = SDL_GetMouseState(&x, &y);
-		return ConvertScreenToWorld(Vector2((float)x, (float)y));
+		return ConvertScreenToWorld(ImGui::GetIO().MousePos);
 	}
 
 	Vector2 GetMousePosScreen()
 	{
-		int x, y;
-		Uint32 buttons = SDL_GetMouseState(&x, &y);
-		return Vector2((float)x, (float)y);
+		return ImGui::GetIO().MousePos;
 	}
 
 	// TileSet / TileMap Management
@@ -1490,9 +1599,18 @@ namespace FlatEngine
 	// Rendering
 	void BeginImGuiRender()
 	{	
-		ImGui_ImplSDLRenderer2_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
+		// old
+		//ImGui_ImplSDLRenderer2_NewFrame();
+		//ImGui_ImplSDL2_NewFrame();
+		//ImGui::NewFrame();
+
+		// new
+		ImGui_ImplVulkan_NewFrame();
+		//ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplSDL2_NewFrame();		
 		ImGui::NewFrame();
+
+
 
 		//Create dockable background space for all viewports
 		ImGui::DockSpaceOverViewport();
@@ -1502,13 +1620,21 @@ namespace FlatEngine
 	{		
 		Vector4 clearColor = Vector4(1.00f, 1.00f, 1.00f, 1.00f);
 		ImGui::Render();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		SDL_RenderSetScale(F_Window->GetRenderer(), io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
-		SDL_SetRenderDrawColor(F_Window->GetRenderer(), (Uint8)(clearColor.x * 255), (Uint8)(clearColor.y * 255), (Uint8)(clearColor.z * 255), (Uint8)(clearColor.w * 255));
-		SDL_RenderClear(F_Window->GetRenderer());
-		ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-		
-		SDL_RenderPresent(F_Window->GetRenderer());		
+		//ImGuiIO& io = ImGui::GetIO(); (void)io;
+		//SDL_RenderSetScale(F_Window->GetRenderer(), io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+		//SDL_SetRenderDrawColor(F_Window->GetRenderer(), (Uint8)(clearColor.x * 255), (Uint8)(clearColor.y * 255), (Uint8)(clearColor.z * 255), (Uint8)(clearColor.w * 255));
+		//SDL_RenderClear(F_Window->GetRenderer());
+		//ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+		//
+		//SDL_RenderPresent(F_Window->GetRenderer());		
+
+		ImDrawData* drawData = ImGui::GetDrawData();
+		const bool b_isMinimized = (drawData->DisplaySize.x <= 0.0f || drawData->DisplaySize.y <= 0.0f);
+
+		if (!b_isMinimized)
+		{
+			F_VulkanManager->DrawFrame(drawData);
+		}
 	}
 
 	void SetNextViewportToFillWindow()
@@ -1592,8 +1718,10 @@ namespace FlatEngine
 				{ "yPos", transformProp->yPos },
 				{ "xScale", transformProp->xScale },
 				{ "yScale", transformProp->yScale },
+				{ "rotation", transformProp->rotation },
 				{ "_posAnimated", transformProp->b_posAnimated },
-				{ "_scaleAnimated", transformProp->b_scaleAnimated }
+				{ "_scaleAnimated", transformProp->b_scaleAnimated },
+				{ "_rotationAnimated", transformProp->b_rotationAnimated }
 			};
 			std::string data = jsonData.dump();
 			transformProps.push_back(json::parse(data));
@@ -1800,8 +1928,10 @@ namespace FlatEngine
 						frame->yPos = CheckJsonFloat(transformProps.at(i), "yPos", animName);
 						frame->xScale = CheckJsonFloat(transformProps.at(i), "xScale", animName);
 						frame->yScale = CheckJsonFloat(transformProps.at(i), "yScale", animName);
+						frame->rotation = CheckJsonFloat(transformProps.at(i), "rotation", animName);
 						frame->b_posAnimated = CheckJsonBool(transformProps.at(i), "_posAnimated", animName);
 						frame->b_scaleAnimated = CheckJsonBool(transformProps.at(i), "_scaleAnimated", animName);
+						frame->b_rotationAnimated = CheckJsonBool(transformProps.at(i), "_rotationAnimated", animName);
 						animProps->transformProps.push_back(frame);
 					}
 					catch (const json::out_of_range& e)
@@ -2209,9 +2339,6 @@ namespace FlatEngine
 		std::string sSelectedFile;
 		std::string sFilePath;
 		HRESULT hr = 0;
-		wchar_t* pSaveFileName = nullptr;
-		IShellItem* pShellItem = nullptr;
-		wchar_t* ppszName = nullptr;
 
 		//  CREATE FILE OBJECT INSTANCE
 		HRESULT f_SysHr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -3204,7 +3331,7 @@ namespace FlatEngine
 		jointProps.angularVelocity = CheckJsonFloat(jointJson, "angularVelocity", objectName);
 		jointProps.linearDampingRatio = CheckJsonFloat(jointJson, "linearDampingRatio", objectName);
 		jointProps.linearHertz = CheckJsonFloat(jointJson, "linearHertz", objectName);
-		jointProps.linearVelocity = CheckJsonFloat(jointJson, "linearVelocity", objectName);
+		//jointProps.linearVelocity = CheckJsonFloat(jointJson, "linearVelocity", objectName);
 		jointProps.maxSpringForce = CheckJsonFloat(jointJson, "maxSpringForce", objectName);
 		jointProps.maxVelocityForce = CheckJsonFloat(jointJson, "maxVelocityForce", objectName);
 		jointProps.maxVelocityTorque = CheckJsonFloat(jointJson, "maxVelocityTorque", objectName);
@@ -3310,9 +3437,9 @@ namespace FlatEngine
 								transform->SetID(id);
 								transform->SetActive(b_isActive);
 								transform->SetCollapsed(b_isCollapsed);								
-								transform->SetPosition(Vector2(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName)));
-								transform->SetScale(Vector2(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName)));
-								transform->SetRotation(rotation);
+								transform->SetPosition(Vector3(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName), 1));
+								transform->SetScale(Vector3(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName), 1));
+								transform->SetZRotation(rotation);
 								objectRotation = rotation;
 
 							}
@@ -3450,7 +3577,6 @@ namespace FlatEngine
 										}
 									}
 								}
-
 							}
 							else if (type == "Audio")
 							{								

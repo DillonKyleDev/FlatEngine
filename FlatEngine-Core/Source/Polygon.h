@@ -11,7 +11,7 @@ namespace FlatEngine
     class Polygon : public Shape
     {
     public:
-        Polygon(Body* parentBody);
+        Polygon(Body* parentBody = nullptr);
         ~Polygon();        
 
         void SetPoints(std::vector<Vector2> points);

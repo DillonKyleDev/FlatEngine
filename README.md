@@ -1,4 +1,4 @@
-# FlatEngine - 2D Game Engine
+# FlatEngine Game Engine
 
 ![engine](https://github.com/user-attachments/assets/885f13e4-e57b-4232-9c16-bdee07d63437)
 

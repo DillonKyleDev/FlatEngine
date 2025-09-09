@@ -8,15 +8,7 @@
 namespace FlatEngine
 {
     ImGuiManager::ImGuiManager()
-    {
-        m_renderPass = RenderPass();
-        m_commandPool = VK_NULL_HANDLE;
-        m_material = std::make_shared<Material>("imgui", "../engine/shaders/imguiVert.spv", "../engine/shaders/imguiFrag.spv");
-        // handles
-        m_instanceHandle = VK_NULL_HANDLE;
-        m_winSystem = nullptr;
-        m_physicalDeviceHandle = nullptr;
-        m_deviceHandle = nullptr;
+    {        
     }
 
     ImGuiManager::~ImGuiManager()
@@ -25,37 +17,23 @@ namespace FlatEngine
 
     void ImGuiManager::Cleanup()
     {
+        PipelineManager::Cleanup();
+
+        QuitImGui();
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplSDL2_Shutdown();
     }
 
 
-    bool ImGuiManager::SetupImGui(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void ImGuiManager::Setup(VkInstance& instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, VkCommandPool& commandPool)
     {
-        // https://frguthmann.github.io/posts/vulkan_imgui/
+        PipelineManager::Setup(instance, winSystem, physicalDevice, logicalDevice, commandPool);
 
-        bool b_success = true;
+        // https://frguthmann.github.io/posts/vulkan_imgui/        
 
-        // Setup Dear ImGui context
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // | ImGuiConfigFlags_ViewportsEnable;
-        //io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports | ImGuiBackendFlags_RendererHasViewports;
-
-        m_instanceHandle = instance;
-        m_winSystem = &winSystem;
-        m_physicalDeviceHandle = &physicalDevice;
-        m_deviceHandle = &logicalDevice;
-        m_renderPass.SetHandles(instance, winSystem, physicalDevice, logicalDevice);
-        m_material->SetHandles(instance, winSystem, physicalDevice, logicalDevice, m_renderPass, m_commandPool);        
-
-        if (!CreateImGuiResources())
-        {
-            b_success = false;
-        }
-
-        return b_success;
+        CreateImageResources();
+        CreateRenderPassResources();
+        CreateImGuiResources();
     }
 
     void ImGuiManager::GetImGuiDescriptorSetLayoutInfo(std::vector<VkDescriptorSetLayoutBinding>& bindings, VkDescriptorSetLayoutCreateInfo& layoutInfo)
@@ -93,16 +71,9 @@ namespace FlatEngine
         poolInfo.pPoolSizes = poolSizes.data();
     }
 
-    bool ImGuiManager::CreateImGuiResources()
+    void ImGuiManager::CreateRenderPassResources()
     {
-        bool b_success = true;
-
-        // Create ImGui Command Pool
-        VulkanManager::CreateCommandPool(m_commandPool, *m_deviceHandle, m_deviceHandle->GetGraphicsIndex(), VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
-
         // Configure ImGui Render Pass
-        m_renderPass.ConfigureFrameBufferImageViews(m_winSystem->GetSwapChainImageViews());
-
         VkAttachmentDescription colorAttachment = {};
         colorAttachment.format = m_winSystem->GetImageFormat();
         colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -133,9 +104,22 @@ namespace FlatEngine
         subpass.pColorAttachments = &colorAttachmentRef;
         m_renderPass.AddSubpass(subpass);
 
-        m_renderPass.Init(m_commandPool);
+        m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews());
+        //m_renderPass.ConfigureFrameBufferImageViews(m_winSystem->GetSwapChainImageViews());
+        m_renderPass.Init(*m_commandPool);
+    }
 
-        // Set up Descriptor Allocator
+    void ImGuiManager::CreateImGuiResources()
+    {        
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;// | ImGuiConfigFlags_ViewportsEnable;
+        //io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports | ImGuiBackendFlags_RendererHasViewports;
+        
+        VulkanManager::CreateCommandPool(*m_commandPool, *m_logicalDevice, m_logicalDevice->GetGraphicsIndex(), VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+        // Set up Descriptor Material Allocator
         std::vector<VkDescriptorSetLayoutBinding> bindings{};
         VkDescriptorSetLayoutCreateInfo layoutInfo{};
         GetImGuiDescriptorSetLayoutInfo(bindings, layoutInfo);
@@ -143,23 +127,21 @@ namespace FlatEngine
         VkDescriptorPoolCreateInfo poolInfo{};
         GetImGuiDescriptorPoolInfo(poolSizes, poolInfo);
 
-        // Material
-        m_material->GetAllocator().ConfigureDescriptorSetLayout(bindings, layoutInfo);
-        m_material->GetAllocator().ConfigureDescriptorPools(poolSizes, poolInfo);
-        m_material->SetTextureCount(1);
-        m_material->Init();
-
-        // Setup ImGui Platform/Renderer backends        
+        std::shared_ptr<Material> imGuiMaterial = F_VulkanManager->GetMaterial("imgui");
+        imGuiMaterial->GetAllocator().ConfigureDescriptorSetLayout(bindings, layoutInfo);
+        imGuiMaterial->GetAllocator().ConfigureDescriptorPools(poolSizes, poolInfo);                
+        imGuiMaterial->Init();
+              
         ImGui_ImplSDL2_InitForVulkan(m_winSystem->GetWindow());
 
         ImGui_ImplVulkan_InitInfo init_info = {};
-        init_info.Instance = m_instanceHandle;
-        init_info.PhysicalDevice = m_physicalDeviceHandle->GetDevice();
-        init_info.Device = m_deviceHandle->GetDevice();
-        init_info.QueueFamily = ImGui_ImplVulkanH_SelectQueueFamilyIndex(m_physicalDeviceHandle->GetDevice());
-        init_info.Queue = m_deviceHandle->GetGraphicsQueue();
+        init_info.Instance = *m_instance;
+        init_info.PhysicalDevice = m_physicalDevice->GetDevice();
+        init_info.Device = m_logicalDevice->GetDevice();
+        init_info.QueueFamily = ImGui_ImplVulkanH_SelectQueueFamilyIndex(m_physicalDevice->GetDevice());
+        init_info.Queue = m_logicalDevice->GetGraphicsQueue();
         init_info.PipelineCache = VK_NULL_HANDLE;
-        init_info.DescriptorPool = m_material->CreateDescriptorPool();
+        init_info.DescriptorPool = imGuiMaterial->CreateDescriptorPool();
         init_info.RenderPass = m_renderPass.GetRenderPass();
         init_info.Subpass = 0;
         init_info.MinImageCount = VM_MAX_FRAMES_IN_FLIGHT;
@@ -170,19 +152,15 @@ namespace FlatEngine
 
         if (!ImGui_ImplVulkan_Init(&init_info))
         {
-            b_success = false;
             FlatEngine::LogError("ImGui backends setup failed!");
         }
-
-        return b_success;
     }
 
     void ImGuiManager::QuitImGui()
-    {
-        vkDestroyRenderPass(m_deviceHandle->GetDevice(), m_renderPass.GetRenderPass(), nullptr);
-        vkDestroyCommandPool(m_deviceHandle->GetDevice(), m_commandPool, nullptr);
+    {        
+        vkDestroyCommandPool(m_logicalDevice->GetDevice(), *m_commandPool, nullptr);
 
-        VkResult err = vkDeviceWaitIdle(m_deviceHandle->GetDevice());
+        VkResult err = vkDeviceWaitIdle(m_logicalDevice->GetDevice());
         VulkanManager::check_vk_result(err);
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplSDL2_Shutdown();
@@ -196,25 +174,20 @@ namespace FlatEngine
         m_renderPass.EndRenderPass();
     }
 
-    void ImGuiManager::CreateDescriptorSets(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets)
-    {
-        Model emptyModel = Model();
-        std::vector<Texture> textures = std::vector<Texture>(1, texture);
-        m_material->GetAllocator().AllocateDescriptorSets(descriptorSets, emptyModel, textures);
+    void ImGuiManager::CreateImageResources()
+    {        
+        m_renderTexture.GetImageViews() = m_winSystem->GetSwapChainImageViews();
+        m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews()); // Give m_renderPass the new imageViews
     }
 
-    void ImGuiManager::FreeDescriptorSet(uint32_t allocationIndex)
-    {
-        m_material->GetAllocator().SetFreed(allocationIndex);
+    void ImGuiManager::CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures)
+    {        
+        material->CreateDescriptorSets(descriptorSets, model, textures);
     }
 
-    RenderPass& ImGuiManager::GetRenderPass()
+    void ImGuiManager::OnWindowResized()
     {
-        return m_renderPass;
-    }
-
-    std::shared_ptr<Material> ImGuiManager::GetMaterial()
-    {
-        return m_material;
+        CreateImageResources();
+        m_renderPass.RecreateFrameBuffers();
     }
 }

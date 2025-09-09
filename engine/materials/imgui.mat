@@ -1,0 +1,15 @@
+{
+    "fragmentShaderPath": "../engine/shaders/imguiFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 3
+    },
+    "name": "imgui",
+        "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 2.0,
+        "polygonMode": 1
+    },
+    "textureCount": 1,
+    "vertexShaderPath": "../engine/shaders/imguiVert.spv"
+}

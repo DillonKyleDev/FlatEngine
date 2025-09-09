@@ -1,6 +1,0 @@
-{
-    "fragmentShaderPath": "../projects/Astrodome/shaders/compiledShaders/frag2.spv",
-    "name": "Painting",
-    "textureCount": 0,
-    "vertexShaderPath": "../projects/Astrodome/shaders/compiledShaders/vert2.spv"
-}

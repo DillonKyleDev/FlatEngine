@@ -46,8 +46,15 @@ namespace FlatEngine
 		Allocator& GetAllocator();
 		void SetTextureCount(uint32_t textureCount);
 		uint32_t GetTextureCount();
+		// Configure GraphicsPipeline
+		VkPipelineInputAssemblyStateCreateInfo& GetInputAssemblyCreateInfos();
+		void SetInputAssemblyCreateInfos(VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos);
+		void SetRasterizerCreateInfos(VkPipelineRasterizationStateCreateInfo rasterizerInfos);
+		VkPipelineRasterizationStateCreateInfo& GetRasterizerCreateInfos();
 
 	private:
+		void SetDefaultValues();
+
 		std::string m_name;		
 		std::string m_path;
 		GraphicsPipeline m_graphicsPipeline;
@@ -61,5 +68,9 @@ namespace FlatEngine
 		RenderPass* m_renderPass;
 		VkCommandPool* m_commandPool;
 		bool m_b_initialized;
+
+		// GraphicsPipeline Configuration structs
+		VkPipelineRasterizationStateCreateInfo m_rasterizer{};
+		VkPipelineInputAssemblyStateCreateInfo m_inputAssembly{};
 	};
 }

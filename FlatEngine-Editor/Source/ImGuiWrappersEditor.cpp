@@ -2819,8 +2819,7 @@ namespace FlatGui
 					{
 						std::filesystem::path fsPath(FL::F_selectedFiles[droppedTextureValue - 1]);
 						if (fsPath.extension() == ".png")
-						{
-							FL::LogString(fsPath.string());
+						{							
 							meshTextures[i].LoadFromFile(fsPath.string());
 							mesh->CreateResources(); // Creates descriptor sets using new texture path
 						}

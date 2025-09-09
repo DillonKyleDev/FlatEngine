@@ -306,9 +306,11 @@ namespace FlatEngine
 	extern GameObject* GetObjectByName(std::string name);
 	extern GameObject* GetObjectByTag(std::string tag);
 
+	extern Camera F_ViewportCamera;
 	extern void SetPrimaryCamera(Camera* primaryCamera);
 	extern void RemovePrimaryCamera();
 	extern Camera* GetPrimaryCamera();
+	extern void UpdateViewportCameraPos();
 
 	extern long GetNextComponentID();
 	extern long GetNextGameObjectID();

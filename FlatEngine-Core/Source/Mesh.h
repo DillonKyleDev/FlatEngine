@@ -12,6 +12,8 @@
 
 namespace FlatEngine
 {
+	class ViewportManager;
+
 	class Mesh : public Component
 	{
 	public:
@@ -24,14 +26,15 @@ namespace FlatEngine
 		bool Initialized();
 		void SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, RenderPass& renderPass, VkCommandPool& commandPool);
 		void SetModel(Model model);
+		void SetModel(std::string modelPath);
 		Model& GetModel();
 		void CreateModelResources(VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
 		void SetMaterial(std::shared_ptr<Material> material);
 		void SetMaterial(std::string materialName);
 		std::shared_ptr<Material> GetMaterial();
 		void CreateResources();
-		void AddTexture(std::string path);
-		void AddTexture(Texture texture);
+		void AddTexture(std::string path, uint32_t index);
+		void AddTexture(Texture texture, uint32_t index);
 		std::vector<Texture>& GetTextures();
 		void CreateTextureResources();
 		std::vector<VkDescriptorSet>& GetDescriptorSets();
@@ -44,11 +47,12 @@ namespace FlatEngine
 		int m_allocationPoolIndex;
 		bool m_b_initialized;
 		// handles
-		VkInstance m_instanceHandle;
+		VkInstance m_instance;
 		WinSys* m_winSystem;
-		PhysicalDevice* m_physicalDeviceHandle;
-		LogicalDevice* m_deviceHandle;
+		PhysicalDevice* m_physicalDevice;
+		LogicalDevice* m_logicalDevice;
 		RenderPass* m_renderPass;
 		VkCommandPool* m_commandPool;
+		ViewportManager* m_viewportManager;
 	};
 }

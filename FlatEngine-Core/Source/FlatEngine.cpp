@@ -42,7 +42,6 @@
 
 namespace FlatEngine
 {	
-	//std::shared_ptr<WindowManager> F_Window = std::make_shared<WindowManager>();
 	std::shared_ptr<Application> F_Application = std::make_shared<Application>();
 	std::shared_ptr<VulkanManager> F_VulkanManager = std::make_shared<VulkanManager>();
 	AssetManager F_AssetManager = AssetManager();
@@ -95,6 +94,7 @@ namespace FlatEngine
 	std::shared_ptr<Animation::S_Property> selectedKeyFrameToEdit = nullptr;
 
 	// Camera
+	Camera F_ViewportCamera = Camera();
 	Camera* F_primaryCamera = nullptr;
 
 	// Collision Detection
@@ -120,8 +120,7 @@ namespace FlatEngine
 	}
 
 	void FreeFonts()
-	{
-		//Free global fonts
+	{		
 		TTF_CloseFont(F_fontCinzel);
 		F_fontCinzel = nullptr;
 	}
@@ -144,12 +143,6 @@ namespace FlatEngine
 		return F_AssetManager.GetTextureObject(textureName);
 	}
 
-	// Get SDL_Texture* using name given in Textures.lua file
-	//SDL_Texture* GetTexture(std::string textureName)
-	//{
-	//	return F_AssetManager.GetTexture(textureName);
-	//}
-
 	VkDescriptorSet GetTexture(std::string textureName)
 	{
 		return F_AssetManager.GetTexture(textureName);
@@ -166,70 +159,6 @@ namespace FlatEngine
 	{
 		return F_AssetManager.GetColor32(colorName);
 	}
-
-	//Vector2 AddImageToDrawList(SDL_Texture* texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offsetPx, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation, ImU32 addColor, Vector2 uvStart, Vector2 uvEnd)
-	//{
-	//	// Changing the scale here because sprites render too large
-	//	Vector2 newScale = Vector2(scale.x * F_spriteScaleMultiplier, scale.y * F_spriteScaleMultiplier);
-
-	//	float scalingXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - (offsetPx.x * newScale.x * zoomMultiplier);
-	//	float scalingYStart = relativeCenterPoint.y - (positionInGrid.y * zoomMultiplier) - (offsetPx.y * newScale.y * zoomMultiplier);
-	//	float scalingXEnd = scalingXStart + (textureWidthPx * newScale.x * zoomMultiplier);
-	//	float scalingYEnd = scalingYStart + (textureHeightPx * newScale.y * zoomMultiplier);
-
-	//	float unscaledXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - offsetPx.x * scale.x;
-	//	float unscaledYStart = relativeCenterPoint.y + (-positionInGrid.y * zoomMultiplier) - offsetPx.y * scale.y;
-
-	//	Vector2 renderStart;
-	//	Vector2 renderEnd;
-
-	//	if (b_scalesWithZoom)
-	//	{
-	//		renderStart = Vector2(scalingXStart, scalingYStart);
-	//		renderEnd = Vector2(scalingXEnd, scalingYEnd);
-
-	//		// FOR DEBUGGING - draw white box around where the texture should be
-	//		//DrawRectangle(renderStart, renderEnd, Vector2(0,0), Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), F_whiteColor, 2, draw_list);
-	//	}
-	//	else
-	//	{
-	//		renderStart = Vector2(unscaledXStart, unscaledYStart);
-	//		renderEnd = Vector2(renderStart.x + textureWidthPx * scale.x, renderStart.y + textureHeightPx * scale.y);
-	//	}
-
-	//	if (rotation != 0)
-	//	{
-	//		Vector2 topLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
-	//		Vector2 topRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, -(renderEnd.y - renderStart.y) / 2), -rotation);
-	//		Vector2 bottomRight = Vector2::Rotate(Vector2(+(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
-	//		Vector2 bottomLeft = Vector2::Rotate(Vector2(-(renderEnd.x - renderStart.x) / 2, +(renderEnd.y - renderStart.y) / 2), -rotation);
-
-	//		Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
-	//		Vector2 pos[4] =
-	//		{
-	//			center + topLeft,
-	//			center + topRight,
-	//			center + bottomRight,
-	//			center + bottomLeft
-	//		};
-	//		Vector2 uvs[4] =
-	//		{
-	//			Vector2(0.0f, 0.0f),
-	//			Vector2(1.0f, 0.0f),
-	//			Vector2(1.0f, 1.0f),
-	//			Vector2(0.0f, 1.0f)
-	//		};
-
-	//		drawList->AddImageQuad(texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], addColor);
-	//	}
-	//	else
-	//	{
-	//		drawList->AddImage((void*)texture, renderStart, renderEnd, uvStart, uvEnd, addColor);
-	//	}
-
-	//	return renderStart;
-	//}
-
 
 	void SetMusicVolume(int volume)
 	{
@@ -272,25 +201,23 @@ namespace FlatEngine
 			printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
 			b_success = false;
 		}
-
-		//// Initialize Vulkan/GLFW + ImGui
-		if (!F_VulkanManager->Init(windowWidth, windowHeight))
-		{
-			printf("Window initialization failed...\n");
-			b_success = false;
-		}
 		else
-		{			
+		{
 			printf("SDL initialized... - Video - Audio - Joystick -\n");
 
-			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"))
+			if (!F_VulkanManager->Init(windowWidth, windowHeight))
 			{
-				printf("Warning: Linear texture filtering not enabled!\n");
+				printf("Vulkan initialization failed...\n");
+				b_success = false;
 			}
+			else
+			{
+				printf("Vulkan initialized...\n");
 
-			//if (F_Window->Init("FlatEngine", windowWidth, windowHeight))
-			//{
-				printf("Window initialized...\n");
+				if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"))
+				{
+					printf("Warning: Linear texture filtering not enabled!\n");
+				}
 
 				int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF | IMG_INIT_WEBP | IMG_INIT_JXL;
 				if (!(IMG_Init(imgFlags) && imgFlags))
@@ -311,7 +238,7 @@ namespace FlatEngine
 						printf("TTF_Fonts initialized...\n");
 						if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 						{
-							printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());						
+							printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 							LogError("Audio Device Not Found - SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
 							b_success = false;
 						}
@@ -328,20 +255,19 @@ namespace FlatEngine
 						printf("Physics initialized...\n");
 
 						F_AssetManager.FindRootDir();
-						F_AssetManager.CollectDirectories();					
+						F_AssetManager.CollectDirectories();
 						F_AssetManager.CollectColors();						   // Collect global colors from Colors.lua
 						F_AssetManager.CollectTextures();	                   // Collect and create Texture icons from Textures.lua
 						F_AssetManager.CollectTags();
-						//SetupImGui();
 						SetImGuiColors();
 
 						printf("Engine Assets initialized...\n");
 						LogSeparator();
 						LogString("System ready. Begin logging...");
-						LogSeparator();					
+						LogSeparator();
 					}
 				}
-			//}
+			}
 		}
 
 		return b_success;
@@ -689,13 +615,13 @@ namespace FlatEngine
 
 		SetLoadedProject(newProject);		
 		F_AssetManager.CollectDirectories();		
-		F_AssetManager.UpdateProjectDirs(F_LoadedProject.GetPath());		
+		F_AssetManager.UpdateProjectDirs(F_LoadedProject.GetPath());	
+		F_VulkanManager->InitializeMaterials();
 		InitializeTileSets();		
-		F_PrefabManager->InitializePrefabs();		
+		F_PrefabManager->InitializePrefabs();	
 		RetrieveLuaScriptPaths();		
 		RetrieveCPPScriptNames();
 		InitializeMappingContexts();		
-
 
 		F_LoadedProject.CreateFreshPersistantScene();
 		F_LoadedProject.LoadPersistantScene();
@@ -994,6 +920,45 @@ namespace FlatEngine
 		return F_primaryCamera;
 	}
 
+	void UpdateViewportCameraPos()
+	{
+		if (F_b_sceneViewRightClicked)
+		{
+			MappingContext* engineContext = GetMappingContext("EngineContext");
+			Vector3 lookDir = GetPrimaryCamera()->GetLookDirection();
+			Vector2 xyPlane = Vector2(lookDir.x, lookDir.y);
+			Vector2 leftDir = Vector2::Rotate(xyPlane, 90);
+			Vector2 rightDir = Vector2::Rotate(xyPlane, -90);
+			Vector3 upDir = Vector3(rightDir.x, rightDir.y, 0).Cross(lookDir);
+			Vector3 downDir = Vector3(leftDir.x, leftDir.y, 0).Cross(lookDir);
+			float moveDamping = 0.005f;
+
+			if (engineContext->ActionPressed("MoveCameraLeft"))
+			{
+				F_ViewportCamera.AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
+			}
+			if (engineContext->ActionPressed("MoveCameraRight"))
+			{
+				F_ViewportCamera.AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
+			}
+			if (engineContext->ActionPressed("MoveCameraForward"))
+			{
+				F_ViewportCamera.AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraBack"))
+			{
+				F_ViewportCamera.AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraUp"))
+			{				
+				F_ViewportCamera.AddVelocity(Vector3(0, 0, moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraDown"))
+			{
+				F_ViewportCamera.AddVelocity(Vector3(0, 0, -moveDamping));
+			}
+		}
+	}
 
 	void CreateNewMappingContextFile(std::string fileName, std::string path)
 	{
@@ -1218,12 +1183,12 @@ namespace FlatEngine
 					}
 					case SDL_WINDOWEVENT_RESIZED:
 					{
-						F_Application->WindowResized();
+						F_Application->SetWindowResized(true);
 						break;
 					}				
 					case SDL_WINDOWEVENT_MAXIMIZED:
 					{
-						F_Application->WindowResized();
+						F_Application->SetWindowResized(true);
 						break;
 					}
 					default:
@@ -1264,54 +1229,9 @@ namespace FlatEngine
 			{				
 				switch (event.key.keysym.sym)
 				{
-				case SDLK_UP:
-					GetPrimaryCamera()->AddToVerticalViewAngle(-2.0f);
-					break;
-
-				case SDLK_DOWN:
-					GetPrimaryCamera()->AddToVerticalViewAngle(2.0f);
-					break;
-
-				case SDLK_LEFT:
-					GetPrimaryCamera()->AddToHorizontalViewAngle(2.0f);					
-					break;
-
-				case SDLK_RIGHT:				
-					GetPrimaryCamera()->AddToHorizontalViewAngle(-2.0f);
-					break;
-
-				//case SDLK_a:
-
-				//	if (F_b_sceneViewRightClicked)
-				//	{
-				//		GetPrimaryCamera()->AddVelocity(Vector3(leftDir.x * 0.01f, leftDir.y * 0.01f, 0));
-				//	}
+				//case SDLK_DELETE:
+				//	DeleteGameObject(F_FocusedGameObjectID);
 				//	break;
-
-				//case SDLK_d:
-				//	if (F_b_sceneViewRightClicked)
-				//	{
-				//		GetPrimaryCamera()->AddVelocity(Vector3(rightDir.x * 0.01f, rightDir.y * 0.01f, 0));
-				//	}
-				//	break;
-
-				//case SDLK_w:
-				//	if (F_b_sceneViewRightClicked)
-				//	{
-				//		GetPrimaryCamera()->AddVelocity(Vector3(lookDir.x * 0.01f, lookDir.y * 0.01f, lookDir.z * 0.01f));
-				//	}
-				//	break;
-
-				//case SDLK_s:
-				//	if (F_b_sceneViewRightClicked)
-				//	{
-				//		GetPrimaryCamera()->AddVelocity(Vector3(-lookDir.x * 0.01f, -lookDir.y * 0.01f, -lookDir.z * 0.01f));
-				//	}
-				//	break;
-
-				case SDLK_DELETE:
-					DeleteGameObject(F_FocusedGameObjectID);
-					break;
 
 				case SDLK_HOME:
 					LoadScene(GetLoadedScenePath());
@@ -1599,20 +1519,11 @@ namespace FlatEngine
 	// Rendering
 	void BeginImGuiRender()
 	{	
-		// old
-		//ImGui_ImplSDLRenderer2_NewFrame();
-		//ImGui_ImplSDL2_NewFrame();
-		//ImGui::NewFrame();
-
-		// new
-		ImGui_ImplVulkan_NewFrame();
-		//ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplVulkan_NewFrame();		
 		ImGui_ImplSDL2_NewFrame();		
 		ImGui::NewFrame();
 
-
-
-		//Create dockable background space for all viewports
+		// Create dockable background space for all viewports
 		ImGui::DockSpaceOverViewport();
 	}
 	
@@ -1620,6 +1531,7 @@ namespace FlatEngine
 	{		
 		Vector4 clearColor = Vector4(1.00f, 1.00f, 1.00f, 1.00f);
 		ImGui::Render();
+
 		//ImGuiIO& io = ImGui::GetIO(); (void)io;
 		//SDL_RenderSetScale(F_Window->GetRenderer(), io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
 		//SDL_SetRenderDrawColor(F_Window->GetRenderer(), (Uint8)(clearColor.x * 255), (Uint8)(clearColor.y * 255), (Uint8)(clearColor.z * 255), (Uint8)(clearColor.w * 255));
@@ -1633,8 +1545,10 @@ namespace FlatEngine
 
 		if (!b_isMinimized)
 		{
-			F_VulkanManager->DrawFrame(drawData);
+			F_VulkanManager->DrawFrame();
 		}
+
+		ImGui::UpdatePlatformWindows(); // Only used when multi viewport support is enabled
 	}
 
 	void SetNextViewportToFillWindow()
@@ -3482,6 +3396,8 @@ namespace FlatEngine
 									CheckJsonFloat(componentJson, "frustrumBlue", objectName),
 									CheckJsonFloat(componentJson, "frustrumAlpha", objectName)
 								));
+								newCamera->SetHorizontalViewAngle(CheckJsonFloat(componentJson, "horizontalViewAngle", objectName));
+								newCamera->SetVerticalViewAngle(CheckJsonFloat(componentJson, "verticalViewAngle", objectName));
 								newCamera->SetShouldFollow(CheckJsonBool(componentJson, "_follow", objectName));
 								newCamera->SetFollowSmoothing(CheckJsonFloat(componentJson, "followSmoothing", objectName));
 								newCamera->SetToFollowID(CheckJsonLong(componentJson, "following", objectName));
@@ -3817,6 +3733,40 @@ namespace FlatEngine
 										}
 									}
 								}
+							}
+							else if (type == "Mesh")
+							{
+								Mesh* newMesh = loadedObject->AddMesh(id, b_isActive, b_isCollapsed);
+
+								std::string materialName = CheckJsonString(componentJson, "materialName", objectName);
+								std::string modelPath = CheckJsonString(componentJson, "modelPath", objectName);
+
+								if (materialName != "")
+								{
+									newMesh->SetMaterial(materialName);
+								}
+								if (DoesFileExist(modelPath))
+								{
+									newMesh->SetModel(modelPath);
+								}
+
+								if (JsonContains(componentJson, "textures", objectName))
+								{
+									for (int i = 0; i < componentJson.at("textures").size(); i++)
+									{
+										try
+										{
+											json texture = componentJson.at("textures").at(i);
+											newMesh->AddTexture(CheckJsonString(texture, "path", objectName), i);
+										}
+										catch (const json::out_of_range& e)
+										{
+											LogError(e.what());
+										}
+									}
+								}
+
+								newMesh->CreateResources();
 							}
 							else if (type == "TileMap")
 							{

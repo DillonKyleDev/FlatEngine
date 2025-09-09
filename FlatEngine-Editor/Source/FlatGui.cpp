@@ -369,8 +369,6 @@ namespace FlatGui
 		FG_sceneViewGridStep = gridStep;
 		FL::F_sceneViewGridStep = &FG_sceneViewGridStep;
 
-		FL::F_VulkanManager->InitializeMaterials();
-
 		if (FL::F_LoadedProject.GetFocusedGameObjectID() != -1 && FL::GetObjectByID(FL::F_LoadedProject.GetFocusedGameObjectID()) != nullptr)
 		{
 			SetFocusedGameObjectID(FL::F_LoadedProject.GetFocusedGameObjectID());

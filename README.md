@@ -6,13 +6,20 @@
 
 
 
+<a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a>
 
-## Update - 09/04/2025
+## Update - Sept. 4th, 2025 - Vulkan Inclusion
 
-FlatEngine2D is now just FlatEngine.  Instead of managing two separate codebases for a 2D and 3D engine and the nightmares that go along with that, I've decided to just merge them into a single engine and use Vulkan as the renderer along side SDL2 for window and event management.  My initial plan was to have a simple and light-weight 2D version of the engine, but in order to implement shaders and keep SDL2, the path of least resistance was to just add Vulkan since I was going to do so for the 3D version of the engine anyway.  And since I'm adding Vulkan and the 3D maths that go along with it, it just made sense to combine the two into one. Box2D will still work perfectly for my 2D physics and collision needs, and at some point in the future I'll be adding 3D physics, but for now, my focus is on getting Vulkan implemented correctly, ironing out the Box2D implementation, getting shaders working, and fixing everything that broke with the introduction of the 3rd dimension.  I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are quite broken and disorganized still so I don't recommend jumping in at the moment unless you really want to see a bad Vulkan implementation.
+FlatEngine2D is now just FlatEngine.  Instead of managing two separate codebases for a 2D and 3D engine and the nightmares that go along with that, I've decided to just merge them into a single engine and use Vulkan as the renderer along side SDL2 for window and event management.</br>
+
+My initial plan was to have a simple and light-weight 2D version of the engine, but in order to implement shaders and keep SDL2, the path of least resistance was to just add Vulkan since I was going to do so for the 3D version of the engine anyway.  And since I'm adding Vulkan and the 3D maths that go along with it, it just made sense to combine the two into one. Box2D will still work perfectly for my 2D physics and collision needs, and at some point in the future I'll be adding 3D physics, but for now, my focus is on getting Vulkan implemented correctly, ironing out the Box2D implementation, getting shaders working, and fixing everything that broke with the introduction of the 3rd dimension.</br>
+
+I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are quite broken and disorganized still so I don't recommend jumping in at the moment unless you really want to see a bad Vulkan implementation.</br>
+
+I still need to go through and edit the ReadMe to reflect the change from FlatEngine2D to FlatEngine, among many other things.
 
 
-## UPDATE - OLD
+## Update - Jan. 1st 2025 - Initial Release
 
 There is now a published release for FlatEngine2D!  Please see the "Releases" section on the right-hand side for a download link and read up on the ReadMe for details on how to use FlatEngine.
 
@@ -20,9 +27,11 @@ I've included a sample project inside FlatEngine2D called FlatSpace.  With it, h
 
 As a note, FlatSpace was made before the implementation of persistant GameObjects which enable you to have some GameObjects stick around even when changing scenes.  Creation of new persistant GameObjects is located in the Assets dropdown menu.  Persistant objects are tied to the Project, so make sure to save your Scenes AND your Projects often to keep your progress saved!
 
-### Building and using FlatEngine2D from source
+## Documentation
 
-If you are using the Release build of FlatEngine2D found in Releases you can safely ignore this section.  There currently is not a stable release for building from source so it is not recommended to do so at this time.  But if you wish to proceed anyway, here's how to get setup:
+### Building and using FlatEngine from source
+
+If you are using the Release build of FlatEngine found in Releases you can safely ignore this section.  There currently is not a stable release for building from source so it is not recommended to do so at this time.  But if you wish to proceed anyway, here's how to get setup:
 
 1. Download the .zip and extract
 2. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
@@ -58,7 +67,7 @@ Quick links:
 
 ## About:
 
-FlatEngine2D is a 2D game engine made using SDL2, ImGui, and Box2D.  It is a passion project and is intended to replace Unity in all of my future 2D game development projects.  Maybe you will find it useful as well.  I will also be using the bones of the engine I develop here to create a full 3D game engine in the future.  See the license for details about using the engine and code, but as far as code I have written and assets I've created, you are free to use them as you wish.  Additionally, I would love to see any projects you are working on or have used any of the engine code for if you would be willing to share it.
+FlatEngine is a game engine made using SDL2, Vulkan, ImGui_Docking, and Box2D.  It is a passion project and is intended to replace Unity in all of my future game development projects.  Maybe you will find it useful as well.  See the license for details about using the engine and code, but as far as code I have written and assets I've created, you are free to use them as you wish.  Additionally, I would love to see any projects you are working on or have used any of the engine code for if you would be willing to share it.
 
 I've spent a lot of time with the Unity game engine and so have found comfort in it's design philosophy.  I will be adopting many of Unity's methods for handling various things within my engine.
 
@@ -70,10 +79,11 @@ I've spent a lot of time with the Unity game engine and so have found comfort in
 | Library used        | Features supported |
 |:--------------------|:---------------|
 |SDL_2|The engine is built using SDL_2 as a base, along with several other SDL libraries including SDL_ttf for fonts, SDL_Image, and SDL_Mixer for audio.|
-|ImGui|The entire user interface, including all of the interactions within the scene view, are handled using ImGui_Docking.|
+|ImGui_Docking|The entire user interface, including all of the interactions within the scene view, are handled using ImGui_Docking.|
+|Vulkan|Rendering.|
 |Box2D|The physics and collision in FlatEngine2D is handled by Box2D.|
 |nlohmann Json Formatter|nlohmann Json Formatter is used for saving various types of data for later use including Scene data (GameObjects and components), Project data, and Animation data.|
-|Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine2D. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
+|Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
 
 
 --------------------------------------------------------------------------------------

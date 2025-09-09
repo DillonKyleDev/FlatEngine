@@ -293,6 +293,7 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
     <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h" />
+    <ClInclude Include="Source\PipelineManager.h" />
     <ClInclude Include="Source\Allocator.h" />
     <ClInclude Include="Source\Animation.h" />
     <ClInclude Include="Source\Application.h" />
@@ -362,6 +363,7 @@
     <ClInclude Include="Source\WeldJoint.h" />
     <ClInclude Include="Source\WheelJoint.h" />
     <ClInclude Include="Source\WinSys.h" />
+    <ClInclude Include="Source\ViewportManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp" />
@@ -375,6 +377,7 @@
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts\binary_to_compressed_c.cpp" />
     <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp" />
+    <ClCompile Include="Source\PipelineManager.cpp" />
     <ClCompile Include="Source\Allocator.cpp" />
     <ClCompile Include="Source\Animation.cpp" />
     <ClCompile Include="Source\Application.cpp" />
@@ -446,6 +449,7 @@
     <ClCompile Include="Source\WeldJoint.cpp" />
     <ClCompile Include="Source\WheelJoint.cpp" />
     <ClCompile Include="Source\WinSys.cpp" />
+    <ClCompile Include="Source\ViewportManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib" />

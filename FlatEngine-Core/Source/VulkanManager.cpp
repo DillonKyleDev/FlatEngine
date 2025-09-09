@@ -24,6 +24,7 @@ namespace FlatEngine
     std::string F_selectedMaterialName = "";
     ValidationLayers VM_validationLayers = ValidationLayers();
     uint32_t VM_currentFrame = 0;
+    uint32_t VM_imageCount = 0;
 
     void VulkanManager::check_vk_result(VkResult err)
     {
@@ -43,26 +44,23 @@ namespace FlatEngine
         m_instance = VK_NULL_HANDLE;
         m_winSystem = WinSys();
         m_physicalDevice = PhysicalDevice();
-        m_logicalDevice = LogicalDevice();
-        
-        m_sceneTextureRenderPass = RenderPass();
-        m_imguiManager = ImGuiManager();
-
-        m_viewportImages = std::vector<VkImage>();
-        m_viewportImageViews = std::vector<VkImageView>();
-        m_viewportImageMemory = std::vector<VkDeviceMemory>();
-        m_viewportSampler = VK_NULL_HANDLE;
-        viewportDescriptorSets = std::vector<VkDescriptorSet>();
-        viewportImageFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+        m_logicalDevice = LogicalDevice();          
 
         // gpu communication
         m_commandPool = VK_NULL_HANDLE;
         m_imageAvailableSemaphores = std::vector<VkSemaphore>();
         m_renderFinishedSemaphores = std::vector<VkSemaphore>();
         m_inFlightFences = std::vector<VkFence>();
-        m_b_framebufferResized = false;
+        m_b_framebufferResized = false; 
 
-        m_materials = std::map<std::string, std::shared_ptr<Material>>();      
+        m_materials = std::map<std::string, std::shared_ptr<Material>>();
+
+        m_imguiManager = ImGuiManager();
+        m_sceneViewManager = ViewportManager();
+
+        m_pipelineManagers = std::vector<PipelineManager*>();
+        m_pipelineManagers.push_back(&m_sceneViewManager);
+        m_pipelineManagers.push_back(&m_imguiManager);
     }
 
     VulkanManager::~VulkanManager()
@@ -91,7 +89,11 @@ namespace FlatEngine
 
         vkDestroyCommandPool(m_logicalDevice.GetDevice(), m_commandPool, nullptr);
 
-        m_sceneTextureRenderPass.Cleanup(m_logicalDevice);
+        for (PipelineManager* pipeline : m_pipelineManagers)
+        {
+            pipeline->Cleanup();
+        }
+
         m_logicalDevice.Cleanup();
         m_physicalDevice.Cleanup();
         VM_validationLayers.Cleanup(m_instance);
@@ -113,19 +115,24 @@ namespace FlatEngine
         else
         {
             printf("Vulkan initialized...\n");
-
-            if (!m_imguiManager.SetupImGui(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice))
-            {
-                printf("ImGui-Vulkan initialization failed!\n");
-                b_success = false;
-            }
-            else
-            {
-                printf("ImGui-Vulkan initialized...\n");
-            }
         }
 
         return b_success;
+    }
+
+    void VulkanManager::CreateTextureImage(VkImage& image, std::string path, uint32_t mipLevels, VkDeviceMemory& imageMemory)
+    {
+        image = WinSys::CreateTextureImage(path, mipLevels, m_commandPool, m_physicalDevice, m_logicalDevice, imageMemory);
+    }
+
+    void VulkanManager::CreateImageView(VkImageView& imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+    {
+        WinSys::CreateImageView(imageView, image, format, aspectFlags, mipLevels, m_logicalDevice);
+    }
+
+    void VulkanManager::CreateTextureSampler(VkSampler& textureSampler, uint32_t mipLevels)
+    {
+        WinSys::CreateTextureSampler(textureSampler, mipLevels, m_physicalDevice, m_logicalDevice);
     }
 
     bool VulkanManager::InitVulkan(int windowWidth, int windowHeight)
@@ -157,59 +164,17 @@ namespace FlatEngine
                 CreateCommandPool(m_commandPool, m_logicalDevice, indices.graphicsFamily.value());
                 CreateSyncObjects();
 
-                // Scene texture RenderPass configuration
-                m_sceneTextureRenderPass.SetHandles(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice);
-                m_sceneTextureRenderPass.CreateSceneRenderPassResources();
-                CreateWriteToImageResources(m_viewportImages, m_viewportImageViews, m_viewportImageMemory);
-                m_sceneTextureRenderPass.ConfigureFrameBufferImageViews(m_viewportImageViews);
-                m_sceneTextureRenderPass.Init(m_commandPool);
+                bool b_initMaterial = false;
+                LoadMaterial("../engine/materials/imgui.mat", b_initMaterial);
+
+                for (PipelineManager* pipeline : m_pipelineManagers)
+                {
+                    pipeline->Setup(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice, m_commandPool);
+                }
             }
         }
 
         return b_success;
-    }
-
-    void VulkanManager::CreateWriteToImageResources(std::vector<VkImage>& images, std::vector<VkImageView>& imageViews, std::vector<VkDeviceMemory>& imageMemory)
-    {
-        images.resize(m_winSystem.GetSwapChainImageViews().size());
-        imageViews.resize(m_winSystem.GetSwapChainImageViews().size());
-        imageMemory.resize(m_winSystem.GetSwapChainImageViews().size());
-        VkExtent2D extent = m_winSystem.GetExtent();
-
-        for (size_t i = 0; i < m_winSystem.GetSwapChainImageViews().size(); i++)
-        {
-            uint32_t mipLevels = 1;
-            int texWidth = extent.width;
-            int texHeight = extent.height;
-            VkDeviceSize imageSize = texWidth * texHeight * 16;
-            VkBuffer stagingBuffer{};
-            VkDeviceMemory stagingBufferMemory{};
-            WinSys::CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, m_physicalDevice, m_logicalDevice);
-            WinSys::CreateImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, viewportImageFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, images[i], imageMemory[i], m_physicalDevice, m_logicalDevice);
-
-            VkCommandBuffer copyCmd = Helper::BeginSingleTimeCommands(m_commandPool, m_logicalDevice);
-            WinSys::InsertImageMemoryBarrier(
-                copyCmd,
-                m_viewportImages[i],
-                VK_ACCESS_TRANSFER_READ_BIT,
-                VK_ACCESS_MEMORY_READ_BIT,
-                VK_IMAGE_LAYOUT_UNDEFINED,
-                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                VK_PIPELINE_STAGE_TRANSFER_BIT,
-                VK_PIPELINE_STAGE_TRANSFER_BIT,
-                VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-            Helper::EndSingleTimeCommands(m_commandPool, copyCmd, m_logicalDevice);
-
-            WinSys::TransitionImageLayout(images[i], viewportImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, m_commandPool, m_logicalDevice);
-            WinSys::CopyBufferToImage(stagingBuffer, images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), m_commandPool, m_logicalDevice);
-            WinSys::TransitionImageLayout(images[i], viewportImageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, m_commandPool, m_logicalDevice);
-
-            vkDestroyBuffer(m_logicalDevice.GetDevice(), stagingBuffer, nullptr);
-            vkFreeMemory(m_logicalDevice.GetDevice(), stagingBufferMemory, nullptr);
-
-            WinSys::CreateImageView(imageViews[i], images[i], viewportImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, m_logicalDevice);
-            WinSys::CreateTextureSampler(m_viewportSampler, mipLevels, m_physicalDevice, m_logicalDevice);
-        }
     }
 
     bool VulkanManager::CreateVulkanInstance()
@@ -324,7 +289,7 @@ namespace FlatEngine
         fileObject.close();
     }
 
-    void VulkanManager::LoadMaterial(std::string path)
+    void VulkanManager::LoadMaterial(std::string path, bool b_init)
     {
         std::shared_ptr<Material> newMaterial = std::make_shared<Material>();
 
@@ -356,31 +321,32 @@ namespace FlatEngine
                 newMaterial->SetTextureCount((uint32_t)textureCount);
             }
 
-            //if (JsonContains(materialData, "textures", name))
-            //{
-            //    for (int texIndex = 0; texIndex < materialData.at("textures").size(); texIndex++)
-            //    {
-            //        try
-            //        {
-            //            json animationJson = materialData.at("textures").at(texIndex);
-            //            std::string path = CheckJsonString(animationJson, "path", name);   
+            // Graphics Pipeline configuration
+            if (JsonContains(materialData, "inputAssemblyData", name))
+            {
+                json inputAssemblyData = materialData["inputAssemblyData"];
 
-            //            if (!DoesFileExist(path))
-            //            {
-            //                LogError("Texture file not found for GameObject: \"" + name + "\" - on Material: \"" + name + "\". This may lead to unexpected behavior.  \npath: " + path);
-            //            }
-            //            Texture texture = Texture(path);
-            //            newMaterial->AddTexture(path);
-            //        }
-            //        catch (const json::out_of_range& e)
-            //        {
-            //            LogError(e.what());
-            //        }
-            //    }
-            //}
+                VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos = newMaterial->GetInputAssemblyCreateInfos(); // Maybe just use initialized VkPipelineInputAssemblyStateCreateInfo instead
+                inputAssemblyInfos.topology = (VkPrimitiveTopology)CheckJsonInt(inputAssemblyData, "topology", name);
+                inputAssemblyInfos.primitiveRestartEnable = (bool)CheckJsonBool(inputAssemblyData, "_primitiveRestartEnable", name);
+                newMaterial->SetInputAssemblyCreateInfos(inputAssemblyInfos);
+            }
+            if (JsonContains(materialData, "rasterizerData", name))
+            {                
+                json rasterizerData = materialData["rasterizerData"];
 
-            newMaterial->SetHandles(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice, m_sceneTextureRenderPass, m_commandPool);
-            newMaterial->Init();
+                VkPipelineRasterizationStateCreateInfo rasterizerInfos = newMaterial->GetRasterizerCreateInfos();
+                rasterizerInfos.polygonMode = (VkPolygonMode)CheckJsonInt(rasterizerData, "polygonMode", name);
+                rasterizerInfos.cullMode = (VkCullModeFlagBits)CheckJsonInt(rasterizerData, "cullMode", name);
+                rasterizerInfos.lineWidth = CheckJsonFloat(rasterizerData, "lineWidth", name);
+                newMaterial->SetRasterizerCreateInfos(rasterizerInfos);
+            }
+
+            newMaterial->SetHandles(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice, m_sceneViewManager.GetRenderPass(), m_commandPool);
+            if (b_init)
+            {
+                newMaterial->Init();
+            }
 
             AddMaterial(newMaterial);
         }
@@ -414,17 +380,14 @@ namespace FlatEngine
         m_materials.emplace(materialPair);
     }
 
-    std::shared_ptr<Material>& VulkanManager::GetMaterial(std::string materialName)
-    {
-        std::shared_ptr<Material> nullMaterial = nullptr;
+    std::shared_ptr<Material> VulkanManager::GetMaterial(std::string materialName)
+    {        
         if (m_materials.count(materialName))
         {
             return m_materials.at(materialName);
         }
-        else
-        {
-            return nullMaterial;
-        }
+
+        return nullptr;
     }
 
     std::map<std::string, std::shared_ptr<Material>>& VulkanManager::GetMaterials()
@@ -459,16 +422,24 @@ namespace FlatEngine
 
     void VulkanManager::CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets)
     {
-        texture.CreateTextureImage(m_winSystem, m_commandPool, m_physicalDevice, m_logicalDevice);
-        m_imguiManager.CreateDescriptorSets(texture, descriptorSets);
+        texture.CreateTextureImage();
+        Model emptyModel = Model();
+        std::vector<Texture> textures = std::vector<Texture>(1, texture);
+        m_imguiManager.CreateDescriptorSets(GetMaterial("imgui"), descriptorSets, emptyModel, textures);
     }
 
     void VulkanManager::FreeImGuiTexture(uint32_t allocatedFrom)
     {
-        m_imguiManager.FreeDescriptorSet(allocatedFrom);
+        std::shared_ptr<Material> imGuiMaterial = F_VulkanManager->GetMaterial("imgui");
+        imGuiMaterial->GetAllocator().SetFreed(allocatedFrom);
     }
 
-    void VulkanManager::DrawFrame(ImDrawData* drawData)
+    std::vector<VkDescriptorSet> VulkanManager::GetSceneDescriptorSets()
+    {
+        return m_sceneViewManager.GetDescriptorSets();
+    }
+
+    void VulkanManager::DrawFrame()
     {
         // More info here - https://vulkan-tutorial.com/en/Drawing_a_triangle/Drawing/Rendering_and_presentation
 
@@ -490,44 +461,18 @@ namespace FlatEngine
 
         // manually reset the fence to the unsignaled state with the vkResetFences call:
         vkResetFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[VM_currentFrame]);
-        
 
-        /////////////////////////
-        //// Draw To Texture RenderPass
-        m_sceneTextureRenderPass.BeginRenderPass(imageIndex);
-        for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
+        for (PipelineManager* pipeline : m_pipelineManagers)
         {
-            if (mesh.second.Initialized())
-            {
-                m_sceneTextureRenderPass.RecordCommandBuffer(imageIndex, mesh.second);
-                m_sceneTextureRenderPass.DrawIndexed(mesh.second);
-
-                mesh.second.GetModel().UpdateUniformBuffer(VM_currentFrame, m_winSystem, 0.5f);
-            }
+            pipeline->HandleRenderPass(imageIndex);
         }
-        m_sceneTextureRenderPass.EndRenderPass();
-        /////////////////////////
-
-        /////////////////////////
-        //// ImGui UI RenderPass
-        m_imguiManager.HandleRenderPass(imageIndex);
-        /////////////////////////
-
-
-        viewportDescriptorSets.resize(VM_MAX_FRAMES_IN_FLIGHT);
-        for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
-        {
-            std::shared_ptr<Material> imguiMaterial = m_imguiManager.GetMaterial();
-            Model emptyModel = Model();
-            Texture texture = Texture();
-            texture.ConfigureImageResources(m_viewportImages[VM_currentFrame], m_viewportImageViews[VM_currentFrame], m_viewportImageMemory[VM_currentFrame], m_viewportSampler);            
-            std::vector<Texture> textures = std::vector<Texture>(1, texture);
-            imguiMaterial->GetAllocator().AllocateDescriptorSets(viewportDescriptorSets, emptyModel, textures);
-        }
-
 
         // Submit the command buffers
-        std::array<VkCommandBuffer, 2> commandBuffers = { m_sceneTextureRenderPass.GetCommandBuffers()[VM_currentFrame], m_imguiManager.GetRenderPass().GetCommandBuffers()[VM_currentFrame] };
+        std::vector<VkCommandBuffer> commandBuffers = std::vector<VkCommandBuffer>(m_pipelineManagers.size(), {});
+        for (int i = 0; i < commandBuffers.size(); i++)
+        {
+            commandBuffers[i] = m_pipelineManagers[i]->GetRenderPass().GetCommandBuffers()[VM_currentFrame];
+        }        
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -537,8 +482,8 @@ namespace FlatEngine
         submitInfo.waitSemaphoreCount = 1;
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
-        submitInfo.commandBufferCount = 2;
-        submitInfo.pCommandBuffers = &commandBuffers[0];
+        submitInfo.commandBufferCount = (uint32_t)commandBuffers.size();
+        submitInfo.pCommandBuffers = commandBuffers.data();
 
         VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphores[VM_currentFrame] };
         submitInfo.signalSemaphoreCount = 1;
@@ -566,9 +511,11 @@ namespace FlatEngine
 
     void VulkanManager::RecreateSwapChainAndFrameBuffers()
     {
-        m_winSystem.RecreateSwapChain();
-        m_sceneTextureRenderPass.RecreateFrameBuffers();
-        m_imguiManager.GetRenderPass().RecreateFrameBuffers();
+        m_winSystem.RecreateSwapChain();   
+        for (PipelineManager* pipeline : m_pipelineManagers)
+        {
+            pipeline->OnWindowResized();
+        }
         ImGui_ImplVulkan_SetMinImageCount(static_cast<uint32_t>(m_winSystem.GetSwapChainImageViews().size()));
     }
 

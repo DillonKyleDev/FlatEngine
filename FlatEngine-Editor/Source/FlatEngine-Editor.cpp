@@ -202,6 +202,8 @@ public:
 				FL::GetPrimaryCamera()->Update();
 			}
 
+			//FL::UpdateViewportCameraPos(); // Uncomment this once projects have viewport cameras to save and load viewport camera settings to and then remove if() above.
+
 			EndRender();
 
 

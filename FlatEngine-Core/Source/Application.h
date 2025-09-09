@@ -26,7 +26,7 @@ namespace FlatEngine
 		void SetWindowDimensions(int width, int height) { m_windowWidth = width; m_windowHeight = height; };
 		int WindowWidth() { return m_windowWidth; };
 		int WindowHeight() { return m_windowHeight; };
-		void WindowResized() { m_b_windowResized = true; };
+		void SetWindowResized(bool b_resized) { m_b_windowResized = b_resized; };		
 		void BeginRender(); // Defined in Application.cpp
 		void EndRender();   // Defined in Application.cpp
 		virtual GameLoop* GetGameLoop() { return nullptr; };

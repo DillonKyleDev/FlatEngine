@@ -1,0 +1,15 @@
+{
+    "fragmentShaderPath": "../projects/Astrodome/shaders/compiledShaders/frag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 2
+    },
+    "name": "VerticesOnly",
+    "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 2.0,
+        "polygonMode": 1
+    },
+    "textureCount": 1,
+    "vertexShaderPath": "../projects/Astrodome/shaders/compiledShaders/vert.spv"
+}

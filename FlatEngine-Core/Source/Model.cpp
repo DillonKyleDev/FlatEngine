@@ -91,40 +91,89 @@ namespace FlatEngine
 
         for (const auto& shape : shapes)
         {
-            for (const auto& index : shape.mesh.indices)
+            // For mesh inputs (triangles)
+            if (shape.mesh.indices.size())
             {
-                Vertex vertex{};
-
-                vertex.pos =
+                for (const auto& index : shape.mesh.indices)
                 {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
-                };
+                    Vertex vertex{};
 
-                vertex.texCoord =
-                {
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                };
+                    vertex.pos =
+                    {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                    };
 
-                vertex.color = { 1.0f, 1.0f, 1.0f };
+                    vertex.texCoord =
+                    {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                    };
 
-                vertex.normal =
-                {
-                    attrib.normals[3 * index.normal_index + 0],
-                    attrib.normals[3 * index.normal_index + 1],
-                    attrib.normals[3 * index.normal_index + 2]
-                };
+                    vertex.color = { 1.0f, 1.0f, 1.0f };
 
-                // Keep only unique vertices
-                if (uniqueVertices.count(vertex) == 0)
-                {
-                    uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());
-                    m_vertices.push_back(vertex);
+                    vertex.normal =
+                    {
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]
+                    };
+
+                    // Keep only unique vertices
+                    if (uniqueVertices.count(vertex) == 0)
+                    {
+                        uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());
+                        m_vertices.push_back(vertex);
+                    }
+
+                    m_indices.push_back(uniqueVertices[vertex]);
                 }
+            }
+            // For line inputs
+            else
+            {
+                for (const auto& index : shape.lines.indices)
+                {
+                    Vertex vertex{};
 
-                m_indices.push_back(uniqueVertices[vertex]);
+                    vertex.pos =
+                    {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                    };
+
+                    if (attrib.texcoords.size())
+                    {
+                        vertex.texCoord =
+                        {
+                            attrib.texcoords[2 * index.texcoord_index + 0],
+                            1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                        };
+                    }
+
+                    vertex.color = { 1.0f, 1.0f, 1.0f };
+
+                    if (attrib.normals.size())
+                    {
+                        vertex.normal =
+                        {
+                            attrib.normals[3 * index.normal_index + 0],
+                            attrib.normals[3 * index.normal_index + 1],
+                            attrib.normals[3 * index.normal_index + 2]
+                        };
+                    }
+
+                    // Keep only unique vertices
+                    if (uniqueVertices.count(vertex) == 0)
+                    {
+                        uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());
+                        m_vertices.push_back(vertex);
+                    }
+
+                    m_indices.push_back(uniqueVertices[vertex]);
+                }
             }
         }
     }

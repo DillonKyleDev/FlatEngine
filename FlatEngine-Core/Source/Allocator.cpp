@@ -242,13 +242,13 @@ namespace FlatEngine
 			for (int i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
 			{
 				int descriptorCounter = 0;
-				int newSize = textures.size();
+				size_t newSize = textures.size();
 				std::vector<VkWriteDescriptorSet> descriptorWrites{};
 				descriptorWrites.resize(newSize);
 
 				if (model.GetModelPath() != "")
 				{
-					descriptorWrites.resize(newSize + 1);
+					descriptorWrites.resize(newSize + (size_t)1);
 
 					VkDescriptorBufferInfo bufferInfo{};
 					bufferInfo.buffer = model.GetUniformBuffers()[i];
@@ -272,8 +272,8 @@ namespace FlatEngine
 				for (size_t j = 0; j < textures.size(); j++)
 				{
 					imageInfos[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-					imageInfos[j].imageView = textures[j].GetImageView();
-					imageInfos[j].sampler = textures[j].GetTextureSampler();
+					imageInfos[j].imageView = textures[j].GetImageViews()[i];
+					imageInfos[j].sampler = textures[j].GetSampler();
 
 					descriptorWrites[descriptorCounter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 					descriptorWrites[descriptorCounter].dstSet = descriptorSets[i];
@@ -288,7 +288,7 @@ namespace FlatEngine
 				}
 
 				vkUpdateDescriptorSets(m_deviceHandle->GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-				m_allocationsRemainingByPool[m_currentPoolIndex] -= descriptorCounter;
+				m_allocationsRemainingByPool[m_currentPoolIndex] -= descriptorCounter;				
 			}
 		}
 		else

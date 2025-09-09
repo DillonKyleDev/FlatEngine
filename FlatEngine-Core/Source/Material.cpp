@@ -14,22 +14,22 @@ namespace FlatEngine
 	{
 		m_name = name;
 		m_graphicsPipeline = GraphicsPipeline(vertexPath, fragmentPath);
-		m_textureCount = 0;
-		m_allocator = Allocator();
-		// handles
-		m_instanceHandle = VK_NULL_HANDLE;
-		m_winSystem = nullptr;
-		m_physicalDeviceHandle = nullptr;
-		m_deviceHandle = nullptr;
-		m_renderPass = nullptr;
-		m_commandPool = nullptr;
-		m_b_initialized = false;
+		SetDefaultValues();
 	}
 
 	Material::Material()
 	{
 		m_name = "";
 		m_graphicsPipeline = GraphicsPipeline();
+		SetDefaultValues();
+	}
+
+	Material::~Material()
+	{
+	}
+
+	void Material::SetDefaultValues()
+	{
 		m_textureCount = 0;
 		m_allocator = Allocator();
 		// handles
@@ -40,19 +40,48 @@ namespace FlatEngine
 		m_renderPass = nullptr;
 		m_commandPool = nullptr;
 		m_b_initialized = false;
-	}
 
-	Material::~Material()
-	{
+		// Graphics Pipeline configuration
+		m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		m_inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		m_inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+		m_rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		m_rasterizer.depthClampEnable = VK_FALSE;
+		m_rasterizer.rasterizerDiscardEnable = VK_FALSE;
+		m_rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+		m_rasterizer.lineWidth = 2.0f;
+		m_rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		m_rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		m_rasterizer.depthBiasEnable = VK_FALSE;
+		m_rasterizer.depthBiasConstantFactor = 0.0f;
+		m_rasterizer.depthBiasClamp = 0.0f;
+		m_rasterizer.depthBiasSlopeFactor = 0.0f;
+
+		m_graphicsPipeline.SetInputAssemblyInfos(m_inputAssembly);
+		m_graphicsPipeline.SetRasterizerCreateInfos(m_rasterizer);
 	}
 
 	std::string Material::GetData()
 	{
+		json inputAssemblyData = {
+			{ "topology", (int)m_inputAssembly.topology },
+			{ "_primitiveRestartEnable", (bool)m_inputAssembly.primitiveRestartEnable }
+		};
+
+		json rasterizerData = {
+			{ "polygonMode", (int)m_rasterizer.polygonMode },
+			{ "cullMode", (int)m_rasterizer.cullMode },
+			{ "lineWidth", m_rasterizer.lineWidth }
+		};
+
 		json jsonData = {
 			{ "name", m_name },
 			{ "vertexShaderPath", m_graphicsPipeline.GetVertexPath() },
 			{ "fragmentShaderPath", m_graphicsPipeline.GetFragmentPath() },
-			{ "textureCount", m_textureCount }		
+			{ "textureCount", m_textureCount },
+			{ "rasterizerData", rasterizerData },
+			{ "inputAssemblyData", inputAssemblyData }
 		};
 
 		std::string data = jsonData.dump(4);
@@ -191,5 +220,27 @@ namespace FlatEngine
 	uint32_t Material::GetTextureCount()
 	{
 		return m_textureCount;
+	}
+
+	VkPipelineInputAssemblyStateCreateInfo& Material::GetInputAssemblyCreateInfos()
+	{
+		return m_inputAssembly;
+	}
+
+	void Material::SetInputAssemblyCreateInfos(VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos)
+	{
+		m_inputAssembly = inputAssemblyInfos;
+		m_graphicsPipeline.SetInputAssemblyInfos(m_inputAssembly);
+	}
+
+	VkPipelineRasterizationStateCreateInfo& Material::GetRasterizerCreateInfos()
+	{
+		return m_rasterizer;
+	}
+
+	void Material::SetRasterizerCreateInfos(VkPipelineRasterizationStateCreateInfo rasterizerInfos)
+	{
+		m_rasterizer = rasterizerInfos;
+		m_graphicsPipeline.SetRasterizerCreateInfos(m_rasterizer);
 	}
 }

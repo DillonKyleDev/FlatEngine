@@ -1,9 +1,10 @@
 #include "FlatEngine.h"
 #include "Application.h"
 #include "AssetManager.h"
-//#include "WindowManager.h"
+#include "VulkanManager.h"
 
 #include "SDL.h"
+
 
 namespace FL = FlatEngine;
 
@@ -17,11 +18,11 @@ namespace FlatEngine
 	void Application::EndRender()
 	{
 		FL::EndImGuiRender();
-
-		// Handle window resizing and recreating ImGui
+		
 		if (m_b_windowResized)
 		{
 			m_b_windowResized = false;
+			F_VulkanManager->RecreateSwapChainAndFrameBuffers();
 		}
 
 		if (F_b_loadNewScene)

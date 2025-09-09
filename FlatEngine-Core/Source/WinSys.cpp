@@ -161,16 +161,16 @@ namespace FlatEngine
         m_presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
         VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
 
-        uint32_t ui_imageCount = swapChainSupport.capabilities.minImageCount;
-        if (ui_imageCount + 1 <= swapChainSupport.capabilities.maxImageCount || swapChainSupport.capabilities.maxImageCount == 0)
+        VM_imageCount = swapChainSupport.capabilities.minImageCount;
+        if (VM_imageCount + 1 <= swapChainSupport.capabilities.maxImageCount || swapChainSupport.capabilities.maxImageCount == 0)
         {
-            ui_imageCount += 1;
+            //VM_imageCount += 1;
         }
 
         VkSwapchainCreateInfoKHR createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         createInfo.surface = m_surface;
-        createInfo.minImageCount = ui_imageCount;
+        createInfo.minImageCount = VM_imageCount;
         createInfo.imageFormat = m_surfaceFormat.format;
         createInfo.imageColorSpace = m_surfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
@@ -209,9 +209,9 @@ namespace FlatEngine
             m_swapChainImageFormat = m_surfaceFormat.format;
             m_swapChainExtent = extent;
 
-            vkGetSwapchainImagesKHR(m_deviceHandle->GetDevice(), m_swapChain, &ui_imageCount, nullptr);
-            m_swapChainImages.resize(ui_imageCount);
-            vkGetSwapchainImagesKHR(m_deviceHandle->GetDevice(), m_swapChain, &ui_imageCount, m_swapChainImages.data());
+            vkGetSwapchainImagesKHR(m_deviceHandle->GetDevice(), m_swapChain, &VM_imageCount, nullptr);
+            m_swapChainImages.resize(VM_imageCount);
+            vkGetSwapchainImagesKHR(m_deviceHandle->GetDevice(), m_swapChain, &VM_imageCount, m_swapChainImages.data());
         }
     }
 
@@ -424,14 +424,14 @@ namespace FlatEngine
 
         samplerInfo.anisotropyEnable = VK_TRUE;
         samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_TRANSPARENT_BLACK; // VK_BORDER_COLOR_INT_OPAQUE_BLACK;
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
         samplerInfo.compareEnable = VK_FALSE;
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
         samplerInfo.minLod = 0.0f; // Optional
         samplerInfo.maxLod = static_cast<float>(mipLevels);
-        samplerInfo.mipLodBias = 0.0f; // Optional
+        samplerInfo.mipLodBias = 0.0f; // Optional        
 
         if (vkCreateSampler(logicalDevice.GetDevice(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
         {

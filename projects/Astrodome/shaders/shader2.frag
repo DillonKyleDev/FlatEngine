@@ -16,7 +16,7 @@ void main() {
     // The sampler automatically takes care of the filtering and transformations in the background
 
     vec3 lightDir = vec3(0,1,0);
-    float intensity = (lightDir.x * normal.x / 2) + (lightDir.y * normal.y / 2) + (lightDir.z * normal.z / 2);
+    float intensity = (lightDir.x * normal.x) + (lightDir.y * normal.y) + (lightDir.z * normal.z);
     outColor = texture(texSampler, fragTexCoord);
     outColor.xyz *= (intensity + 1);
 }

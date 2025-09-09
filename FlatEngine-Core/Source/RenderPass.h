@@ -3,11 +3,6 @@
 #include "LogicalDevice.h"
 #include "WinSys.h"
 
-//#ifndef GLFW_INCLUDE_VULKAN
-//#define GLFW_INCLUDE_VULKAN
-//#endif
-//#include <glfw3.h>
-
 #include <vector>
 
 
@@ -49,7 +44,8 @@ namespace FlatEngine
 		void BeginRenderPass(uint32_t imageIndex);
 		void EndRenderPass();
 
-		void SetImageColorFormat(VkFormat colorFormat);
+		void SetImageColorFormat(VkFormat colorFormat);		
+		void SetMSAASampleCount(VkSampleCountFlagBits sampleCount);
 
 	private:
 		void CreateColorResources();
@@ -80,10 +76,29 @@ namespace FlatEngine
 		VkImageView m_depthImageView;
 		bool m_b_depthBuffersEnabled;
 		// handles
-		VkInstance m_instanceHandle;
+		VkInstance m_instance;
 		WinSys* m_winSystem;
-		PhysicalDevice* m_physicalDeviceHandle;
-		LogicalDevice* m_deviceHandle;
+		PhysicalDevice* m_physicalDevice;
+		LogicalDevice* m_logicalDevice;
+
+		
+		VkCommandBufferBeginInfo m_beginInfo{};
+		VkRenderPassBeginInfo m_renderPassInfo{};
+		VkViewport m_viewport{};
+		VkRect2D m_scissor{};
+
+		//std::vector<uint32_t> m_pushConstOffsets;
+		//std::vector<uint32_t> m_pushConstSizes;
+		//std::vector<const void*> m_pushValues;
+
+		//// Figure these out after going through vulkan docs again
+		//std::vector<VkAttachmentDescription> m_colorAttachments;
+		//std::vector<VkClearValue> m_colorClears;
+		//std::vector<VkAttachmentDescription> m_depthAttachments;
+		//std::vector<VkClearValue> m_depthClears;
+		//std::vector<VkAttachmentDescription> m_resolveAttachments;
+		//std::vector<VkClearValue> m_resolveClears;
+		//std::vector<VkAttachmentDescription> m_inputAttachments;
 	};
 }
 

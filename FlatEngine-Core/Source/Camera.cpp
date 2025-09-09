@@ -52,6 +52,8 @@ namespace FlatEngine
 			{ "_follow", m_b_shouldFollow },
 			{ "followSmoothing", m_followSmoothing },
 			{ "following", m_toFollowID },
+			{ "horizontalViewAngle", m_horizontalViewAngle },
+			{ "verticalViewAngle", m_verticalViewAngle }			
 		};
 
 		std::string data = jsonData.dump();
@@ -237,6 +239,7 @@ namespace FlatEngine
 		return m_velocity;
 	}
 
+	// Eventually remove the event handling and give Project viewport camera settings to save and load. Use Primary camera here in the meantime
 	void Camera::Update()
 	{
 		if (F_b_sceneViewRightClicked)
@@ -268,11 +271,11 @@ namespace FlatEngine
 			}
 			if (engineContext->ActionPressed("MoveCameraUp"))
 			{
-				GetPrimaryCamera()->AddVelocity(Vector3(upDir.x * moveDamping, upDir.y * moveDamping, upDir.z * moveDamping));
+				GetPrimaryCamera()->AddVelocity(Vector3(0, 0, moveDamping));
 			}
 			if (engineContext->ActionPressed("MoveCameraDown"))
 			{
-				GetPrimaryCamera()->AddVelocity(Vector3(downDir.x * moveDamping, downDir.y * moveDamping, downDir.z * moveDamping));
+				GetPrimaryCamera()->AddVelocity(Vector3(0, 0, -moveDamping));
 			}
 		}
 

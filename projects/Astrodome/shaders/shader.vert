@@ -1,7 +1,11 @@
 #version 450
 
 layout(push_constant, std430) uniform pc {
-    vec3 position;
+    layout(offset = 0)   vec4 position;
+    layout(offset = 16)  float time;
+    layout(offset = 64)  mat4 model;
+    layout(offset = 128) mat4 view;
+    layout(offset = 192) mat4 projection;
 };
 
 layout(set = 0, binding = 0) uniform UniformBufferObject {
@@ -19,9 +23,10 @@ layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 normal;
 
-void main() {
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition + position, 1.0);    
+void main() {    
+    gl_Position = projection * view * (model * vec4(inPosition.x, inPosition.y, inPosition.z, 1) + position);    
     fragColor = inColor;
     fragTexCoord = inTexCoord;
-    normal = inNormal;
+    vec4 rotatedNormal = model * vec4(inNormal.x, inNormal.y, inNormal.z, 1);
+    normal = vec3(rotatedNormal.x, rotatedNormal.y, rotatedNormal.z);
 }

@@ -43,6 +43,7 @@ namespace FlatEngine
             return pos == other.pos && color == other.color && texCoord == other.texCoord && normal == other.normal;
         }
 
+        // Bindings: spacing between data and whether the data is per - vertex or per - instance(see instancing)
         static VkVertexInputBindingDescription getBindingDescription()
         {
             VkVertexInputBindingDescription bindingDescription{};
@@ -52,7 +53,7 @@ namespace FlatEngine
 
             return bindingDescription;
         }
-
+        // Attribute descriptions : type of the attributes passed to the vertex shader, which binding to load them from and at which offset
         static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions()
         {
             std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};

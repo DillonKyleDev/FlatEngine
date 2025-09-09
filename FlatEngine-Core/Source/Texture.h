@@ -52,14 +52,18 @@ namespace FlatEngine
 
 		void SetTexturePath(std::string path);
 		std::string GetTexturePath();
-		VkImageView& GetImageView();
-		VkImage& GetImage();
-		VkDeviceMemory& GetTextureImageMemory();
-		VkSampler& GetTextureSampler();
+		std::vector<VkImage>& GetImages();
+		std::vector<VkImageView>& GetImageViews();
+		std::vector<VkDeviceMemory>& GetImageMemory();
+		VkSampler& GetSampler();
 		uint32_t GetMipLevels();
+		VkFormat GetImageFormat();
+		void SetImageFormat(VkFormat imageFormat);
+		VkImageAspectFlagBits GetAspectFlagsBits();
+		void SetAspecFlagsBits(VkImageAspectFlagBits aspectFlagBits);
 
-		void CreateTextureImage(WinSys& winSystem, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
-		void ConfigureImageResources(VkImage& image, VkImageView& imageView, VkDeviceMemory& textureImageMemory, VkSampler& textureSampler);
+		void CreateTextureImage();
+		void ConfigureImageResources(std::vector<VkImage>& images, std::vector<VkImageView>& imageViews, std::vector<VkDeviceMemory>& imageMemory, VkSampler& sampler);
 
 	private:
 		std::string m_path;
@@ -67,10 +71,12 @@ namespace FlatEngine
 		int m_textureHeight;
 		std::vector<VkDescriptorSet> m_descriptorSets;
 		int m_allocationIndex;
-		VkImage m_image;
-		VkImageView m_imageView;
-		VkDeviceMemory m_textureImageMemory;
-		VkSampler m_textureSampler;
+		std::vector<VkImage> m_images;
+		std::vector<VkImageView> m_imageViews;
+		std::vector<VkDeviceMemory> m_imageMemory;
+		VkSampler m_sampler;
 		uint32_t m_mipLevels;
+		VkFormat m_imageFormat;
+		VkImageAspectFlagBits m_aspectFlags;
 	};
 }

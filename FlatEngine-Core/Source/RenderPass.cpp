@@ -40,10 +40,25 @@ namespace FlatEngine
         m_depthImageView = VK_NULL_HANDLE;
         m_b_depthBuffersEnabled = false;
         // handles
-        m_instanceHandle = VK_NULL_HANDLE;
-        m_winSystem = nullptr;
-        m_physicalDeviceHandle = nullptr;
-        m_deviceHandle = nullptr;
+        m_instance = VK_NULL_HANDLE;
+        m_winSystem = VK_NULL_HANDLE;
+        m_physicalDevice = VK_NULL_HANDLE;
+        m_logicalDevice = VK_NULL_HANDLE;
+        
+
+        m_beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        m_beginInfo.flags = 0;
+        m_beginInfo.pInheritanceInfo = nullptr;
+
+        m_renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        m_renderPassInfo.renderArea.offset = { 0, 0 };        
+
+        m_viewport.x = 0.0f;
+        m_viewport.y = 0.0f;
+        m_viewport.minDepth = 0.0f;
+        m_viewport.maxDepth = 1.0f;
+        
+        m_scissor.offset = { 0, 0 };
     }
 
     RenderPass::~RenderPass()
@@ -58,10 +73,10 @@ namespace FlatEngine
 
     void RenderPass::SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
     {
-        m_instanceHandle = instance;
+        m_instance = instance;
         m_winSystem = &winSystem;
-        m_physicalDeviceHandle = &physicalDevice;
-        m_deviceHandle = &logicalDevice;
+        m_physicalDevice = &physicalDevice;
+        m_logicalDevice = &logicalDevice;
     }
 
     void RenderPass::Init(VkCommandPool commandPool)
@@ -102,7 +117,7 @@ namespace FlatEngine
 
         // Depth attachment
         VkAttachmentDescription depthAttachment{};
-        depthAttachment.format = Helper::FindDepthFormat(m_physicalDeviceHandle->GetDevice());
+        depthAttachment.format = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
         depthAttachment.samples = m_msaaSamples;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -172,7 +187,7 @@ namespace FlatEngine
         AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
 
         VkAttachmentDescription depthAttachment{};
-        depthAttachment.format = Helper::FindDepthFormat(m_physicalDeviceHandle->GetDevice());
+        depthAttachment.format = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
         depthAttachment.samples = m_msaaSamples;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -253,7 +268,7 @@ namespace FlatEngine
         renderPassInfo.dependencyCount = (uint32_t)m_subpassDependencies.size();
         renderPassInfo.pDependencies = m_subpassDependencies.data();
 
-        if (vkCreateRenderPass(m_deviceHandle->GetDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
+        if (vkCreateRenderPass(m_logicalDevice->GetDevice(), &renderPassInfo, nullptr, &m_renderPass) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create render pass!");
         }
@@ -265,7 +280,7 @@ namespace FlatEngine
         m_renderPassAttachmentRefs.clear();
         m_subpasses.clear();
         m_subpassDependencies.clear();
-        vkDestroyRenderPass(m_deviceHandle->GetDevice(), m_renderPass, nullptr);
+        vkDestroyRenderPass(m_logicalDevice->GetDevice(), m_renderPass, nullptr);
     }
 
     VkRenderPass& RenderPass::GetRenderPass()
@@ -282,9 +297,9 @@ namespace FlatEngine
     {
         // More info here - https://vulkan-tutorial.com/en/Drawing_a_triangle/Drawing/Framebuffers
 
-        m_framebuffers.resize(m_winSystem->GetSwapChainImageViews().size());
+        m_framebuffers.resize(VM_MAX_FRAMES_IN_FLIGHT);
 
-        for (size_t i = 0; i < m_winSystem->GetSwapChainImageViews().size(); i++)
+        for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
         {
             std::vector<VkImageView> attachments = {};
             if (m_b_msaaEnabled)
@@ -306,7 +321,7 @@ namespace FlatEngine
             framebufferInfo.height = m_winSystem->GetExtent().height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(m_deviceHandle->GetDevice(), &framebufferInfo, nullptr, &m_framebuffers[i]) != VK_SUCCESS)
+            if (vkCreateFramebuffer(m_logicalDevice->GetDevice(), &framebufferInfo, nullptr, &m_framebuffers[i]) != VK_SUCCESS)
             {
                 throw std::runtime_error("failed to create framebuffer!");
             }
@@ -317,7 +332,7 @@ namespace FlatEngine
     {
         for (VkFramebuffer framebuffer : m_framebuffers)
         {
-            vkDestroyFramebuffer(m_deviceHandle->GetDevice(), framebuffer, nullptr);
+            vkDestroyFramebuffer(m_logicalDevice->GetDevice(), framebuffer, nullptr);
         }
     }
 
@@ -354,24 +369,24 @@ namespace FlatEngine
 
     void RenderPass::EnableDepthBuffering()
     {
-        DestroyColorResources(); // Should be CreateColorResources()?? Check later
+        CreateDepthResources(); // Should be CreateColorResources()?? Check later
         m_b_depthBuffersEnabled = true;
     }
 
     void RenderPass::CreateColorResources()
     {
         // Refer to - https://vulkan-tutorial.com/Multisampling
-        WinSys::CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, m_colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_colorImage, m_colorImageMemory, *m_physicalDeviceHandle, *m_deviceHandle);
-        WinSys::CreateImageView(m_colorImageView, m_colorImage, m_colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, *m_deviceHandle);
+        WinSys::CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, m_colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_colorImage, m_colorImageMemory, *m_physicalDevice, *m_logicalDevice);
+        WinSys::CreateImageView(m_colorImageView, m_colorImage, m_colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, *m_logicalDevice);
     }
 
     void RenderPass::DestroyColorResources()
     {
-        if (m_deviceHandle != nullptr)
+        if (m_logicalDevice != nullptr)
         {
-            vkDestroyImageView(m_deviceHandle->GetDevice(), m_colorImageView, nullptr);
-            vkDestroyImage(m_deviceHandle->GetDevice(), m_colorImage, nullptr);
-            vkFreeMemory(m_deviceHandle->GetDevice(), m_colorImageMemory, nullptr);
+            vkDestroyImageView(m_logicalDevice->GetDevice(), m_colorImageView, nullptr);
+            vkDestroyImage(m_logicalDevice->GetDevice(), m_colorImage, nullptr);
+            vkFreeMemory(m_logicalDevice->GetDevice(), m_colorImageMemory, nullptr);
         }
     }
 
@@ -385,20 +400,20 @@ namespace FlatEngine
         // Refer to - https://vulkan-tutorial.com/en/Depth_buffering
         // and for msaa - https://vulkan-tutorial.com/Multisampling
 
-        VkFormat depthFormat = Helper::FindDepthFormat(m_physicalDeviceHandle->GetDevice());
+        VkFormat depthFormat = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
         uint32_t singleMipLevel = 1;
 
-        WinSys::CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImage, m_depthImageMemory, *m_physicalDeviceHandle, *m_deviceHandle);
-        WinSys::CreateImageView(m_depthImageView, m_depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, singleMipLevel, *m_deviceHandle);
+        WinSys::CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImage, m_depthImageMemory, *m_physicalDevice, *m_logicalDevice);
+        WinSys::CreateImageView(m_depthImageView, m_depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, singleMipLevel, *m_logicalDevice);
     }
 
     void RenderPass::DestroyDepthResources()
     {
-        if (m_deviceHandle != nullptr)
+        if (m_logicalDevice != nullptr)
         {
-            vkDestroyImageView(m_deviceHandle->GetDevice(), m_depthImageView, nullptr);
-            vkDestroyImage(m_deviceHandle->GetDevice(), m_depthImage, nullptr);
-            vkFreeMemory(m_deviceHandle->GetDevice(), m_depthImageMemory, nullptr);
+            vkDestroyImageView(m_logicalDevice->GetDevice(), m_depthImageView, nullptr);
+            vkDestroyImage(m_logicalDevice->GetDevice(), m_depthImage, nullptr);
+            vkFreeMemory(m_logicalDevice->GetDevice(), m_depthImageMemory, nullptr);
         }
     }
 
@@ -412,14 +427,14 @@ namespace FlatEngine
         beginInfo.flags = 0;
         beginInfo.pInheritanceInfo = nullptr;
 
-        if (vkBeginCommandBuffer(m_commandBuffers[VM_currentFrame], &beginInfo) != VK_SUCCESS)
+        if (vkBeginCommandBuffer(m_commandBuffers[VM_currentFrame], &m_beginInfo) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
         std::vector<VkClearValue> clearValues;
         VkClearValue clearColor;
-        clearColor.color = { {0.0f, 0.0f, 0.0f, 0.0f} };
+        clearColor.color = { {0.2f, 0.2f, 0.2f, 1.0f} };
         clearValues.push_back(clearColor);
         if (m_b_depthBuffersEnabled)
         {
@@ -434,31 +449,21 @@ namespace FlatEngine
             clearValues.push_back(msaa);
         }
 
-        VkRenderPassBeginInfo renderPassInfo{};
-        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = m_renderPass;
-        renderPassInfo.framebuffer = m_framebuffers[imageIndex];
-        renderPassInfo.renderArea.offset = { 0, 0 };
-        renderPassInfo.renderArea.extent = m_winSystem->GetExtent();
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
+        m_renderPassInfo.framebuffer = m_framebuffers[imageIndex];
+        m_renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        m_renderPassInfo.pClearValues = clearValues.data();
+        m_renderPassInfo.renderArea.extent = m_winSystem->GetExtent();
+        m_renderPassInfo.renderPass = m_renderPass;
 
         // we did specify viewport and scissor state for this pipeline to be dynamic. So we need to set them in the command buffer before issuing our draw command:
-        VkViewport viewport{};
-        viewport.x = 0.0f;
-        viewport.y = 0.0f;
-        viewport.width = static_cast<float>(m_winSystem->GetExtent().width);
-        viewport.height = static_cast<float>(m_winSystem->GetExtent().height);
-        viewport.minDepth = 0.0f;
-        viewport.maxDepth = 1.0f;
-        vkCmdSetViewport(m_commandBuffers[VM_currentFrame], 0, 1, &viewport);
+        m_viewport.width = static_cast<float>(m_winSystem->GetExtent().width);
+        m_viewport.height = static_cast<float>(m_winSystem->GetExtent().height);
+        vkCmdSetViewport(m_commandBuffers[VM_currentFrame], 0, 1, &m_viewport);
+        
+        m_scissor.extent = m_winSystem->GetExtent();
+        vkCmdSetScissor(m_commandBuffers[VM_currentFrame], 0, 1, &m_scissor);
 
-        VkRect2D scissor{};
-        scissor.offset = { 0, 0 };
-        scissor.extent = m_winSystem->GetExtent();
-        vkCmdSetScissor(m_commandBuffers[VM_currentFrame], 0, 1, &scissor);
-
-        vkCmdBeginRenderPass(m_commandBuffers[VM_currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBeginRenderPass(m_commandBuffers[VM_currentFrame], &m_renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     }
 
     void RenderPass::EndRenderPass()
@@ -503,21 +508,25 @@ namespace FlatEngine
         glm::mat4 model = meshRotation * meshScale;        
         glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
         glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height), nearClip, farClip);        
-        projection[1][1] *= -1;        
+        projection[1][1] *= -1;    
          
-        uint32_t posOffset = 0;
+        uint32_t posOffset =        0;
         uint32_t posSize =          sizeof(glm::vec4);
+        uint32_t timeOffset =       sizeof(glm::vec4);
+        uint32_t timeSize =         sizeof(glm::vec4);
         uint32_t modelOffset =      sizeof(glm::mat4);
         uint32_t modelSize =        sizeof(glm::mat4);
         uint32_t viewOffset =       sizeof(glm::mat4) * 2;
         uint32_t viewSize =         sizeof(glm::mat4);
         uint32_t projectionOffset = sizeof(glm::mat4) * 3;
         uint32_t projectionSize =   sizeof(glm::mat4);
+
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
+        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);
-        
+        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);      
+
         vkCmdBindPipeline(m_commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 
@@ -552,7 +561,7 @@ namespace FlatEngine
 
         m_commandBuffers.resize(VM_MAX_FRAMES_IN_FLIGHT);
 
-        if (vkAllocateCommandBuffers(m_deviceHandle->GetDevice(), &allocInfo, m_commandBuffers.data()) != VK_SUCCESS)
+        if (vkAllocateCommandBuffers(m_logicalDevice->GetDevice(), &allocInfo, m_commandBuffers.data()) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate command buffers!");
         }
@@ -566,5 +575,10 @@ namespace FlatEngine
     std::vector<VkCommandBuffer>& RenderPass::GetCommandBuffers()
     {
         return m_commandBuffers;
+    }
+
+    void RenderPass::SetMSAASampleCount(VkSampleCountFlagBits sampleCount)
+    {
+        m_msaaSamples = sampleCount;
     }
 }

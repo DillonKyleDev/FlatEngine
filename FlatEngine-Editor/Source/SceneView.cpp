@@ -68,11 +68,11 @@ namespace FlatGui
 			Vector2 centerOffset = Vector2(SCENE_VIEWPORT_WIDTH / 2, SCENE_VIEWPORT_HEIGHT / 2);
 			bool b_weightedScroll = false;
 
-
-			if (FL::F_VulkanManager->viewportDescriptorSets.size() > 0)
+			
+			if (FL::F_VulkanManager->GetSceneDescriptorSets().size() > 0)
 			{
 				ImVec2 size = ImGui::GetContentRegionAvail();
-				ImGui::Image(FL::F_VulkanManager->viewportDescriptorSets[FL::VM_currentFrame], size);
+				ImGui::Image(FL::F_VulkanManager->GetSceneDescriptorSets()[FL::VM_currentFrame], size);
 			}
 
 			// Need both the center of the viewport and the center of the world to reference when drawing imagese to the scene view

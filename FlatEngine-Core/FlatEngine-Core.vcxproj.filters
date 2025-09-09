@@ -717,6 +717,8 @@
     <ClInclude Include="Source\WinSys.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ViewportManager.h" />
+    <ClInclude Include="Source\PipelineManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -965,6 +967,8 @@
     <ClCompile Include="Source\WinSys.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ViewportManager.cpp" />
+    <ClCompile Include="Source\PipelineManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

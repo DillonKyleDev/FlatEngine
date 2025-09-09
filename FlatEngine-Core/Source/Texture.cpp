@@ -14,12 +14,14 @@ namespace FlatEngine
 		m_textureWidth = 0;
 		m_textureHeight = 0;
 		m_allocationIndex = -1;
-		m_descriptorSets = std::vector<VkDescriptorSet>(2, {});
-		m_imageView = VK_NULL_HANDLE;
-		m_image = VK_NULL_HANDLE;
-		m_textureImageMemory = VK_NULL_HANDLE;
-		m_textureSampler = VK_NULL_HANDLE;
+		m_descriptorSets = std::vector<VkDescriptorSet>(VM_MAX_FRAMES_IN_FLIGHT, {});
+		m_images = std::vector<VkImage>(VM_MAX_FRAMES_IN_FLIGHT, {});
+		m_imageViews = std::vector<VkImageView>(VM_MAX_FRAMES_IN_FLIGHT, {});
+		m_imageMemory = std::vector<VkDeviceMemory>(VM_MAX_FRAMES_IN_FLIGHT, {});
+		m_sampler = VK_NULL_HANDLE;		
 		m_mipLevels = 1;
+		m_imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
+		m_aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
 		if (path != "")
 		{
@@ -34,10 +36,15 @@ namespace FlatEngine
 	void Texture::Cleanup(LogicalDevice& logicalDevice)
 	{
 		FreeTexture();		
-		vkDestroySampler(logicalDevice.GetDevice(), m_textureSampler, nullptr);
-		vkFreeMemory(logicalDevice.GetDevice(), m_textureImageMemory, nullptr);
-		vkDestroyImage(logicalDevice.GetDevice(), m_image, nullptr);
-		vkDestroyImageView(logicalDevice.GetDevice(), m_imageView, nullptr);
+		
+		for (int i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			vkFreeMemory(logicalDevice.GetDevice(), m_imageMemory[i], nullptr);
+			vkDestroyImage(logicalDevice.GetDevice(), m_images[i], nullptr);
+			vkDestroyImageView(logicalDevice.GetDevice(), m_imageViews[i], nullptr);
+		}
+
+		vkDestroySampler(logicalDevice.GetDevice(), m_sampler, nullptr);
 	}
 
 	bool Texture::LoadFromFile(std::string path)
@@ -57,7 +64,8 @@ namespace FlatEngine
 			}
 
 			F_VulkanManager->CreateImGuiTexture(*this, m_descriptorSets);			
-			return m_allocationIndex != -1;
+			//return m_allocationIndex != -1;  TODO: Look into this, allocation index not saving
+			return true;
 		}
 		else
 		{
@@ -145,24 +153,24 @@ namespace FlatEngine
 		return m_path;
 	}
 
-	VkImageView& Texture::GetImageView()
+	std::vector<VkImage>& Texture::GetImages()
 	{
-		return m_imageView;
+		return m_images;
 	}
 
-	VkImage& Texture::GetImage()
+	std::vector<VkImageView>& Texture::GetImageViews()
 	{
-		return m_image;
+		return m_imageViews;
 	}
 
-	VkDeviceMemory& Texture::GetTextureImageMemory()
+	std::vector<VkDeviceMemory>& Texture::GetImageMemory()
 	{
-		return m_textureImageMemory;
+		return m_imageMemory;
 	}
 
-	VkSampler& Texture::GetTextureSampler()
+	VkSampler& Texture::GetSampler()
 	{
-		return m_textureSampler;
+		return m_sampler;
 	}
 
 	uint32_t Texture::GetMipLevels()
@@ -170,18 +178,26 @@ namespace FlatEngine
 		return m_mipLevels;
 	}
 
-	void Texture::CreateTextureImage(WinSys& winSystem, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+	void Texture::CreateTextureImage()
 	{
-		VkImage newImage = winSystem.CreateTextureImage(m_path, m_mipLevels, commandPool, physicalDevice, logicalDevice, m_textureImageMemory);
-		WinSys::CreateImageView(m_imageView, newImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels, logicalDevice);
-		WinSys::CreateTextureSampler(m_textureSampler, m_mipLevels, physicalDevice, logicalDevice);
+		m_images.resize(VM_MAX_FRAMES_IN_FLIGHT);
+		m_imageViews.resize(VM_MAX_FRAMES_IN_FLIGHT);
+		m_imageMemory.resize(VM_MAX_FRAMES_IN_FLIGHT);
+
+		for (int i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			F_VulkanManager->CreateTextureImage(m_images[i], m_path, m_mipLevels, m_imageMemory[i]);			
+			F_VulkanManager->CreateImageView(m_imageViews[i], m_images[i], m_imageFormat, m_aspectFlags, m_mipLevels);			
+		}
+		
+		F_VulkanManager->CreateTextureSampler(m_sampler, m_mipLevels);
 	}
 
-	void Texture::ConfigureImageResources(VkImage& image, VkImageView& imageView, VkDeviceMemory& textureImageMemory, VkSampler& textureSampler)
+	void Texture::ConfigureImageResources(std::vector<VkImage>& images, std::vector<VkImageView>& imageViews, std::vector<VkDeviceMemory>& imageMemory, VkSampler& sampler)
 	{
-		m_image = image;
-		m_imageView = imageView;
-		m_textureImageMemory = textureImageMemory;
-		m_textureSampler = textureSampler;
+		m_images = images;
+		m_imageViews = imageViews;
+		m_imageMemory = imageMemory;
+		m_sampler = sampler;
 	}
 }

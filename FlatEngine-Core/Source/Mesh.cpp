@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "FlatEngine.h"
+#include "ViewportManager.h"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -16,30 +17,19 @@ namespace FlatEngine
 
 		m_model = Model();
 		m_material = nullptr;
-		m_descriptorSets = std::vector<VkDescriptorSet>();
+		m_descriptorSets = std::vector<VkDescriptorSet>(VM_MAX_FRAMES_IN_FLIGHT, {});
 		m_textures = std::vector<Texture>();
 		m_allocationPoolIndex = -1;
 		m_b_initialized = false;
 
 		// handles
-		m_instanceHandle = VK_NULL_HANDLE;
+		m_instance = VK_NULL_HANDLE;
 		m_winSystem = nullptr;
-		m_physicalDeviceHandle = nullptr;
-		m_deviceHandle = nullptr;
+		m_physicalDevice = nullptr;
+		m_logicalDevice = nullptr;
 		m_renderPass = nullptr;
 		m_commandPool = nullptr;		
-
-		//GetModel().SetModelPath("../projects/Astrodome/models/quad.obj");
-		//SetMaterial(F_VulkanManager->GetMaterial("Spaceboy"));
-		//m_textures.resize(m_material->GetTextureCount());
-
-		//// Assign image views used for sceneTextureRenderer
-		//for (Texture& texture : m_textures)
-		//{
-		//	texture.ConfigureImageResources(F_VulkanManager->m_viewportImages[VM_currentFrame], F_VulkanManager->m_viewportImageViews[VM_currentFrame], F_VulkanManager->m_viewportImageMemory[VM_currentFrame], F_VulkanManager->m_viewportSampler);
-		//}
-
-		//CreateResources();		
+		m_viewportManager = &F_VulkanManager->m_sceneViewManager;
 	}
 
 	Mesh::~Mesh()
@@ -64,7 +54,9 @@ namespace FlatEngine
 			{ "id", GetID() },
 			{ "_isCollapsed", IsCollapsed() },
 			{ "_isActive", IsActive() },
-			{ "textures", texturesArray }			
+			{ "textures", texturesArray },
+			{ "materialName", m_material->GetName() },
+			{ "modelPath", m_model.GetModelPath() }
 		};
 
 		std::string data = jsonData.dump();
@@ -76,7 +68,7 @@ namespace FlatEngine
 	{
 		for (Texture& texture : m_textures)
 		{
-			texture.Cleanup(*m_deviceHandle);
+			texture.Cleanup(*m_logicalDevice);
 			m_material->GetAllocator().SetFreed(texture.GetAllocationIndex());
 		}
 	}
@@ -85,7 +77,7 @@ namespace FlatEngine
 	{		
 		CleanupTextures();
 		m_material->Cleanup();
-		m_model.Cleanup(*m_deviceHandle);
+		m_model.Cleanup(*m_logicalDevice);
 	}
 
 
@@ -96,10 +88,10 @@ namespace FlatEngine
 
 	void Mesh::SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, RenderPass& renderPass, VkCommandPool& commandPool)
 	{
-		m_instanceHandle = instance;
+		m_instance = instance;
 		m_winSystem = &winSystem;
-		m_physicalDeviceHandle = &physicalDevice;
-		m_deviceHandle = &logicalDevice;
+		m_physicalDevice = &physicalDevice;
+		m_logicalDevice = &logicalDevice;
 		m_renderPass = &renderPass;
 		m_commandPool = &commandPool;
 	}
@@ -108,11 +100,26 @@ namespace FlatEngine
 	{
 		if (m_model.GetModelPath() != "")
 		{
-			m_model.Cleanup(*m_deviceHandle);
+			m_model.Cleanup(*m_logicalDevice);
 		}
 		m_model = model;
 
 		if (m_model.GetModelPath() != "")
+		{
+			CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
+		}
+	}
+
+	void Mesh::SetModel(std::string modelPath)
+	{
+		if (m_model.GetModelPath() != "")
+		{
+			m_model.Cleanup(*m_logicalDevice);
+		}
+
+		m_model.SetModelPath(modelPath);
+
+		if (modelPath != "")
 		{
 			CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
 		}
@@ -137,17 +144,12 @@ namespace FlatEngine
 		{
 			m_material->Cleanup();
 		}
+
 		m_material = material;
 
 		if (m_material != nullptr)
 		{
 			m_textures.resize(m_material->GetTextureCount());
-
-			// Assign image views used for sceneTextureRenderer
-			for (Texture& texture : m_textures)
-			{
-				texture.ConfigureImageResources(F_VulkanManager->m_viewportImages[VM_currentFrame], F_VulkanManager->m_viewportImageViews[VM_currentFrame], F_VulkanManager->m_viewportImageMemory[VM_currentFrame], F_VulkanManager->m_viewportSampler);
-			}
 		}
 	}
 
@@ -157,17 +159,12 @@ namespace FlatEngine
 		{
 			m_material->Cleanup();
 		}
-		m_material = FlatEngine::F_VulkanManager->GetMaterial(materialName);
+
+		m_material = F_VulkanManager->GetMaterial(materialName);
 
 		if (m_material != nullptr)
 		{
 			m_textures.resize(m_material->GetTextureCount());
-
-			// Assign image views used for sceneTextureRenderer
-			for (Texture& texture : m_textures)
-			{
-				texture.ConfigureImageResources(F_VulkanManager->m_viewportImages[VM_currentFrame], F_VulkanManager->m_viewportImageViews[VM_currentFrame], F_VulkanManager->m_viewportImageMemory[VM_currentFrame], F_VulkanManager->m_viewportSampler);
-			}
 		}
 	}
 
@@ -178,48 +175,58 @@ namespace FlatEngine
 
 	void Mesh::CreateResources()
 	{
-		//// make sure there are the necessary number of actual textures assigned to Mesh before creating resources
-		//bool b_texturesAssigned = true;
-		//if (m_textures.size() != m_material->GetTextureCount())
-		//{
-		//	b_texturesAssigned = false;
-		//}
-		//else
-		//{
-		//	for (int i = 0; i < m_material->GetTextureCount(); i++)
-		//	{
-		//		if (m_textures[i].GetTexturePath() == "")
-		//		{
-		//			b_texturesAssigned = false;
-		//		}
-		//	}
-		//}
-
-		//if (b_texturesAssigned)
-		//{
-		if (m_model.GetModelPath() != "" && m_material != nullptr)
+		if (m_material != nullptr)
 		{
-			CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
-			m_material->CreateDescriptorSets(m_descriptorSets, m_model, m_textures);
-			m_b_initialized = true;
+			// make sure there are the necessary number of actual textures assigned to Mesh before creating resources
+			bool b_texturesAssigned = true;
+
+			if (m_textures.size() != m_material->GetTextureCount())
+			{
+				b_texturesAssigned = false;
+			}
+			else
+			{
+				for (uint32_t i = 0; i < m_material->GetTextureCount(); i++)
+				{
+					if (m_textures[i].GetTexturePath() == "")
+					{
+						b_texturesAssigned = false;
+					}
+				}
+			}
+
+			if (b_texturesAssigned)
+			{
+				CreateTextureResources();
+			}
+
+			if (m_model.GetModelPath() != "")
+			{
+				CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
+
+				m_b_initialized = true;
+			}
 		}
-
-
-		//}
 	}
 
-	void Mesh::AddTexture(std::string path)
+	void Mesh::AddTexture(std::string path, uint32_t index)
 	{
-		Texture newTexture = Texture();
-		newTexture.SetTexturePath(path);
-		m_textures.push_back(newTexture);
-		CreateTextureResources();
+		if (m_textures.size() >= index + 1)
+		{
+			Texture newTexture = Texture();
+			newTexture.SetTexturePath(path);
+			m_textures[index] = newTexture;
+			CreateTextureResources();
+		}
 	}
 
-	void Mesh::AddTexture(Texture texture)
+	void Mesh::AddTexture(Texture texture, uint32_t index)
 	{
-		m_textures.push_back(texture);
-		CreateTextureResources();
+		if (m_textures.size() >= index)
+		{
+			m_textures[index] = texture;
+			CreateTextureResources();
+		}
 	}
 
 	std::vector<Texture>& Mesh::GetTextures()
@@ -233,13 +240,13 @@ namespace FlatEngine
 		{
 			if (texture.GetTexturePath() != "")
 			{
-				texture.CreateTextureImage(*m_winSystem, *m_commandPool, *m_physicalDeviceHandle, *m_deviceHandle);
+				texture.CreateTextureImage();
 			}
 		}
 
 		if (m_material != nullptr)
 		{
-			m_material->CreateDescriptorSets(m_descriptorSets, m_model, m_textures);
+			m_viewportManager->CreateDescriptorSets(m_material, m_descriptorSets, m_model, m_textures);			
 		}
 	}
 

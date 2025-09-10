@@ -23,8 +23,7 @@ namespace FlatEngine
 		void CleanupTextures();
 		void Cleanup();
 
-		bool Initialized();
-		void SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, RenderPass& renderPass, VkCommandPool& commandPool);
+		bool Initialized();		
 		void SetModel(Model model);
 		void SetModel(std::string modelPath);
 		Model& GetModel();
@@ -47,12 +46,7 @@ namespace FlatEngine
 		int m_allocationPoolIndex;
 		bool m_b_initialized;
 		// handles
-		VkInstance m_instance;
-		WinSys* m_winSystem;
-		PhysicalDevice* m_physicalDevice;
 		LogicalDevice* m_logicalDevice;
-		RenderPass* m_renderPass;
-		VkCommandPool* m_commandPool;
 		ViewportManager* m_viewportManager;
 	};
 }

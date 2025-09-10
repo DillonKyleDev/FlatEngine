@@ -22,13 +22,8 @@ namespace FlatEngine
 		m_allocationPoolIndex = -1;
 		m_b_initialized = false;
 
-		// handles
-		m_instance = VK_NULL_HANDLE;
-		m_winSystem = nullptr;
-		m_physicalDevice = nullptr;
-		m_logicalDevice = nullptr;
-		m_renderPass = nullptr;
-		m_commandPool = nullptr;		
+		// handles		
+		m_logicalDevice = &F_VulkanManager->GetLogicalDevice();;
 		m_viewportManager = &F_VulkanManager->m_sceneViewManager;
 	}
 
@@ -84,16 +79,6 @@ namespace FlatEngine
 	bool Mesh::Initialized()
 	{
 		return m_b_initialized;
-	}
-
-	void Mesh::SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, RenderPass& renderPass, VkCommandPool& commandPool)
-	{
-		m_instance = instance;
-		m_winSystem = &winSystem;
-		m_physicalDevice = &physicalDevice;
-		m_logicalDevice = &logicalDevice;
-		m_renderPass = &renderPass;
-		m_commandPool = &commandPool;
 	}
 
 	void Mesh::SetModel(Model model)

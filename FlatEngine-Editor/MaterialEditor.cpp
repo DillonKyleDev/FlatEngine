@@ -19,10 +19,10 @@ namespace FlatGui
 
 	void RenderMaterialEditor()
 	{
-		FL::BeginWindow("Material Editor", FG_b_showMappingContextEditor);
+		FL::BeginWindow("Material Editor", FG_b_showMaterialEditor);
 		// {		
 
-		if (FL::F_MappingContexts.size() > 0)
+		if (FL::F_selectedMaterialName.size() > 0)
 		{
 			std::shared_ptr<Material> currentMaterial = FL::F_VulkanManager->GetMaterial(FL::F_selectedMaterialName);
 			std::map<std::string, std::shared_ptr<Material>>& materials = FL::F_VulkanManager->GetMaterials();
@@ -89,42 +89,45 @@ namespace FlatGui
 			ImGui::PopStyleColor();
 			// {
 
-			static std::string vertexInputText = "";
-			static std::string fragmentInputText = "";
-			vertexInputText = currentMaterial->GetVertexPath();
-			fragmentInputText = currentMaterial->GetFragmentPath();
-			uint32_t textureCount = currentMaterial->GetTextureCount();
-
-			if (FL::RenderInput("##VertexShaderPathInput", "Vertex Shader Path", vertexInputText))
+			if (currentMaterial != nullptr)
 			{
-				currentMaterial->SetVertexPath(vertexInputText);
+				static std::string vertexInputText = "";
+				static std::string fragmentInputText = "";
+				vertexInputText = currentMaterial->GetVertexPath();
+				fragmentInputText = currentMaterial->GetFragmentPath();
+				uint32_t textureCount = currentMaterial->GetTextureCount();
+
+				if (FL::RenderInput("##VertexShaderPathInput", "Vertex Shader Path", vertexInputText))
+				{
+					currentMaterial->SetVertexPath(vertexInputText);
+				}
+
+				if (FL::RenderInput("##FragmentShaderPathInput", "Fragment Shader Path", fragmentInputText))
+				{
+					currentMaterial->SetFragmentPath(fragmentInputText);
+				}
+
+				if (FL::RenderButton("Add Texture"))
+				{
+					Texture newTexture = Texture();
+					currentMaterial->SetTextureCount(textureCount + 1);
+				}
+
+				std::string textureCountText = "Textures: " + std::to_string(textureCount);
+				ImGui::Text(textureCountText.c_str());
+
+				//int textureCounter = 0;
+				//for (Texture& texture : currentMaterial->GetTextures())
+				//{
+				//	std::string texturePath = texture.GetTexturePath();
+
+				//	if (FL::RenderInput("##TexturePathInput" + std::to_string(textureCounter), "Texture Path", texturePath))
+				//	{
+				//		texture.SetTexturePath(texturePath);
+				//	}
+				//	textureCounter++;
+				//}
 			}
-
-			if (FL::RenderInput("##FragmentShaderPathInput", "Fragment Shader Path", fragmentInputText))
-			{
-				currentMaterial->SetFragmentPath(fragmentInputText);
-			}
-			
-			if (FL::RenderButton("Add Texture"))
-			{
-				Texture newTexture = Texture();
-				currentMaterial->SetTextureCount(textureCount + 1);
-			}
-
-			std::string textureCountText = "Textures: " + std::to_string(textureCount);
-			ImGui::Text(textureCountText.c_str());
-
-			//int textureCounter = 0;
-			//for (Texture& texture : currentMaterial->GetTextures())
-			//{
-			//	std::string texturePath = texture.GetTexturePath();
-
-			//	if (FL::RenderInput("##TexturePathInput" + std::to_string(textureCounter), "Texture Path", texturePath))
-			//	{
-			//		texture.SetTexturePath(texturePath);
-			//	}
-			//	textureCounter++;
-			//}
 
 			// }
 			ImGui::EndChild();

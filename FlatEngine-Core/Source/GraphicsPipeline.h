@@ -24,10 +24,13 @@ namespace FlatEngine
 		void CreateGraphicsPipeline(LogicalDevice& logicalDevice, WinSys& winSystem, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout);
 		VkPipeline& GetGraphicsPipeline();
 		VkPipelineLayout& GetPipelineLayout();
+		// Pipeline Configuration
 		VkPipelineInputAssemblyStateCreateInfo& GetInputAssemblyInfos();
 		void SetInputAssemblyInfos(VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos);
 		VkPipelineRasterizationStateCreateInfo& GetRasterizerCreateInfos();		
 		void SetRasterizerCreateInfos(VkPipelineRasterizationStateCreateInfo rasterizerInfos);
+		void SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos);
+		VkPipelineColorBlendAttachmentState& GetColorBlendAttachmentCreateInfos();
 
 	private:
 		VkPipeline m_graphicsPipeline;

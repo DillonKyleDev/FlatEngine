@@ -103,6 +103,7 @@ namespace FlatEngine
 	// Scene View
 	Vector2* F_sceneViewCenter = nullptr;
 	Vector2* F_sceneViewGridStep = nullptr;
+	Vector2 F_sceneViewDimensions = Vector2();
 	bool F_b_sceneViewRightClicked = false;
 
 
@@ -3330,8 +3331,7 @@ namespace FlatEngine
 				}				
 
 				loadedObject->SetTagList(tags);
-				
-				float objectRotation = 0;
+								
 				try
 				{
 					if (objectJson.contains("components"))
@@ -3346,15 +3346,13 @@ namespace FlatEngine
 
 							if (type == "Transform")
 							{								
-								Transform* transform = loadedObject->GetTransform();
-								float rotation = CheckJsonFloat(componentJson, "rotation", objectName);
+								Transform* transform = loadedObject->GetTransform();								
 								transform->SetID(id);
 								transform->SetActive(b_isActive);
 								transform->SetCollapsed(b_isCollapsed);								
-								transform->SetPosition(Vector3(CheckJsonFloat(componentJson, "xPos", objectName), CheckJsonFloat(componentJson, "yPos", objectName), 1));
-								transform->SetScale(Vector3(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName), 1));
-								transform->SetZRotation(rotation);
-								objectRotation = rotation;
+								transform->SetPosition(Vector3(CheckJsonFloat(componentJson, "xPosition", objectName), CheckJsonFloat(componentJson, "yPosition", objectName), CheckJsonFloat(componentJson, "zPosition", objectName)));
+								transform->SetScale(Vector3(CheckJsonFloat(componentJson, "xScale", objectName), CheckJsonFloat(componentJson, "yScale", objectName), CheckJsonFloat(componentJson, "zScale", objectName)));
+								transform->SetRotation(Vector3(CheckJsonFloat(componentJson, "xRotation", objectName), CheckJsonFloat(componentJson, "yRotation", objectName), CheckJsonFloat(componentJson, "zRotation", objectName)));								
 
 							}
 							else if (type == "Sprite")

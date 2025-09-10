@@ -28,11 +28,15 @@ namespace FlatEngine
 			{ "id", GetID() },
 			{ "_isCollapsed", IsCollapsed() },
 			{ "_isActive", IsActive() },
-			{ "xPos", m_position.x },
-			{ "yPos", m_position.y },
-			{ "rotation", m_rotation.z },
+			{ "xPosition", m_position.x },
+			{ "yPosition", m_position.y },
+			{ "zPosition", m_position.z },
+			{ "xRotation", m_rotation.x },
+			{ "yRotation", m_rotation.y },
+			{ "zRotation", m_rotation.z },
 			{ "xScale", m_scale.x },
-			{ "yScale", m_scale.y }
+			{ "yScale", m_scale.y },
+			{ "zScale", m_scale.z }
 		};
 
 		std::string data = jsonData.dump();
@@ -151,6 +155,11 @@ namespace FlatEngine
 		{
 			GetParent()->GetBody()->SetRotation(m_rotation.z);
 		}
+	}
+
+	void Transform::SetRotation(Vector3 rotation)
+	{
+		m_rotation = rotation;
 	}
 
 	Vector3 Transform::GetScale()

@@ -101,6 +101,8 @@ namespace FlatEngine
         EnableDepthBuffering();
         EnableMsaa();
 
+        // Attachments for fragment shader stage
+
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = m_colorFormat;
         colorAttachment.samples = m_msaaSamples;
@@ -126,7 +128,7 @@ namespace FlatEngine
         depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         VkAttachmentReference depthAttachmentRef{};
-        depthAttachmentRef.attachment = 1;
+        depthAttachmentRef.attachment = 1; // (layout = 1) in shader
         depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         AddRenderPassAttachment(depthAttachment, depthAttachmentRef);
 
@@ -141,7 +143,7 @@ namespace FlatEngine
         colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         VkAttachmentReference colorAttachmentResolveRef{};
-        colorAttachmentResolveRef.attachment = 2;
+        colorAttachmentResolveRef.attachment = 2; // (layout = 2) in shader
         colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
 
@@ -434,7 +436,7 @@ namespace FlatEngine
 
         std::vector<VkClearValue> clearValues;
         VkClearValue clearColor;
-        clearColor.color = { {0.2f, 0.2f, 0.2f, 1.0f} };
+        clearColor.color = { {0.25f, 0.25f, 0.35f, 1.0f} };
         clearValues.push_back(clearColor);
         if (m_b_depthBuffersEnabled)
         {
@@ -503,16 +505,22 @@ namespace FlatEngine
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
+        float aspectRatio = (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height);
+
         glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
-        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
+        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);        
         glm::mat4 model = meshRotation * meshScale;        
         glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
-        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height), nearClip, farClip);        
+        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
         projection[1][1] *= -1;    
+
+        glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
          
         uint32_t posOffset =        0;
         uint32_t posSize =          sizeof(glm::vec4);
-        uint32_t timeOffset =       sizeof(glm::vec4);
+        uint32_t cameraPosOffset =  sizeof(glm::vec4);
+        uint32_t cameraPosSize =    sizeof(glm::vec4);
+        uint32_t timeOffset =       sizeof(glm::vec4) * 2;
         uint32_t timeSize =         sizeof(glm::vec4);
         uint32_t modelOffset =      sizeof(glm::mat4);
         uint32_t modelSize =        sizeof(glm::mat4);
@@ -522,10 +530,11 @@ namespace FlatEngine
         uint32_t projectionSize =   sizeof(glm::mat4);
 
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
+        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
         vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);      
+        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);            
 
         vkCmdBindPipeline(m_commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }

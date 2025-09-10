@@ -28,7 +28,7 @@ namespace FlatEngine
 		void Cleanup();
 		void RecreateGraphicsPipeline();
 
-		void SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, RenderPass& renderPass, VkCommandPool& commandPool);
+		void SetHandles(WinSys& winSystem, LogicalDevice& logicalDevice, RenderPass& renderPass);
 		void CreateMaterialResources();
 		void SetName(std::string name);
 		std::string GetName();		
@@ -51,6 +51,8 @@ namespace FlatEngine
 		void SetInputAssemblyCreateInfos(VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos);
 		void SetRasterizerCreateInfos(VkPipelineRasterizationStateCreateInfo rasterizerInfos);
 		VkPipelineRasterizationStateCreateInfo& GetRasterizerCreateInfos();
+		void SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos);
+		VkPipelineColorBlendAttachmentState& GetColorBlendAttachmentCreateInfos();
 
 	private:
 		void SetDefaultValues();
@@ -61,16 +63,14 @@ namespace FlatEngine
 		Allocator m_allocator;
 		uint32_t m_textureCount;
 		// handles
-		VkInstance m_instanceHandle;
 		WinSys* m_winSystem;
-		PhysicalDevice* m_physicalDeviceHandle;
-		LogicalDevice* m_deviceHandle;
+		LogicalDevice* m_logicalDevice;
 		RenderPass* m_renderPass;
-		VkCommandPool* m_commandPool;
 		bool m_b_initialized;
 
 		// GraphicsPipeline Configuration structs
 		VkPipelineRasterizationStateCreateInfo m_rasterizer{};
 		VkPipelineInputAssemblyStateCreateInfo m_inputAssembly{};
+		VkPipelineColorBlendAttachmentState m_colorBlendAttachment{};
 	};
 }

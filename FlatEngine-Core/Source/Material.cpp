@@ -33,15 +33,12 @@ namespace FlatEngine
 		m_textureCount = 0;
 		m_allocator = Allocator();
 		// handles
-		m_instanceHandle = VK_NULL_HANDLE;
 		m_winSystem = nullptr;
-		m_physicalDeviceHandle = nullptr;
-		m_deviceHandle = nullptr;
+		m_logicalDevice = nullptr;
 		m_renderPass = nullptr;
-		m_commandPool = nullptr;
 		m_b_initialized = false;
 
-		// Graphics Pipeline configuration
+		// Default Graphics Pipeline configuration (Filled in with saved values when LoadMaterial() is called
 		m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		m_inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		m_inputAssembly.primitiveRestartEnable = VK_FALSE;
@@ -50,7 +47,7 @@ namespace FlatEngine
 		m_rasterizer.depthClampEnable = VK_FALSE;
 		m_rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		m_rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-		m_rasterizer.lineWidth = 2.0f;
+		m_rasterizer.lineWidth = 1.0f;
 		m_rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
 		m_rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		m_rasterizer.depthBiasEnable = VK_FALSE;
@@ -58,8 +55,18 @@ namespace FlatEngine
 		m_rasterizer.depthBiasClamp = 0.0f;
 		m_rasterizer.depthBiasSlopeFactor = 0.0f;
 
+		m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT | 0;
+		m_colorBlendAttachment.blendEnable = VK_TRUE;
+		m_colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		m_colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		m_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+		m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+		
 		m_graphicsPipeline.SetInputAssemblyInfos(m_inputAssembly);
 		m_graphicsPipeline.SetRasterizerCreateInfos(m_rasterizer);
+		m_graphicsPipeline.SetColorBlendAttachmentCreateInfos(m_colorBlendAttachment);
 	}
 
 	std::string Material::GetData()
@@ -75,13 +82,18 @@ namespace FlatEngine
 			{ "lineWidth", m_rasterizer.lineWidth }
 		};
 
+		json colorBlendAttachmentData = {
+			{ "alphaBlendOp", (int)m_colorBlendAttachment.alphaBlendOp }
+		};
+
 		json jsonData = {
 			{ "name", m_name },
 			{ "vertexShaderPath", m_graphicsPipeline.GetVertexPath() },
 			{ "fragmentShaderPath", m_graphicsPipeline.GetFragmentPath() },
 			{ "textureCount", m_textureCount },
 			{ "rasterizerData", rasterizerData },
-			{ "inputAssemblyData", inputAssemblyData }
+			{ "inputAssemblyData", inputAssemblyData },
+			{ "colorBlendAttachmentData", colorBlendAttachmentData }
 		};
 
 		std::string data = jsonData.dump(4);
@@ -105,7 +117,7 @@ namespace FlatEngine
 
 	void Material::CleanupGraphicsPipeline()
 	{
-		m_graphicsPipeline.Cleanup(*m_deviceHandle);
+		m_graphicsPipeline.Cleanup(*m_logicalDevice);
 	}
 
 	void Material::Cleanup()
@@ -124,19 +136,16 @@ namespace FlatEngine
 	}
 
 
-	void Material::SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, RenderPass& renderPass, VkCommandPool& commandPool)
-	{
-		m_instanceHandle = instance;
+	void Material::SetHandles(WinSys& winSystem, LogicalDevice& logicalDevice, RenderPass& renderPass)
+	{		
 		m_winSystem = &winSystem;
-		m_physicalDeviceHandle = &physicalDevice;
-		m_deviceHandle = &logicalDevice;
+		m_logicalDevice = &logicalDevice;
 		m_renderPass = &renderPass;
-		m_commandPool = &commandPool;
 	}
 
 	void Material::CreateMaterialResources()
 	{
-		m_allocator.Init(AllocatorType::DescriptorPool, m_textureCount, *m_deviceHandle);
+		m_allocator.Init(AllocatorType::DescriptorPool, m_textureCount, *m_logicalDevice);
 		CreateGraphicsPipeline();
 	}
 
@@ -184,7 +193,7 @@ namespace FlatEngine
 
 	void Material::CreateGraphicsPipeline()
 	{
-		m_graphicsPipeline.CreateGraphicsPipeline(*m_deviceHandle, *m_winSystem, *m_renderPass, m_allocator.GetDescriptorSetLayout());
+		m_graphicsPipeline.CreateGraphicsPipeline(*m_logicalDevice, *m_winSystem, *m_renderPass, m_allocator.GetDescriptorSetLayout());
 	}
 
 	VkPipeline& Material::GetGraphicsPipeline()
@@ -242,5 +251,15 @@ namespace FlatEngine
 	{
 		m_rasterizer = rasterizerInfos;
 		m_graphicsPipeline.SetRasterizerCreateInfos(m_rasterizer);
+	}
+
+	void Material::SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos)
+	{
+		m_colorBlendAttachment = colorBlendAttachmentInfos;
+	}
+
+	VkPipelineColorBlendAttachmentState& Material::GetColorBlendAttachmentCreateInfos()
+	{
+		return m_colorBlendAttachment;
 	}
 }

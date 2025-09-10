@@ -15,6 +15,8 @@ namespace FlatEngine
         SetVertexPath(vertexPath);
         SetFragmentPath(fragmentPath);
 
+        // CAN REMOVE DEFAULT VALUES FOR CREATEINFOS as they get moved into Material implementation.
+        // 
         // Describes what kind of geometry will be drawn from the vertices and if primitive restart should be enabled        
         // VK_PRIMITIVE_TOPOLOGY_POINT_LIST: points from vertices
         // VK_PRIMITIVE_TOPOLOGY_LINE_LIST : line from every 2 vertices without reuse
@@ -22,7 +24,7 @@ namespace FlatEngine
         // VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST : triangle from every 3 vertices without reuse
         // VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP : the second and third vertex of every triangle are used as first two vertices of the next triangle  
         m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        m_inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP; // VK_PRIMITIVE_TOPOLOGY_LINE_LIST
+        m_inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
         m_inputAssembly.primitiveRestartEnable = VK_FALSE;        
         m_viewport.x = 0.0f;
         m_viewport.y = 0.0f;
@@ -73,7 +75,7 @@ namespace FlatEngine
         m_colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
         m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
         m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
+        m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // VK_BLEND_OP_MIN or VK_BLEND_OP_MAX to remove additive effect of alpha
         
         m_colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
         m_colorBlending.logicOpEnable = VK_FALSE;
@@ -99,9 +101,13 @@ namespace FlatEngine
         translateRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
         translateRange.offset = (uint32_t)0;
         translateRange.size = (uint32_t)16;
+        VkPushConstantRange camPosRange = {};
+        camPosRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        camPosRange.offset = (uint32_t)16;
+        camPosRange.size = (uint32_t)16;
         VkPushConstantRange timeRange = {};
         timeRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        timeRange.offset = (uint32_t)16;
+        timeRange.offset = (uint32_t)32;
         timeRange.size = (uint32_t)16;
         VkPushConstantRange modelRange = {};
         modelRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
@@ -116,12 +122,15 @@ namespace FlatEngine
         projectionRange.offset = (uint32_t)192;
         projectionRange.size = (uint32_t)64;
 
+
         m_pushRanges.push_back(translateRange);
+        m_pushRanges.push_back(camPosRange);
         m_pushRanges.push_back(timeRange);
         m_pushRanges.push_back(modelRange);
         m_pushRanges.push_back(viewRange);
         m_pushRanges.push_back(projectionRange);
-                
+
+
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         m_pipelineLayoutInfo.setLayoutCount = VM_MAX_FRAMES_IN_FLIGHT;
                                 
@@ -183,12 +192,23 @@ namespace FlatEngine
     {
         // More info here - https://vulkan-tutorial.com/en/Drawing_a_triangle/Graphics_pipeline_basics/Fixed_functions
         // Load the bytecode of the shaders
-        auto vertShaderCode = Helper::ReadFile(m_vertexPath);
-        auto fragShaderCode = Helper::ReadFile(m_fragmentPath);
+        VkShaderModule vertShaderModule = VK_NULL_HANDLE;
+        VkShaderModule fragShaderModule = VK_NULL_HANDLE;
 
-        // The compilation and linking of the SPIR-V bytecode to machine code for execution by the GPU doesn't happen until the graphics pipeline is created, so we make them local and destroy them immediately after pipeline creation is finished
-        VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode, logicalDevice);
-        VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode, logicalDevice);
+        if (DoesFileExist(m_vertexPath) && DoesFileExist(m_fragmentPath))
+        {
+            auto vertShaderCode = Helper::ReadFile(m_vertexPath);
+            auto fragShaderCode = Helper::ReadFile(m_fragmentPath);
+
+            // The compilation and linking of the SPIR-V bytecode to machine code for execution by the GPU doesn't happen until the graphics pipeline is created, so we make them local and destroy them immediately after pipeline creation is finished
+            vertShaderModule = CreateShaderModule(vertShaderCode, logicalDevice);
+            fragShaderModule = CreateShaderModule(fragShaderCode, logicalDevice);
+        }
+        else
+        {
+            LogError("Vertex shader and Fragment shader paths not found. GraphicsPipeline::CreateGraphicsPipeline() failed.");
+            return;
+        }
 
         // Assign shaders to whichever pipeline stage we want through this struct used to create the pipeline
         // Vertex shader
@@ -240,7 +260,7 @@ namespace FlatEngine
         // More info here - https://vulkan-tutorial.com/en/Drawing_a_triangle/Graphics_pipeline_basics/Conclusion                     
         m_pipelineInfo.stageCount = 2;
         m_pipelineInfo.pStages = shaderStages;        
-        m_pipelineInfo.pVertexInputState = &vertexInputInfo;                    
+        m_pipelineInfo.pVertexInputState = &vertexInputInfo;          
         m_pipelineInfo.renderPass = renderPass.GetRenderPass();
         m_pipelineInfo.subpass = 0;
         m_pipelineInfo.pInputAssemblyState = &m_inputAssembly;
@@ -292,4 +312,13 @@ namespace FlatEngine
         m_rasterizer = rasterizerInfos;
     }
 
+    void GraphicsPipeline::SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos)
+    {
+        m_colorBlendAttachment = colorBlendAttachmentInfos;
+    }
+
+    VkPipelineColorBlendAttachmentState& GraphicsPipeline::GetColorBlendAttachmentCreateInfos()
+    {
+        return m_colorBlendAttachment;
+    }
 }

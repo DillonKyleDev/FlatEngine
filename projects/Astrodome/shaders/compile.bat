@@ -1,7 +1,7 @@
 @REM glslc.exe imgui.vert -o compiledShaders/imguiVert.spv
 @REM glslc.exe imgui.frag -o compiledShaders/imguiFrag.spv
-glslc.exe shader.vert -o compiledShaders/vert.spv
-glslc.exe shader.frag -o compiledShaders/frag.spv
+glslc.exe water.vert -o compiledShaders/waterVert.spv
+glslc.exe water.frag -o compiledShaders/waterFrag.spv
 glslc.exe shader2.vert -o compiledShaders/vert2.spv
 glslc.exe shader2.frag -o compiledShaders/frag2.spv
 

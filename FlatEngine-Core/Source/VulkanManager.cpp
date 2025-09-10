@@ -341,8 +341,16 @@ namespace FlatEngine
                 rasterizerInfos.lineWidth = CheckJsonFloat(rasterizerData, "lineWidth", name);
                 newMaterial->SetRasterizerCreateInfos(rasterizerInfos);
             }
+            if (JsonContains(materialData, "colorBlendAttachmentData", name))
+            {
+                json colorBlendAttachmentData = materialData["colorBlendAttachmentData"];
 
-            newMaterial->SetHandles(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice, m_sceneViewManager.GetRenderPass(), m_commandPool);
+                VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos = newMaterial->GetColorBlendAttachmentCreateInfos();
+                colorBlendAttachmentInfos.alphaBlendOp = (VkBlendOp)CheckJsonInt(colorBlendAttachmentData, "alphaBlendOp", name);
+                newMaterial->SetColorBlendAttachmentCreateInfos(colorBlendAttachmentInfos);
+            }
+
+            newMaterial->SetHandles(m_winSystem, m_logicalDevice, m_sceneViewManager.GetRenderPass());
             if (b_init)
             {
                 newMaterial->Init();
@@ -368,6 +376,7 @@ namespace FlatEngine
 
         newMaterial->SetPath(filePath);
         newMaterial->SetName(fileName);
+        newMaterial->SetHandles(m_winSystem, m_logicalDevice, m_sceneViewManager.GetRenderPass());
         SaveMaterial(newMaterial);        
 
         return newMaterial;

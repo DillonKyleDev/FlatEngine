@@ -14,8 +14,7 @@ namespace FlatGui
 {
 	// FG_sceneViewGridStep: Used to convert grid space values to pixel values. ie. 2 grid squares = 2 * 10 = 20px.
 	Vector2 FG_sceneViewGridStep = Vector2(50,50);
-	float SCENE_VIEWPORT_WIDTH = 600;
-	float SCENE_VIEWPORT_HEIGHT = 400;
+	Vector2 FG_sceneViewDimensions = Vector2(600, 400);	
 	float DYNAMIC_VIEWPORT_WIDTH = 600;
 	float DYNAMIC_VIEWPORT_HEIGHT = 400;
 	bool FG_b_firstSceneRenderPass = true;
@@ -32,7 +31,7 @@ namespace FlatGui
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
 
 		FlatEngine::PushWindowStyles();
-		ImGui::Begin("Scene View", &FG_b_showSceneView); // Window flags 	ImGuiWindowFlags_NoScrollWithMouse
+		ImGui::Begin("Scene View", &FG_b_showSceneView, 8 | 16); // Window flags 	ImGuiWindowFlags_NoScrollWithMouse
 		FlatEngine::PopWindowStyles();
 		// {
 		
@@ -50,8 +49,8 @@ namespace FlatGui
 			{
 				if (!FG_b_sceneHasBeenSet)
 				{
-					SCENE_VIEWPORT_WIDTH = canvas_sz.x;
-					SCENE_VIEWPORT_HEIGHT = canvas_sz.y;
+					FG_sceneViewDimensions = canvas_sz;					
+					FL::F_sceneViewDimensions = canvas_sz;
 					FG_b_sceneHasBeenSet = true;
 				}
 			}
@@ -65,13 +64,28 @@ namespace FlatGui
 
 			ImGuiIO& inputOutput = ImGui::GetIO();
 			Vector2 currentPos = ImGui::GetCursorScreenPos();
-			Vector2 centerOffset = Vector2(SCENE_VIEWPORT_WIDTH / 2, SCENE_VIEWPORT_HEIGHT / 2);
+			Vector2 centerOffset = FG_sceneViewDimensions * 0.5f;
 			bool b_weightedScroll = false;
-
+			Vector2 size;
+			Vector2 startingPos = ImGui::GetCursorScreenPos();
 			
 			if (FL::F_VulkanManager->GetSceneDescriptorSets().size() > 0)
 			{
-				ImVec2 size = ImGui::GetContentRegionAvail();
+				Vector2 regionAvailable = ImGui::GetContentRegionAvail();		
+				if (regionAvailable.x > regionAvailable.y)
+				{
+					size = Vector2(regionAvailable.x);
+					float heightAdjust = (regionAvailable.x - regionAvailable.y) / 2;
+					startingPos.y -= heightAdjust;
+					ImGui::SetCursorScreenPos(startingPos);
+				}
+				else
+				{
+					size = Vector2(regionAvailable.y);
+					float widthAdjust = (regionAvailable.y - regionAvailable.x) / 2;
+					startingPos.x -= widthAdjust;
+					ImGui::SetCursorScreenPos(startingPos);
+				}
 				ImGui::Image(FL::F_VulkanManager->GetSceneDescriptorSets()[FL::VM_currentFrame], size);
 			}
 

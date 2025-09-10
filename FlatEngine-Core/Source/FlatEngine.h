@@ -193,6 +193,7 @@ namespace FlatEngine
 	// Scene View
 	extern Vector2* F_sceneViewCenter;
 	extern Vector2* F_sceneViewGridStep; 
+	extern Vector2 F_sceneViewDimensions;
 
 	// Collision Detection
 	extern b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible = false);

@@ -151,7 +151,7 @@ namespace FlatGui
 
 	// Scene view
 	extern Vector2 FG_sceneViewportCenter;
-	extern float SCENE_VIEWPORT_WIDTH;
+	extern Vector2 FG_sceneViewDimensions;
 	extern float SCENE_VIEWPORT_HEIGHT;
 	extern float DYNAMIC_VIEWPORT_WIDTH;
 	extern float DYNAMIC_VIEWPORT_HEIGHT;

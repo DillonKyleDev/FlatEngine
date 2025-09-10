@@ -31,6 +31,7 @@ namespace FlatEngine
 		void SetXRotation(float rotation);
 		void SetYRotation(float rotation);
 		void SetZRotation(float rotation);
+		void SetRotation(Vector3 rotation);
 		float GetRotation();
 		Vector3 GetRotations();
 		glm::mat4 GetRotationMatrix();

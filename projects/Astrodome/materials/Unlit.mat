@@ -1,4 +1,7 @@
 {
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
     "fragmentShaderPath": "../projects/Astrodome/shaders/compiledShaders/frag2.spv",
     "inputAssemblyData": {
         "_primitiveRestartEnable": false,
@@ -6,7 +9,7 @@
     },
     "name": "Unlit",
     "rasterizerData": {
-        "cullMode": 2,
+        "cullMode": 0,
         "lineWidth": 1.0,
         "polygonMode": 0
     },

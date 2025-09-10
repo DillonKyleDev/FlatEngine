@@ -58,6 +58,12 @@ namespace FlatEngine
         {
             std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
 
+            // 
+            // float: VK_FORMAT_R32_SFLOAT
+            // vec2 : VK_FORMAT_R32G32_SFLOAT
+            // vec3 : VK_FORMAT_R32G32B32_SFLOAT
+            // vec4 : VK_FORMAT_R32G32B32A32_SFLOAT
+
             attributeDescriptions[0].binding = 0;
             attributeDescriptions[0].location = 0;
             attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;

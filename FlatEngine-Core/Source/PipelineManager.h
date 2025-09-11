@@ -44,7 +44,9 @@ namespace FlatEngine
 		virtual void CreateImageResources() {};		
 		virtual void CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures) {};
 		virtual void OnWindowResized() {};
-		RenderPass& GetRenderPass();
+		virtual void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh) {};
+
+		RenderPass& GetRenderPass();		
 
 	private:
 		RenderPass m_renderPass;						

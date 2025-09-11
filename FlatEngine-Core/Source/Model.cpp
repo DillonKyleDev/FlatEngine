@@ -130,7 +130,7 @@ namespace FlatEngine
                     m_indices.push_back(uniqueVertices[vertex]);
                 }
             }
-            // For line inputs
+            // For line inputs.. TODO: Should query topology member in PipelineManager and switch
             else
             {
                 for (const auto& index : shape.lines.indices)
@@ -246,53 +246,37 @@ namespace FlatEngine
         }
     }
 
-    void Model::UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, float multiplier)
+    void Model::UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, Mesh* mesh)
     {
-        // No longer using UBO for this data, switched to push constants
-        //Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
-        //Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
-        //glm::vec3 cameraPos = glm::vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-        //glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
-        //glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
-        //Vector3 lookDir = Vector3(1.0f, 0.0f, 0.0f);
-
-        //UniformBufferObject ubo{};
-        ////ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Creates a vec4 that is used to matrix multiply by the positions of each vertex.
-        //ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        //ubo.proj = glm::perspective(glm::radians(90.0f), winSystem.GetExtent().width / (float)winSystem.GetExtent().height, 0.1f, 10.0f);
-        //ubo.proj[1][1] *= -1;
-
-        //memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
-
-        // This function will generate a new transformation every frame to make the geometry spin around.We need to include two new headers to implement this functionality:
-        static auto startTime = std::chrono::high_resolution_clock::now();
-
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-        UniformBufferObject ubo{};
-        ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // Creates a vec4 that is used to matrix multiply by the positions of each vertex.
-        ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.proj = glm::perspective(glm::radians(90.0f), winSystem.GetExtent().width / (float)winSystem.GetExtent().height, 0.1f, 10.0f);
-        ubo.proj[1][1] *= -1;
-
-        memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
-    }
-
-    void Model::UpdateUniformBufferObject(glm::mat4 transformationMatrix, glm::vec3 cameraPos, glm::vec3 center, WinSys& winSystem, uint32_t currentImage)
-    {        
-        // This function will generate a new transformation every frame to make the geometry spin around.We need to include two new headers to implement this functionality:
-        static auto startTime = std::chrono::high_resolution_clock::now();
-
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        Transform* transform = mesh->GetParent()->GetTransform();
+        Vector3 meshPosition = transform->GetPosition();
+        glm::mat4 meshScale = transform->GetScaleMatrix();
+        glm::mat4 meshRotation = transform->GetRotationMatrix();
+        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
+        Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
+        Vector3 lookDir = primaryCamera->GetLookDirection();
+        float nearClip = primaryCamera->GetNearClippingDistance();
+        float farClip = primaryCamera->GetFarClippingDistance();
+        float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
         glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
 
+        static auto startTime = std::chrono::high_resolution_clock::now();
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        float aspectRatio = (float)(winSystem.GetExtent().width / winSystem.GetExtent().height);
+
+        glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
+        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
+        glm::mat4 model = meshRotation * meshScale;
+        glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
+        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
+        projection[1][1] *= -1;
+        //glm::mat4 viewAndProjection = projection * view;
+
         UniformBufferObject ubo{};
-        ubo.model = transformationMatrix;
-        ubo.view = glm::lookAt(cameraPos, center, up);
-        ubo.proj = glm::perspective(glm::radians(45.0f), winSystem.GetExtent().width / (float)winSystem.GetExtent().height, 0.1f, 10.0f);
-        ubo.proj[1][1] *= -1;
+        ubo.model = model;
+        ubo.view = view;
+        ubo.projection = projection;
 
         memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }

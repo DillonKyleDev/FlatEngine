@@ -10,6 +10,7 @@ namespace FlatEngine
 	class Texture;
 	class Model;
 	class Material;
+	class Mesh;
 
 	class ViewportManager : public PipelineManager
 	{
@@ -25,6 +26,7 @@ namespace FlatEngine
 		void CreateImageResources();
 		std::vector<VkDescriptorSet> GetDescriptorSets();
 		void OnWindowResized();
+		void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh);
 
 
 	private:		

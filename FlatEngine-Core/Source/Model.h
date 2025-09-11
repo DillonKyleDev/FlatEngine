@@ -9,6 +9,8 @@
 
 namespace FlatEngine
 {
+	class Mesh;
+
 	class Model
 	{
 	public:
@@ -25,8 +27,7 @@ namespace FlatEngine
 		void CreateVertexBuffer(VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
 		void CreateIndexBuffer(VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
 		void CreateUniformBuffers(PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
-		void UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, float multiplier);
-		void UpdateUniformBufferObject(glm::mat4 transformationMatrix, glm::vec3 cameraPos, glm::vec3 center, WinSys& winSystem, uint32_t currentImage);
+		void UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, Mesh* mesh);
 		std::vector<VkBuffer>& GetUniformBuffers();
 		VkBuffer& GetVertexBuffer();
 		VkBuffer& GetIndexBuffer();

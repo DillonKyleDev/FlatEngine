@@ -3,6 +3,8 @@
 #include "PhysicalDevice.h"
 #include "Structs.h"
 #include "Helper.h"
+#include "VulkanManager.h"
+#include "FlatEngine.h"
 
 #include <stdexcept>
 #include <vector>
@@ -54,6 +56,7 @@ namespace FlatEngine
             {
                 vkGetPhysicalDeviceProperties(device, &m_physicalDeviceProperties);
                 m_physicalDevice = device;
+                F_VulkanManager->SetMaxSamples(Helper::GetMaxUsableSampleCount(m_physicalDevice));
                 break;
             }
         }

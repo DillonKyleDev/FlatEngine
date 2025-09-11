@@ -471,10 +471,14 @@ namespace FlatEngine
         // manually reset the fence to the unsignaled state with the vkResetFences call:
         vkResetFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[VM_currentFrame]);
 
-        for (PipelineManager* pipeline : m_pipelineManagers)
-        {
-            pipeline->HandleRenderPass(imageIndex);
-        }
+        //for (PipelineManager* pipeline : m_pipelineManagers)
+        //{
+        //    pipeline->HandleRenderPass(imageIndex);
+        //}
+
+        m_sceneViewManager.HandleRenderPass(imageIndex);
+        m_imguiManager.HandleRenderPass(imageIndex);
+
 
         // Submit the command buffers
         std::vector<VkCommandBuffer> commandBuffers = std::vector<VkCommandBuffer>(m_pipelineManagers.size(), {});
@@ -516,6 +520,16 @@ namespace FlatEngine
         VkResult presentResult = vkQueuePresentKHR(m_logicalDevice.GetPresentQueue(), &presentInfo);
 
         VM_currentFrame = (VM_currentFrame + 1) % VM_MAX_FRAMES_IN_FLIGHT;
+    }
+
+    VkSampleCountFlagBits VulkanManager::GetMaxSamples()
+    {
+        return m_maxSamples;
+    }
+
+    void VulkanManager::SetMaxSamples(VkSampleCountFlagBits maxSamples)
+    {
+        m_maxSamples = maxSamples;
     }
 
     void VulkanManager::RecreateSwapChainAndFrameBuffers()

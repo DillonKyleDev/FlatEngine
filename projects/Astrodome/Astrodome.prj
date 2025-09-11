@@ -21,13 +21,13 @@
             "_vsyncEnabled": true,
             "buildPath": "",
             "currentFileDirectory": "..\\projects\\Astrodome\\materials",
-            "daysSinceSave": 9,
+            "daysSinceSave": 10,
             "effectsVolume": 10,
             "focusedGameObjectID": 0,
-            "hoursSinceSave": 18,
+            "hoursSinceSave": 16,
             "loadedAnimationPath": "..\\projects\\Astrodome\\animations\\Snap.anm",
             "loadedScenePath": "..\\projects\\Astrodome\\scenes\\sandbox.scn",
-            "minutesSinceSave": 58,
+            "minutesSinceSave": 55,
             "monthsSinceSave": 8,
             "musicVolume": 10,
             "path": "..\\projects\\Astrodome\\Astrodome.prj",
@@ -39,7 +39,7 @@
             "sceneViewGridStepY": 25.0,
             "sceneViewScrollingX": -675.0,
             "sceneViewScrollingY": 1828.0,
-            "secondsSinceSave": 47,
+            "secondsSinceSave": 27,
             "yearsSinceSave": 125
         }
     ]

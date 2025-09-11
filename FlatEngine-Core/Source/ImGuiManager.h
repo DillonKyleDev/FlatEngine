@@ -15,6 +15,7 @@ namespace FlatEngine
     class Texture;
     class Model;
     class Material;
+    class Mesh;
 
     class ImGuiManager : public PipelineManager
     {
@@ -29,6 +30,7 @@ namespace FlatEngine
         void CreateImageResources();
         void CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures);
         void OnWindowResized();
+        void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh);
 
         void QuitImGui();        
       

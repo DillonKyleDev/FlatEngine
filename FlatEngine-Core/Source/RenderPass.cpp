@@ -472,7 +472,7 @@ namespace FlatEngine
     {
         // End render pass
         vkCmdEndRenderPass(m_commandBuffers[VM_currentFrame]);
-
+     
         // Finish recording the command buffer
         if (vkEndCommandBuffer(m_commandBuffers[VM_currentFrame]) != VK_SUCCESS)
         {

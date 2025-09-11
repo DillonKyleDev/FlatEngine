@@ -1,6 +1,9 @@
 #include "ImGuiManager.h"
 #include "VulkanManager.h"
 #include "FlatEngine.h"
+#include "Vector3.h"
+#include "Transform.h"
+#include "Camera.h"
 
 #include <stdexcept>
 
@@ -189,5 +192,57 @@ namespace FlatEngine
     {
         CreateImageResources();
         m_renderPass.RecreateFrameBuffers();
+    }
+
+    void ImGuiManager::RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh)
+    {
+        std::vector<VkCommandBuffer>& commandBuffers = m_renderPass.GetCommandBuffers();
+        VkPipeline& graphicsPipeline = mesh.GetMaterial()->GetGraphicsPipeline();
+        VkPipelineLayout& pipelineLayout = mesh.GetMaterial()->GetPipelineLayout();
+        Transform* transform = mesh.GetParent()->GetTransform();
+        Vector3 meshPosition = transform->GetPosition();
+        glm::mat4 meshScale = transform->GetScaleMatrix();
+        glm::mat4 meshRotation = transform->GetRotationMatrix();
+        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
+        Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
+        Vector3 lookDir = primaryCamera->GetLookDirection();
+        float nearClip = primaryCamera->GetNearClippingDistance();
+        float farClip = primaryCamera->GetFarClippingDistance();
+        float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
+        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
+
+        static auto startTime = std::chrono::high_resolution_clock::now();
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+        float aspectRatio = (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height);
+
+        glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
+        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
+        glm::mat4 model = meshRotation * meshScale;
+        glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
+        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
+        projection[1][1] *= -1;
+
+        glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
+
+        uint32_t posOffset = 0;
+        uint32_t posSize = sizeof(glm::vec4);
+        uint32_t cameraPosOffset = sizeof(glm::vec4);
+        uint32_t cameraPosSize = sizeof(glm::vec4);
+        uint32_t timeOffset = sizeof(glm::vec4) * 2;
+        uint32_t timeSize = sizeof(glm::vec4);
+        uint32_t modelOffset = sizeof(glm::vec4) * 2;
+        uint32_t modelSize = sizeof(glm::mat4);
+        uint32_t viewProjectionOffset = sizeof(glm::mat4) * 2;
+        uint32_t viewProjectionSize = sizeof(glm::mat4);
+
+        //vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
+        //vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
+        //vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
+        //vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
+        //vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewProjectionOffset, viewProjectionSize, &view);
+
+        vkCmdBindPipeline(commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 }

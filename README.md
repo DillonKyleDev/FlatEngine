@@ -14,6 +14,8 @@ FlatEngine2D is now just FlatEngine.  Instead of managing two separate codebases
 
 My initial plan was to have a simple and light-weight 2D version of the engine, but in order to implement shaders and keep SDL2, the path of least resistance was to just add Vulkan since I was going to do so for the 3D version of the engine anyway.  And since I'm adding Vulkan and the 3D maths that go along with it, it just made sense to combine the two into one. Box2D will still work perfectly for my 2D physics and collision needs, and at some point in the future I'll be adding 3D physics, but for now, my focus is on getting Vulkan implemented correctly, ironing out the Box2D implementation, getting shaders working, and fixing everything that broke with the introduction of the 3rd dimension.</br>
 
+You are still able to download the last version of FlatEngine2D from before I added Vulkan. It can be found in the branch "LegacyNoVulkanImpl".</br>
+
 I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are quite broken and disorganized still so I don't recommend jumping in at the moment unless you really want to see a bad Vulkan implementation.</br>
 
 I still need to go through and edit the ReadMe to reflect the change from FlatEngine2D to FlatEngine, among many other things.

@@ -50,10 +50,13 @@ namespace FlatEngine
         VkInstance& GetInstance();
         VkQueue& GetGraphicsQueue();
         void DrawFrame();
+        VkSampleCountFlagBits GetMaxSamples();
+        void SetMaxSamples(VkSampleCountFlagBits maxSamples);
 
         static void check_vk_result(VkResult err);
         static void CreateCommandPool(VkCommandPool& commandPool, LogicalDevice& logicalDevice, uint32_t queueFamilyIndices, VkCommandPoolCreateFlags flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
+        // Materials
         void InitializeMaterials();        
         void SaveMaterial(std::shared_ptr<Material> material);
         void LoadMaterial(std::string path, bool b_init = true);
@@ -94,6 +97,7 @@ namespace FlatEngine
         VkInstance m_instance;
         WinSys m_winSystem;
         PhysicalDevice m_physicalDevice;
+        VkSampleCountFlagBits m_maxSamples;
         LogicalDevice m_logicalDevice;
         bool m_b_framebufferResized;
         VkCommandPool m_commandPool;

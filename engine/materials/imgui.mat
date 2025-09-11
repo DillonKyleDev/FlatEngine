@@ -11,7 +11,7 @@
     "rasterizerData": {
         "cullMode": 0,
         "lineWidth": 1.0,
-        "polygonMode": 1
+        "polygonMode": 0
     },
     "textureCount": 1,
     "vertexShaderPath": "../engine/shaders/compiledShaders/imguiVert.spv"

@@ -2,6 +2,7 @@
 #include "VulkanManager.h"
 #include "Helper.h"
 #include "Structs.h"
+#include "FlatEngine.h"
 
 #include "SDL_vulkan.h"
 
@@ -28,8 +29,6 @@ namespace FlatEngine
         m_surface = VK_NULL_HANDLE;
         m_surfaceFormat = {};
         m_presentMode = {};
-        m_windowWidth = 1900;
-        m_windowHeight = 1000;
         m_swapChain = VK_NULL_HANDLE;
         m_swapChainImageFormat = VkFormat();
         m_swapChainExtent = VkExtent2D();
@@ -72,6 +71,9 @@ namespace FlatEngine
     bool WinSys::CreateSDLWindow(std::string windowTitle, int windowWidth, int windowHeight)
     {
         bool b_success = true;
+
+        m_windowWidth = windowWidth;
+        m_windowHeight = windowHeight;
 
         if (m_window != NULL)
         {
@@ -165,6 +167,11 @@ namespace FlatEngine
         if (VM_imageCount + 1 <= swapChainSupport.capabilities.maxImageCount || swapChainSupport.capabilities.maxImageCount == 0)
         {
             //VM_imageCount += 1;
+        }
+
+        if (VM_MAX_FRAMES_IN_FLIGHT <= swapChainSupport.capabilities.maxImageCount || swapChainSupport.capabilities.maxImageCount == 0)
+        {
+            VM_imageCount = VM_MAX_FRAMES_IN_FLIGHT;
         }
 
         VkSwapchainCreateInfoKHR createInfo{};

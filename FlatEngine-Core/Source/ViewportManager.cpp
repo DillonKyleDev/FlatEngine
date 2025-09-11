@@ -2,6 +2,9 @@
 #include "Helper.h"
 #include "FlatEngine.h"
 #include "ImGuiManager.h"
+#include "Vector3.h"
+#include "Transform.h"
+#include "Camera.h"
 
 
 namespace FlatEngine
@@ -34,10 +37,9 @@ namespace FlatEngine
         {
             if (mesh.second.Initialized())
             {
-                m_renderPass.RecordCommandBuffer(imageIndex, mesh.second);
+                RecordCommandBuffer(imageIndex, mesh.second);
+                mesh.second.GetModel().UpdateUniformBuffer(imageIndex, *m_winSystem, &mesh.second);
                 m_renderPass.DrawIndexed(mesh.second);
-
-                mesh.second.GetModel().UpdateUniformBuffer(VM_currentFrame, *m_winSystem, 0.5f);
             }
         }
         m_renderPass.EndRenderPass();
@@ -53,15 +55,14 @@ namespace FlatEngine
     {
         m_renderPass.EnableDepthBuffering();
         m_renderPass.EnableMsaa();
-        m_renderPass.SetImageColorFormat(VK_FORMAT_R32G32B32A32_SFLOAT);
-        m_renderPass.SetMSAASampleCount(VK_SAMPLE_COUNT_1_BIT);
-
-        VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+        VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;// F_VulkanManager->GetMaxSamples();
         VkFormat colorFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+        m_renderPass.SetImageColorFormat(colorFormat);
+        m_renderPass.SetMSAASampleCount(msaaSamples);
 
         VkAttachmentDescription colorAttachment{};
         colorAttachment.format = colorFormat;
-        colorAttachment.samples = msaaSamples;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -75,7 +76,7 @@ namespace FlatEngine
 
         VkAttachmentDescription depthAttachment{};
         depthAttachment.format = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
-        depthAttachment.samples = msaaSamples;
+        depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
         depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -187,5 +188,60 @@ namespace FlatEngine
     void ViewportManager::CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures)
     {
         material->CreateDescriptorSets(descriptorSets, model, textures);
+    }
+    
+    void ViewportManager::RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh)
+    {
+        std::vector<VkCommandBuffer>& commandBuffers = m_renderPass.GetCommandBuffers();
+        VkPipeline& graphicsPipeline = mesh.GetMaterial()->GetGraphicsPipeline();
+        VkPipelineLayout& pipelineLayout = mesh.GetMaterial()->GetPipelineLayout();
+        Transform* transform = mesh.GetParent()->GetTransform();
+        Vector3 meshPosition = transform->GetPosition();
+        glm::mat4 meshScale = transform->GetScaleMatrix();
+        glm::mat4 meshRotation = transform->GetRotationMatrix();
+        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
+        Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
+        Vector3 lookDir = primaryCamera->GetLookDirection();
+        float nearClip = primaryCamera->GetNearClippingDistance();
+        float farClip = primaryCamera->GetFarClippingDistance();
+        float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
+        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
+
+        static auto startTime = std::chrono::high_resolution_clock::now();
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+        float aspectRatio = (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height);
+
+        glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
+        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
+        glm::mat4 model = meshRotation * meshScale;
+        glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
+        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
+        projection[1][1] *= -1;
+
+        glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
+
+        uint32_t posOffset = 0;
+        uint32_t posSize = sizeof(glm::vec4);
+        uint32_t cameraPosOffset = sizeof(glm::vec4);
+        uint32_t cameraPosSize = sizeof(glm::vec4);
+        uint32_t timeOffset = sizeof(glm::vec4) * 2;
+        uint32_t timeSize = sizeof(glm::vec4);
+        uint32_t modelOffset = sizeof(glm::mat4);
+        uint32_t modelSize = sizeof(glm::mat4);
+        uint32_t viewOffset = sizeof(glm::mat4) * 2;
+        uint32_t viewSize = sizeof(glm::mat4);
+        uint32_t projectionOffset = sizeof(glm::mat4) * 3;
+        uint32_t projectionSize = sizeof(glm::mat4);
+
+        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
+        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
+        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
+        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
+        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
+        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);
+
+        vkCmdBindPipeline(commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 }

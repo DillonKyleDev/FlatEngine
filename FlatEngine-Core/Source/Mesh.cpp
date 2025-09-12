@@ -33,6 +33,13 @@ namespace FlatEngine
 
 	std::string Mesh::GetData()
 	{
+		std::string materialName = "";
+
+		if (m_material != nullptr)
+		{
+			materialName = m_material->GetName();
+		}
+
 		json texturesArray = json::array();
 
 		for (Texture texture : m_textures)
@@ -50,7 +57,7 @@ namespace FlatEngine
 			{ "_isCollapsed", IsCollapsed() },
 			{ "_isActive", IsActive() },
 			{ "textures", texturesArray },
-			{ "materialName", m_material->GetName() },
+			{ "materialName", materialName },
 			{ "modelPath", m_model.GetModelPath() }
 		};
 

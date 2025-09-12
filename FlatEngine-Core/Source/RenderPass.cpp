@@ -22,6 +22,7 @@ namespace FlatEngine
         m_framebuffers = std::vector<VkFramebuffer>();
         m_imageViews = std::vector<VkImageView>();
         m_commandBuffers = std::vector<VkCommandBuffer>();
+
         m_renderPassAttachments = std::vector<VkAttachmentDescription>();
         m_renderPassAttachmentRefs = std::vector<VkAttachmentReference>();
         m_subpasses = std::vector<VkSubpassDescription>();

@@ -1,9 +1,9 @@
 #pragma once
 #include "GraphicsPipeline.h"
+#include "RenderPass.h"
 #include "PhysicalDevice.h"
 #include "LogicalDevice.h"
 #include "WinSys.h"
-#include "RenderPass.h"
 #include "Model.h"
 #include "Texture.h"
 #include "Allocator.h"
@@ -60,6 +60,7 @@ namespace FlatEngine
 		std::string m_name;		
 		std::string m_path;
 		GraphicsPipeline m_graphicsPipeline;
+		//RenderPass m_renderPass;
 		Allocator m_allocator;
 		uint32_t m_textureCount;
 		// handles
@@ -67,6 +68,10 @@ namespace FlatEngine
 		LogicalDevice* m_logicalDevice;
 		RenderPass* m_renderPass;
 		bool m_b_initialized;
+
+		std::vector<uint32_t> m_pushConstOffsets;
+		std::vector<uint32_t> m_pushConstSizes;
+		std::vector<const void*> m_pushValues;
 
 		// GraphicsPipeline Configuration structs
 		VkPipelineRasterizationStateCreateInfo m_rasterizer{};

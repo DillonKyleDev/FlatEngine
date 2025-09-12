@@ -87,10 +87,6 @@ namespace FlatEngine
 		VkViewport m_viewport{};
 		VkRect2D m_scissor{};
 
-		//std::vector<uint32_t> m_pushConstOffsets;
-		//std::vector<uint32_t> m_pushConstSizes;
-		//std::vector<const void*> m_pushValues;
-
 		//// Figure these out after going through vulkan docs again
 		//std::vector<VkAttachmentDescription> m_colorAttachments;
 		//std::vector<VkClearValue> m_colorClears;

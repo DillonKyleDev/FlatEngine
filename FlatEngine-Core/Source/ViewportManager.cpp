@@ -38,8 +38,8 @@ namespace FlatEngine
             if (mesh.second.Initialized())
             {
                 RecordCommandBuffer(imageIndex, mesh.second);
-                mesh.second.GetModel().UpdateUniformBuffer(imageIndex, *m_winSystem, &mesh.second);
                 m_renderPass.DrawIndexed(mesh.second);
+                mesh.second.GetModel().UpdateUniformBuffer(imageIndex, *m_winSystem, &mesh.second);
             }
         }
         m_renderPass.EndRenderPass();
@@ -199,7 +199,7 @@ namespace FlatEngine
         Vector3 meshPosition = transform->GetPosition();
         glm::mat4 meshScale = transform->GetScaleMatrix();
         glm::mat4 meshRotation = transform->GetRotationMatrix();
-        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
+        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();        
         Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
         Vector3 lookDir = primaryCamera->GetLookDirection();
         float nearClip = primaryCamera->GetNearClippingDistance();
@@ -235,13 +235,13 @@ namespace FlatEngine
         uint32_t projectionOffset = sizeof(glm::mat4) * 3;
         uint32_t projectionSize = sizeof(glm::mat4);
 
-        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
-        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
-        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
-        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
-        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
-        vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);
+        vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
+        vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
+        vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
+        vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
+        vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
+        vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);
 
-        vkCmdBindPipeline(commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+        vkCmdBindPipeline(commandBuffers[imageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
     }
 }

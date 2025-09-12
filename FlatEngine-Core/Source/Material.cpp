@@ -14,6 +14,8 @@ namespace FlatEngine
 	{
 		m_name = name;
 		m_graphicsPipeline = GraphicsPipeline(vertexPath, fragmentPath);
+		//m_renderPass = RenderPass();
+		m_renderPass = VK_NULL_HANDLE;
 		SetDefaultValues();
 	}
 
@@ -35,9 +37,11 @@ namespace FlatEngine
 		// handles
 		m_winSystem = nullptr;
 		m_logicalDevice = nullptr;
-		m_renderPass = nullptr;
 		m_b_initialized = false;
 
+		// Set default RenderPass configuration
+		// TODO
+		
 		// Default Graphics Pipeline configuration (Filled in with saved values when LoadMaterial() is called
 		m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		m_inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;

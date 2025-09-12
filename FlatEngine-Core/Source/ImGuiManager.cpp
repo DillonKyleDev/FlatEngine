@@ -172,7 +172,7 @@ namespace FlatEngine
 
     void ImGuiManager::HandleRenderPass(uint32_t imageIndex)
     {
-        m_renderPass.BeginRenderPass(imageIndex);
+        m_renderPass.BeginRenderPass(imageIndex);        
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_renderPass.GetCommandBuffers()[VM_currentFrame]);
         m_renderPass.EndRenderPass();
     }

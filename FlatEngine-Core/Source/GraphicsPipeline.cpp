@@ -132,7 +132,6 @@ namespace FlatEngine
 
 
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        m_pipelineLayoutInfo.setLayoutCount = VM_MAX_FRAMES_IN_FLIGHT;
                                 
         m_pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;        
         // Vulkan allows you to create a new graphics pipeline by deriving from an existing pipeline (not using this)
@@ -244,11 +243,12 @@ namespace FlatEngine
         m_viewport.height = (float)winSystem.GetExtent().height;
         m_scissor.extent = winSystem.GetExtent();           
         m_viewportState.pScissors = &m_scissor;
-        m_multisampling.rasterizationSamples = renderPass.GetMsaa();
+        m_multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;// renderPass.GetMsaa();
         m_colorBlending.pAttachments = &m_colorBlendAttachment;
 
         std::vector<VkDescriptorSetLayout> layouts(VM_MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
         m_pipelineLayoutInfo.pSetLayouts = layouts.data();
+        m_pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
         m_pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)m_pushRanges.size();
         m_pipelineLayoutInfo.pPushConstantRanges = m_pushRanges.data();
 

@@ -6,6 +6,8 @@ layout(location = 2) in vec3 normal;
 
 layout(location = 0) out vec4 outColor;
 
+layout(binding = 1) uniform sampler2D texSampler;
+
 
 void main() {
     // Textures are sampled using the built-in texture function.

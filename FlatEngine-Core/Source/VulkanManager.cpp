@@ -18,6 +18,7 @@
 #include <array>
 #include <fstream>
 
+// TODO: Remove PipelineManager class and move RenderPasses into Materials alongside GraphicsPipeline to be controlled by each Material. 
 
 namespace FlatEngine
 {
@@ -55,12 +56,15 @@ namespace FlatEngine
 
         m_materials = std::map<std::string, std::shared_ptr<Material>>();
 
-        m_imguiManager = ImGuiManager();
-        m_sceneViewManager = ViewportManager();
+        m_sceneViewDescriptorSets = std::vector<VkDescriptorSet>();
+        m_gameViewDescriptorSets = std::vector<VkDescriptorSet>();
 
-        m_pipelineManagers = std::vector<PipelineManager*>();
-        m_pipelineManagers.push_back(&m_sceneViewManager);
-        m_pipelineManagers.push_back(&m_imguiManager);
+        //m_imguiManager = ImGuiManager();
+        //m_sceneViewManager = ViewportManager();
+
+        //m_pipelineManagers = std::vector<PipelineManager*>();
+        //m_pipelineManagers.push_back(&m_sceneViewManager);
+        //m_pipelineManagers.push_back(&m_imguiManager);
     }
 
     VulkanManager::~VulkanManager()
@@ -83,16 +87,15 @@ namespace FlatEngine
 
         for (std::pair<std::string, std::shared_ptr<Material>> materialPair : m_materials)
         {
-            // Cleanup allocator as well??
-            materialPair.second->CleanupGraphicsPipeline();
+            materialPair.second->Cleanup();
         }
 
         vkDestroyCommandPool(m_logicalDevice.GetDevice(), m_commandPool, nullptr);
 
-        for (PipelineManager* pipeline : m_pipelineManagers)
-        {
-            pipeline->Cleanup();
-        }
+        //for (PipelineManager* pipeline : m_pipelineManagers)
+        //{
+        //    pipeline->Cleanup();
+        //}
 
         m_logicalDevice.Cleanup();
         m_physicalDevice.Cleanup();
@@ -167,10 +170,10 @@ namespace FlatEngine
                 bool b_initMaterial = false;
                 LoadMaterial("../engine/materials/imgui.mat", b_initMaterial);
 
-                for (PipelineManager* pipeline : m_pipelineManagers)
-                {
-                    pipeline->Setup(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice, m_commandPool);
-                }
+                //for (PipelineManager* pipeline : m_pipelineManagers)
+                //{
+                //    pipeline->Setup(m_instance, m_winSystem, m_physicalDevice, m_logicalDevice, m_commandPool);
+                //}
             }
         }
 
@@ -350,11 +353,13 @@ namespace FlatEngine
                 newMaterial->SetColorBlendAttachmentCreateInfos(colorBlendAttachmentInfos);
             }
 
-            newMaterial->SetHandles(m_winSystem, m_logicalDevice, m_sceneViewManager.GetRenderPass());
-            if (b_init)
+            if (name != "imgui")
             {
-                newMaterial->Init();
+                newMaterial->AddMaterialDescriptorSetToRenderTo("imgui", &m_sceneViewDescriptorSets);
+                newMaterial->AddMaterialDescriptorSetToRenderTo("imgui", &m_gameViewDescriptorSets);
             }
+            newMaterial->SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice, &m_commandPool);
+            newMaterial->Init();
 
             AddMaterial(newMaterial);
         }
@@ -376,7 +381,7 @@ namespace FlatEngine
 
         newMaterial->SetPath(filePath);
         newMaterial->SetName(fileName);
-        newMaterial->SetHandles(m_winSystem, m_logicalDevice, m_sceneViewManager.GetRenderPass());
+        newMaterial->SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice, &m_commandPool);
         SaveMaterial(newMaterial);        
 
         return newMaterial;
@@ -434,18 +439,22 @@ namespace FlatEngine
         texture.CreateTextureImage();
         Model emptyModel = Model();
         std::vector<Texture> textures = std::vector<Texture>(1, texture);
-        m_imguiManager.CreateDescriptorSets(GetMaterial("imgui"), descriptorSets, emptyModel, textures);
+        GetMaterial("imgui")->CreateDescriptorSets(descriptorSets, emptyModel, textures);
     }
 
     void VulkanManager::FreeImGuiTexture(uint32_t allocatedFrom)
     {
-        std::shared_ptr<Material> imGuiMaterial = F_VulkanManager->GetMaterial("imgui");
-        imGuiMaterial->GetAllocator().SetFreed(allocatedFrom);
+        GetMaterial("imgui")->GetAllocator().SetFreed(allocatedFrom);
     }
 
-    std::vector<VkDescriptorSet> VulkanManager::GetSceneDescriptorSets()
+    std::vector<VkDescriptorSet> VulkanManager::GetSceneViewDescriptorSets()
     {
-        return m_sceneViewManager.GetDescriptorSets();
+        return m_sceneViewDescriptorSets;
+    }
+
+    std::vector<VkDescriptorSet> VulkanManager::GetGameViewDescriptorSets()
+    {
+        return m_gameViewDescriptorSets;
     }
 
     void VulkanManager::DrawFrame()
@@ -471,20 +480,25 @@ namespace FlatEngine
         // manually reset the fence to the unsignaled state with the vkResetFences call:
         vkResetFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[VM_currentFrame]);
 
-        //for (PipelineManager* pipeline : m_pipelineManagers)
-        //{
-        //    pipeline->HandleRenderPass(imageIndex);
-        //}
 
-        m_sceneViewManager.HandleRenderPass(imageIndex);
-        m_imguiManager.HandleRenderPass(imageIndex);
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_materials.begin(); material != m_materials.end(); material++)
+        {
+            if (material->first != "imgui")
+            {
+                material->second->HandleRenderPass(imageIndex);
+            }
+        }
+
+        m_materials.at("imgui")->HandleRenderPass(imageIndex);
 
 
         // Submit the command buffers
-        std::vector<VkCommandBuffer> commandBuffers = std::vector<VkCommandBuffer>(m_pipelineManagers.size(), {});
-        for (int i = 0; i < commandBuffers.size(); i++)
+        std::vector<VkCommandBuffer> commandBuffers = std::vector<VkCommandBuffer>(m_materials.size(), {});
+        int bufferIndex = 0;
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_materials.begin(); material != m_materials.end(); material++)
         {
-            commandBuffers[i] = m_pipelineManagers[i]->GetRenderPass().GetCommandBuffers()[VM_currentFrame];
+            commandBuffers[bufferIndex] = material->second->GetRenderPass().GetCommandBuffers()[VM_currentFrame];
+            bufferIndex++;
         }        
 
         VkSubmitInfo submitInfo{};
@@ -535,10 +549,16 @@ namespace FlatEngine
     void VulkanManager::RecreateSwapChainAndFrameBuffers()
     {
         m_winSystem.RecreateSwapChain();   
-        for (PipelineManager* pipeline : m_pipelineManagers)
+        //for (PipelineManager* pipeline : m_pipelineManagers)
+        //{
+        //    pipeline->OnWindowResized();
+        //}
+
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_materials.begin(); material != m_materials.end(); material++)
         {
-            pipeline->OnWindowResized();
+            material->second->OnWindowResized();
         }
+
         ImGui_ImplVulkan_SetMinImageCount(static_cast<uint32_t>(m_winSystem.GetSwapChainImageViews().size()));
     }
 

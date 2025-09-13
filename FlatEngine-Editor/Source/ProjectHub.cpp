@@ -160,7 +160,10 @@ namespace FlatGui
 								buttonStart = buttonStart - Vector2(3, 0);
 								Vector2 renderStart = Vector2(ImGui::GetCursorScreenPos()) + Vector2(indent, 0);
 								Vector2 renderEnd = renderStart + Vector2((float)width, (float)height);
-								ImGui::GetWindowDrawList()->AddImage((void*)texture->GetTexture(), renderStart, renderEnd, Vector2(0), Vector2(1), FL::GetColor32("col_9"));
+								if (texture->GetTexture() != NULL)
+								{
+									ImGui::GetWindowDrawList()->AddImage((void*)texture->GetTexture(), renderStart, renderEnd, Vector2(0), Vector2(1), FL::GetColor32("col_9"));
+								}
 								FL::MoveScreenCursor(indent, 35);
 								ImGui::Text(dateModifiedString.c_str());
 								FL::MoveScreenCursor(indent, 0);

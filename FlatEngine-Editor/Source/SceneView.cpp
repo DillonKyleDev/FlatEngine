@@ -69,7 +69,7 @@ namespace FlatGui
 			Vector2 size;
 			Vector2 startingPos = ImGui::GetCursorScreenPos();
 			
-			if (FL::F_VulkanManager->GetSceneDescriptorSets().size() > 0)
+			if (FL::F_VulkanManager->GetSceneViewDescriptorSets().size() > 0)
 			{
 				Vector2 regionAvailable = ImGui::GetContentRegionAvail();		
 				if (regionAvailable.x > regionAvailable.y)
@@ -86,7 +86,7 @@ namespace FlatGui
 					startingPos.x -= widthAdjust;
 					ImGui::SetCursorScreenPos(startingPos);
 				}
-				ImGui::Image(FL::F_VulkanManager->GetSceneDescriptorSets()[FL::VM_currentFrame], size);
+				ImGui::Image(FL::F_VulkanManager->GetSceneViewDescriptorSets()[FL::VM_currentFrame], size);
 			}
 
 			// Need both the center of the viewport and the center of the world to reference when drawing imagese to the scene view

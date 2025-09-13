@@ -20,13 +20,13 @@ namespace FlatEngine
 		void Cleanup();
 
 		void Setup(VkInstance& instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, VkCommandPool& commandPool);
-		void HandleRenderPass(uint32_t imageIndex);
-		void CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures);
-		void CreateRenderPassResources();
-		void CreateImageResources();
-		std::vector<VkDescriptorSet> GetDescriptorSets();
-		void OnWindowResized();
-		void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh);
+		//void HandleRenderPass(uint32_t imageIndex);
+		//void CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures);
+		//void CreateRenderPassResources();
+		//void CreateImageResources();
+		//std::vector<VkDescriptorSet> GetDescriptorSets();
+		//void OnWindowResized();
+		//void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh);
 
 
 	private:		

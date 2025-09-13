@@ -1,18 +1,18 @@
 #version 450
 
 layout(push_constant, std430) uniform pc {
-    layout(offset = 0)   vec4 position;
-    layout(offset = 16)  vec4 cameraPos;
-    layout(offset = 32)  float time;
-    layout(offset = 64)  mat4 model;
-    layout(offset = 128) mat4 view;
-    layout(offset = 192) mat4 projection;
+    vec4 time;
+    vec4 position;
+    vec4 cameraPos;
+    mat4 model;
+    mat4 view;
+    mat4 projection;
 };
 
 layout(set = 0, binding = 0) uniform UniformBufferObject {
     mat4 model;
     mat4 view;
-    mat4 proj;
+    mat4 projection;
 } ubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -25,10 +25,10 @@ layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 normal;
 
 void main() {    
-    vec4 localPos = model * vec4(inPosition.x, inPosition.y, inPosition.z, 1);
-    float zPos = (sin(localPos.x + time) + sin(localPos.y + time)) + (.5 * sin(localPos.x + (3 * time))) + sin(5 * localPos.y);
+    vec4 localPos = ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1);
+    float zPos = (sin(localPos.x + time.x) + sin(localPos.y + time.x)) + (.5 * sin(localPos.x + (3 * time.x))) + sin(5 * localPos.y);
     vec4 worldPos = vec4(localPos.x + position.x, localPos.y + position.y, zPos, 1);
-    gl_Position = projection * view * worldPos;    
+    gl_Position = ubo.projection * ubo.view * worldPos;    
     fragTexCoord = inTexCoord;
-    fragColor = vec4(sin(localPos.x + time) + sin(localPos.y + time));
+    fragColor = vec4(sin(localPos.x + time.x) + sin(localPos.y + time.x));
 }

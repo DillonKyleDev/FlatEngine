@@ -261,10 +261,10 @@
                     "frustrumGreen": 255.0,
                     "frustrumRed": 255.0,
                     "height": 30.0,
-                    "horizontalViewAngle": 347.0,
+                    "horizontalViewAngle": 583.5,
                     "id": 3,
                     "type": "Camera",
-                    "verticalViewAngle": 11.75,
+                    "verticalViewAngle": 13.5,
                     "width": 50.0,
                     "zoom": 10.0
                 }

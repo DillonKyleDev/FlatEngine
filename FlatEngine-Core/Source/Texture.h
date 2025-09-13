@@ -69,7 +69,7 @@ namespace FlatEngine
 		std::string m_path;
 		int m_textureWidth;
 		int m_textureHeight;
-		std::vector<VkDescriptorSet> m_descriptorSets;
+		std::vector<VkDescriptorSet> m_descriptorSets; // For ImGui to use for it's textures (icons, etc.)
 		int m_allocationIndex;
 		std::vector<VkImage> m_images;
 		std::vector<VkImageView> m_imageViews;

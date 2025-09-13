@@ -24,7 +24,7 @@ namespace FlatEngine
 
 		// handles		
 		m_logicalDevice = &F_VulkanManager->GetLogicalDevice();;
-		m_viewportManager = &F_VulkanManager->m_sceneViewManager;
+		//m_viewportManager = &F_VulkanManager->m_sceneViewManager;
 	}
 
 	Mesh::~Mesh()
@@ -141,6 +141,7 @@ namespace FlatEngine
 
 		if (m_material != nullptr)
 		{
+			m_materialName = m_material->GetName();
 			m_textures.resize(m_material->GetTextureCount());
 		}
 	}
@@ -153,6 +154,7 @@ namespace FlatEngine
 		}
 
 		m_material = F_VulkanManager->GetMaterial(materialName);
+		m_materialName = materialName;
 
 		if (m_material != nullptr)
 		{
@@ -163,6 +165,11 @@ namespace FlatEngine
 	std::shared_ptr<Material> Mesh::GetMaterial()
 	{
 		return m_material;
+	}
+
+	std::string Mesh::GetMaterialName()
+	{
+		return m_materialName;
 	}
 
 	void Mesh::CreateResources()
@@ -197,6 +204,11 @@ namespace FlatEngine
 				CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
 
 				m_b_initialized = true;
+			}
+
+			if (m_material != nullptr)
+			{
+				m_material->CreateDescriptorSets(m_descriptorSets, m_model, m_textures);
 			}
 		}
 	}
@@ -234,11 +246,6 @@ namespace FlatEngine
 			{
 				texture.CreateTextureImage();
 			}
-		}
-
-		if (m_material != nullptr)
-		{
-			m_viewportManager->CreateDescriptorSets(m_material, m_descriptorSets, m_model, m_textures);			
 		}
 	}
 

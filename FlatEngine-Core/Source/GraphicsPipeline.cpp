@@ -25,7 +25,7 @@ namespace FlatEngine
         // VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP : the second and third vertex of every triangle are used as first two vertices of the next triangle  
         m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
         m_inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        m_inputAssembly.primitiveRestartEnable = VK_FALSE;        
+        m_inputAssembly.primitiveRestartEnable = VK_FALSE;
         m_viewport.x = 0.0f;
         m_viewport.y = 0.0f;
         m_viewport.minDepth = 0.0f;
@@ -44,8 +44,8 @@ namespace FlatEngine
 
         m_viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
         m_viewportState.viewportCount = 1;
-        m_viewportState.scissorCount = 1;        
-                
+        m_viewportState.scissorCount = 1;
+
         // Rasterizer - more info found here: https://vulkan-tutorial.com/en/Drawing_a_triangle/Graphics_pipeline_basics/Fixed_functions        
         m_rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         m_rasterizer.depthClampEnable = VK_FALSE;
@@ -66,7 +66,7 @@ namespace FlatEngine
         m_multisampling.pSampleMask = nullptr;
         m_multisampling.alphaToCoverageEnable = VK_FALSE;
         m_multisampling.alphaToOneEnable = VK_FALSE;
-    
+
         // Color blending - After a fragment shader has returned a color, it needs to be combined with the color that is already in the framebuffer.
         m_colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT | 0;
         m_colorBlendAttachment.blendEnable = VK_TRUE;
@@ -76,7 +76,7 @@ namespace FlatEngine
         m_colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
         m_colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
         m_colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // VK_BLEND_OP_MIN or VK_BLEND_OP_MAX to remove additive effect of alpha
-        
+
         m_colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
         m_colorBlending.logicOpEnable = VK_FALSE;
         m_colorBlending.logicOp = VK_LOGIC_OP_COPY;
@@ -85,7 +85,7 @@ namespace FlatEngine
         m_colorBlending.blendConstants[1] = 0.0f;
         m_colorBlending.blendConstants[2] = 0.0f;
         m_colorBlending.blendConstants[3] = 0.0f;
-        
+
         m_depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
         m_depthStencil.depthTestEnable = VK_TRUE;
         m_depthStencil.depthWriteEnable = VK_TRUE;
@@ -96,47 +96,14 @@ namespace FlatEngine
         m_depthStencil.stencilTestEnable = VK_FALSE;
         m_depthStencil.front = {};
         m_depthStencil.back = {};
-                 
-        VkPushConstantRange translateRange = {};
-        translateRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        translateRange.offset = (uint32_t)0;
-        translateRange.size = (uint32_t)16;
-        VkPushConstantRange camPosRange = {};
-        camPosRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        camPosRange.offset = (uint32_t)16;
-        camPosRange.size = (uint32_t)16;
-        VkPushConstantRange timeRange = {};
-        timeRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        timeRange.offset = (uint32_t)32;
-        timeRange.size = (uint32_t)16;
-        VkPushConstantRange modelRange = {};
-        modelRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        modelRange.offset = (uint32_t)64;
-        modelRange.size = (uint32_t)64;
-        VkPushConstantRange viewRange = {};
-        viewRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        viewRange.offset = (uint32_t)128;
-        viewRange.size = (uint32_t)64;
-        VkPushConstantRange projectionRange = {};
-        projectionRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        projectionRange.offset = (uint32_t)192;
-        projectionRange.size = (uint32_t)64;
-
-
-        m_pushRanges.push_back(translateRange);
-        m_pushRanges.push_back(camPosRange);
-        m_pushRanges.push_back(timeRange);
-        m_pushRanges.push_back(modelRange);
-        m_pushRanges.push_back(viewRange);
-        m_pushRanges.push_back(projectionRange);
 
 
         m_pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-                                
-        m_pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;        
+
+        m_pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
         // Vulkan allows you to create a new graphics pipeline by deriving from an existing pipeline (not using this)
         m_pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
-        m_pipelineInfo.basePipelineIndex = -1;        
+        m_pipelineInfo.basePipelineIndex = -1;
     }
 
     GraphicsPipeline::~GraphicsPipeline()
@@ -185,6 +152,49 @@ namespace FlatEngine
         }
 
         return shaderModule;
+    }
+
+    void GraphicsPipeline::CreatePushConstantRanges()
+    {
+        VkPushConstantRange pushRange = {};
+        pushRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        pushRange.offset = (uint32_t)0;
+        pushRange.size = (uint32_t)(sizeof(PushConstants));
+
+
+        //VkPushConstantRange translateRange = {};
+        //translateRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //translateRange.offset = (uint32_t)0;
+        //translateRange.size = (uint32_t)16;
+        //VkPushConstantRange camPosRange = {};
+        //camPosRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //camPosRange.offset = (uint32_t)16;
+        //camPosRange.size = (uint32_t)16;
+        //VkPushConstantRange timeRange = {};
+        //timeRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //timeRange.offset = (uint32_t)32;
+        //timeRange.size = (uint32_t)16;
+        //VkPushConstantRange modelRange = {};
+        //modelRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //modelRange.offset = (uint32_t)64;
+        //modelRange.size = (uint32_t)64;
+        //VkPushConstantRange viewRange = {};
+        //viewRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //viewRange.offset = (uint32_t)128;
+        //viewRange.size = (uint32_t)64;
+        //VkPushConstantRange projectionRange = {};
+        //projectionRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //projectionRange.offset = (uint32_t)192;
+        //projectionRange.size = (uint32_t)64;
+
+        m_pushRanges.push_back(pushRange);
+
+        //m_pushRanges.push_back(translateRange);
+        //m_pushRanges.push_back(camPosRange);
+        //m_pushRanges.push_back(timeRange);
+        //m_pushRanges.push_back(modelRange);
+        //m_pushRanges.push_back(viewRange);
+        //m_pushRanges.push_back(projectionRange);
     }
 
     void GraphicsPipeline::CreateGraphicsPipeline(LogicalDevice& logicalDevice, WinSys& winSystem, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout)
@@ -249,8 +259,11 @@ namespace FlatEngine
         std::vector<VkDescriptorSetLayout> layouts(VM_MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
         m_pipelineLayoutInfo.pSetLayouts = layouts.data();
         m_pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
-        m_pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)m_pushRanges.size();
-        m_pipelineLayoutInfo.pPushConstantRanges = m_pushRanges.data();
+        if (m_pushRanges.size() > 0)
+        {
+            m_pipelineLayoutInfo.pushConstantRangeCount = (uint32_t)m_pushRanges.size();
+            m_pipelineLayoutInfo.pPushConstantRanges = m_pushRanges.data();
+        }
 
         if (vkCreatePipelineLayout(logicalDevice.GetDevice(), &m_pipelineLayoutInfo, nullptr, &m_pipelineLayout) != VK_SUCCESS)
         {

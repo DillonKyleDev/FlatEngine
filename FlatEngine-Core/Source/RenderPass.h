@@ -17,7 +17,7 @@ namespace FlatEngine
 		~RenderPass();
 		void Cleanup(LogicalDevice& logicalDevice);
 
-		void SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
+		void SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice);
 		void Init(VkCommandPool commandPool);
 		void SetDefaultRenderPassConfig();
 		void CreateSceneRenderPassResources();
@@ -40,6 +40,7 @@ namespace FlatEngine
 		void DestroyCommandBuffers();
 		std::vector<VkCommandBuffer>& GetCommandBuffers();
 		void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh);
+		void RecordCommandBuffer(VkPipelineLayout pipelineLayout, std::vector<uint32_t>& m_pushConstOffsets, std::vector<uint32_t>& m_pushConstSizes, std::vector<const void*>& m_pushValues);
 		void DrawIndexed(Mesh& mesh);
 		void BeginRenderPass(uint32_t imageIndex);
 		void EndRenderPass();
@@ -76,7 +77,7 @@ namespace FlatEngine
 		VkImageView m_depthImageView;
 		bool m_b_depthBuffersEnabled;
 		// handles
-		VkInstance m_instance;
+		VkInstance* m_instance;
 		WinSys* m_winSystem;
 		PhysicalDevice* m_physicalDevice;
 		LogicalDevice* m_logicalDevice;

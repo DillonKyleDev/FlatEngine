@@ -95,9 +95,12 @@ namespace FlatEngine
     };
 
     struct PushConstants {
+        glm::vec4 time;
         glm::vec4 meshPosition;
-        glm::mat4 transformation;
-        glm::mat4 viewAndProjection;
+        glm::vec4 cameraPosition;
+        glm::mat4 model;        
+        glm::mat4 view;
+        glm::mat4 projection;
     };
 
     struct SamplerProps {

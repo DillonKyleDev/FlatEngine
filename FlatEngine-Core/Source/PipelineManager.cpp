@@ -21,8 +21,8 @@ namespace FlatEngine
 	{
 	}
 
-	RenderPass& PipelineManager::GetRenderPass()
-	{
-		return m_renderPass;
-	}
+	//RenderPass& PipelineManager::GetRenderPass()
+	//{
+	//	return m_renderPass;
+	//}
 }

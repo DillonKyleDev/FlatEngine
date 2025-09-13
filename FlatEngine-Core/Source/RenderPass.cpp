@@ -72,12 +72,12 @@ namespace FlatEngine
     }
 
 
-    void RenderPass::SetHandles(VkInstance instance, WinSys& winSystem, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void RenderPass::SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice)
     {
         m_instance = instance;
-        m_winSystem = &winSystem;
-        m_physicalDevice = &physicalDevice;
-        m_logicalDevice = &logicalDevice;
+        m_winSystem = winSystem;
+        m_physicalDevice = physicalDevice;
+        m_logicalDevice = logicalDevice;
     }
 
     void RenderPass::Init(VkCommandPool commandPool)
@@ -488,56 +488,79 @@ namespace FlatEngine
 
     void RenderPass::RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh)
     {
-        VkPipeline& graphicsPipeline = mesh.GetMaterial()->GetGraphicsPipeline();
-        VkPipelineLayout& pipelineLayout = mesh.GetMaterial()->GetPipelineLayout();
-        Transform* transform = mesh.GetParent()->GetTransform();
-        Vector3 meshPosition = transform->GetPosition();
-        glm::mat4 meshScale = transform->GetScaleMatrix();
-        glm::mat4 meshRotation = transform->GetRotationMatrix();
-        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
-        Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();        
-        Vector3 lookDir = primaryCamera->GetLookDirection();
-        float nearClip = primaryCamera->GetNearClippingDistance();
-        float farClip = primaryCamera->GetFarClippingDistance();
-        float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
-        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);                   
-        
-        static auto startTime = std::chrono::high_resolution_clock::now();
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        //VkPipeline& graphicsPipeline = mesh.GetMaterial()->GetGraphicsPipeline();
+        //VkPipelineLayout& pipelineLayout = mesh.GetMaterial()->GetPipelineLayout();
+        //Transform* transform = mesh.GetParent()->GetTransform();
+        //Vector3 meshPosition = transform->GetPosition();
+        //glm::mat4 meshScale = transform->GetScaleMatrix();
+        //glm::mat4 meshRotation = transform->GetRotationMatrix();
+        //Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
+        //Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();        
+        //Vector3 lookDir = primaryCamera->GetLookDirection();
+        //float nearClip = primaryCamera->GetNearClippingDistance();
+        //float farClip = primaryCamera->GetFarClippingDistance();
+        //float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
+        //glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);                   
+        //
+        //static auto startTime = std::chrono::high_resolution_clock::now();
+        //auto currentTime = std::chrono::high_resolution_clock::now();
+        //float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-        float aspectRatio = (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height);
+        //float aspectRatio = (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height);
 
-        glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
-        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);        
-        glm::mat4 model = meshRotation * meshScale;        
-        glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
-        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
-        projection[1][1] *= -1;    
+        //glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
+        //glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);        
+        //glm::mat4 model = meshRotation * meshScale;        
+        //glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
+        //glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
+        //projection[1][1] *= -1;    
 
-        glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
-         
-        uint32_t posOffset =        0;
-        uint32_t posSize =          sizeof(glm::vec4);
-        uint32_t cameraPosOffset =  sizeof(glm::vec4);
-        uint32_t cameraPosSize =    sizeof(glm::vec4);
-        uint32_t timeOffset =       sizeof(glm::vec4) * 2;
-        uint32_t timeSize =         sizeof(glm::vec4);
-        uint32_t modelOffset =      sizeof(glm::mat4);
-        uint32_t modelSize =        sizeof(glm::mat4);
-        uint32_t viewOffset =       sizeof(glm::mat4) * 2;
-        uint32_t viewSize =         sizeof(glm::mat4);
-        uint32_t projectionOffset = sizeof(glm::mat4) * 3;
-        uint32_t projectionSize =   sizeof(glm::mat4);
+        //glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
+        // 
+        //uint32_t posOffset =        0;
+        //uint32_t posSize =          sizeof(glm::vec4);
+        //uint32_t cameraPosOffset =  sizeof(glm::vec4);
+        //uint32_t cameraPosSize =    sizeof(glm::vec4);
+        //uint32_t timeOffset =       sizeof(glm::vec4) * 2;
+        //uint32_t timeSize =         sizeof(glm::vec4);
+        //uint32_t modelOffset =      sizeof(glm::mat4);
+        //uint32_t modelSize =        sizeof(glm::mat4);
+        //uint32_t viewOffset =       sizeof(glm::mat4) * 2;
+        //uint32_t viewSize =         sizeof(glm::mat4);
+        //uint32_t projectionOffset = sizeof(glm::mat4) * 3;
+        //uint32_t projectionSize =   sizeof(glm::mat4);
 
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
-        vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection);            
 
-        vkCmdBindPipeline(m_commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+        //PushConstants pushConstants;
+        //pushConstants.time = glm::vec4(time);
+        //pushConstants.meshPosition = meshPos;
+        //pushConstants.cameraPosition = viewportCameraPos;
+        //pushConstants.model = model;
+        //pushConstants.view = view;
+        //pushConstants.projection = projection;
+
+        //uint32_t pushOffset = 0;
+        //uint32_t pushSize = sizeof(PushConstants);
+
+        //vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushOffset, pushSize, &pushConstants);
+
+        ////vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, posOffset, posSize, &meshPos);
+        ////vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, cameraPosOffset, cameraPosSize, &viewportCameraPos);
+        ////vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, timeOffset, timeSize, &time);
+        ////vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, modelOffset, modelSize, &model);
+        ////vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, viewOffset, viewSize, &view);
+        ////vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, projectionOffset, projectionSize, &projection); 
+
+        //vkCmdBindPipeline(m_commandBuffers[VM_currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+    }
+
+    // TODO: iron out dynamic push constants
+    void RenderPass::RecordCommandBuffer(VkPipelineLayout pipelineLayout, std::vector<uint32_t>& pushConstOffsets, std::vector<uint32_t>& pushConstSizes, std::vector<const void*>& pushValues)
+    {
+        for (int i = 0; i < pushValues.size(); i++)
+        {
+            vkCmdPushConstants(m_commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushConstOffsets[i], pushConstSizes[i], &pushValues[i]);
+        }
     }
 
     void RenderPass::DrawIndexed(Mesh& mesh)

@@ -21,6 +21,7 @@ namespace FlatEngine
 		std::string GetVertexPath();
 		std::string GetFragmentPath();
 		VkShaderModule CreateShaderModule(const std::vector<char>& code, LogicalDevice& logicalDevice);
+		void CreatePushConstantRanges();
 		void CreateGraphicsPipeline(LogicalDevice& logicalDevice, WinSys& winSystem, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout);
 		VkPipeline& GetGraphicsPipeline();
 		VkPipelineLayout& GetPipelineLayout();

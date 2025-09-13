@@ -69,7 +69,9 @@ namespace FlatEngine
         void CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets);
         void FreeImGuiTexture(uint32_t allocatedFrom);
         // Scene View
-        std::vector<VkDescriptorSet> GetSceneDescriptorSets();        
+        std::vector<VkDescriptorSet> GetSceneViewDescriptorSets();        
+        // Game View
+        std::vector<VkDescriptorSet> GetGameViewDescriptorSets();
 
         // WinSystem wrappers
         void CreateTextureImage(VkImage& image, std::string path, uint32_t mipLevels, VkDeviceMemory& imageMemory);
@@ -89,10 +91,13 @@ namespace FlatEngine
         
         std::map<std::string, std::shared_ptr<Material>> m_materials;
 
-        ImGuiManager m_imguiManager;
-        ViewportManager m_sceneViewManager;
+        //ImGuiManager m_imguiManager;
+        //ViewportManager m_sceneViewManager;
 
-        std::vector<PipelineManager*> m_pipelineManagers;
+        //std::vector<PipelineManager*> m_pipelineManagers;
+
+        std::vector<VkDescriptorSet> m_sceneViewDescriptorSets;
+        std::vector<VkDescriptorSet> m_gameViewDescriptorSets;
 
         VkInstance m_instance;
         WinSys m_winSystem;

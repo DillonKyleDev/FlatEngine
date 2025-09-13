@@ -245,7 +245,7 @@ namespace FlatEngine
 				size_t newSize = textures.size();
 				std::vector<VkWriteDescriptorSet> descriptorWrites{};
 				descriptorWrites.resize(newSize);
-
+	
 				if (model.GetModelPath() != "")
 				{
 					descriptorWrites.resize(newSize + (size_t)1);
@@ -270,8 +270,8 @@ namespace FlatEngine
 				imageInfos.resize(m_textureCount);
 
 				for (size_t j = 0; j < textures.size(); j++)
-				{
-					imageInfos[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				{				
+					imageInfos[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; // LOOK INTO THIS FOR EXPECTS VKIMAGE TO BE IN SHADER_READONLY_OPTIMAL ERROR
 					imageInfos[j].imageView = textures[j].GetImageViews()[i];
 					imageInfos[j].sampler = textures[j].GetSampler();
 

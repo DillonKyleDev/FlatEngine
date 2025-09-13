@@ -31,6 +31,7 @@ namespace FlatEngine
 		void SetMaterial(std::shared_ptr<Material> material);
 		void SetMaterial(std::string materialName);
 		std::shared_ptr<Material> GetMaterial();
+		std::string GetMaterialName();
 		void CreateResources();
 		void AddTexture(std::string path, uint32_t index);
 		void AddTexture(Texture texture, uint32_t index);
@@ -40,6 +41,7 @@ namespace FlatEngine
 
 	private:
 		Model m_model;
+		std::string m_materialName;
 		std::shared_ptr<Material> m_material;
 		std::vector<Texture> m_textures;
 		std::vector<VkDescriptorSet> m_descriptorSets;

@@ -37,16 +37,16 @@ namespace FlatEngine
 			m_physicalDevice = &physicalDevice;
 			m_logicalDevice = &logicalDevice;
 			m_commandPool = &commandPool;
-			m_renderPass.SetHandles(instance, winSystem, physicalDevice, logicalDevice);
+			//m_renderPass.SetHandles(instance, winSystem, physicalDevice, logicalDevice);
 		};
-		virtual void HandleRenderPass(uint32_t imageIndex) {};	
-		virtual void CreateRenderPassResources() {};
-		virtual void CreateImageResources() {};		
-		virtual void CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures) {};
-		virtual void OnWindowResized() {};
-		virtual void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh) {};
+		//virtual void HandleRenderPass(uint32_t imageIndex) {};	
+		//virtual void CreateRenderPassResources() {};
+		//virtual void CreateImageResources() {};		
+		//virtual void CreateDescriptorSets(std::shared_ptr<Material> material, std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures) {};
+		//virtual void OnWindowResized() {};
+		//virtual void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh) {};
 
-		RenderPass& GetRenderPass();		
+		//RenderPass& GetRenderPass();		
 
 	private:
 		RenderPass m_renderPass;						

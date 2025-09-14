@@ -1,5 +1,6 @@
 #include "Helper.h"
 #include "VulkanManager.h"
+#include "FlatEngine.h"
 
 #include <set>
 #include <fstream>
@@ -131,8 +132,11 @@ namespace FlatEngine
         return files;
     }
 
-    VkCommandBuffer Helper::BeginSingleTimeCommands(VkCommandPool commandPool, LogicalDevice& logicalDevice)
+    VkCommandBuffer Helper::BeginSingleTimeCommands()
     {
+        VkCommandPool& commandPool = F_VulkanManager->GetCommandPool();
+        LogicalDevice& logicalDevice = F_VulkanManager->GetLogicalDevice();
+
         // For copying our cpu staging buffer over to our actual device buffer
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -155,8 +159,11 @@ namespace FlatEngine
         return commandBuffer;
     }
 
-    void Helper::EndSingleTimeCommands(VkCommandPool commandPool, VkCommandBuffer commandBuffer, LogicalDevice& logicalDevice)
+    void Helper::EndSingleTimeCommands(VkCommandBuffer commandBuffer)
     {
+        VkCommandPool& commandPool = F_VulkanManager->GetCommandPool();
+        LogicalDevice& logicalDevice = F_VulkanManager->GetLogicalDevice();
+
         // Stop recording
         vkEndCommandBuffer(commandBuffer);
         // Now execute the command buffer to complete the transfer

@@ -15,6 +15,7 @@ namespace FlatEngine
 {
     Model::Model()
     {
+        m_winSystem = &F_VulkanManager->GetWinSystem();
         m_modelPath = "";
         m_vertices = std::vector<Vertex>();
         m_indices = std::vector<uint32_t>();
@@ -187,7 +188,7 @@ namespace FlatEngine
 
         VkBuffer stagingBuffer{};
         VkDeviceMemory stagingBufferMemory{};
-        WinSys::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, physicalDevice, logicalDevice);
+        m_winSystem->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
         void* data;
         vkMapMemory(logicalDevice.GetDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
@@ -195,10 +196,10 @@ namespace FlatEngine
         vkUnmapMemory(logicalDevice.GetDevice(), stagingBufferMemory);
 
         // Create device local vertex buffer for actual buffer
-        WinSys::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertexBuffer, m_vertexBufferMemory, physicalDevice, logicalDevice);
+        m_winSystem->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertexBuffer, m_vertexBufferMemory);
 
         // We can now call copyBuffer function to move the vertex data to the device local buffer:
-        WinSys::CopyBuffer(stagingBuffer, m_vertexBuffer, bufferSize, commandPool, logicalDevice);
+        m_winSystem->CopyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
 
         // After copying the data from the staging buffer to the device buffer, we should clean it up:
         vkDestroyBuffer(logicalDevice.GetDevice(), stagingBuffer, nullptr);
@@ -213,16 +214,16 @@ namespace FlatEngine
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
-        WinSys::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, physicalDevice, logicalDevice);
+        m_winSystem->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
         void* data;
         vkMapMemory(logicalDevice.GetDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
         memcpy(data, m_indices.data(), (size_t)bufferSize);
         vkUnmapMemory(logicalDevice.GetDevice(), stagingBufferMemory);
 
-        WinSys::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory, physicalDevice, logicalDevice);
+        m_winSystem->CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_indexBuffer, m_indexBufferMemory);
 
-        WinSys::CopyBuffer(stagingBuffer, m_indexBuffer, bufferSize, commandPool, logicalDevice);
+        m_winSystem->CopyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
 
         vkDestroyBuffer(logicalDevice.GetDevice(), stagingBuffer, nullptr);
         vkFreeMemory(logicalDevice.GetDevice(), stagingBufferMemory, nullptr);
@@ -240,7 +241,7 @@ namespace FlatEngine
 
         for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
         {
-            WinSys::CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_uniformBuffers[i], m_uniformBuffersMemory[i], physicalDevice, logicalDevice);
+            m_winSystem->CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_uniformBuffers[i], m_uniformBuffersMemory[i]);
 
             vkMapMemory(logicalDevice.GetDevice(), m_uniformBuffersMemory[i], 0, bufferSize, 0, &m_uniformBuffersMapped[i]);
         }
@@ -252,8 +253,8 @@ namespace FlatEngine
         Vector3 meshPosition = transform->GetPosition();
         glm::mat4 meshScale = transform->GetScaleMatrix();
         glm::mat4 meshRotation = transform->GetRotationMatrix();
-        Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
-        Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
+        Camera* primaryCamera = FlatEngine::F_sceneViewCameraObject.GetCamera();
+        Vector3 cameraPosition = FlatEngine::F_sceneViewCameraObject.GetTransform()->GetPosition();
         Vector3 lookDir = primaryCamera->GetLookDirection();
         float nearClip = primaryCamera->GetNearClippingDistance();
         float farClip = primaryCamera->GetFarClippingDistance();
@@ -270,9 +271,11 @@ namespace FlatEngine
         projection[1][1] *= -1;
 
         UniformBufferObject ubo{};
+        ubo.meshPosition = meshPos;
+        ubo.cameraPosition = viewportCameraPos;
         ubo.model = model;
-        ubo.view = view;
-        ubo.projection = projection;
+        ubo.viewAndProjection = projection * view;        
+        ubo.time = (glm::float32)((glm::float32)GetEngineTime() / 1000.0f);
         memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 

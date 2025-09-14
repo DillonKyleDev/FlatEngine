@@ -89,9 +89,11 @@ namespace FlatEngine
     };
 
     struct UniformBufferObject {
+        glm::vec4 meshPosition;
+        glm::vec4 cameraPosition;
         glm::mat4 model;
-        glm::mat4 view;     
-        glm::mat4 projection;
+        glm::mat4 viewAndProjection;             
+        glm::float32 time;
     };
 
     struct PushConstants {
@@ -121,3 +123,29 @@ template<> struct std::hash<FlatEngine::Vertex>
             (std::hash<glm::vec3>()(vertex.normal) << 1);
     }
 };
+
+
+// Shader ubo alignment cheatsheet
+// 
+// Vulkan expects the data in your structure to be aligned in memory in a specific way, for example:
+
+// Scalars have to be aligned by N(= 4 bytes given 32 bit floats).
+// A vec2 must be aligned by 2N(= 8 bytes)
+// A vec3 or vec4 must be aligned by 4N(= 16 bytes)
+// A nested structure must be aligned by the base alignment of its members rounded up to a multiple of 16.
+// A mat4 matrix must have the same alignment as a vec4.
+
+// You can find the full list of alignment requirements in the specification.
+
+// Our original shader with just three mat4 fields already met the alignment requirements.As each mat4 is 4 x 4 x 4 = 64 bytes in size, model has an offset of 0, view has an offset of 64 and proj has an offset of 128. All of these are multiples of 16 and that's why it worked fine.
+
+// The new structure starts with a vec2 which is only 8 bytes in size and therefore throws off all of the offsets.Now model has an offset of 8, view an offset of 72 and proj an offset of 136, none of which are multiples of 16. To fix this problem we can use the alignas specifier introduced in C++11:
+
+// struct UniformBufferObject {
+//     glm::vec2 foo;
+//     alignas(16) glm::mat4 model;
+//     glm::mat4 view;
+//     glm::mat4 proj;
+// };
+
+// If you now compile and run your program again you should see that the shader correctly receives its matrix values once again.

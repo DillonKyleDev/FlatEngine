@@ -150,7 +150,7 @@ namespace FlatEngine
 	{
 		if (GetPrimaryCamera() != nullptr)
 		{
-			GetPrimaryCamera()->Follow();
+			GetPrimaryCamera()->Update();
 		}
 	}
 

@@ -53,6 +53,10 @@ namespace FlatEngine
         VkSampleCountFlagBits GetMaxSamples();
         void SetMaxSamples(VkSampleCountFlagBits maxSamples);
 
+        VkCommandPool& GetCommandPool();
+        PhysicalDevice& GetPhysicalDevice();
+        LogicalDevice& GetLogicalDevice();        
+
         static void check_vk_result(VkResult err);
         static void CreateCommandPool(VkCommandPool& commandPool, LogicalDevice& logicalDevice, uint32_t queueFamilyIndices, VkCommandPoolCreateFlags flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
@@ -69,9 +73,9 @@ namespace FlatEngine
         void CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets);
         void FreeImGuiTexture(uint32_t allocatedFrom);
         // Scene View
-        std::vector<VkDescriptorSet> GetSceneViewDescriptorSets();        
+        std::vector<VkDescriptorSet>& GetSceneViewDescriptorSets();        
         // Game View
-        std::vector<VkDescriptorSet> GetGameViewDescriptorSets();
+        std::vector<VkDescriptorSet>& GetGameViewDescriptorSets();
 
         // WinSystem wrappers
         void CreateTextureImage(VkImage& image, std::string path, uint32_t mipLevels, VkDeviceMemory& imageMemory);
@@ -84,10 +88,6 @@ namespace FlatEngine
         void RecreateSwapChainAndFrameBuffers();
         bool CreateVulkanInstance();
         void CreateSyncObjects();        
-
-        VkCommandPool& GetCommandPool();
-        PhysicalDevice& GetPhysicalDevice();
-        LogicalDevice& GetLogicalDevice();
         
         std::map<std::string, std::shared_ptr<Material>> m_materials;
 
@@ -96,6 +96,8 @@ namespace FlatEngine
 
         //std::vector<PipelineManager*> m_pipelineManagers;
 
+        Texture m_sceneViewTexture;
+        Texture m_gameViewTexture;
         std::vector<VkDescriptorSet> m_sceneViewDescriptorSets;
         std::vector<VkDescriptorSet> m_gameViewDescriptorSets;
 

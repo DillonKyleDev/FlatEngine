@@ -10,9 +10,11 @@ layout(push_constant, std430) uniform pc {
 };
 
 layout(set = 0, binding = 0) uniform UniformBufferObject {
+    vec4 meshPosition;
+    vec4 cameraPosition;
     mat4 model;
-    mat4 view;
-    mat4 projection;
+    mat4 viewAndProjection;    
+    float time;
 } ubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -26,9 +28,9 @@ layout(location = 2) out vec3 normal;
 
 void main() {    
     vec4 localPos = ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1);
-    float zPos = (sin(localPos.x + time.x) + sin(localPos.y + time.x)) + (.5 * sin(localPos.x + (3 * time.x))) + sin(5 * localPos.y);
-    vec4 worldPos = vec4(localPos.x + position.x, localPos.y + position.y, zPos, 1);
-    gl_Position = ubo.projection * ubo.view * worldPos;    
+    float zPos = (sin(localPos.x + ubo.time.x) + sin(localPos.y + ubo.time.x)) + (.5 * sin(localPos.x + (3 * ubo.time.x))) + sin(5 * localPos.y);
+    vec4 worldPos = vec4(localPos.x + ubo.meshPosition.x, localPos.y + ubo.meshPosition.y, zPos, 1);
+    gl_Position = ubo.viewAndProjection * worldPos;    
     fragTexCoord = inTexCoord;
-    fragColor = vec4(sin(localPos.x + time.x) + sin(localPos.y + time.x));
+    fragColor = vec4(sin(localPos.x + ubo.time.x) + sin(localPos.y + ubo.time.x));
 }

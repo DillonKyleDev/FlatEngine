@@ -19,8 +19,8 @@ namespace FlatEngine
         static SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface);
         static bool CheckDeviceExtensionSupport(VkPhysicalDevice physicalDevice);
         static std::vector<std::string> FindAllFilesWithExtension(std::string dir, std::string extension);
-        static VkCommandBuffer BeginSingleTimeCommands(VkCommandPool commandPool, LogicalDevice& logicalDevice);
-        static void EndSingleTimeCommands(VkCommandPool commandPool, VkCommandBuffer commandBuffer, LogicalDevice& logicalDevice);
+        static VkCommandBuffer BeginSingleTimeCommands();
+        static void EndSingleTimeCommands(VkCommandBuffer commandBuffer);
         static VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features, VkPhysicalDevice physicalDevice);
         static VkFormat FindDepthFormat(VkPhysicalDevice physicalDevice);
         static bool HasStencilComponent(VkFormat format);

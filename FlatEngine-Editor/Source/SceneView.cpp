@@ -11,9 +11,8 @@
 
 
 namespace FlatGui 
-{
-	// FG_sceneViewGridStep: Used to convert grid space values to pixel values. ie. 2 grid squares = 2 * 10 = 20px.
-	Vector2 FG_sceneViewGridStep = Vector2(50,50);
+{	
+	Vector2 FG_sceneViewGridStep = Vector2(50,50); // Used to convert grid space values to pixel values.ie. 2 grid squares = 2 * 10 = 20px.
 	Vector2 FG_sceneViewDimensions = Vector2(600, 400);	
 	float DYNAMIC_VIEWPORT_WIDTH = 600;
 	float DYNAMIC_VIEWPORT_HEIGHT = 400;

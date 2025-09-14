@@ -1,6 +1,7 @@
 #include "Texture.h"
 #include "FlatEngine.h"
 #include "VulkanManager.h"
+#include "Helper.h"
 
 #include "imgui_impl_vulkan.h"
 #include <stdexcept>
@@ -178,6 +179,11 @@ namespace FlatEngine
 		return m_mipLevels;
 	}
 
+	std::vector<VkDescriptorSet>& Texture::GetDescriptorSets()
+	{
+		return m_descriptorSets;
+	}
+
 	void Texture::CreateTextureImage()
 	{
 		m_images.resize(VM_MAX_FRAMES_IN_FLIGHT);
@@ -191,6 +197,51 @@ namespace FlatEngine
 		}
 		
 		F_VulkanManager->CreateTextureSampler(m_sampler, m_mipLevels);
+	}
+
+	void Texture::CreateRenderToTextureResources()
+	{
+		WinSys& windowSystem = F_VulkanManager->GetWinSystem();
+		VkDevice& logicalDevice = F_VulkanManager->GetLogicalDevice().GetDevice();
+		m_images.resize(VM_MAX_FRAMES_IN_FLIGHT);
+		m_imageViews.resize(VM_MAX_FRAMES_IN_FLIGHT);
+		m_imageMemory.resize(VM_MAX_FRAMES_IN_FLIGHT);
+		VkExtent2D extent = F_VulkanManager->GetWinSystem().GetExtent();
+
+		for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
+		{
+			uint32_t mipLevels = 1;
+			int texWidth = extent.width;
+			int texHeight = extent.height;
+			VkDeviceSize imageSize = texWidth * texHeight * 16;
+			VkBuffer stagingBuffer{};
+			VkDeviceMemory stagingBufferMemory{};
+			windowSystem.CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+			windowSystem.CreateImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_images[i], m_imageMemory[i]);
+
+			VkCommandBuffer copyCmd = Helper::BeginSingleTimeCommands();
+			windowSystem.InsertImageMemoryBarrier(
+				copyCmd,
+				m_images[i],
+				VK_ACCESS_TRANSFER_READ_BIT,
+				VK_ACCESS_MEMORY_READ_BIT,
+				VK_IMAGE_LAYOUT_UNDEFINED,
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+				VK_PIPELINE_STAGE_TRANSFER_BIT,
+				VK_PIPELINE_STAGE_TRANSFER_BIT,
+				VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+			Helper::EndSingleTimeCommands(copyCmd);
+
+			windowSystem.TransitionImageLayout(m_images[i], m_imageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+			windowSystem.CopyBufferToImage(stagingBuffer, m_images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+			windowSystem.TransitionImageLayout(m_images[i], m_imageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+
+			vkDestroyBuffer(logicalDevice, stagingBuffer, nullptr);
+			vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
+
+			windowSystem.CreateImageView(m_imageViews[i], m_images[i], m_imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+			windowSystem.CreateTextureSampler(m_sampler, mipLevels);
+		}		
 	}
 
 	void Texture::ConfigureImageResources(std::vector<VkImage>& images, std::vector<VkImageView>& imageViews, std::vector<VkDeviceMemory>& imageMemory, VkSampler& sampler)

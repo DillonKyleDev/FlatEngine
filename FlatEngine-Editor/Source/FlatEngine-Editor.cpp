@@ -197,12 +197,7 @@ public:
 				frameStart = FL::GetEngineTime();
 			}
 
-			if (FL::GetPrimaryCamera() != nullptr)
-			{
-				FL::GetPrimaryCamera()->Update();
-			}
-
-			//FL::UpdateViewportCameraPos(); // Uncomment this once projects have viewport cameras to save and load viewport camera settings to and then remove if() above.
+			FL::UpdateSceneViewCamera();			
 
 			EndRender();
 

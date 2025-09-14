@@ -63,6 +63,13 @@ namespace FlatEngine
 		std::string m_currentFileDirectory;
 		std::string m_persistantGameObjectsScenePath;
 		Scene m_persistantGameObjectsScene;
+		Vector3 m_sceneCameraPos;
+		float m_sceneCameraHorizontalViewAngle;
+		float m_sceneCameraVerticalViewAngle;
+		Vector3 m_sceneViewLookDirection;
+		float m_sceneViewNearClippingDistance;
+		float m_sceneViewFarClippingDistance;
+		float m_sceneViewPerspectiveAngle;
 		Vector2 m_sceneViewScrolling;
 		Vector2 m_sceneViewGridStep;
 		long m_focusedGameObjectID;

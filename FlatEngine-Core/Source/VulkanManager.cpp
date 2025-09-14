@@ -59,6 +59,9 @@ namespace FlatEngine
         m_sceneViewDescriptorSets = std::vector<VkDescriptorSet>();
         m_gameViewDescriptorSets = std::vector<VkDescriptorSet>();
 
+        m_sceneViewTexture = Texture();
+        m_gameViewTexture = Texture();
+
         //m_imguiManager = ImGuiManager();
         //m_sceneViewManager = ViewportManager();
 
@@ -125,17 +128,17 @@ namespace FlatEngine
 
     void VulkanManager::CreateTextureImage(VkImage& image, std::string path, uint32_t mipLevels, VkDeviceMemory& imageMemory)
     {
-        image = WinSys::CreateTextureImage(path, mipLevels, m_commandPool, m_physicalDevice, m_logicalDevice, imageMemory);
+        image = m_winSystem.CreateTextureImage(path, mipLevels, imageMemory);
     }
 
     void VulkanManager::CreateImageView(VkImageView& imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
     {
-        WinSys::CreateImageView(imageView, image, format, aspectFlags, mipLevels, m_logicalDevice);
+        m_winSystem.CreateImageView(imageView, image, format, aspectFlags, mipLevels);
     }
 
     void VulkanManager::CreateTextureSampler(VkSampler& textureSampler, uint32_t mipLevels)
     {
-        WinSys::CreateTextureSampler(textureSampler, mipLevels, m_physicalDevice, m_logicalDevice);
+        m_winSystem.CreateTextureSampler(textureSampler, mipLevels);
     }
 
     bool VulkanManager::InitVulkan(int windowWidth, int windowHeight)
@@ -156,7 +159,7 @@ namespace FlatEngine
             }
             else
             {
-                m_winSystem.SetHandles(m_instance, m_physicalDevice, m_logicalDevice);
+                m_winSystem.SetHandles(&m_instance, &m_physicalDevice, &m_logicalDevice, &m_commandPool);
                 m_winSystem.CreateSurface();
                 VM_validationLayers.SetupDebugMessenger(m_instance);
                 m_physicalDevice.Init(m_instance, m_winSystem.GetSurface());
@@ -169,6 +172,9 @@ namespace FlatEngine
 
                 bool b_initMaterial = false;
                 LoadMaterial("../engine/materials/imgui.mat", b_initMaterial);
+
+                m_sceneViewTexture.CreateRenderToTextureResources();
+                m_gameViewTexture.CreateRenderToTextureResources();
 
                 //for (PipelineManager* pipeline : m_pipelineManagers)
                 //{
@@ -447,12 +453,12 @@ namespace FlatEngine
         GetMaterial("imgui")->GetAllocator().SetFreed(allocatedFrom);
     }
 
-    std::vector<VkDescriptorSet> VulkanManager::GetSceneViewDescriptorSets()
+    std::vector<VkDescriptorSet>& VulkanManager::GetSceneViewDescriptorSets()
     {
         return m_sceneViewDescriptorSets;
     }
 
-    std::vector<VkDescriptorSet> VulkanManager::GetGameViewDescriptorSets()
+    std::vector<VkDescriptorSet>& VulkanManager::GetGameViewDescriptorSets()
     {
         return m_gameViewDescriptorSets;
     }
@@ -598,11 +604,6 @@ namespace FlatEngine
         return m_logicalDevice.GetGraphicsQueue();
     }
 
-    VkCommandPool& VulkanManager::GetCommandPool()
-    {
-        return m_commandPool;
-    }
-
     PhysicalDevice& VulkanManager::GetPhysicalDevice()
     {
         return m_physicalDevice;
@@ -611,5 +612,10 @@ namespace FlatEngine
     LogicalDevice& VulkanManager::GetLogicalDevice()
     {
         return m_logicalDevice;
+    }
+
+    VkCommandPool& VulkanManager::GetCommandPool()
+    {
+        return m_commandPool;
     }
 }

@@ -97,7 +97,12 @@ namespace FlatEngine
 	{
 		m_position = newPosition;
 
-		Body* body = GetParent()->GetBody();
+		Body* body = nullptr;
+		
+		if (GetParent() != nullptr)
+		{
+			body = GetParent()->GetBody();
+		}
 
 		if (body != nullptr)
 		{
@@ -108,7 +113,11 @@ namespace FlatEngine
 
 	Vector3 Transform::GetPosition()
 	{
-		Body* body = GetParent()->GetBody();
+		Body* body = nullptr;
+		if (GetParent() != nullptr)
+		{
+			body = GetParent()->GetBody();
+		}
 
 		if (body != nullptr)
 		{

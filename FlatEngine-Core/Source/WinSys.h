@@ -19,7 +19,7 @@ namespace FlatEngine
 		void CleanupSystem();
 		void CleanupDrawingResources();
 
-		void SetHandles(VkInstance instance, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
+		void SetHandles(VkInstance* instance, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool);
 		bool CreateSDLWindow(std::string windowTitle, int windowWidth, int windowHeight);
 		SDL_Window* GetWindow();
 		void DestroyWindow();
@@ -43,16 +43,16 @@ namespace FlatEngine
 		VkExtent2D GetExtent();
 		VkSwapchainKHR& GetSwapChain();
 
-		static void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
-		static void CreateImageView(VkImageView& imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, LogicalDevice& logicalDevice);
-		static void CreateTextureSampler(VkSampler& textureSampler, uint32_t mipLevels, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
-		static VkImage CreateTextureImage(std::string path, uint32_t mipLevels, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, VkDeviceMemory textureImageMemory);
-		static void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
-		static void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkCommandPool commandPool, LogicalDevice& logicalDevice);
-		static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice);
-		static void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkCommandPool commandPool, LogicalDevice& logicalDevice);
-		static void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, VkCommandPool commandPool, LogicalDevice& logicalDevice);
-		static void InsertImageMemoryBarrier(VkCommandBuffer commandBuffer, VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkImageSubresourceRange subresourceRange);
+		void CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+		void CreateImageView(VkImageView& imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+		void CreateTextureSampler(VkSampler& textureSampler, uint32_t mipLevels);
+		VkImage CreateTextureImage(std::string path, uint32_t mipLevels, VkDeviceMemory textureImageMemory);
+		void GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
+		void TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
+		void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+		void CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+		void InsertImageMemoryBarrier(VkCommandBuffer commandBuffer, VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkImageSubresourceRange subresourceRange);
 		void ResizeWindow(int width, int height);
 		void SetFullscreen(bool b_isFullscreen);
 
@@ -74,9 +74,10 @@ namespace FlatEngine
 		std::vector<VkImage> m_swapChainImages;
 		std::vector<VkImageView> m_swapChainImageViews;
 		// handles
-		VkInstance m_instanceHandle;
-		PhysicalDevice* m_physicalDeviceHandle;
-		LogicalDevice* m_deviceHandle;
+		VkInstance* m_instance;
+		PhysicalDevice* m_physicalDevice;
+		LogicalDevice* m_logicalDevice;
+		VkCommandPool* m_commandPool;
 	};
 }
 

@@ -276,6 +276,10 @@ namespace FlatGui
 		json projectJson;
 		FL::LoadGameProject(path, projectJson);
 
+		FL::F_sceneViewCameraObject = GameObject();
+		FL::F_sceneViewCameraObject.AddTransform();
+		Camera* sceneViewCamera = FL::F_sceneViewCameraObject.AddCamera();
+
 		if (projectJson["Project Properties"][0] != "NULL")
 		{			
 			for (int i = 0; i < projectJson["Project Properties"].size(); i++)
@@ -345,13 +349,11 @@ namespace FlatGui
 				if (currentObjectJson.contains("effectVolume"))
 				{
 					FL::F_effectVolume = currentObjectJson["effectVolume"];
-				}
-				
+				}				
 				if (currentObjectJson.contains("currentFileDirectory"))
 				{
 					FG_currentDirectory = currentObjectJson["currentFileDirectory"];
-				}
-				
+				}				
 				if (currentObjectJson.contains("_clearLogBuffer"))
 				{
 					FG_b_clearBufferEveryFrame = currentObjectJson["_clearLogBuffer"];
@@ -359,6 +361,54 @@ namespace FlatGui
 					{
 						FL::F_Logger.ClearBuffer();
 					}
+				}
+				
+				Vector3 sceneCameraPos = Vector3();
+				Vector3 sceneCameraLookDir = Vector3();
+
+				if (currentObjectJson.contains("sceneCameraPosX"))
+				{
+					sceneCameraPos.x = currentObjectJson["sceneCameraPosX"];
+				}
+				if (currentObjectJson.contains("sceneCameraPosY"))
+				{
+					sceneCameraPos.y = currentObjectJson["sceneCameraPosY"];
+				}
+				if (currentObjectJson.contains("sceneCameraPosZ"))
+				{
+					sceneCameraPos.z = currentObjectJson["sceneCameraPosZ"];
+				}
+				if (currentObjectJson.contains("sceneViewLookDirectionX"))
+				{
+					sceneCameraLookDir.x = currentObjectJson["sceneViewLookDirectionX"];
+				}
+				if (currentObjectJson.contains("sceneViewLookDirectionY"))
+				{
+					sceneCameraLookDir.y = currentObjectJson["sceneViewLookDirectionY"];
+				}
+				if (currentObjectJson.contains("sceneViewLookDirectionZ"))
+				{
+					sceneCameraLookDir.z = currentObjectJson["sceneViewLookDirectionZ"];
+				}
+				if (currentObjectJson.contains("sceneCameraHorizontalViewAngle"))
+				{
+					sceneViewCamera->SetHorizontalViewAngle(currentObjectJson["sceneCameraHorizontalViewAngle"]);
+				}
+				if (currentObjectJson.contains("sceneCameraVerticalViewAngle"))
+				{
+					sceneViewCamera->SetVerticalViewAngle(currentObjectJson["sceneCameraVerticalViewAngle"]);
+				}
+				if (currentObjectJson.contains("sceneViewNearClippingDistance"))
+				{
+					sceneViewCamera->SetNearClippingDistance(currentObjectJson["sceneViewNearClippingDistance"]);
+				}
+				if (currentObjectJson.contains("sceneViewFarClippingDistance"))
+				{
+					sceneViewCamera->SetFarClippingDistance(currentObjectJson["sceneViewFarClippingDistance"]);
+				}
+				if (currentObjectJson.contains("sceneViewPerspectiveAngle"))
+				{
+					sceneViewCamera->SetPerspectiveAngle(currentObjectJson["sceneViewPerspectiveAngle"]);
 				}
 			}
 		}
@@ -368,6 +418,7 @@ namespace FlatGui
 		Vector2 gridStep = FL::F_LoadedProject.GetSceneViewGridStep();
 		FG_sceneViewGridStep = gridStep;
 		FL::F_sceneViewGridStep = &FG_sceneViewGridStep;
+
 
 		if (FL::F_LoadedProject.GetFocusedGameObjectID() != -1 && FL::GetObjectByID(FL::F_LoadedProject.GetFocusedGameObjectID()) != nullptr)
 		{
@@ -410,6 +461,11 @@ namespace FlatGui
 		std::filesystem::create_directory(path + "\\scripts\\cpp");
 		std::filesystem::create_directory(path + "\\scripts\\lua");
 		std::filesystem::create_directory(path + "\\tileSets");
+		std::filesystem::create_directory(path + "\\materials");
+		std::filesystem::create_directory(path + "\\models");
+		std::filesystem::create_directory(path + "\\shaders");
+		std::filesystem::create_directory(path + "\\compiledShaders");
+		// TODO: Copy shader compilation files into shaders directory
 	}
 
 	void SaveProject(Project& project, std::string path)
@@ -429,6 +485,10 @@ namespace FlatGui
 		
 		project.UpdateSavedTime();
 		tm timeSaved = project.GetSavedTime();
+
+		Camera* sceneViewCamera = FL::F_sceneViewCameraObject.GetCamera();
+		Vector3 sceneViewLookDir = sceneViewCamera->GetLookDirection();
+		Vector3 sceneViewPos = FL::F_sceneViewCameraObject.GetTransform()->GetPosition();
 
 		json properties = json::object({
 			{ "path", path },
@@ -470,7 +530,18 @@ namespace FlatGui
 			{ "daysSinceSave", timeSaved.tm_mday },
 			{ "hoursSinceSave", timeSaved.tm_hour },
 			{ "minutesSinceSave", timeSaved.tm_min },
-			{ "secondsSinceSave", timeSaved.tm_sec }
+			{ "secondsSinceSave", timeSaved.tm_sec },
+			{ "sceneCameraPosX", sceneViewPos.x },
+			{ "sceneCameraPosY", sceneViewPos.y },
+			{ "sceneCameraPosZ", sceneViewPos.z },
+			{ "sceneViewLookDirectionX", sceneViewLookDir.x },
+			{ "sceneViewLookDirectionY", sceneViewLookDir.y },
+			{ "sceneViewLookDirectionZ", sceneViewLookDir.z },
+			{ "sceneCameraHorizontalViewAngle", sceneViewCamera->GetHorizontalViewAngle() },
+			{ "sceneCameraVerticalViewAngle", sceneViewCamera->GetVerticalViewAngle() },
+			{ "sceneViewNearClippingDistance", sceneViewCamera->GetNearClippingDistance() },
+			{ "sceneViewFarClippingDistance", sceneViewCamera->GetFarClippingDistance() },
+			{ "sceneViewPerspectiveAngle", sceneViewCamera->GetPerspectiveAngle() },
 		});
 
 		projectProperties.push_back(properties);
@@ -2030,8 +2101,8 @@ namespace FlatGui
 				scrolling.x += mouseDelta.x;
 				scrolling.y += mouseDelta.y;
 				lastMousePos = mousePos;	
-				FL::GetPrimaryCamera()->AddToHorizontalViewAngle(-mouseDelta.x * 0.25f);
-				FL::GetPrimaryCamera()->AddToVerticalViewAngle(mouseDelta.y * 0.25f);
+				FL::F_sceneViewCameraObject.GetCamera()->AddToHorizontalViewAngle(-mouseDelta.x * 0.25f);
+				FL::F_sceneViewCameraObject.GetCamera()->AddToVerticalViewAngle(mouseDelta.y * 0.25f);
 			}
 			if (ImGui::IsItemDeactivated())
 			{				

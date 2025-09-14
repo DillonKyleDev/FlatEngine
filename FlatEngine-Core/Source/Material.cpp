@@ -374,11 +374,11 @@ namespace FlatEngine
 				VkDeviceSize imageSize = texWidth * texHeight * 16;
 				VkBuffer stagingBuffer{};
 				VkDeviceMemory stagingBufferMemory{};
-				WinSys::CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, *m_physicalDevice, *m_logicalDevice);
-				WinSys::CreateImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, images[i], imageMemory[i], *m_physicalDevice, *m_logicalDevice);
+				m_winSystem->CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+				m_winSystem->CreateImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, images[i], imageMemory[i]);
 
-				VkCommandBuffer copyCmd = Helper::BeginSingleTimeCommands(*m_commandPool, *m_logicalDevice);
-				WinSys::InsertImageMemoryBarrier(
+				VkCommandBuffer copyCmd = Helper::BeginSingleTimeCommands();
+				m_winSystem->InsertImageMemoryBarrier(
 					copyCmd,
 					images[i],
 					VK_ACCESS_TRANSFER_READ_BIT,
@@ -388,17 +388,17 @@ namespace FlatEngine
 					VK_PIPELINE_STAGE_TRANSFER_BIT,
 					VK_PIPELINE_STAGE_TRANSFER_BIT,
 					VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-				Helper::EndSingleTimeCommands(*m_commandPool, copyCmd, *m_logicalDevice);
+				Helper::EndSingleTimeCommands(copyCmd);
 
-				WinSys::TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, *m_commandPool, *m_logicalDevice);
-				WinSys::CopyBufferToImage(stagingBuffer, images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), *m_commandPool, *m_logicalDevice);
-				WinSys::TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, *m_commandPool, *m_logicalDevice);
+				m_winSystem->TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+				m_winSystem->CopyBufferToImage(stagingBuffer, images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+				m_winSystem->TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
 
 				vkDestroyBuffer(m_logicalDevice->GetDevice(), stagingBuffer, nullptr);
 				vkFreeMemory(m_logicalDevice->GetDevice(), stagingBufferMemory, nullptr);
 
-				WinSys::CreateImageView(imageViews[i], images[i], m_imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, *m_logicalDevice);
-				WinSys::CreateTextureSampler(sampler, mipLevels, *m_physicalDevice, *m_logicalDevice);
+				m_winSystem->CreateImageView(imageViews[i], images[i], m_imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+				m_winSystem->CreateTextureSampler(sampler, mipLevels);
 			}
 
 			m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews()); // Give m_renderPass the VkImageViews to write to their VkImages (to be used later by ImGui material)

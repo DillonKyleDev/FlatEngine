@@ -156,7 +156,7 @@ namespace FlatEngine
 		return m_nearClippingDistance;
 	}
 
-	void Camera::SetNearClipping(float nearDistance)
+	void Camera::SetNearClippingDistance(float nearDistance)
 	{
 		m_nearClippingDistance = nearDistance;
 	}
@@ -234,7 +234,7 @@ namespace FlatEngine
 		m_velocity.z += velocity.z;
 	}
 
-	Vector3 Camera::GetVelocity()
+	Vector3& Camera::GetVelocity()
 	{
 		return m_velocity;
 	}
@@ -242,42 +242,7 @@ namespace FlatEngine
 	// Eventually remove the event handling and give Project viewport camera settings to save and load. Use Primary camera here in the meantime
 	void Camera::Update()
 	{
-		if (F_b_sceneViewRightClicked)
-		{
-			MappingContext* engineContext = GetMappingContext("EngineContext");
-			Vector3 lookDir = GetPrimaryCamera()->GetLookDirection();
-			Vector2 xyPlane = Vector2(lookDir.x, lookDir.y);
-			Vector2 leftDir = Vector2::Rotate(xyPlane, 90);
-			Vector2 rightDir = Vector2::Rotate(xyPlane, -90);
-			Vector3 upDir = Vector3(rightDir.x, rightDir.y, 0).Cross(lookDir);
-			Vector3 downDir = Vector3(leftDir.x, leftDir.y, 0).Cross(lookDir);
-			float moveDamping = 0.005f;
-
-			if (engineContext->ActionPressed("MoveCameraLeft"))
-			{
-				GetPrimaryCamera()->AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
-			}
-			if (engineContext->ActionPressed("MoveCameraRight"))
-			{
-				GetPrimaryCamera()->AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
-			}
-			if (engineContext->ActionPressed("MoveCameraForward"))
-			{
-				GetPrimaryCamera()->AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
-			}
-			if (engineContext->ActionPressed("MoveCameraBack"))
-			{
-				GetPrimaryCamera()->AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
-			}
-			if (engineContext->ActionPressed("MoveCameraUp"))
-			{
-				GetPrimaryCamera()->AddVelocity(Vector3(0, 0, moveDamping));
-			}
-			if (engineContext->ActionPressed("MoveCameraDown"))
-			{
-				GetPrimaryCamera()->AddVelocity(Vector3(0, 0, -moveDamping));
-			}
-		}
+		Follow();
 
 		if (m_velocity != 0)
 		{

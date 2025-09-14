@@ -16,6 +16,7 @@
 #include "Physics.h"
 #include "Body.h"
 #include "Shape.h"
+#include "Camera.h"
 
 #include <fstream>
 #include <string>
@@ -94,18 +95,69 @@ namespace FlatEngine
 	std::shared_ptr<Animation::S_Property> selectedKeyFrameToEdit = nullptr;
 
 	// Camera
-	Camera F_ViewportCamera = Camera();
 	Camera* F_primaryCamera = nullptr;
 
 	// Collision Detection
 	std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
 
 	// Scene View
+	GameObject F_sceneViewCameraObject = GameObject();
 	Vector2* F_sceneViewCenter = nullptr;
 	Vector2* F_sceneViewGridStep = nullptr;
 	Vector2 F_sceneViewDimensions = Vector2();
 	bool F_b_sceneViewRightClicked = false;
 
+
+	void UpdateSceneViewCamera()
+	{
+		Camera* sceneViewCamera = F_sceneViewCameraObject.GetCamera();
+
+		if (F_b_sceneViewRightClicked && sceneViewCamera != nullptr)
+		{			
+			MappingContext* engineContext = GetMappingContext("EngineContext");
+			Vector3 lookDir = GetPrimaryCamera()->GetLookDirection();
+			Vector2 xyPlane = Vector2(lookDir.x, lookDir.y);
+			Vector2 leftDir = Vector2::Rotate(xyPlane, 90);
+			Vector2 rightDir = Vector2::Rotate(xyPlane, -90);
+			Vector3 upDir = Vector3(rightDir.x, rightDir.y, 0).Cross(lookDir);
+			Vector3 downDir = Vector3(leftDir.x, leftDir.y, 0).Cross(lookDir);
+			float moveDamping = 0.005f;
+
+			if (engineContext->ActionPressed("MoveCameraLeft"))
+			{
+				sceneViewCamera->AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
+			}
+			if (engineContext->ActionPressed("MoveCameraRight"))
+			{
+				sceneViewCamera->AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
+			}
+			if (engineContext->ActionPressed("MoveCameraForward"))
+			{
+				sceneViewCamera->AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraBack"))
+			{
+				sceneViewCamera->AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraUp"))
+			{
+				sceneViewCamera->AddVelocity(Vector3(0, 0, moveDamping));
+			}
+			if (engineContext->ActionPressed("MoveCameraDown"))
+			{
+				sceneViewCamera->AddVelocity(Vector3(0, 0, -moveDamping));
+			}
+
+			Vector3& cameraVelocity = sceneViewCamera->GetVelocity();
+			if (cameraVelocity != 0)
+			{
+				Transform* transform = F_sceneViewCameraObject.GetTransform();
+				Vector3 position = transform->GetPosition();
+				transform->SetPosition(position + cameraVelocity);
+				cameraVelocity = cameraVelocity * 0.95f;				
+			}
+		}		
+	}
 
 	bool LoadFonts()
 	{
@@ -530,7 +582,7 @@ namespace FlatEngine
 
 	Uint32 GetEngineTime()
 	{
-		return (int)SDL_GetTicks();
+		return SDL_GetTicks64();
 	}
 
 
@@ -933,30 +985,30 @@ namespace FlatEngine
 			Vector3 upDir = Vector3(rightDir.x, rightDir.y, 0).Cross(lookDir);
 			Vector3 downDir = Vector3(leftDir.x, leftDir.y, 0).Cross(lookDir);
 			float moveDamping = 0.005f;
-
+			Camera* sceneViewCamera = F_sceneViewCameraObject.GetCamera();
 			if (engineContext->ActionPressed("MoveCameraLeft"))
 			{
-				F_ViewportCamera.AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
+				sceneViewCamera->AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
 			}
 			if (engineContext->ActionPressed("MoveCameraRight"))
 			{
-				F_ViewportCamera.AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
+				sceneViewCamera->AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
 			}
 			if (engineContext->ActionPressed("MoveCameraForward"))
 			{
-				F_ViewportCamera.AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
+				sceneViewCamera->AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
 			}
 			if (engineContext->ActionPressed("MoveCameraBack"))
 			{
-				F_ViewportCamera.AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
+				sceneViewCamera->AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
 			}
 			if (engineContext->ActionPressed("MoveCameraUp"))
 			{				
-				F_ViewportCamera.AddVelocity(Vector3(0, 0, moveDamping));
+				sceneViewCamera->AddVelocity(Vector3(0, 0, moveDamping));
 			}
 			if (engineContext->ActionPressed("MoveCameraDown"))
 			{
-				F_ViewportCamera.AddVelocity(Vector3(0, 0, -moveDamping));
+				sceneViewCamera->AddVelocity(Vector3(0, 0, -moveDamping));
 			}
 		}
 	}

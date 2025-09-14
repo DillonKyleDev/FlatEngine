@@ -58,11 +58,13 @@ namespace FlatEngine
 		VkSampler& GetSampler();
 		uint32_t GetMipLevels();
 		VkFormat GetImageFormat();
-		void SetImageFormat(VkFormat imageFormat);
-		VkImageAspectFlagBits GetAspectFlagsBits();
-		void SetAspecFlagsBits(VkImageAspectFlagBits aspectFlagBits);
+		//void SetImageFormat(VkFormat imageFormat);
+		//VkImageAspectFlagBits GetAspectFlagsBits();
+		//void SetAspecFlagsBits(VkImageAspectFlagBits aspectFlagBits);
+		std::vector<VkDescriptorSet>& GetDescriptorSets();
 
 		void CreateTextureImage();
+		void CreateRenderToTextureResources();
 		void ConfigureImageResources(std::vector<VkImage>& images, std::vector<VkImageView>& imageViews, std::vector<VkDeviceMemory>& imageMemory, VkSampler& sampler);
 
 	private:

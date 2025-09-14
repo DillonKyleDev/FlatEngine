@@ -188,12 +188,15 @@ namespace FlatEngine
 	extern Vector2 F_gameViewGridStep;
 
 	extern Camera* F_primaryCamera;
+	extern GameObject F_sceneViewCameraObject;
 	extern bool F_b_sceneViewRightClicked;
 
 	// Scene View
 	extern Vector2* F_sceneViewCenter;
 	extern Vector2* F_sceneViewGridStep; 
 	extern Vector2 F_sceneViewDimensions;
+
+	extern void UpdateSceneViewCamera();
 
 	// Collision Detection
 	extern b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible = false);
@@ -307,7 +310,6 @@ namespace FlatEngine
 	extern GameObject* GetObjectByName(std::string name);
 	extern GameObject* GetObjectByTag(std::string tag);
 
-	extern Camera F_ViewportCamera;
 	extern void SetPrimaryCamera(Camera* primaryCamera);
 	extern void RemovePrimaryCamera();
 	extern Camera* GetPrimaryCamera();

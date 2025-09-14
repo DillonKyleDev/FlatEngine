@@ -379,8 +379,8 @@ namespace FlatEngine
     void RenderPass::CreateColorResources()
     {
         // Refer to - https://vulkan-tutorial.com/Multisampling
-        WinSys::CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, m_colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_colorImage, m_colorImageMemory, *m_physicalDevice, *m_logicalDevice);
-        WinSys::CreateImageView(m_colorImageView, m_colorImage, m_colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, *m_logicalDevice);
+        m_winSystem->CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, m_colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_colorImage, m_colorImageMemory);
+        m_winSystem->CreateImageView(m_colorImageView, m_colorImage, m_colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void RenderPass::DestroyColorResources()
@@ -406,8 +406,8 @@ namespace FlatEngine
         VkFormat depthFormat = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
         uint32_t singleMipLevel = 1;
 
-        WinSys::CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImage, m_depthImageMemory, *m_physicalDevice, *m_logicalDevice);
-        WinSys::CreateImageView(m_depthImageView, m_depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, singleMipLevel, *m_logicalDevice);
+        m_winSystem->CreateImage(m_winSystem->GetExtent().width, m_winSystem->GetExtent().height, 1, m_msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depthImage, m_depthImageMemory);
+        m_winSystem->CreateImageView(m_depthImageView, m_depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, singleMipLevel);
     }
 
     void RenderPass::DestroyDepthResources()

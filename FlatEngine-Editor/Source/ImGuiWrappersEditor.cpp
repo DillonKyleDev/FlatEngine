@@ -487,7 +487,7 @@ namespace FlatGui
 			}
 			if (FL::RenderFloatDragTableRow("##nearClip" + std::to_string(ID), "Near Clip", nearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX))
 			{
-				camera->SetNearClipping(nearClippingDistance);
+				camera->SetNearClippingDistance(nearClippingDistance);
 			}
 			if (FL::RenderFloatDragTableRow("##farClip" + std::to_string(ID), "Far Clip", farClippingDistance, 0.1f, -FLT_MAX, FLT_MAX))
 			{

@@ -21,7 +21,7 @@ namespace FlatEngine
 		void SetLookDirection(Vector3 lookDir);
 		Vector3 GetLookDirection();
 		float GetNearClippingDistance();
-		void SetNearClipping(float nearDistance);
+		void SetNearClippingDistance(float nearDistance);
 		float GetFarClippingDistance();
 		void SetFarClippingDistance(float farDistance);
 		float GetPerspectiveAngle();
@@ -44,7 +44,7 @@ namespace FlatEngine
 		void SetFollowSmoothing(float smoothing);
 		float GetFollowSmoothing();
 		void AddVelocity(Vector3 velocity);
-		Vector3 GetVelocity();
+		Vector3& GetVelocity();
 		void Update();
 
 	private:

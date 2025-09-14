@@ -36,9 +36,10 @@ namespace FlatEngine
         m_swapChainImageViews = std::vector<VkImageView>();
         m_b_framebufferResized = false;
         // handles
-        m_instanceHandle = VK_NULL_HANDLE;
-        m_physicalDeviceHandle = VK_NULL_HANDLE;
-        m_deviceHandle = VK_NULL_HANDLE;
+        m_instance = VK_NULL_HANDLE;
+        m_physicalDevice = VK_NULL_HANDLE;
+        m_logicalDevice = VK_NULL_HANDLE;
+        m_commandPool = VK_NULL_HANDLE;
     }
 
     WinSys::~WinSys()
@@ -61,11 +62,12 @@ namespace FlatEngine
     }
 
 
-    void WinSys::SetHandles(VkInstance instance, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void WinSys::SetHandles(VkInstance* instance, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool)
     {
-        m_instanceHandle = instance;
-        m_physicalDeviceHandle = &physicalDevice;
-        m_deviceHandle = &logicalDevice;
+        m_instance = instance;
+        m_physicalDevice = physicalDevice;
+        m_logicalDevice = logicalDevice;
+        m_commandPool = commandPool;
     }
 
     bool WinSys::CreateSDLWindow(std::string windowTitle, int windowWidth, int windowHeight)
@@ -115,14 +117,14 @@ namespace FlatEngine
 
     void WinSys::CreateSurface()
     {
-        SDL_Vulkan_CreateSurface(GetWindow(), m_instanceHandle, &m_surface);
+        SDL_Vulkan_CreateSurface(GetWindow(), *m_instance, &m_surface);
     }
 
     void WinSys::DestroySurface()
     {
-        if (m_deviceHandle != VK_NULL_HANDLE)
+        if (m_logicalDevice != VK_NULL_HANDLE)
         {
-            vkDestroySurfaceKHR(m_instanceHandle, m_surface, nullptr);
+            vkDestroySurfaceKHR(*m_instance, m_surface, nullptr);
         }
     }
 
@@ -157,7 +159,7 @@ namespace FlatEngine
 
     void WinSys::CreateSwapChain()
     {
-        SwapChainSupportDetails swapChainSupport = Helper::QuerySwapChainSupport(m_physicalDeviceHandle->GetDevice(), m_surface);
+        SwapChainSupportDetails swapChainSupport = Helper::QuerySwapChainSupport(m_physicalDevice->GetDevice(), m_surface);
 
         m_surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
         m_presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
@@ -185,7 +187,7 @@ namespace FlatEngine
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT; // VK_IMAGE_USAGE_TRANSFER_DST_BIT // Specifies what kind of operations we'll use the images in the swap chain for.
         // ^^ NOTE FROM WIKI FOR ABOVE: It is also possible that you'll render images to a separate image first to perform operations like post-processing. In that case you may use a value like VK_IMAGE_USAGE_TRANSFER_DST_BIT instead and use a memory operation to transfer the rendered image to a swap chain image.
 
-        QueueFamilyIndices indices = Helper::FindQueueFamilies(m_physicalDeviceHandle->GetDevice(), m_surface);
+        QueueFamilyIndices indices = Helper::FindQueueFamilies(m_physicalDevice->GetDevice(), m_surface);
         uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
         if (indices.graphicsFamily != indices.presentFamily) // If the queue families are not the same, use concurrent sharing mode (more lenient, less performant)
@@ -207,7 +209,7 @@ namespace FlatEngine
         createInfo.clipped = VK_TRUE;
         createInfo.oldSwapchain = VK_NULL_HANDLE;
 
-        if (vkCreateSwapchainKHR(m_deviceHandle->GetDevice(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS)
+        if (vkCreateSwapchainKHR(m_logicalDevice->GetDevice(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create swapchain.");
         }
@@ -216,17 +218,17 @@ namespace FlatEngine
             m_swapChainImageFormat = m_surfaceFormat.format;
             m_swapChainExtent = extent;
 
-            vkGetSwapchainImagesKHR(m_deviceHandle->GetDevice(), m_swapChain, &VM_imageCount, nullptr);
+            vkGetSwapchainImagesKHR(m_logicalDevice->GetDevice(), m_swapChain, &VM_imageCount, nullptr);
             m_swapChainImages.resize(VM_imageCount);
-            vkGetSwapchainImagesKHR(m_deviceHandle->GetDevice(), m_swapChain, &VM_imageCount, m_swapChainImages.data());
+            vkGetSwapchainImagesKHR(m_logicalDevice->GetDevice(), m_swapChain, &VM_imageCount, m_swapChainImages.data());
         }
     }
 
     void WinSys::DestroySwapChain()
     {
-        if (m_deviceHandle != VK_NULL_HANDLE)
+        if (m_logicalDevice != VK_NULL_HANDLE)
         {
-            vkDestroySwapchainKHR(m_deviceHandle->GetDevice(), m_swapChain, nullptr);
+            vkDestroySwapchainKHR(m_logicalDevice->GetDevice(), m_swapChain, nullptr);
         }
     }
 
@@ -238,7 +240,7 @@ namespace FlatEngine
             SDL_GetWindowSize(m_window, &width, &height);
         }
 
-        vkDeviceWaitIdle(m_deviceHandle->GetDevice());
+        vkDeviceWaitIdle(m_logicalDevice->GetDevice());
 
         CleanupDrawingResources();
         CreateDrawingResources();
@@ -252,7 +254,7 @@ namespace FlatEngine
         for (size_t i = 0; i < m_swapChainImages.size(); i++)
         {
             uint32_t singleMipLevel = 1;
-            CreateImageView(m_swapChainImageViews[i], m_swapChainImages[i], m_swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, singleMipLevel, *m_deviceHandle);
+            CreateImageView(m_swapChainImageViews[i], m_swapChainImages[i], m_swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, singleMipLevel);
         }
     }
 
@@ -260,7 +262,7 @@ namespace FlatEngine
     {
         for (auto imageView : m_swapChainImageViews)
         {
-            vkDestroyImageView(m_deviceHandle->GetDevice(), imageView, nullptr);
+            vkDestroyImageView(m_logicalDevice->GetDevice(), imageView, nullptr);
         }
     }
 
@@ -358,7 +360,7 @@ namespace FlatEngine
 
 
     // statics
-    void WinSys::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void WinSys::CreateImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
     {
         VkImageCreateInfo imageInfo{};
         imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -375,27 +377,27 @@ namespace FlatEngine
         imageInfo.samples = numSamples;
         imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateImage(logicalDevice.GetDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
+        if (vkCreateImage(m_logicalDevice->GetDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
             throw std::runtime_error("failed to create image!");
         }
 
         VkMemoryRequirements memRequirements{};
-        vkGetImageMemoryRequirements(logicalDevice.GetDevice(), image, &memRequirements);
+        vkGetImageMemoryRequirements(m_logicalDevice->GetDevice(), image, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = physicalDevice.FindMemoryType(memRequirements.memoryTypeBits, properties);
+        allocInfo.memoryTypeIndex = m_physicalDevice->FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-        if (vkAllocateMemory(logicalDevice.GetDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
+        if (vkAllocateMemory(m_logicalDevice->GetDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate image memory!");
         }
 
-        vkBindImageMemory(logicalDevice.GetDevice(), image, imageMemory, 0);
+        vkBindImageMemory(m_logicalDevice->GetDevice(), image, imageMemory, 0);
     }
 
-    void WinSys::CreateImageView(VkImageView& imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, LogicalDevice& logicalDevice)
+    void WinSys::CreateImageView(VkImageView& imageView, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
     {
         VkImageViewCreateInfo viewInfo{};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -408,13 +410,13 @@ namespace FlatEngine
         viewInfo.subresourceRange.baseArrayLayer = 0;
         viewInfo.subresourceRange.layerCount = 1;
 
-        if (vkCreateImageView(logicalDevice.GetDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
+        if (vkCreateImageView(m_logicalDevice->GetDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create texture image view!");
         }
     }
 
-    void WinSys::CreateTextureSampler(VkSampler& textureSampler, uint32_t mipLevels, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void WinSys::CreateTextureSampler(VkSampler& textureSampler, uint32_t mipLevels)
     {
         // Refer to - https://vulkan-tutorial.com/en/Texture_mapping/Image_view_and_sampler
 
@@ -427,7 +429,7 @@ namespace FlatEngine
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(physicalDevice.GetDevice(), &properties);
+        vkGetPhysicalDeviceProperties(m_physicalDevice->GetDevice(), &properties);
 
         samplerInfo.anisotropyEnable = VK_TRUE;
         samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
@@ -440,13 +442,13 @@ namespace FlatEngine
         samplerInfo.maxLod = static_cast<float>(mipLevels);
         samplerInfo.mipLodBias = 0.0f; // Optional        
 
-        if (vkCreateSampler(logicalDevice.GetDevice(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
+        if (vkCreateSampler(m_logicalDevice->GetDevice(), &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create texture sampler!");
         }
     }
 
-    VkImage WinSys::CreateTextureImage(std::string path, uint32_t mipLevels, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice, VkDeviceMemory textureImageMemory)
+    VkImage WinSys::CreateTextureImage(std::string path, uint32_t mipLevels, VkDeviceMemory textureImageMemory)
     {
         // Refer to - https://vulkan-tutorial.com/en/Texture_mapping/Images
         // And refer to - https://vulkan-tutorial.com/en/Generating_Mipmaps
@@ -466,41 +468,41 @@ namespace FlatEngine
 
         VkBuffer stagingBuffer{};
         VkDeviceMemory stagingBufferMemory{};
-        CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory, physicalDevice, logicalDevice);
+        CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
         void* data{};
-        vkMapMemory(logicalDevice.GetDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
+        vkMapMemory(m_logicalDevice->GetDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
         memcpy(data, pixels, static_cast<size_t>(imageSize));
-        vkUnmapMemory(logicalDevice.GetDevice(), stagingBufferMemory);
+        vkUnmapMemory(m_logicalDevice->GetDevice(), stagingBufferMemory);
 
         // Cleanup pixel array
         stbi_image_free(pixels);
 
-        CreateImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, newImage, textureImageMemory, physicalDevice, logicalDevice);
+        CreateImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, newImage, textureImageMemory);
 
-        TransitionImageLayout(newImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels, commandPool, logicalDevice);
-        CopyBufferToImage(stagingBuffer, newImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), commandPool, logicalDevice);
-        GenerateMipmaps(newImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels, commandPool, physicalDevice, logicalDevice);
+        TransitionImageLayout(newImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+        CopyBufferToImage(stagingBuffer, newImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        GenerateMipmaps(newImage, VK_FORMAT_R8G8B8A8_UNORM, texWidth, texHeight, mipLevels);
 
-        vkDestroyBuffer(logicalDevice.GetDevice(), stagingBuffer, nullptr);
-        vkFreeMemory(logicalDevice.GetDevice(), stagingBufferMemory, nullptr);
+        vkDestroyBuffer(m_logicalDevice->GetDevice(), stagingBuffer, nullptr);
+        vkFreeMemory(m_logicalDevice->GetDevice(), stagingBufferMemory, nullptr);
 
         return newImage;
     }
 
-    void WinSys::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, VkCommandPool commandPool, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void WinSys::GenerateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
     {
         // Refer to - https://vulkan-tutorial.com/en/Generating_Mipmaps
 
         // Check if image format supports linear blitting
         VkFormatProperties formatProperties;
-        vkGetPhysicalDeviceFormatProperties(physicalDevice.GetDevice(), imageFormat, &formatProperties);
+        vkGetPhysicalDeviceFormatProperties(m_physicalDevice->GetDevice(), imageFormat, &formatProperties);
         if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
         {
             throw std::runtime_error("texture image format does not support linear blitting!");
         }
 
-        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands(commandPool, logicalDevice);
+        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands();
 
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -577,14 +579,14 @@ namespace FlatEngine
             0, nullptr,
             1, &barrier);
 
-        Helper::EndSingleTimeCommands(commandPool, commandBuffer, logicalDevice);
+        Helper::EndSingleTimeCommands(commandBuffer);
     }
 
-    void WinSys::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkCommandPool commandPool, LogicalDevice& logicalDevice)
+    void WinSys::TransitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels)
     {
         // Refer to - https://vulkan-tutorial.com/en/Texture_mapping/Images
 
-        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands(commandPool, logicalDevice);
+        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands();
 
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -624,10 +626,10 @@ namespace FlatEngine
 
         vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        Helper::EndSingleTimeCommands(commandPool, commandBuffer, logicalDevice);
+        Helper::EndSingleTimeCommands(commandBuffer);
     }
 
-    void WinSys::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory, PhysicalDevice& physicalDevice, LogicalDevice& logicalDevice)
+    void WinSys::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
     {
         // Refer to - https://vulkan-tutorial.com/en/Vertex_buffers/Vertex_buffer_creation
         VkBufferCreateInfo bufferInfo{};
@@ -636,43 +638,43 @@ namespace FlatEngine
         bufferInfo.usage = usage;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateBuffer(logicalDevice.GetDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
+        if (vkCreateBuffer(m_logicalDevice->GetDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to create vertex buffer!");
         }
 
         VkMemoryRequirements memRequirements{};
-        vkGetBufferMemoryRequirements(logicalDevice.GetDevice(), buffer, &memRequirements);
+        vkGetBufferMemoryRequirements(m_logicalDevice->GetDevice(), buffer, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = physicalDevice.FindMemoryType(memRequirements.memoryTypeBits, properties);
+        allocInfo.memoryTypeIndex = m_physicalDevice->FindMemoryType(memRequirements.memoryTypeBits, properties);
 
         // NOTE FROM THE WIKI: It should be noted that in a real world application, you're not supposed to actually call vkAllocateMemory for every individual buffer. The maximum number of simultaneous memory allocations is limited by the maxMemoryAllocationCount physical device limit
-        if (vkAllocateMemory(logicalDevice.GetDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
+        if (vkAllocateMemory(m_logicalDevice->GetDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
         {
             throw std::runtime_error("failed to allocate vertex buffer memory!");
         }
 
-        vkBindBufferMemory(logicalDevice.GetDevice(), buffer, bufferMemory, 0);
+        vkBindBufferMemory(m_logicalDevice->GetDevice(), buffer, bufferMemory, 0);
     }
 
-    void WinSys::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkCommandPool commandPool, LogicalDevice& logicalDevice)
+    void WinSys::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
     {
-        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands(commandPool, logicalDevice);
+        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands();
 
         // We're only going to use the command buffer once and wait with returning from the function until the copy operation has finished executing. It's good practice to tell the driver about our intent using 
         VkBufferCopy copyRegion{};
         copyRegion.size = size;
         vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-        Helper::EndSingleTimeCommands(commandPool, commandBuffer, logicalDevice);
+        Helper::EndSingleTimeCommands(commandBuffer);
     }
 
-    void WinSys::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, VkCommandPool commandPool, LogicalDevice& logicalDevice)
+    void WinSys::CopyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
     {
-        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands(commandPool, logicalDevice);
+        VkCommandBuffer commandBuffer = Helper::BeginSingleTimeCommands();
 
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
@@ -700,7 +702,7 @@ namespace FlatEngine
             &region
         );
 
-        Helper::EndSingleTimeCommands(commandPool, commandBuffer, logicalDevice);
+        Helper::EndSingleTimeCommands(commandBuffer);
     }
 
     void WinSys::InsertImageMemoryBarrier(VkCommandBuffer commandBuffer, VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkImageSubresourceRange subresourceRange)

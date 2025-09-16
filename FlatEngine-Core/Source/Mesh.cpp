@@ -174,7 +174,7 @@ namespace FlatEngine
 
 	void Mesh::CreateResources()
 	{
-		if (m_material != nullptr)
+		if (m_material != nullptr && m_model.GetModelPath() != "" && m_textures.size() == m_material->GetTextureCount())
 		{
 			// make sure there are the necessary number of actual textures assigned to Mesh before creating resources
 			bool b_texturesAssigned = true;
@@ -197,18 +197,18 @@ namespace FlatEngine
 			if (b_texturesAssigned)
 			{
 				CreateTextureResources();
-			}
 
-			if (m_model.GetModelPath() != "")
-			{
-				CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
+				if (m_model.GetModelPath() != "")
+				{
+					CreateModelResources(FlatEngine::F_VulkanManager->GetCommandPool(), FlatEngine::F_VulkanManager->GetPhysicalDevice(), FlatEngine::F_VulkanManager->GetLogicalDevice());
 
-				m_b_initialized = true;
-			}
+					m_b_initialized = true;
+				}
 
-			if (m_material != nullptr)
-			{
-				m_material->CreateDescriptorSets(m_descriptorSets, m_model, m_textures);
+				if (m_material != nullptr)
+				{
+					m_material->CreateDescriptorSets(m_descriptorSets, m_model, m_textures);
+				}
 			}
 		}
 	}

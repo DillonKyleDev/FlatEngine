@@ -7,6 +7,7 @@
 #include "Model.h"
 #include "Texture.h"
 #include "Allocator.h"
+#include "Structs.h"
 
 #include <string>
 #include <vector>
@@ -27,8 +28,10 @@ namespace FlatEngine
 		bool Initialized();	
 		void Cleanup();
 		void RecreateGraphicsPipeline();
+		void SetViewport(ViewportType viewport);
+		ViewportType GetViewport();
 
-		void SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool);
+		void SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool, RenderPass* renderPass);
 		void SetName(std::string name);
 		std::string GetName();		
 		void SetPath(std::string path);
@@ -58,12 +61,12 @@ namespace FlatEngine
 		VkPipelineColorBlendAttachmentState& GetColorBlendAttachmentCreateInfos();
 
 		void CreateRenderPassResources();
-		void HandleRenderPass(uint32_t imageIndex);
+		bool HandleRenderPass(uint32_t imageIndex, ViewportType viewport = ViewportType::None);
 		void RecordDefaultCommandBuffer(uint32_t imageIndex, Mesh& mesh);
-		RenderPass& GetRenderPass();
+		RenderPass* GetRenderPass();
 
 		// For rendering to texture
-		void AddMaterialDescriptorSetToRenderTo(std::string materialName, std::vector<VkDescriptorSet>* descriptorSetsToWriteTo);
+		void SetRenderToTexture(Texture* renderToTexture);
 
 	private:
 		void QuitImGui();
@@ -74,15 +77,14 @@ namespace FlatEngine
 
 		std::string m_name;		
 		std::string m_path;
+		ViewportType m_viewport;
 		GraphicsPipeline m_graphicsPipeline;
-		RenderPass m_renderPass;
+		RenderPass* m_renderPass;
 		Allocator m_allocator;
 		uint32_t m_textureCount;
 
 		// For rendering to texture instead of to the screen
-		Texture m_renderTexture;
-		std::map<std::string, std::vector<VkDescriptorSet>*> m_renderTextureMaterialDescriptorSets; // std::map<materialNameToUse, std::vector<descriptorSets to allocate to>> -- Configure to meet the demands of where the Texture will be used.
-
+		Texture* m_renderTexture;		
 		VkFormat m_imageFormat;
 		uint32_t m_mipLevels;
 

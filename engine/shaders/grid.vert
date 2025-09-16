@@ -1,18 +1,11 @@
 #version 450
 
-layout(push_constant, std430) uniform pc {
-    layout(offset = 0)   vec4 position;
-    layout(offset = 16)  vec4 cameraPos;
-    layout(offset = 32)  float time;
-    layout(offset = 64)  mat4 models;
-    layout(offset = 128) mat4 views;
-    layout(offset = 192) mat4 proj;
-};
-
-layout(binding = 0) uniform UniformBufferObject {
+layout(set = 0, binding = 0) uniform UniformBufferObject {
+    vec4 meshPosition;
+    vec4 cameraPosition;
     mat4 model;
-    mat4 view;
-    mat4 projection;
+    mat4 viewAndProjection;    
+    float time;
 } ubo;
 
 layout(location = 0) in vec3 inPosition;
@@ -26,10 +19,10 @@ layout(location = 2) out vec3 normal;
 
 void main() {    
     vec4 localPos = ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1);
-    vec4 worldPos = vec4(floor(localPos.x + cameraPos.x), floor(localPos.y + cameraPos.y), localPos.z, 1);
-    gl_Position = ubo.projection * ubo.view * worldPos;    
-    float xyDistance = distance(vec2(worldPos), vec2(cameraPos));
-    float zDistance = distance(position.z, cameraPos.z);
+    vec4 worldPos = vec4(floor(localPos.x + ubo.cameraPosition.x), floor(localPos.y + ubo.cameraPosition.y), localPos.z, 1);
+    gl_Position = ubo.viewAndProjection * worldPos;    
+    float xyDistance = distance(vec2(worldPos), vec2(ubo.cameraPosition));
+    float zDistance = distance(ubo.meshPosition.z, ubo.cameraPosition.z);
     if (xyDistance == 0)
     {
         xyDistance = 0.001;

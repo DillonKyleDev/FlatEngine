@@ -115,7 +115,7 @@ namespace FlatEngine
 		if (F_b_sceneViewRightClicked && sceneViewCamera != nullptr)
 		{			
 			MappingContext* engineContext = GetMappingContext("EngineContext");
-			Vector3 lookDir = GetPrimaryCamera()->GetLookDirection();
+			Vector3 lookDir = sceneViewCamera->GetLookDirection();
 			Vector2 xyPlane = Vector2(lookDir.x, lookDir.y);
 			Vector2 leftDir = Vector2::Rotate(xyPlane, 90);
 			Vector2 rightDir = Vector2::Rotate(xyPlane, -90);
@@ -147,16 +147,19 @@ namespace FlatEngine
 			{
 				sceneViewCamera->AddVelocity(Vector3(0, 0, -moveDamping));
 			}
+		}		
 
+		if (sceneViewCamera != nullptr)
+		{
 			Vector3& cameraVelocity = sceneViewCamera->GetVelocity();
 			if (cameraVelocity != 0)
 			{
 				Transform* transform = F_sceneViewCameraObject.GetTransform();
 				Vector3 position = transform->GetPosition();
 				transform->SetPosition(position + cameraVelocity);
-				cameraVelocity = cameraVelocity * 0.95f;				
+				cameraVelocity = cameraVelocity * 0.95f;
 			}
-		}		
+		}
 	}
 
 	bool LoadFonts()

@@ -2779,12 +2779,7 @@ namespace FlatGui
 				{					
 					mesh->SetMaterial(FL::GetFilenameFromPath(fsPath.string()));
 					mesh->CreateResources();
-
-					//model.SetModelPath(fsPath.string());
-					//if (mesh->GetMaterial() != nullptr)
-					//{
-					//	mesh->CreateResources();
-					//}
+					material = mesh->GetMaterial();
 				}
 				else
 				{

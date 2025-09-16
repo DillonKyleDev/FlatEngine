@@ -157,7 +157,7 @@ namespace FlatEngine
     void GraphicsPipeline::CreatePushConstantRanges()
     {
         VkPushConstantRange pushRange = {};
-        pushRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        pushRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
         pushRange.offset = (uint32_t)0;
         pushRange.size = (uint32_t)(sizeof(PushConstants));
 

@@ -25,7 +25,7 @@ namespace FlatGui
 		if (FL::F_selectedMaterialName.size() > 0)
 		{
 			std::shared_ptr<Material> currentMaterial = FL::F_VulkanManager->GetMaterial(FL::F_selectedMaterialName);
-			std::map<std::string, std::shared_ptr<Material>>& materials = FL::F_VulkanManager->GetMaterials();
+			std::vector<std::shared_ptr<Material>> materials = FL::F_VulkanManager->GetMaterials();
 
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("innerWindow"));
 			ImGui::BeginChild("Material Selection", Vector2(0), FL::F_headerFlags);
@@ -42,13 +42,13 @@ namespace FlatGui
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 144);
 				if (ImGui::BeginCombo("##materials", FL::F_selectedMaterialName.c_str()))
 				{
-					for (std::map<std::string, std::shared_ptr<Material>>::iterator iter = materials.begin(); iter != materials.end(); iter++)
+					for (std::shared_ptr<Material> material : materials)
 					{						
-						bool b_isSelected = (iter->second->GetName() == FL::F_selectedMaterialName);
+						bool b_isSelected = (material->GetName() == FL::F_selectedMaterialName);
 						ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("outerWindow"));
-						if (ImGui::Selectable(iter->second->GetName().c_str(), b_isSelected))
+						if (ImGui::Selectable(material->GetName().c_str(), b_isSelected))
 						{
-							FL::F_selectedMaterialName = iter->second->GetName();
+							FL::F_selectedMaterialName = material->GetName();
 						}
 						if (b_isSelected)
 						{
@@ -67,7 +67,8 @@ namespace FlatGui
 					if (FL::RenderButton("Save"))
 					{
 						FL::F_VulkanManager->SaveMaterial(currentMaterial);
-						currentMaterial->Init();
+						//currentMaterial->Init();
+						FL::F_VulkanManager->InitializeMaterials();
 					}
 				}
 				ImGui::SameLine(0, 5);

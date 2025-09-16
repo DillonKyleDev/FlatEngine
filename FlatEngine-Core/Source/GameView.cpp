@@ -58,7 +58,7 @@ namespace FlatEngine
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		FL::PushWindowStyles();
-		ImGui::Begin("Game View", 0, flags);
+		ImGui::Begin("Game View", 0, flags | 8 | 16);
 		// {
 		
 			static bool opt_enable_context_menu = true;
@@ -73,8 +73,37 @@ namespace FlatEngine
 			F_GAME_VIEWPORT_WIDTH = canvas_p1.x - canvasP0.x + 1;
 			F_GAME_VIEWPORT_HEIGHT = canvas_p1.y - canvasP0.y + 1;
 
+			Vector2 currentPos = ImGui::GetCursorScreenPos();
+			Vector2 centerOffset = F_sceneViewDimensions * 0.5f;
+			bool b_weightedScroll = false;
+			Vector2 size;
+			Vector2 startingPos = ImGui::GetCursorScreenPos();
+
+			std::vector<VkDescriptorSet> descriptors = FL::F_VulkanManager->GetGameViewDescriptorSets();
+
+			if (descriptors.size() > 0 && descriptors[FL::VM_currentFrame])
+			{
+				Vector2 regionAvailable = ImGui::GetContentRegionAvail();
+				if (regionAvailable.x > regionAvailable.y)
+				{
+					size = Vector2(regionAvailable.x);
+					float heightAdjust = (regionAvailable.x - regionAvailable.y) / 2;
+					startingPos.y -= heightAdjust;
+					ImGui::SetCursorScreenPos(startingPos);
+				}
+				else
+				{
+					size = Vector2(regionAvailable.y);
+					float widthAdjust = (regionAvailable.y - regionAvailable.x) / 2;
+					startingPos.x -= widthAdjust;
+					ImGui::SetCursorScreenPos(startingPos);
+				}
+
+				ImGui::Image(descriptors[FL::VM_currentFrame], size);
+			}
+
 			// Render GameObjects in game view
-			Game_RenderObjects(canvasP0, canvasSize);
+			//Game_RenderObjects(canvasP0, canvasSize);
 
 		// }
 		ImGui::End();

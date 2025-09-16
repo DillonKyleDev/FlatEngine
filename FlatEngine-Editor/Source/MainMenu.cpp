@@ -437,6 +437,10 @@ namespace FlatGui
 						}
 					}
 				}
+				if (ImGui::MenuItem("Reload Shaders"))
+				{
+					FL::F_VulkanManager->ReloadShaders();
+				}
 				ImGui::Separator();
 				if (ImGui::BeginMenu("Widgets"))
 				{

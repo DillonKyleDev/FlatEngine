@@ -63,11 +63,13 @@ namespace FlatEngine
         // Materials
         void InitializeMaterials();        
         void SaveMaterial(std::shared_ptr<Material> material);
-        void LoadMaterial(std::string path, bool b_init = true);
+        std::shared_ptr<Material> LoadMaterial(std::string path, Texture* renderToTexture = nullptr);
         std::shared_ptr<Material> CreateNewMaterialFile(std::string fileName, std::string path = "");        
-        void AddMaterial(std::shared_ptr<Material> material);
+        void AddSceneViewMaterial(std::shared_ptr<Material> material);
+        void AddGameViewMaterial(std::shared_ptr<Material> material);
         std::shared_ptr<Material> GetMaterial(std::string materialName);
-        std::map<std::string, std::shared_ptr<Material>>& GetMaterials();
+        std::vector<std::shared_ptr<Material>> GetMaterials();
+        void ReloadShaders();
 
         // ImGui
         void CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets);
@@ -89,17 +91,13 @@ namespace FlatEngine
         bool CreateVulkanInstance();
         void CreateSyncObjects();        
         
-        std::map<std::string, std::shared_ptr<Material>> m_materials;
-
-        //ImGuiManager m_imguiManager;
-        //ViewportManager m_sceneViewManager;
-
-        //std::vector<PipelineManager*> m_pipelineManagers;
-
+        RenderPass m_renderToTextureRenderPass;
+        RenderPass m_imGuiRenderPass;
+        std::shared_ptr<Material> m_imGuiMaterial;
+        std::vector < std::shared_ptr<Material>> m_sceneViewMaterials;
+        std::vector < std::shared_ptr<Material>> m_gameViewMaterials;
         Texture m_sceneViewTexture;
         Texture m_gameViewTexture;
-        std::vector<VkDescriptorSet> m_sceneViewDescriptorSets;
-        std::vector<VkDescriptorSet> m_gameViewDescriptorSets;
 
         VkInstance m_instance;
         WinSys m_winSystem;

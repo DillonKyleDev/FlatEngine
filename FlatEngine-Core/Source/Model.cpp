@@ -247,36 +247,56 @@ namespace FlatEngine
         }
     }
 
-    void Model::UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, Mesh* mesh)
-    {
+    void Model::UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, Mesh* mesh, ViewportType viewport)
+    {        
         Transform* transform = mesh->GetParent()->GetTransform();
         Vector3 meshPosition = transform->GetPosition();
         glm::mat4 meshScale = transform->GetScaleMatrix();
         glm::mat4 meshRotation = transform->GetRotationMatrix();
-        Camera* primaryCamera = FlatEngine::F_sceneViewCameraObject.GetCamera();
-        Vector3 cameraPosition = FlatEngine::F_sceneViewCameraObject.GetTransform()->GetPosition();
-        Vector3 lookDir = primaryCamera->GetLookDirection();
-        float nearClip = primaryCamera->GetNearClippingDistance();
-        float farClip = primaryCamera->GetFarClippingDistance();
-        float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
-        glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
+        Camera* primaryCamera = nullptr;
+        Vector3 cameraPosition = Vector3();
 
-        glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
-        glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
-        glm::mat4 model = meshRotation * meshScale;
-        glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
-        glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
-        float aspectRatio = (float)(winSystem.GetExtent().width / winSystem.GetExtent().height);
-        glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
-        projection[1][1] *= -1;
+        switch (viewport)
+        {
+        case ViewportType::SceneView:
+            primaryCamera = F_sceneViewCameraObject.GetCamera();
+            cameraPosition = F_sceneViewCameraObject.GetTransform()->GetPosition();
+            break;
+        case ViewportType::GameView:
+            primaryCamera = GetPrimaryCamera();
+            if (primaryCamera != nullptr)
+            {
+                cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
+            }
+        default:
+            break;
+        }
+                 
+        if (primaryCamera != nullptr)
+        {
+            Vector3 lookDir = primaryCamera->GetLookDirection();
+            float nearClip = primaryCamera->GetNearClippingDistance();
+            float farClip = primaryCamera->GetFarClippingDistance();
+            float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
+            glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
 
-        UniformBufferObject ubo{};
-        ubo.meshPosition = meshPos;
-        ubo.cameraPosition = viewportCameraPos;
-        ubo.model = model;
-        ubo.viewAndProjection = projection * view;        
-        ubo.time = (glm::float32)((glm::float32)GetEngineTime() / 1000.0f);
-        memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+            glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
+            glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
+            glm::mat4 model = meshRotation * meshScale;
+            glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
+            glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
+            float aspectRatio = (float)(winSystem.GetExtent().width / winSystem.GetExtent().height);
+            glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
+            projection[1][1] *= -1;
+
+            UniformBufferObject ubo{};
+            ubo.meshPosition = meshPos;
+            ubo.cameraPosition = viewportCameraPos;
+            ubo.model = model;
+            ubo.viewAndProjection = projection * view;
+            ubo.time = (glm::float32)((glm::float32)GetEngineTime() / 1000.0f);
+            memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+        }
     }
 
     std::vector<VkBuffer>& Model::GetUniformBuffers()

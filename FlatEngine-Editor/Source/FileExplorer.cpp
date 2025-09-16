@@ -126,7 +126,8 @@ namespace FlatGui
 			if (FL::RenderInputModal("Create Material", "Enter a name for the Material", newFileName, b_openMaterialModal))
 			{
 				std::shared_ptr<Material> newMaterial = FL::F_VulkanManager->CreateNewMaterialFile(newFileName, FG_currentDirectory);
-				FL::F_VulkanManager->AddMaterial(newMaterial);
+				FL::F_VulkanManager->AddSceneViewMaterial(newMaterial);
+				FL::F_VulkanManager->AddGameViewMaterial(newMaterial);
 				FL::F_selectedMaterialName = newFileName;
 				FG_b_showMaterialEditor = true;
 			}

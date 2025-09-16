@@ -12,6 +12,12 @@
 
 namespace FlatEngine
 {
+    enum ViewportType {
+        None,
+        SceneView,
+        GameView,
+    };
+
     struct QueueFamilyIndices
     {
         std::optional<uint32_t> graphicsFamily; // Make sure graphics can be rendered
@@ -97,12 +103,7 @@ namespace FlatEngine
     };
 
     struct PushConstants {
-        glm::vec4 time;
-        glm::vec4 meshPosition;
-        glm::vec4 cameraPosition;
-        glm::mat4 model;        
-        glm::mat4 view;
-        glm::mat4 projection;
+        glm::vec4 lightDirection;
     };
 
     struct SamplerProps {

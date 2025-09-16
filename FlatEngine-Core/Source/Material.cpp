@@ -18,8 +18,7 @@ namespace FlatEngine
 	Material::Material(std::string name, std::string vertexPath, std::string fragmentPath)
 	{
 		m_name = name;
-		m_graphicsPipeline = GraphicsPipeline(vertexPath, fragmentPath);
-		m_renderPass = RenderPass();		
+		m_graphicsPipeline = GraphicsPipeline(vertexPath, fragmentPath);	
 		SetDefaultValues();
 	}
 
@@ -42,8 +41,10 @@ namespace FlatEngine
 		m_winSystem = nullptr;
 		m_logicalDevice = nullptr;
 		m_b_initialized = false;
+		m_viewport = None;
+		m_renderPass = nullptr;
 
-		m_renderTexture = Texture();
+		m_renderTexture = nullptr;
 		m_imageFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 		m_mipLevels = 1;
 
@@ -116,9 +117,8 @@ namespace FlatEngine
 	void Material::Init()
 	{
 		if (m_graphicsPipeline.GetVertexPath() != "" && m_graphicsPipeline.GetFragmentPath() != "")
-		{
-			CreateImageResources();
-			CreateRenderPassResources();
+		{			
+			CreateRenderPassResources(); // TODO: move out into VulkanManager
 			if (m_name == "imgui")
 			{
 				CreateImGuiResources();
@@ -128,7 +128,7 @@ namespace FlatEngine
 				m_allocator.Init(AllocatorType::DescriptorPool, m_textureCount, *m_logicalDevice);
 				m_graphicsPipeline.CreatePushConstantRanges();
 			}			
-			m_graphicsPipeline.CreateGraphicsPipeline(*m_logicalDevice, *m_winSystem, m_renderPass, m_allocator.GetDescriptorSetLayout());
+			m_graphicsPipeline.CreateGraphicsPipeline(*m_logicalDevice, *m_winSystem, *m_renderPass, m_allocator.GetDescriptorSetLayout());
 			m_b_initialized = true;
 		}
 	}
@@ -147,7 +147,7 @@ namespace FlatEngine
 			ImGui_ImplSDL2_Shutdown();
 		}
 
-		m_renderPass.Cleanup(*m_logicalDevice);
+		//m_renderPass->Cleanup(*m_logicalDevice);
 		m_graphicsPipeline.Cleanup(*m_logicalDevice);
 	}
 
@@ -162,14 +162,15 @@ namespace FlatEngine
 		ImGui::DestroyContext();
 	}
 
-	void Material::SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool)
+	void Material::SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool, RenderPass* renderPass)
 	{		
 		m_instance = instance;
 		m_winSystem = winSystem;
 		m_physicalDevice = physicalDevice;
 		m_logicalDevice = logicalDevice;
 		m_commandPool = commandPool;
-		m_renderPass.SetHandles(instance, winSystem, physicalDevice, logicalDevice);
+		m_renderPass = renderPass;
+		m_renderPass->SetHandles(instance, winSystem, physicalDevice, logicalDevice);
 	}
 
 	void Material::RecreateGraphicsPipeline()
@@ -178,8 +179,18 @@ namespace FlatEngine
 
 		if (m_graphicsPipeline.GetVertexPath() != "" && m_graphicsPipeline.GetFragmentPath() != "")
 		{
-			m_graphicsPipeline.CreateGraphicsPipeline(*m_logicalDevice, *m_winSystem, m_renderPass, m_allocator.GetDescriptorSetLayout());
+			m_graphicsPipeline.CreateGraphicsPipeline(*m_logicalDevice, *m_winSystem, *m_renderPass, m_allocator.GetDescriptorSetLayout());
 		}
+	}
+
+	void Material::SetViewport(ViewportType viewport)
+	{
+		m_viewport = viewport;
+	}
+
+	ViewportType Material::GetViewport()
+	{
+		return m_viewport;
 	}
 
 	void Material::GetImGuiDescriptorSetLayoutInfo(std::vector<VkDescriptorSetLayoutBinding>& bindings, VkDescriptorSetLayoutCreateInfo& layoutInfo)
@@ -251,7 +262,7 @@ namespace FlatEngine
 		init_info.Queue = m_logicalDevice->GetGraphicsQueue();
 		init_info.PipelineCache = VK_NULL_HANDLE;
 		init_info.DescriptorPool = CreateDescriptorPool();
-		init_info.RenderPass = m_renderPass.GetRenderPass();
+		init_info.RenderPass = m_renderPass->GetRenderPass();
 		init_info.Subpass = 0;
 		init_info.MinImageCount = VM_MAX_FRAMES_IN_FLIGHT;
 		init_info.ImageCount = VM_MAX_FRAMES_IN_FLIGHT;
@@ -343,66 +354,69 @@ namespace FlatEngine
 	void Material::OnWindowResized()
 	{
 		// Cleanup image resources??
-		CreateImageResources();
-		m_renderPass.RecreateFrameBuffers();
+		//CreateImageResources();
 	}
 
 	void Material::CreateImageResources()
 	{
 		if (m_name == "imgui")
 		{
-			m_renderTexture.GetImageViews() = m_winSystem->GetSwapChainImageViews();
-			m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews()); // Give m_renderPass the new imageViews
-			// m_renderPass.ConfigureFrameBufferImageViews(m_winSystem->GetSwapChainImageViews());
+			//m_renderTexture.GetImageViews() = m_winSystem->GetSwapChainImageViews();
+			//m_renderPass->ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews()); // Give m_renderPass the new imageViews
+			// m_renderPass->ConfigureFrameBufferImageViews(m_winSystem->GetSwapChainImageViews());
 		}
 		else 	// Configure images used to render to texture
 		{
-			std::vector<VkImage>& images = m_renderTexture.GetImages();
-			std::vector<VkImageView>& imageViews = m_renderTexture.GetImageViews();
-			std::vector<VkDeviceMemory>& imageMemory = m_renderTexture.GetImageMemory();
-			VkSampler& sampler = m_renderTexture.GetSampler();
-			images.resize(VM_MAX_FRAMES_IN_FLIGHT);
-			imageViews.resize(VM_MAX_FRAMES_IN_FLIGHT);
-			imageMemory.resize(VM_MAX_FRAMES_IN_FLIGHT);
-			VkExtent2D extent = m_winSystem->GetExtent();
+			//m_renderTexture = *m_renderTextureMaterials.begin()->second;
 
-			for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
-			{
-				uint32_t mipLevels = 1;
-				int texWidth = extent.width;
-				int texHeight = extent.height;
-				VkDeviceSize imageSize = texWidth * texHeight * 16;
-				VkBuffer stagingBuffer{};
-				VkDeviceMemory stagingBufferMemory{};
-				m_winSystem->CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-				m_winSystem->CreateImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, images[i], imageMemory[i]);
+			//std::vector<VkImage>& images = m_renderTexture->GetImages();
+			//std::vector<VkImageView>& imageViews = m_renderTexture->GetImageViews();
+			//std::vector<VkDeviceMemory>& imageMemory = m_renderTexture->GetImageMemory();
+			//VkSampler& sampler =m_renderTexture->GetSampler();
+			//images.resize(VM_MAX_FRAMES_IN_FLIGHT);
+			//imageViews.resize(VM_MAX_FRAMES_IN_FLIGHT);
+			//imageMemory.resize(VM_MAX_FRAMES_IN_FLIGHT);
+			//VkExtent2D extent = m_winSystem->GetExtent();
 
-				VkCommandBuffer copyCmd = Helper::BeginSingleTimeCommands();
-				m_winSystem->InsertImageMemoryBarrier(
-					copyCmd,
-					images[i],
-					VK_ACCESS_TRANSFER_READ_BIT,
-					VK_ACCESS_MEMORY_READ_BIT,
-					VK_IMAGE_LAYOUT_UNDEFINED,
-					VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-					VK_PIPELINE_STAGE_TRANSFER_BIT,
-					VK_PIPELINE_STAGE_TRANSFER_BIT,
-					VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
-				Helper::EndSingleTimeCommands(copyCmd);
+			//for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
+			//{
+			//	uint32_t mipLevels = 1;
+			//	int texWidth = extent.width;
+			//	int texHeight = extent.height;
+			//	VkDeviceSize imageSize = texWidth * texHeight * 16;
+			//	VkBuffer stagingBuffer{};
+			//	VkDeviceMemory stagingBufferMemory{};
+			//	m_winSystem->CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+			//	m_winSystem->CreateImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, images[i], imageMemory[i]);
 
-				m_winSystem->TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
-				m_winSystem->CopyBufferToImage(stagingBuffer, images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-				m_winSystem->TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+			//	VkCommandBuffer copyCmd = Helper::BeginSingleTimeCommands();
+			//	m_winSystem->InsertImageMemoryBarrier(
+			//		copyCmd,
+			//		images[i],
+			//		VK_ACCESS_TRANSFER_READ_BIT,
+			//		VK_ACCESS_MEMORY_READ_BIT,
+			//		VK_IMAGE_LAYOUT_UNDEFINED,
+			//		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			//		VK_PIPELINE_STAGE_TRANSFER_BIT,
+			//		VK_PIPELINE_STAGE_TRANSFER_BIT,
+			//		VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 });
+			//	Helper::EndSingleTimeCommands(copyCmd);
 
-				vkDestroyBuffer(m_logicalDevice->GetDevice(), stagingBuffer, nullptr);
-				vkFreeMemory(m_logicalDevice->GetDevice(), stagingBufferMemory, nullptr);
+			//	m_winSystem->TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+			//	m_winSystem->CopyBufferToImage(stagingBuffer, images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+			//	m_winSystem->TransitionImageLayout(images[i], m_imageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
 
-				m_winSystem->CreateImageView(imageViews[i], images[i], m_imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
-				m_winSystem->CreateTextureSampler(sampler, mipLevels);
-			}
+			//	vkDestroyBuffer(m_logicalDevice->GetDevice(), stagingBuffer, nullptr);
+			//	vkFreeMemory(m_logicalDevice->GetDevice(), stagingBufferMemory, nullptr);
 
-			m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews()); // Give m_renderPass the VkImageViews to write to their VkImages (to be used later by ImGui material)
-		}
+			//	m_winSystem->CreateImageView(imageViews[i], images[i], m_imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+			//	m_winSystem->CreateTextureSampler(sampler, mipLevels);
+			//}
+
+			//m_renderPass->ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews()); // Give m_renderPass the VkImageViews to write to their VkImages (to be used later by ImGui material)
+			
+			//m_renderTexture = *m_renderTextureMaterials.begin()->second;
+		}		
 	}
 
 	VkPipelineInputAssemblyStateCreateInfo& Material::GetInputAssemblyCreateInfos()
@@ -440,228 +454,192 @@ namespace FlatEngine
 
 	void Material::CreateRenderPassResources()
 	{
-		if (m_name == "imgui")
+		if (!m_renderPass->Initialized())
 		{
-			// Configure ImGui Render Pass
-			m_renderPass.EnableMsaa();
-			VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; // F_VulkanManager->GetMaxSamples();
-			VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
-			m_renderPass.SetImageColorFormat(colorFormat);
-			m_renderPass.SetMSAASampleCount(msaaSamples);
+			if (m_name == "imgui")
+			{
+				// Configure ImGui Render Pass
+				m_renderPass->EnableMsaa();
+				VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; // F_VulkanManager->GetMaxSamples();
+				VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+				m_renderPass->SetImageColorFormat(colorFormat);
+				m_renderPass->SetMSAASampleCount(msaaSamples);
 
-			VkAttachmentDescription colorAttachment = {};
-			colorAttachment.format = m_winSystem->GetImageFormat();
-			colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-			colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			VkAttachmentReference colorAttachmentRef = {};
-			colorAttachmentRef.attachment = 0;
-			colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			m_renderPass.AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
+				VkAttachmentDescription colorAttachment = {};
+				colorAttachment.format = m_winSystem->GetImageFormat();
+				colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+				colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+				colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+				colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+				colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				VkAttachmentReference colorAttachmentRef = {};
+				colorAttachmentRef.attachment = 0;
+				colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				m_renderPass->AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
 
-			VkAttachmentDescription colorAttachmentResolve{};
-			colorAttachmentResolve.format = colorFormat;
-			colorAttachmentResolve.samples = msaaSamples;
-			colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-			VkAttachmentReference colorAttachmentResolveRef{};
-			colorAttachmentResolveRef.attachment = 1;
-			colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			m_renderPass.AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
+				VkAttachmentDescription colorAttachmentResolve{};
+				colorAttachmentResolve.format = colorFormat;
+				colorAttachmentResolve.samples = msaaSamples;
+				colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+				colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+				colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+				VkAttachmentReference colorAttachmentResolveRef{};
+				colorAttachmentResolveRef.attachment = 1;
+				colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				m_renderPass->AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
 
-			// Create Dependency
-			VkSubpassDependency dependency{};
-			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependency.dstSubpass = 0;
-			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-			m_renderPass.AddSubpassDependency(dependency);
+				// Create Dependency
+				VkSubpassDependency dependency{};
+				dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+				dependency.dstSubpass = 0;
+				dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+				dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+				dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+				dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+				m_renderPass->AddSubpassDependency(dependency);
 
-			VkSubpassDescription subpass = {};
-			subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-			subpass.colorAttachmentCount = 1;
-			subpass.pColorAttachments = &colorAttachmentRef;
-			subpass.pResolveAttachments = &colorAttachmentResolveRef;
-			m_renderPass.AddSubpass(subpass);
+				VkSubpassDescription subpass = {};
+				subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+				subpass.colorAttachmentCount = 1;
+				subpass.pColorAttachments = &colorAttachmentRef;
+				subpass.pResolveAttachments = &colorAttachmentResolveRef;
+				m_renderPass->AddSubpass(subpass);
 
-			m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews());
-			//m_renderPass.ConfigureFrameBufferImageViews(m_winSystem->GetSwapChainImageViews());
+				m_renderPass->ConfigureFrameBufferImageViews(m_winSystem->GetSwapChainImageViews());
+			}
+			else
+			{
+				m_renderPass->EnableDepthBuffering();
+				m_renderPass->EnableMsaa();
+				VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; // F_VulkanManager->GetMaxSamples();
+				VkFormat colorFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+				m_renderPass->SetImageColorFormat(colorFormat);
+				m_renderPass->SetMSAASampleCount(msaaSamples);
+
+				VkAttachmentDescription colorAttachment{};
+				colorAttachment.format = colorFormat;
+				colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+				colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+				colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+				colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+				colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				VkAttachmentReference colorAttachmentRef{};
+				colorAttachmentRef.attachment = 0;
+				colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				m_renderPass->AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
+
+				VkAttachmentDescription depthAttachment{};
+				depthAttachment.format = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
+				depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+				depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+				depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+				depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+				depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+				VkAttachmentReference depthAttachmentRef{};
+				depthAttachmentRef.attachment = 1;
+				depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+				m_renderPass->AddRenderPassAttachment(depthAttachment, depthAttachmentRef);
+
+				VkAttachmentDescription colorAttachmentResolve{};
+				colorAttachmentResolve.format = colorFormat;
+				colorAttachmentResolve.samples = msaaSamples;
+				colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+				colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+				colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+				VkAttachmentReference colorAttachmentResolveRef{};
+				colorAttachmentResolveRef.attachment = 2;
+				colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				m_renderPass->AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
+
+				// Create Dependency
+				VkSubpassDependency dependency{};
+				dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+				dependency.dstSubpass = 0;
+				dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+				dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+				dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+				dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+				m_renderPass->AddSubpassDependency(dependency);
+
+				VkSubpassDescription subpass{};
+				subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+				subpass.colorAttachmentCount = 1;
+				subpass.pColorAttachments = &m_renderPass->GetAttachmentRefs()[0];
+				subpass.pDepthStencilAttachment = &m_renderPass->GetAttachmentRefs()[1];
+				subpass.pResolveAttachments = &m_renderPass->GetAttachmentRefs()[2];
+				m_renderPass->AddSubpass(subpass);
+
+				m_renderPass->ConfigureFrameBufferImageViews(m_renderTexture->GetImageViews()); // Give m_renderPass the VkImageViews to write to their VkImages (to be used later by ImGui material)		
+			}
+
+			m_renderPass->Init(*m_commandPool);
 		}
-		else
-		{
-			m_renderPass.EnableDepthBuffering();
-			m_renderPass.EnableMsaa();
-			VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; // F_VulkanManager->GetMaxSamples();
-			VkFormat colorFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-			m_renderPass.SetImageColorFormat(colorFormat);
-			m_renderPass.SetMSAASampleCount(msaaSamples);
-
-			VkAttachmentDescription colorAttachment{};
-			colorAttachment.format = colorFormat;
-			colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-			colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			VkAttachmentReference colorAttachmentRef{};
-			colorAttachmentRef.attachment = 0;
-			colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			m_renderPass.AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
-
-			VkAttachmentDescription depthAttachment{};
-			depthAttachment.format = Helper::FindDepthFormat(m_physicalDevice->GetDevice());
-			depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-			depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-			VkAttachmentReference depthAttachmentRef{};
-			depthAttachmentRef.attachment = 1;
-			depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-			m_renderPass.AddRenderPassAttachment(depthAttachment, depthAttachmentRef);
-
-			VkAttachmentDescription colorAttachmentResolve{};
-			colorAttachmentResolve.format = colorFormat;
-			colorAttachmentResolve.samples = msaaSamples;
-			colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-			VkAttachmentReference colorAttachmentResolveRef{};
-			colorAttachmentResolveRef.attachment = 2;
-			colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			m_renderPass.AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
-
-			// Create Dependency
-			VkSubpassDependency dependency{};
-			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependency.dstSubpass = 0;
-			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-			m_renderPass.AddSubpassDependency(dependency);
-
-			VkSubpassDescription subpass{};
-			subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-			subpass.colorAttachmentCount = 1;
-			subpass.pColorAttachments = &m_renderPass.GetAttachmentRefs()[0];
-			subpass.pDepthStencilAttachment = &m_renderPass.GetAttachmentRefs()[1];
-			subpass.pResolveAttachments = &m_renderPass.GetAttachmentRefs()[2];
-			m_renderPass.AddSubpass(subpass);
-
-			m_renderPass.ConfigureFrameBufferImageViews(m_renderTexture.GetImageViews());
-		}
-
-		m_renderPass.Init(*m_commandPool);
 	}
 
 
-	void Material::HandleRenderPass(uint32_t imageIndex)
+	bool Material::HandleRenderPass(uint32_t imageIndex, ViewportType viewport)
 	{
+		bool b_dataDrawn = false;
+
 		if (m_name == "imgui")
 		{
-			m_renderPass.BeginRenderPass(imageIndex);
-			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_renderPass.GetCommandBuffers()[VM_currentFrame]);
-			m_renderPass.EndRenderPass();
+			m_renderPass->BeginRenderPass(imageIndex);
+			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_renderPass->GetCommandBuffers()[VM_currentFrame]);
+			m_renderPass->EndRenderPass();
 		}
 		else
 		{			
-			m_renderPass.BeginRenderPass(imageIndex);
-
 			for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
 			{
 				if (mesh.second.Initialized() && mesh.second.GetMaterialName() == m_name)
 				{
-					mesh.second.GetModel().UpdateUniformBuffer(imageIndex, *m_winSystem, &mesh.second);
+					mesh.second.GetModel().UpdateUniformBuffer(imageIndex, *m_winSystem, &mesh.second, viewport);
 					RecordDefaultCommandBuffer(imageIndex, mesh.second);
-					m_renderPass.DrawIndexed(mesh.second);
+					m_renderPass->DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
+
+					b_dataDrawn = true;
 				}
-			}
-
-			m_renderPass.EndRenderPass();
-
-			// Once VkImage has been written to from m_renderPass, that image can be used as a texture to render to using a different material and desired descriptorSets, so we'd need to create descriptor sets for it using that material's configuration
-			for (std::map<std::string, std::vector<VkDescriptorSet>*>::iterator materialDescriptorPair = m_renderTextureMaterialDescriptorSets.begin(); materialDescriptorPair != m_renderTextureMaterialDescriptorSets.end(); materialDescriptorPair++)
-			{
-				std::string materialName = materialDescriptorPair->first;
-				std::shared_ptr<Material> renderToMaterial = F_VulkanManager->GetMaterial(materialName);
-				Model emptyModel = Model();
-				std::vector<Texture> textures = std::vector<Texture>(1, m_renderTexture); // m_renderTexture was given to m_renderPass and if m_name != imgui, it was written to in m_renderPass.DrawIndexed()
-				renderToMaterial->GetAllocator().AllocateDescriptorSets(*materialDescriptorPair->second, emptyModel, textures);
-			}
+			}			
 		}
+
+		return b_dataDrawn;
 	}
 
-	RenderPass& Material::GetRenderPass()
+	RenderPass* Material::GetRenderPass()
 	{
 		return m_renderPass;
 	}
 
-	void Material::AddMaterialDescriptorSetToRenderTo(std::string materialName, std::vector<VkDescriptorSet>* descriptorSetsToWriteTo)
+	void Material::SetRenderToTexture(Texture* renderToTexture)
 	{
-		std::pair<std::string, std::vector<VkDescriptorSet>*> materialDescriptorSetPair = { materialName, descriptorSetsToWriteTo };
-
-		m_renderTextureMaterialDescriptorSets.emplace(materialDescriptorSetPair);
+		m_renderTexture = renderToTexture;
 	}
 
 	void Material::RecordDefaultCommandBuffer(uint32_t imageIndex, Mesh& mesh)
 	{
-		std::vector<VkCommandBuffer>& commandBuffers = m_renderPass.GetCommandBuffers();
+		std::vector<VkCommandBuffer>& commandBuffers = m_renderPass->GetCommandBuffers();
 		VkPipeline& graphicsPipeline = mesh.GetMaterial()->GetGraphicsPipeline();
 		VkPipelineLayout& pipelineLayout = mesh.GetMaterial()->GetPipelineLayout();
-		Transform* transform = mesh.GetParent()->GetTransform();
-		Vector3 meshPosition = transform->GetPosition();
-		glm::mat4 meshScale = transform->GetScaleMatrix();
-		glm::mat4 meshRotation = transform->GetRotationMatrix();
-		Camera* primaryCamera = FlatEngine::GetPrimaryCamera();
-		Vector3 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
-		Vector3 lookDir = primaryCamera->GetLookDirection();
-		float nearClip = primaryCamera->GetNearClippingDistance();
-		float farClip = primaryCamera->GetFarClippingDistance();
-		float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
-		glm::vec3 up = glm::vec3(0.0f, 0.0f, 1.0f);
-
-		static auto startTime = std::chrono::high_resolution_clock::now();
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-		glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
-		glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
-		glm::mat4 model = meshRotation * meshScale;
-		glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
-		glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
-		float aspectRatio = (float)(m_winSystem->GetExtent().width / m_winSystem->GetExtent().height);
-		glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
-		projection[1][1] *= -1;
 
 		PushConstants pushConstants;
-		pushConstants.time = glm::vec4(time);
-		pushConstants.meshPosition = meshPos;
-		pushConstants.cameraPosition = viewportCameraPos;
-		pushConstants.model = model;
-		pushConstants.view = view;
-		pushConstants.projection = projection;
+		pushConstants.lightDirection = glm::vec4(1);
 
 		uint32_t pushOffset = 0;
 		uint32_t pushSize = sizeof(PushConstants);
 
-		vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, pushOffset, pushSize, &pushConstants);
+		vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, pushOffset, pushSize, &pushConstants);
 
 		vkCmdBindPipeline(commandBuffers[imageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 	}

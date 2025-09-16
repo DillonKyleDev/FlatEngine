@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "Project.h"
+#include "VulkanManager.h"
 
 #include "imgui_internal.h"
 #include <cmath> // trunc
@@ -68,7 +69,9 @@ namespace FlatGui
 			Vector2 size;
 			Vector2 startingPos = ImGui::GetCursorScreenPos();
 			
-			if (FL::F_VulkanManager->GetSceneViewDescriptorSets().size() > 0)
+			std::vector<VkDescriptorSet> descriptors = FL::F_VulkanManager->GetSceneViewDescriptorSets();
+
+			if (descriptors.size() > 0 && descriptors[FL::VM_currentFrame])
 			{
 				Vector2 regionAvailable = ImGui::GetContentRegionAvail();		
 				if (regionAvailable.x > regionAvailable.y)
@@ -85,7 +88,8 @@ namespace FlatGui
 					startingPos.x -= widthAdjust;
 					ImGui::SetCursorScreenPos(startingPos);
 				}
-				ImGui::Image(FL::F_VulkanManager->GetSceneViewDescriptorSets()[FL::VM_currentFrame], size);
+
+				ImGui::Image(descriptors[FL::VM_currentFrame], size);
 			}
 
 			// Need both the center of the viewport and the center of the world to reference when drawing imagese to the scene view

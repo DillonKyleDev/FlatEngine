@@ -54,6 +54,7 @@ namespace FlatEngine
 		std::string GetTexturePath();
 		std::vector<VkImage>& GetImages();
 		std::vector<VkImageView>& GetImageViews();
+		void SetImageViews(std::vector<VkImageView>& imageViews);
 		std::vector<VkDeviceMemory>& GetImageMemory();
 		VkSampler& GetSampler();
 		uint32_t GetMipLevels();

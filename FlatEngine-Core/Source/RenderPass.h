@@ -19,6 +19,7 @@ namespace FlatEngine
 
 		void SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice);
 		void Init(VkCommandPool commandPool);
+		bool Initialized();
 		void SetDefaultRenderPassConfig();
 		void CreateSceneRenderPassResources();
 		void AddRenderPassAttachment(VkAttachmentDescription description, VkAttachmentReference reference);
@@ -55,6 +56,7 @@ namespace FlatEngine
 		void DestroyDepthResources();
 
 		VkRenderPass m_renderPass;
+		bool m_b_initialized;
 		std::vector<VkFramebuffer> m_framebuffers;
 		std::vector<VkCommandBuffer> m_commandBuffers;
 		std::vector<VkImageView> m_imageViews;

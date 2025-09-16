@@ -277,8 +277,9 @@ namespace FlatGui
 		FL::LoadGameProject(path, projectJson);
 
 		FL::F_sceneViewCameraObject = GameObject();
-		FL::F_sceneViewCameraObject.AddTransform();
-		Camera* sceneViewCamera = FL::F_sceneViewCameraObject.AddCamera();
+		Transform* sceneViewTransform = FL::F_sceneViewCameraObject.AddTransform();
+		Vector3 sceneCameraPos = Vector3();
+		Camera* sceneViewCamera = FL::F_sceneViewCameraObject.AddCamera();		
 
 		if (projectJson["Project Properties"][0] != "NULL")
 		{			
@@ -361,10 +362,7 @@ namespace FlatGui
 					{
 						FL::F_Logger.ClearBuffer();
 					}
-				}
-				
-				Vector3 sceneCameraPos = Vector3();
-				Vector3 sceneCameraLookDir = Vector3();
+				}			
 
 				if (currentObjectJson.contains("sceneCameraPosX"))
 				{
@@ -377,18 +375,6 @@ namespace FlatGui
 				if (currentObjectJson.contains("sceneCameraPosZ"))
 				{
 					sceneCameraPos.z = currentObjectJson["sceneCameraPosZ"];
-				}
-				if (currentObjectJson.contains("sceneViewLookDirectionX"))
-				{
-					sceneCameraLookDir.x = currentObjectJson["sceneViewLookDirectionX"];
-				}
-				if (currentObjectJson.contains("sceneViewLookDirectionY"))
-				{
-					sceneCameraLookDir.y = currentObjectJson["sceneViewLookDirectionY"];
-				}
-				if (currentObjectJson.contains("sceneViewLookDirectionZ"))
-				{
-					sceneCameraLookDir.z = currentObjectJson["sceneViewLookDirectionZ"];
 				}
 				if (currentObjectJson.contains("sceneCameraHorizontalViewAngle"))
 				{
@@ -410,6 +396,8 @@ namespace FlatGui
 				{
 					sceneViewCamera->SetPerspectiveAngle(currentObjectJson["sceneViewPerspectiveAngle"]);
 				}
+
+				sceneViewTransform->SetPosition(sceneCameraPos);
 			}
 		}
 
@@ -487,7 +475,6 @@ namespace FlatGui
 		tm timeSaved = project.GetSavedTime();
 
 		Camera* sceneViewCamera = FL::F_sceneViewCameraObject.GetCamera();
-		Vector3 sceneViewLookDir = sceneViewCamera->GetLookDirection();
 		Vector3 sceneViewPos = FL::F_sceneViewCameraObject.GetTransform()->GetPosition();
 
 		json properties = json::object({
@@ -534,9 +521,6 @@ namespace FlatGui
 			{ "sceneCameraPosX", sceneViewPos.x },
 			{ "sceneCameraPosY", sceneViewPos.y },
 			{ "sceneCameraPosZ", sceneViewPos.z },
-			{ "sceneViewLookDirectionX", sceneViewLookDir.x },
-			{ "sceneViewLookDirectionY", sceneViewLookDir.y },
-			{ "sceneViewLookDirectionZ", sceneViewLookDir.z },
 			{ "sceneCameraHorizontalViewAngle", sceneViewCamera->GetHorizontalViewAngle() },
 			{ "sceneCameraVerticalViewAngle", sceneViewCamera->GetVerticalViewAngle() },
 			{ "sceneViewNearClippingDistance", sceneViewCamera->GetNearClippingDistance() },

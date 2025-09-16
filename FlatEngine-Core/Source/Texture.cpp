@@ -164,6 +164,11 @@ namespace FlatEngine
 		return m_imageViews;
 	}
 
+	void Texture::SetImageViews(std::vector<VkImageView>& imageViews)
+	{
+		m_imageViews = imageViews;
+	}
+
 	std::vector<VkDeviceMemory>& Texture::GetImageMemory()
 	{
 		return m_imageMemory;

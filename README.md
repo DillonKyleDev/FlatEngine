@@ -19,7 +19,7 @@ My initial plan was to have a simple and light-weight 2D version of the engine, 
 
 You are still able to download the last version of FlatEngine2D from before I added Vulkan. It can be found in the branch "LegacyNoVulkanImpl".</br>
 
-I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are quite broken and disorganized still so I don't recommend jumping in at the moment unless you really want to see a bad Vulkan implementation.</br>
+I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are broken and disorganized.</br>
 
 I still need to go through and edit the ReadMe to reflect the change from FlatEngine2D to FlatEngine, among many other things.
 

@@ -292,7 +292,6 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\variadic_results.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\version.hpp" />
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp" />
-    <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h" />
     <ClInclude Include="Source\PipelineManager.h" />
     <ClInclude Include="Source\Allocator.h" />
     <ClInclude Include="Source\Animation.h" />
@@ -376,7 +375,6 @@
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\imgui_widgets.cpp" />
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts\binary_to_compressed_c.cpp" />
-    <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp" />
     <ClCompile Include="Source\PipelineManager.cpp" />
     <ClCompile Include="Source\Allocator.cpp" />
     <ClCompile Include="Source\Animation.cpp" />

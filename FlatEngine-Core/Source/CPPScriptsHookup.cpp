@@ -12,10 +12,6 @@ std::shared_ptr<FlatEngine::CPPScript> FlatEngine::InstantiateCPPScript(std::str
 {
 	std::shared_ptr<CPPScript> newScript = nullptr;
 
-	if (scriptName == "EnemyAI (C++)")
-	{
-		newScript = std::make_shared<FlatEngine::EnemyAI>();
-		newScript->SetName("EnemyAI (C++)");
-	}
+
 	return newScript; 
  }

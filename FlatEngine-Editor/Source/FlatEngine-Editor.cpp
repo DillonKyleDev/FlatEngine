@@ -358,7 +358,7 @@ private:
 std::shared_ptr<FL::Application> FL::CreateApplication(int argc, char** argv)
 {
 	std::shared_ptr<EditorApplication> EditorApp = std::make_shared<EditorApplication>();
-	EditorApp->SetWindowDimensions(800, 500);
-	//EditorApp->SetWindowDimensions(1800, 1000);
+	//EditorApp->SetWindowDimensions(800, 500);
+	EditorApp->SetWindowDimensions(1800, 1000);
 	return EditorApp;
 }

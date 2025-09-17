@@ -12,6 +12,14 @@
 
 <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a>
 
+## Update - Sept. 17th, 2025 - Disclaimer
+
+Due to the recent inclusion of Vulkan and my still incomplete understanding of it, FlatEngine may or may not launch without crashing immediately on your computer after downloading, compiling, and running it.  It works on my external monitor (a 27 inch 1920 x 1080 Asus) but not on my native laptop screen (higher native resolution, but even at 1920 x 1080 it does not work) and I've yet to dive in and figure out why.  Resizing the window currently doesn't work, and there are many other crashes and validation errors currently plaguing the implementation.  In addition, you will likely need to download and install the VulkanSDK and have it on your system.  I have it installed in `C:\VulkanSDK`.  You can download it here: https://vulkan.lunarg.com/
+
+FlatEngine2D, the 2D only engine without Vulkan, found in the branch "LegacyNoVulkanImpl", shouldn't give you too much trouble when downloading and compiling it though if you wanted to check that out.  Fair warning though: it's ReadMe's documentation is a bit out of date.
+
+Best of luck to any who enter at this point.
+
 ## Update - Sept. 4th, 2025 - Vulkan Inclusion
 
 FlatEngine2D is now just FlatEngine.  Instead of managing two separate codebases for a 2D and 3D engine and the nightmares that go along with that, I've decided to just merge them into a single engine and use Vulkan as the renderer along side SDL2 for window and event management.</br>

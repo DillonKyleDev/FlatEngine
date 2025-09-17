@@ -507,9 +507,6 @@
     <ClInclude Include="..\Vendor\includes\Sol2\include\sol\wrapper.hpp">
       <Filter>..\Vendor\includes\Sol2\include\sol</Filter>
     </ClInclude>
-    <ClInclude Include="..\projects\Pool\scripts\cpp\EnemyAI.h">
-      <Filter>..\projects\Pool\scripts\cpp</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Allocator.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -750,9 +747,6 @@
     </ClCompile>
     <ClCompile Include="..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts\binary_to_compressed_c.cpp">
       <Filter>..\Vendor\includes\ImGui\ImGui_Docking\misc\fonts</Filter>
-    </ClCompile>
-    <ClCompile Include="..\projects\Pool\scripts\cpp\EnemyAI.cpp">
-      <Filter>..\projects\Pool\scripts\cpp</Filter>
     </ClCompile>
     <ClCompile Include="Source\Allocator.cpp">
       <Filter>Source</Filter>

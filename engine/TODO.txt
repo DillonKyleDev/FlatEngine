@@ -52,9 +52,12 @@ Animations are a bit broken with the starting frame sprite path
 
 Unparent drag and drop currently not working in hierarchies
 
-
-Add Material file type that holds:
-1. texture paths to textures used in the material
-2. shader file paths for vert and frag shader spv files
-
 Then add setting material for each Mesh component, which creates a new graphics pipeline using that material.
+
+
+Fix Window resizing and what happens in RecreateFrameBuffers() method in VulkanManager
+
+Deleting Mesh gameobjects and adding new ones after sometimes causes crashes.
+
+Crashes when changing Mesh material sometimes
+

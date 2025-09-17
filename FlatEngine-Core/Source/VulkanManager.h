@@ -35,10 +35,12 @@ namespace FlatEngine
     extern uint32_t VM_currentFrame;
     extern uint32_t VM_imageCount;
 
+    class Scene;
+
     class VulkanManager
     {
         friend class Mesh;
-        friend class Application;
+        friend class Application;        
 
     public:
         VulkanManager();
@@ -60,7 +62,16 @@ namespace FlatEngine
         static void check_vk_result(VkResult err);
         static void CreateCommandPool(VkCommandPool& commandPool, LogicalDevice& logicalDevice, uint32_t queueFamilyIndices, VkCommandPoolCreateFlags flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
 
+        // Renderpass
+        void CreateRenderToTextureRenderPassResources();
+        void CreateImGuiRendePassResources();
+        void GetImGuiDescriptorSetLayoutInfo(std::vector<VkDescriptorSetLayoutBinding>& bindings, VkDescriptorSetLayoutCreateInfo& layoutInfo);
+        void GetImGuiDescriptorPoolInfo(std::vector<VkDescriptorPoolSize>& poolSizes, VkDescriptorPoolCreateInfo& poolInfo);
+        void CreateImGuiResources();
+        void QuitImGui();
+
         // Materials
+        void LoadEngineMaterials();
         void InitializeMaterials();        
         void SaveMaterial(std::shared_ptr<Material> material);
         std::shared_ptr<Material> LoadMaterial(std::string path, Texture* renderToTexture = nullptr);
@@ -75,6 +86,7 @@ namespace FlatEngine
         void CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets);
         void FreeImGuiTexture(uint32_t allocatedFrom);
         // Scene View
+        void CreateSceneViewGridObjects();
         std::vector<VkDescriptorSet>& GetSceneViewDescriptorSets();        
         // Game View
         std::vector<VkDescriptorSet>& GetGameViewDescriptorSets();
@@ -94,10 +106,11 @@ namespace FlatEngine
         RenderPass m_renderToTextureRenderPass;
         RenderPass m_imGuiRenderPass;
         std::shared_ptr<Material> m_imGuiMaterial;
-        std::vector < std::shared_ptr<Material>> m_sceneViewMaterials;
-        std::vector < std::shared_ptr<Material>> m_gameViewMaterials;
+        std::vector<std::shared_ptr<Material>> m_engineMaterials;
+        std::vector<std::shared_ptr<Material>> m_sceneViewMaterials;
+        std::vector<std::shared_ptr<Material>> m_gameViewMaterials;
         Texture m_sceneViewTexture;
-        Texture m_gameViewTexture;
+        Texture m_gameViewTexture;        
 
         VkInstance m_instance;
         WinSys m_winSystem;

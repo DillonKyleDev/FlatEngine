@@ -8,6 +8,8 @@ glslc.exe yAxis.vert -o compiledShaders/yAxisVert.spv
 glslc.exe yAxis.frag -o compiledShaders/yAxisFrag.spv
 glslc.exe zAxis.vert -o compiledShaders/zAxisVert.spv
 glslc.exe zAxis.frag -o compiledShaders/zAxisFrag.spv
+glslc.exe unlit.vert -o compiledShaders/unlitVert.spv
+glslc.exe unlit.frag -o compiledShaders/unlitFrag.spv
 
 
 @REM C:/VulkanSDK/1.3.283.0/Bin/glslc.exe imgui.vert -o ../Binaries/windows-x86_64/Release/Shaders/compiledShaders/imguiVert.spv

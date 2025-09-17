@@ -474,8 +474,19 @@ namespace FlatGui
 		project.UpdateSavedTime();
 		tm timeSaved = project.GetSavedTime();
 
+		Vector3 sceneViewPos = Vector3();
 		Camera* sceneViewCamera = FL::F_sceneViewCameraObject.GetCamera();
-		Vector3 sceneViewPos = FL::F_sceneViewCameraObject.GetTransform()->GetPosition();
+		if (sceneViewCamera == nullptr)
+		{
+			FL::F_sceneViewCameraObject = GameObject();
+			sceneViewCamera = FL::F_sceneViewCameraObject.AddCamera();
+			Transform* sceneViewCameraTransform = FL::F_sceneViewCameraObject.AddTransform();
+			sceneViewPos = sceneViewCameraTransform->GetPosition();
+		}
+		else
+		{
+			sceneViewPos = FL::F_sceneViewCameraObject.GetTransform()->GetPosition();
+		}
 
 		json properties = json::object({
 			{ "path", path },

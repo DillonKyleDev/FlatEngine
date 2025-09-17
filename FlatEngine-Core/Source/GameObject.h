@@ -75,7 +75,7 @@ namespace FlatEngine
 		JointMaker* AddJointMaker(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		CharacterController* AddCharacterController(long ID = -1, bool b_active = true, bool b_collapsed = false);
 		TileMap* AddTileMap(long ID = -1, bool b_active = true, bool b_collapsed = false);
-		Mesh* AddMesh(long ID = -1, bool b_active = true, bool b_collapsed = false);
+		Mesh* AddMesh(GameObject* parent, long ID = -1, bool b_active = true, bool b_collapsed = false);
 
 		Sprite* AddSpriteLua() { return AddSprite(-1, true, false); };
 		Camera* AddCameraLua() { return AddCamera(-1, true, false); };
@@ -88,7 +88,7 @@ namespace FlatEngine
 		CharacterController* AddCharacterControllerLua() { return AddCharacterController(-1, true, false); };
 		TileMap* AddTileMapLua() { return AddTileMap(-1, true, false); };
 		Body* AddBodyLua() { return AddBody(Physics::BodyProps(), -1, true, false); };
-		Mesh* AddMeshLua() { return AddMesh(-1, true, false); };
+		Mesh* AddMeshLua() { return AddMesh(nullptr, -1, true, false); };
 
 		Component* GetComponent(ComponentTypes type);
 		bool HasComponent(ComponentTypes type);
@@ -125,6 +125,7 @@ namespace FlatEngine
 		bool IsPersistant();
 		void SetHierarchyPosition(long position);
 		long GetHierarchyPosition();
+		void SetIsSceneViewGridObject(bool b_isSceneViewGridObject);
 
 	private:
 		std::string m_name;
@@ -139,6 +140,7 @@ namespace FlatEngine
 		std::vector<Component*> m_components;
 		std::vector<long> m_childrenIDs;
 		bool m_b_persistant;
+		bool m_b_isSceneViewGridObject;
 		long m_hierarchyPosition;
 	};
 }

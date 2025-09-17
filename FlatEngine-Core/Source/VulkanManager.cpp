@@ -26,6 +26,7 @@ namespace FlatEngine
     ValidationLayers VM_validationLayers = ValidationLayers();
     uint32_t VM_currentFrame = 0;
     uint32_t VM_imageCount = 0;
+    Scene F_sceneViewGridObjects = Scene();
 
     void VulkanManager::check_vk_result(VkResult err)
     {
@@ -58,10 +59,13 @@ namespace FlatEngine
         m_b_framebufferResized = false; 
 
         m_imGuiMaterial = std::shared_ptr<Material>();
+        m_engineMaterials = std::vector<std::shared_ptr<Material>>();
         m_sceneViewMaterials = std::vector<std::shared_ptr<Material>>();
         m_gameViewMaterials = std::vector<std::shared_ptr<Material>>();
         m_sceneViewTexture = Texture();
         m_gameViewTexture = Texture();
+
+        F_sceneViewGridObjects.SetIsSceneViewGridScene(true);
     }
 
     VulkanManager::~VulkanManager()
@@ -70,6 +74,8 @@ namespace FlatEngine
 
     void VulkanManager::Cleanup()
     {
+        QuitImGui();
+
         vkDeviceWaitIdle(m_logicalDevice.GetDevice()); // This may need to be moved elsewhere potentially
 
         // Semaphores and Fences
@@ -166,10 +172,15 @@ namespace FlatEngine
                 CreateCommandPool(m_commandPool, m_logicalDevice, indices.graphicsFamily.value());
                 CreateSyncObjects();
 
-                m_imGuiMaterial = LoadMaterial("../engine/materials/imgui.mat");
-
                 m_sceneViewTexture.CreateRenderToTextureResources();
                 m_gameViewTexture.CreateRenderToTextureResources();
+                
+                CreateImGuiRendePassResources();
+                CreateRenderToTextureRenderPassResources();
+
+                LoadEngineMaterials();
+
+                CreateSceneViewGridObjects();
             }
         }
 
@@ -255,6 +266,260 @@ namespace FlatEngine
         {
             throw std::runtime_error("failed to create command pool!");
         }
+    }
+
+    void VulkanManager::CreateRenderToTextureRenderPassResources()
+    {
+        m_renderToTextureRenderPass.SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice);
+
+        m_renderToTextureRenderPass.EnableDepthBuffering();
+        m_renderToTextureRenderPass.EnableMsaa();
+        VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; // F_VulkanManager->GetMaxSamples();
+        VkFormat colorFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+        m_renderToTextureRenderPass.SetImageColorFormat(colorFormat);
+        m_renderToTextureRenderPass.SetMSAASampleCount(msaaSamples);
+
+        VkAttachmentDescription colorAttachment{};
+        colorAttachment.format = colorFormat;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference colorAttachmentRef{};
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        m_renderToTextureRenderPass.AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
+
+        VkAttachmentDescription depthAttachment{};
+        depthAttachment.format = Helper::FindDepthFormat(m_physicalDevice.GetDevice());
+        depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference depthAttachmentRef{};
+        depthAttachmentRef.attachment = 1;
+        depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        m_renderToTextureRenderPass.AddRenderPassAttachment(depthAttachment, depthAttachmentRef);
+
+        VkAttachmentDescription colorAttachmentResolve{};
+        colorAttachmentResolve.format = colorFormat;
+        colorAttachmentResolve.samples = msaaSamples;
+        colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentReference colorAttachmentResolveRef{};
+        colorAttachmentResolveRef.attachment = 2;
+        colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        m_renderToTextureRenderPass.AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
+        
+        VkSubpassDependency dependency{};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        m_renderToTextureRenderPass.AddSubpassDependency(dependency);
+
+        VkSubpassDescription subpass{};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &m_renderToTextureRenderPass.GetAttachmentRefs()[0];
+        subpass.pDepthStencilAttachment = &m_renderToTextureRenderPass.GetAttachmentRefs()[1];
+        subpass.pResolveAttachments = &m_renderToTextureRenderPass.GetAttachmentRefs()[2];
+        m_renderToTextureRenderPass.AddSubpass(subpass);
+
+        m_renderToTextureRenderPass.ConfigureFrameBufferImageViews(m_sceneViewTexture.GetImageViews()); // Give m_renderPass the VkImageViews to write to their VkImages (to be used later by ImGui material)		
+
+        m_renderToTextureRenderPass.Init(m_commandPool);
+    }
+
+    void VulkanManager::CreateImGuiRendePassResources()
+    {
+        m_imGuiRenderPass.SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice);
+
+        m_imGuiRenderPass.EnableMsaa();
+        VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; // F_VulkanManager->GetMaxSamples();
+        VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+        m_imGuiRenderPass.SetImageColorFormat(colorFormat);
+        m_imGuiRenderPass.SetMSAASampleCount(msaaSamples);
+
+        VkAttachmentDescription colorAttachment = {};
+        colorAttachment.format = m_winSystem.GetImageFormat();
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkAttachmentReference colorAttachmentRef = {};
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        m_imGuiRenderPass.AddRenderPassAttachment(colorAttachment, colorAttachmentRef);
+
+        VkAttachmentDescription colorAttachmentResolve{};
+        colorAttachmentResolve.format = colorFormat;
+        colorAttachmentResolve.samples = msaaSamples;
+        colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentReference colorAttachmentResolveRef{};
+        colorAttachmentResolveRef.attachment = 1;
+        colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        m_imGuiRenderPass.AddRenderPassAttachment(colorAttachmentResolve, colorAttachmentResolveRef);
+        
+        VkSubpassDependency dependency{};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+        m_imGuiRenderPass.AddSubpassDependency(dependency);
+
+        VkSubpassDescription subpass = {};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &colorAttachmentRef;
+        subpass.pResolveAttachments = &colorAttachmentResolveRef;
+        m_imGuiRenderPass.AddSubpass(subpass);
+
+        m_imGuiRenderPass.ConfigureFrameBufferImageViews(m_winSystem.GetSwapChainImageViews());
+
+        m_imGuiRenderPass.Init(m_commandPool);
+    }
+
+    void VulkanManager::GetImGuiDescriptorSetLayoutInfo(std::vector<VkDescriptorSetLayoutBinding>& bindings, VkDescriptorSetLayoutCreateInfo& layoutInfo)
+    {
+        bindings.resize(1);
+        bindings[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        bindings[0].descriptorCount = 1;
+        bindings[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        bindings[0].binding = 0;
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+        layoutInfo.pBindings = bindings.data();
+    }
+
+    void VulkanManager::GetImGuiDescriptorPoolInfo(std::vector<VkDescriptorPoolSize>& poolSizes, VkDescriptorPoolCreateInfo& poolInfo)
+    {
+        poolSizes =
+        {
+            { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+            { VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
+            { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
+            { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+        };
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        poolInfo.maxSets = 1000;
+        poolInfo.poolSizeCount = (uint32_t)poolSizes.size();
+        poolInfo.pPoolSizes = poolSizes.data();
+    }
+
+    void VulkanManager::CreateImGuiResources()
+    {
+        // https://frguthmann.github.io/posts/vulkan_imgui/       
+
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;// | ImGuiConfigFlags_ViewportsEnable;
+        //io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports | ImGuiBackendFlags_RendererHasViewports;
+
+        VulkanManager::CreateCommandPool(m_commandPool, m_logicalDevice, m_logicalDevice.GetGraphicsIndex(), VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
+
+        // Set up Descriptor Material Allocator
+        std::vector<VkDescriptorSetLayoutBinding> bindings{};
+        VkDescriptorSetLayoutCreateInfo layoutInfo{};
+        GetImGuiDescriptorSetLayoutInfo(bindings, layoutInfo);
+        std::vector<VkDescriptorPoolSize> poolSizes{};
+        VkDescriptorPoolCreateInfo poolInfo{};
+        GetImGuiDescriptorPoolInfo(poolSizes, poolInfo);
+
+        m_imGuiMaterial->GetAllocator().ConfigureDescriptorSetLayout(bindings, layoutInfo);
+        m_imGuiMaterial->GetAllocator().ConfigureDescriptorPools(poolSizes, poolInfo);
+        m_imGuiMaterial->GetAllocator().Init(AllocatorType::DescriptorPool, 1, m_logicalDevice);
+
+        ImGui_ImplSDL2_InitForVulkan(m_winSystem.GetWindow());
+
+        ImGui_ImplVulkan_InitInfo init_info = {};
+        init_info.Instance = m_instance;
+        init_info.PhysicalDevice = m_physicalDevice.GetDevice();
+        init_info.Device = m_logicalDevice.GetDevice();
+        init_info.QueueFamily = ImGui_ImplVulkanH_SelectQueueFamilyIndex(m_physicalDevice.GetDevice());
+        init_info.Queue = m_logicalDevice.GetGraphicsQueue();
+        init_info.PipelineCache = VK_NULL_HANDLE;
+        init_info.DescriptorPool = m_imGuiMaterial->CreateDescriptorPool();
+        init_info.RenderPass = m_imGuiRenderPass.GetRenderPass();
+        init_info.Subpass = 0;
+        init_info.MinImageCount = VM_MAX_FRAMES_IN_FLIGHT;
+        init_info.ImageCount = VM_MAX_FRAMES_IN_FLIGHT;
+        init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+        init_info.Allocator = nullptr;
+        init_info.CheckVkResultFn = VulkanManager::check_vk_result;
+
+        if (!ImGui_ImplVulkan_Init(&init_info))
+        {
+            FlatEngine::LogError("ImGui backends setup failed!");
+        }
+    }
+
+    void VulkanManager::CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets)
+    {
+        texture.CreateTextureImage();
+        Model emptyModel = Model();
+        std::vector<Texture> textures = std::vector<Texture>(1, texture);
+        m_imGuiMaterial->CreateDescriptorSets(descriptorSets, emptyModel, textures);
+    }
+
+    void VulkanManager::FreeImGuiTexture(uint32_t allocatedFrom)
+    {
+        m_imGuiMaterial->GetAllocator().SetFreed(allocatedFrom);
+    }
+
+    void VulkanManager::QuitImGui()
+    {
+        vkDestroyCommandPool(m_logicalDevice.GetDevice(), m_commandPool, nullptr);
+
+        VkResult err = vkDeviceWaitIdle(m_logicalDevice.GetDevice());
+        VulkanManager::check_vk_result(err);
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplSDL2_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    void VulkanManager::LoadEngineMaterials()
+    {
+        m_imGuiMaterial = LoadMaterial("../engine/materials/engineMaterial_imgui.mat");
+        CreateImGuiResources();
+        m_imGuiMaterial->Init();
+
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_Unlit.mat", &m_sceneViewTexture));
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_VerticesOnly.mat", &m_sceneViewTexture));
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_xAxis.mat", &m_sceneViewTexture));
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_yAxis.mat", &m_sceneViewTexture));
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_zAxis.mat", &m_sceneViewTexture));
     }
 
     void VulkanManager::InitializeMaterials()
@@ -357,13 +622,12 @@ namespace FlatEngine
             {
                 newMaterial->SetRenderToTexture(renderToTexture);
                 newMaterial->SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice, &m_commandPool, &m_renderToTextureRenderPass);
+                newMaterial->Init();
             }
             else
             {
                 newMaterial->SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice, &m_commandPool, &m_imGuiRenderPass);
             }
-
-            newMaterial->Init();
         }
 
         return newMaterial;
@@ -393,25 +657,42 @@ namespace FlatEngine
 
     // Only call add material after all material members have been filled
     void VulkanManager::AddSceneViewMaterial(std::shared_ptr<Material> material)
-    {
-        material->SetViewport(ViewportType::SceneView);
+    {        
         m_sceneViewMaterials.push_back(material);
     }
+
     void VulkanManager::AddGameViewMaterial(std::shared_ptr<Material> material)
-    {
-        material->SetViewport(ViewportType::GameView);
+    {        
         m_gameViewMaterials.push_back(material);
     }
 
     // Assume Scene View Materials for now
     std::shared_ptr<Material> VulkanManager::GetMaterial(std::string materialName)
     {                
-        for (std::shared_ptr<Material> material : m_sceneViewMaterials)        
+        for (std::shared_ptr<Material> material : m_engineMaterials)
         {
             if (material->GetName() == materialName)
             {
                 return material;
             }
+        }
+        for (std::shared_ptr<Material> material : m_sceneViewMaterials)
+        {
+            if (material->GetName() == materialName)
+            {
+                return material;
+            }
+        }
+        for (std::shared_ptr<Material> material : m_gameViewMaterials)
+        {
+            if (material->GetName() == materialName)
+            {
+                return material;
+            }
+        }
+        if (materialName == "imgui")
+        {
+            return m_imGuiMaterial;
         }
 
         return nullptr;
@@ -425,6 +706,13 @@ namespace FlatEngine
 
     void VulkanManager::ReloadShaders()
     {
+        for (std::shared_ptr<Material> material : m_engineMaterials)
+        {
+            if (material->Initialized())
+            {
+                material->RecreateGraphicsPipeline();
+            }
+        }
         for (std::shared_ptr<Material> material : m_sceneViewMaterials)
         {
             if (material->Initialized())
@@ -466,17 +754,43 @@ namespace FlatEngine
         }
     }
 
-    void VulkanManager::CreateImGuiTexture(Texture& texture, std::vector<VkDescriptorSet>& descriptorSets)
+    void VulkanManager::CreateSceneViewGridObjects()
     {
-        texture.CreateTextureImage();
-        Model emptyModel = Model();
-        std::vector<Texture> textures = std::vector<Texture>(1, texture);
-        m_imGuiMaterial->CreateDescriptorSets(descriptorSets, emptyModel, textures);
-    }
+        GameObject* grid = F_sceneViewGridObjects.CreateGameObject();
+        grid->SetIsSceneViewGridObject(true);
+        grid->SetName("Grid");
+        Mesh* gridMesh = grid->AddMesh(grid);
+        gridMesh->SetMaterial("engineMaterial_VerticesOnly");
+        gridMesh->SetModel("../engine/models/largeGrid.obj");
+        gridMesh->AddTexture("../engine/images/colors/cave.png", 0);
+        gridMesh->CreateResources();
 
-    void VulkanManager::FreeImGuiTexture(uint32_t allocatedFrom)
-    {
-        m_imGuiMaterial->GetAllocator().SetFreed(allocatedFrom);
+        GameObject* xAxis = F_sceneViewGridObjects.CreateGameObject();
+        xAxis->SetIsSceneViewGridObject(true);
+        xAxis->SetName("xAxis");
+        Mesh* xAxisMesh = xAxis->AddMesh(xAxis);
+        xAxisMesh->SetMaterial("engineMaterial_xAxis");
+        xAxisMesh->SetModel("../engine/models/xAxis.obj");
+        xAxisMesh->AddTexture("../engine/images/colors/green.png", 0);
+        xAxisMesh->CreateResources();
+
+        GameObject* yAxis = F_sceneViewGridObjects.CreateGameObject();
+        yAxis->SetIsSceneViewGridObject(true);
+        yAxis->SetName("yAxis");
+        Mesh* yAxisMesh = yAxis->AddMesh(yAxis);
+        yAxisMesh->SetMaterial("engineMaterial_yAxis");
+        yAxisMesh->SetModel("../engine/models/yAxis.obj");
+        yAxisMesh->AddTexture("../engine/images/colors/yellow.png", 0);
+        yAxisMesh->CreateResources();
+
+        GameObject* zAxis = F_sceneViewGridObjects.CreateGameObject();
+        zAxis->SetIsSceneViewGridObject(true);
+        zAxis->SetName("zAxis");
+        Mesh* zAxisMesh = zAxis->AddMesh(zAxis);
+        zAxisMesh->SetMaterial("engineMaterial_zAxis");
+        zAxisMesh->SetModel("../engine/models/zAxis.obj");
+        zAxisMesh->AddTexture("../engine/images/colors/rose.png", 0);    
+        zAxisMesh->CreateResources();
     }
 
     std::vector<VkDescriptorSet>& VulkanManager::GetSceneViewDescriptorSets()
@@ -521,14 +835,40 @@ namespace FlatEngine
         if (m_renderToTextureRenderPass.Initialized())
         {
             m_renderToTextureRenderPass.BeginRenderPass(imageIndex);
-            // Scene View
+
+            // Scene View Grid Objects
+            for (std::shared_ptr<Material> material : m_engineMaterials)
+            {
+                if (material->Initialized())
+                {
+                    for (std::pair<long, Mesh> mesh : F_sceneViewGridObjects.GetMeshes())
+                    {
+                        if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
+                        {
+                            mesh.second.GetModel().UpdateUniformBuffer(imageIndex, m_winSystem, &mesh.second, ViewportType::SceneView);
+                            material->RecordDefaultCommandBuffer(imageIndex, mesh.second);
+                            m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
+
+                            b_sceneViewTextureDrawnTo = true;
+                        }
+                    }
+                }
+            }
+            // Scene View GameObjects
             for (std::shared_ptr<Material> material : m_sceneViewMaterials)
             {
                 if (material->Initialized())
                 {
-                    if (material->HandleRenderPass(imageIndex, ViewportType::SceneView))
+                    for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
                     {
-                        b_sceneViewTextureDrawnTo = true;
+                        if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
+                        {
+                            mesh.second.GetModel().UpdateUniformBuffer(imageIndex, m_winSystem, &mesh.second, ViewportType::SceneView);
+                            material->RecordDefaultCommandBuffer(imageIndex, mesh.second);
+                            m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
+
+                            b_sceneViewTextureDrawnTo = true;
+                        }
                     }
                 }
             }
@@ -540,6 +880,7 @@ namespace FlatEngine
             //        material->HandleRenderPass(imageIndex, ViewportType::GameView);                     
             //    }
             //}
+
             m_renderToTextureRenderPass.EndRenderPass();
 
             if (b_sceneViewTextureDrawnTo) // Once VkImage has been written to from m_renderPass, that image can be used as a texture to render to using a different material and desired descriptorSets, so we'd need to create descriptor sets for it using that material's configuration
@@ -558,7 +899,9 @@ namespace FlatEngine
  
         if (m_imGuiMaterial != nullptr)
         {
-            m_imGuiMaterial->HandleRenderPass(imageIndex);
+            m_imGuiRenderPass.BeginRenderPass(imageIndex);
+            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_imGuiRenderPass.GetCommandBuffers()[VM_currentFrame]);
+            m_imGuiRenderPass.EndRenderPass();
         }
         commandBuffers.push_back(m_imGuiRenderPass.GetCommandBuffers()[VM_currentFrame]);
    
@@ -614,8 +957,29 @@ namespace FlatEngine
     {
         m_winSystem.RecreateSwapChain();   
 
+        m_sceneViewTexture.CreateRenderToTextureResources();
+        m_gameViewTexture.CreateRenderToTextureResources();
+
+        m_renderToTextureRenderPass.ConfigureFrameBufferImageViews(m_sceneViewTexture.GetImageViews());
         m_renderToTextureRenderPass.RecreateFrameBuffers();
+
+        m_imGuiRenderPass.ConfigureFrameBufferImageViews(m_winSystem.GetSwapChainImageViews());
         m_imGuiRenderPass.RecreateFrameBuffers();
+
+        m_imGuiMaterial->OnWindowResized();
+        for (std::shared_ptr<Material> material : m_engineMaterials)
+        {
+            material->OnWindowResized();
+        }
+        for (std::shared_ptr<Material> material : m_sceneViewMaterials)
+        {
+            material->OnWindowResized();
+        }
+        for (std::shared_ptr<Material> material : m_gameViewMaterials)
+        {
+            material->OnWindowResized();
+        }
+
 
         ImGui_ImplVulkan_SetMinImageCount(static_cast<uint32_t>(m_winSystem.GetSwapChainImageViews().size()));
     }

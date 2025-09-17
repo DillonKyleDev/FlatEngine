@@ -38,6 +38,7 @@ namespace FlatEngine
 		m_b_isActive = true;
 		m_childrenIDs = std::vector<long>();
 		m_b_persistant = false;
+		m_b_isSceneViewGridObject = false;
 		m_hierarchyPosition = 0;
 	}
 
@@ -195,7 +196,11 @@ namespace FlatEngine
 		long nextID = id;
 		if (nextID == -1)
 		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+			if (m_b_isSceneViewGridObject)
+			{
+				nextID = F_sceneViewGridObjects.GetNextComponentID();
+			}
+			else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 			{
 				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
 			}
@@ -221,7 +226,11 @@ namespace FlatEngine
 		}
 
 		Transform* transformPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		if (m_b_isSceneViewGridObject)
+		{
+			transformPtr = F_sceneViewGridObjects.AddTransform(transform, m_ID);
+		}
+		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			transformPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddTransform(transform, m_ID);
 		}
@@ -680,7 +689,7 @@ namespace FlatEngine
 		return tileMapPtr;
 	}
 
-	Mesh* GameObject::AddMesh(long ID, bool b_active, bool b_collapsed)
+	Mesh* GameObject::AddMesh(GameObject* parent, long ID, bool b_active, bool b_collapsed)
 	{
 		long nextID = ID;
 		if (nextID == -1)
@@ -689,13 +698,17 @@ namespace FlatEngine
 			{
 				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
 			}
+			else if (m_b_isSceneViewGridObject)
+			{
+				nextID = F_sceneViewGridObjects.GetNextComponentID();
+			}
 			else if (GetLoadedScene() != nullptr)
 			{
 				nextID = GetLoadedScene()->GetNextComponentID();
 			}
 		}
 
-		Mesh mesh = Mesh(nextID, m_ID);
+		Mesh mesh = Mesh(parent, nextID, m_ID);
 		mesh.SetActive(b_active);
 		mesh.SetCollapsed(b_collapsed);
 
@@ -703,6 +716,10 @@ namespace FlatEngine
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			meshPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddMesh(mesh, m_ID);
+		}
+		else if (m_b_isSceneViewGridObject)
+		{
+			meshPtr = F_sceneViewGridObjects.AddMesh(mesh, m_ID);
 		}
 		else if (GetLoadedScene() != nullptr)
 		{
@@ -752,6 +769,10 @@ namespace FlatEngine
 
 	Transform* GameObject::GetTransform()
 	{
+		if (m_b_isSceneViewGridObject)
+		{
+			return F_sceneViewGridObjects.GetTransformByOwner(m_ID);
+		}
 		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
 		{
 			return GetLoadedProject().GetPersistantGameObjectScene()->GetTransformByOwner(m_ID);
@@ -1035,5 +1056,10 @@ namespace FlatEngine
 	long GameObject::GetHierarchyPosition()
 	{
 		return m_hierarchyPosition;
+	}
+
+	void GameObject::SetIsSceneViewGridObject(bool b_isSceneViewGridObject)
+	{
+		m_b_isSceneViewGridObject = b_isSceneViewGridObject;
 	}
 }

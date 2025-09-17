@@ -364,6 +364,13 @@ namespace FlatGui
 						newObject->SetName("TileMap(" + std::to_string(newObject->GetID()) + ")");
 						SetFocusedGameObjectID(newObject->GetID());
 					}
+					if (ImGui::MenuItem("Mesh"))
+					{
+						GameObject* newObject = FL::CreateGameObject(-1);
+						newObject->AddMesh(newObject);
+						newObject->SetName("Mesh(" + std::to_string(newObject->GetID()) + ")");
+						SetFocusedGameObjectID(newObject->GetID());
+					}
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Prefabs"))

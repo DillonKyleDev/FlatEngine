@@ -397,6 +397,10 @@ namespace FlatEngine
 		{
 			return RemoveAnimation(ownerID);
 		}
+		else if (component->GetTypeString() == "Mesh")
+		{
+			return RemoveMesh(ownerID);
+		}
 		else if (component->GetTypeString() == "Body")
 		{
 			return RemoveBody(ownerID);
@@ -572,6 +576,7 @@ namespace FlatEngine
 		bool b_success = false;
 		if (m_Meshes.count(ownerID))
 		{
+			m_Meshes.at(ownerID).Cleanup();
 			m_Meshes.erase(ownerID);
 			b_success = true;
 		}

@@ -249,7 +249,8 @@ namespace FlatEngine
 
     void Model::UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, Mesh* mesh, ViewportType viewport)
     {        
-        Transform* transform = mesh->GetParent()->GetTransform();
+        GameObject* parent = mesh->GetParentPtr();
+        Transform* transform = parent->GetTransform();
         Vector3 meshPosition = transform->GetPosition();
         glm::mat4 meshScale = transform->GetScaleMatrix();
         glm::mat4 meshRotation = transform->GetRotationMatrix();
@@ -260,7 +261,10 @@ namespace FlatEngine
         {
         case ViewportType::SceneView:
             primaryCamera = F_sceneViewCameraObject.GetCamera();
-            cameraPosition = F_sceneViewCameraObject.GetTransform()->GetPosition();
+            if (primaryCamera != nullptr)
+            {
+                cameraPosition = F_sceneViewCameraObject.GetTransform()->GetPosition();
+            }
             break;
         case ViewportType::GameView:
             primaryCamera = GetPrimaryCamera();
@@ -268,6 +272,7 @@ namespace FlatEngine
             {
                 cameraPosition = primaryCamera->GetParent()->GetTransform()->GetPosition();
             }
+            break;
         default:
             break;
         }

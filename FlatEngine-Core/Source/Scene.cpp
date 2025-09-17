@@ -32,6 +32,7 @@ namespace FlatEngine
 		m_freedComponentIDs = std::vector<long>();
 		m_freedGameObjectIDs = std::vector<long>();
 		m_b_persistantScene = false;
+		m_b_sceneViewGridScene = false;
 	}
 
 	Scene::~Scene()
@@ -161,6 +162,7 @@ namespace FlatEngine
 
 		GameObject newObject = GameObject(parentID, myID);
 		newObject.SetPersistant(m_b_persistantScene);
+		newObject.SetIsSceneViewGridObject(m_b_sceneViewGridScene);
 		newObject.AddTransform();
 
 		if (parentID != -1 && m_sceneObjects.count(parentID))
@@ -303,9 +305,13 @@ namespace FlatEngine
 		return m_b_persistantScene;
 	}
 
+	void Scene::SetIsSceneViewGridScene(bool b_isSceneViewGridScene)
+	{
+		m_b_sceneViewGridScene = b_isSceneViewGridScene;
+	}
+
 	void Scene::OnPrefabInstantiated()
 	{		
-
 	}
 
 	void Scene::SortSceneObjects()

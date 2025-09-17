@@ -17,12 +17,13 @@ namespace FlatEngine
 	class Mesh : public Component
 	{
 	public:
-		Mesh(long myID = -1, long parentID = -1);
+		Mesh(GameObject* parent, long myID = -1, long parentID = -1);
 		~Mesh();
 		std::string GetData();
 		void CleanupTextures();
 		void Cleanup();
 
+		GameObject* GetParentPtr();
 		bool Initialized();		
 		void SetModel(Model model);
 		void SetModel(std::string modelPath);
@@ -48,7 +49,7 @@ namespace FlatEngine
 		int m_allocationPoolIndex;
 		bool m_b_initialized;
 		// handles
+		GameObject* m_parent;
 		LogicalDevice* m_logicalDevice;
-		ViewportManager* m_viewportManager;
 	};
 }

@@ -3,6 +3,8 @@
 #include "VulkanManager.h"
 #include "Helper.h"
 
+#include "stb_image.h"
+
 #include "imgui_impl_vulkan.h"
 #include <stdexcept>
 
@@ -56,13 +58,8 @@ namespace FlatEngine
 		{
 			FreeTexture();
 
-			// JUST FOR GETTING TEXTURE DIMENSIONS, todo: figure out how to get them without using SDL surface
-			SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-			if (loadedSurface != nullptr)
-			{
-				m_textureWidth = loadedSurface->w;
-				m_textureHeight = loadedSurface->h;
-			}
+			int texChannels;
+			stbi_uc* pixels = stbi_load(path.c_str(), &m_textureWidth, &m_textureHeight, &texChannels, STBI_rgb_alpha);			
 
 			F_VulkanManager->CreateImGuiTexture(*this, m_descriptorSets);			
 			//return m_allocationIndex != -1;  TODO: Look into this, allocation index not saving

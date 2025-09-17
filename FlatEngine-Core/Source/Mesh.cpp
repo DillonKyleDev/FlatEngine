@@ -1,6 +1,5 @@
 #include "Mesh.h"
 #include "FlatEngine.h"
-#include "ViewportManager.h"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -9,7 +8,7 @@ using namespace nlohmann::literals;
 
 namespace FlatEngine
 {
-	Mesh::Mesh(long myID, long parentID)
+	Mesh::Mesh(GameObject* parent, long myID, long parentID)
 	{
 		SetID(myID);
 		SetParentID(parentID);
@@ -23,8 +22,8 @@ namespace FlatEngine
 		m_b_initialized = false;
 
 		// handles		
-		m_logicalDevice = &F_VulkanManager->GetLogicalDevice();;
-		//m_viewportManager = &F_VulkanManager->m_sceneViewManager;
+		m_parent = parent;
+		m_logicalDevice = &F_VulkanManager->GetLogicalDevice();
 	}
 
 	Mesh::~Mesh()
@@ -82,6 +81,11 @@ namespace FlatEngine
 		m_model.Cleanup(*m_logicalDevice);
 	}
 
+
+	GameObject* Mesh::GetParentPtr()
+	{
+		return m_parent;
+	}
 
 	bool Mesh::Initialized()
 	{

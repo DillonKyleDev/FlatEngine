@@ -1,0 +1,18 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 3
+    },
+    "fragmentShaderPath": "../engine/shaders/compiledShaders/gridFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 1
+    },
+    "name": "engineMaterial_VerticesOnly",
+    "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 1.0,
+        "polygonMode": 1
+    },
+    "textureCount": 1,
+    "vertexShaderPath": "../engine/shaders/compiledShaders/gridVert.spv"
+}

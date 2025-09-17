@@ -117,6 +117,7 @@ namespace FlatEngine
 		std::map<std::string, std::vector<Mesh>>& GetMeshesByMaterial();
 		void SetPersistantScene(bool b_persistant);
 		bool IsPersistantScene();
+		void SetIsSceneViewGridScene(bool b_isSceneViewGridScene);
 
 	private:
 		std::string m_name;
@@ -130,5 +131,6 @@ namespace FlatEngine
 		std::vector<long> m_freedComponentIDs;
 		std::vector<long> m_freedGameObjectIDs;
 		bool m_b_persistantScene;
+		bool m_b_sceneViewGridScene;
 	};
 }

@@ -902,7 +902,7 @@ namespace FlatEngine
 	}
 
 	GameObject* GetObjectByID(long objectID)
-	{
+	{		
 		GameObject* sceneObject = GetLoadedScene()->GetObjectByID(objectID);
 		GameObject* persistantObject = GetLoadedProject().GetPersistantGameObjectScene()->GetObjectByID(objectID);
 
@@ -3789,7 +3789,7 @@ namespace FlatEngine
 							}
 							else if (type == "Mesh")
 							{
-								Mesh* newMesh = loadedObject->AddMesh(id, b_isActive, b_isCollapsed);
+								Mesh* newMesh = loadedObject->AddMesh(loadedObject, id, b_isActive, b_isCollapsed);
 
 								std::string materialName = CheckJsonString(componentJson, "materialName", objectName);
 								std::string modelPath = CheckJsonString(componentJson, "modelPath", objectName);

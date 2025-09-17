@@ -1,0 +1,18 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
+    "fragmentShaderPath": "../engine/shaders/compiledShaders/xAxisFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 2
+    },
+    "name": "engineMaterial_xAxis",
+    "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 1.0,
+        "polygonMode": 1
+    },
+    "textureCount": 1,
+    "vertexShaderPath": "../engine/shaders/compiledShaders/xAxisVert.spv"
+}

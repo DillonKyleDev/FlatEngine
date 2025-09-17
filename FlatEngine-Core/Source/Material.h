@@ -28,8 +28,6 @@ namespace FlatEngine
 		bool Initialized();	
 		void Cleanup();
 		void RecreateGraphicsPipeline();
-		void SetViewport(ViewportType viewport);
-		ViewportType GetViewport();
 
 		void SetHandles(VkInstance* instance, WinSys* winSystem, PhysicalDevice* physicalDevice, LogicalDevice* logicalDevice, VkCommandPool* commandPool, RenderPass* renderPass);
 		void SetName(std::string name);
@@ -46,12 +44,9 @@ namespace FlatEngine
 		void CreateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures);
 		Allocator& GetAllocator();
 		void SetTextureCount(uint32_t textureCount);
-		uint32_t GetTextureCount();
-		void CreateImageResources();
+		uint32_t GetTextureCount();		
 		void OnWindowResized();
 
-		// Configure RenderPass
-		// TODO
 		// Configure GraphicsPipeline
 		VkPipelineInputAssemblyStateCreateInfo& GetInputAssemblyCreateInfos();
 		void SetInputAssemblyCreateInfos(VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos);
@@ -60,8 +55,6 @@ namespace FlatEngine
 		void SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos);
 		VkPipelineColorBlendAttachmentState& GetColorBlendAttachmentCreateInfos();
 
-		void CreateRenderPassResources();
-		bool HandleRenderPass(uint32_t imageIndex, ViewportType viewport = ViewportType::None);
 		void RecordDefaultCommandBuffer(uint32_t imageIndex, Mesh& mesh);
 		RenderPass* GetRenderPass();
 
@@ -69,15 +62,10 @@ namespace FlatEngine
 		void SetRenderToTexture(Texture* renderToTexture);
 
 	private:
-		void QuitImGui();
 		void SetDefaultValues();
-		void CreateImGuiResources();
-		void GetImGuiDescriptorSetLayoutInfo(std::vector<VkDescriptorSetLayoutBinding>& bindings, VkDescriptorSetLayoutCreateInfo& layoutInfo);
-		void GetImGuiDescriptorPoolInfo(std::vector<VkDescriptorPoolSize>& poolSizes, VkDescriptorPoolCreateInfo& poolInfo);
 
 		std::string m_name;		
 		std::string m_path;
-		ViewportType m_viewport;
 		GraphicsPipeline m_graphicsPipeline;
 		RenderPass* m_renderPass;
 		Allocator m_allocator;

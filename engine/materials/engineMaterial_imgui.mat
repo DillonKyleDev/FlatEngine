@@ -1,0 +1,18 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
+    "fragmentShaderPath": "../engine/shaders/compiledShaders/imguiFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 3
+    },
+    "name": "engineMaterial_imgui",
+    "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 1.0,
+        "polygonMode": 0
+    },
+    "textureCount": 1,
+    "vertexShaderPath": "../engine/shaders/compiledShaders/imguiVert.spv"
+}

@@ -164,6 +164,7 @@ namespace FlatEngine
 
 	// Managers
 	extern SceneManager F_SceneManager;
+	extern Scene F_sceneViewGridObjects;
 	extern Logger F_Logger;	
 	extern std::vector<Line> F_SceneLines;
 	extern std::vector<Process> F_ProfilerProcesses;

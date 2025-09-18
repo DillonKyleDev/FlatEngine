@@ -49,6 +49,8 @@ namespace FlatEngine
         std::vector<VkPhysicalDevice> devices(ui_deviceCount);
         vkEnumeratePhysicalDevices(instance, &ui_deviceCount, devices.data());
 
+        VkPhysicalDevice backupDevice;
+        bool b_nonIntegratedDeviceFound = false;
         // Check if any of the devices are suitable for our needs
         for (const auto& device : devices)
         {
@@ -56,10 +58,25 @@ namespace FlatEngine
             if (IsDeviceSuitable(device, surface))
             {
                 vkGetPhysicalDeviceProperties(device, &m_physicalDeviceProperties);
-                m_physicalDevice = device;
-                F_VulkanManager->SetMaxSamples(Helper::GetMaxUsableSampleCount(m_physicalDevice));
-                break;
+                if (m_physicalDeviceProperties.deviceType != VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)
+                {
+                    m_physicalDevice = device;
+                    F_VulkanManager->SetMaxSamples(Helper::GetMaxUsableSampleCount(m_physicalDevice));
+                    b_nonIntegratedDeviceFound = true;
+                    break;
+                }
+                else
+                {
+                    backupDevice = device;
+                }
             }
+        }
+
+        if (!b_nonIntegratedDeviceFound)
+        {
+            m_physicalDevice = backupDevice;
+            F_VulkanManager->SetMaxSamples(Helper::GetMaxUsableSampleCount(m_physicalDevice));
+            printf("No non-integrated phyiscal device found, using integrated graphics. This may lead to problems.");
         }
 
         if (m_physicalDevice == VK_NULL_HANDLE)
@@ -84,7 +101,7 @@ namespace FlatEngine
         // Get supported features list on GPU device
         VkPhysicalDeviceFeatures supportedFeatures;
         vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
-        
+
         m_b_fillModeNonSolid = supportedFeatures.fillModeNonSolid;
 
         return indices.isComplete() && b_extensionsSupported && b_swapChainAdequate && supportedFeatures.samplerAnisotropy;

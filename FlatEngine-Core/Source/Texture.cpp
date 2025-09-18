@@ -219,12 +219,12 @@ namespace FlatEngine
 		m_imageFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 		//Cleanup(logicalDevice);
 
-		m_images.resize(VM_MAX_FRAMES_IN_FLIGHT);
-		m_imageViews.resize(VM_MAX_FRAMES_IN_FLIGHT);
-		m_imageMemory.resize(VM_MAX_FRAMES_IN_FLIGHT);
+		m_images.resize(VM_imageCount);
+		m_imageViews.resize(VM_imageCount);
+		m_imageMemory.resize(VM_imageCount);
 		VkExtent2D extent = F_VulkanManager->GetWinSystem().GetExtent();
 
-		for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
+		for (size_t i = 0; i < VM_imageCount; i++)
 		{
 			uint32_t mipLevels = 1;
 			int texWidth = extent.width;

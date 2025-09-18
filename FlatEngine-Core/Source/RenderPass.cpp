@@ -307,9 +307,9 @@ namespace FlatEngine
     {
         // More info here - https://vulkan-tutorial.com/en/Drawing_a_triangle/Drawing/Framebuffers
 
-        m_framebuffers.resize(VM_MAX_FRAMES_IN_FLIGHT);
+        m_framebuffers.resize(m_imageViews.size());
 
-        for (size_t i = 0; i < VM_MAX_FRAMES_IN_FLIGHT; i++)
+        for (size_t i = 0; i < m_imageViews.size(); i++)
         {
             std::vector<VkImageView> attachments = {};
             if (m_b_msaaEnabled)

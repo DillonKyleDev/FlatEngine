@@ -473,8 +473,8 @@ namespace FlatEngine
         init_info.DescriptorPool = m_imGuiMaterial->CreateDescriptorPool();
         init_info.RenderPass = m_imGuiRenderPass.GetRenderPass();
         init_info.Subpass = 0;
-        init_info.MinImageCount = VM_MAX_FRAMES_IN_FLIGHT;
-        init_info.ImageCount = VM_MAX_FRAMES_IN_FLIGHT;
+        init_info.MinImageCount = VM_imageCount;
+        init_info.ImageCount = VM_imageCount;
         init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
         init_info.Allocator = nullptr;
         init_info.CheckVkResultFn = VulkanManager::check_vk_result;
@@ -815,7 +815,7 @@ namespace FlatEngine
         // At the start of the frame, we want to wait until the previous frame has finished, so that the command buffer and semaphores are available to use. To do that, we call vkWaitForFences:
         vkWaitForFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[VM_currentFrame], VK_TRUE, UINT64_MAX);
 
-        uint32_t imageIndex;
+        uint32_t imageIndex;        
         VkResult aquireImageResult = vkAcquireNextImageKHR(m_logicalDevice.GetDevice(), m_winSystem.GetSwapChain(), UINT64_MAX, m_imageAvailableSemaphores[VM_currentFrame], VK_NULL_HANDLE, &imageIndex);
         if (!CheckSwapChainIntegrity(aquireImageResult, "Failed to acquire swap chain image."))
         {
@@ -918,7 +918,7 @@ namespace FlatEngine
         submitInfo.commandBufferCount = (uint32_t)commandBuffers.size();
         submitInfo.pCommandBuffers = commandBuffers.data();
 
-        VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphores[VM_currentFrame] };
+        VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphores[VM_currentFrame] }; // { m_renderFinishedSemaphores[imageIndex] }; Seemed to fix the semaphore issue, but didn't fix the frame flickering
         submitInfo.signalSemaphoreCount = 1;
         submitInfo.pSignalSemaphores = signalSemaphores;
 

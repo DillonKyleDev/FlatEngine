@@ -43,10 +43,6 @@ namespace FlatEngine
 		m_logicalDevice = nullptr;
 		m_b_initialized = false;		
 		m_renderPass = nullptr;
-
-		m_renderTexture = nullptr;
-		m_imageFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
-		m_mipLevels = 1;
 		
 		// Default Graphics Pipeline configuration (Filled in with saved values when LoadMaterial() is called
 		m_inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -195,9 +191,9 @@ namespace FlatEngine
 		return m_graphicsPipeline.GetFragmentPath();
 	}
 
-	VkPipeline& Material::GetGraphicsPipeline()
+	GraphicsPipeline& Material::GetGraphicsPipeline()
 	{
-		return m_graphicsPipeline.GetGraphicsPipeline();
+		return m_graphicsPipeline;
 	}
 
 	VkPipelineLayout& Material::GetPipelineLayout()
@@ -272,16 +268,11 @@ namespace FlatEngine
 		return m_renderPass;
 	}
 
-	void Material::SetRenderToTexture(Texture* renderToTexture)
-	{
-		m_renderTexture = renderToTexture;
-	}
-
-	void Material::RecordDefaultCommandBuffer(uint32_t imageIndex, Mesh& mesh)
+	void Material::RecordDefaultCommandBuffer(uint32_t imageIndex)
 	{
 		std::vector<VkCommandBuffer>& commandBuffers = m_renderPass->GetCommandBuffers();
-		VkPipeline& graphicsPipeline = mesh.GetMaterial()->GetGraphicsPipeline();
-		VkPipelineLayout& pipelineLayout = mesh.GetMaterial()->GetPipelineLayout();
+		VkPipeline& graphicsPipeline = m_graphicsPipeline.GetGraphicsPipeline();
+		VkPipelineLayout& pipelineLayout = m_graphicsPipeline.GetPipelineLayout();
 
 		PushConstants pushConstants;
 		pushConstants.lightDirection = glm::vec4(1);
@@ -289,7 +280,7 @@ namespace FlatEngine
 		uint32_t pushOffset = 0;
 		uint32_t pushSize = sizeof(PushConstants);
 
-		vkCmdPushConstants(commandBuffers[VM_currentFrame], pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, pushOffset, pushSize, &pushConstants);
+		vkCmdPushConstants(commandBuffers[imageIndex], pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, pushOffset, pushSize, &pushConstants);
 
 		vkCmdBindPipeline(commandBuffers[imageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 	}

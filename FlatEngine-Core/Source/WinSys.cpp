@@ -234,13 +234,13 @@ namespace FlatEngine
 
     void WinSys::RecreateSwapChain()
     {
+        vkDeviceWaitIdle(m_logicalDevice->GetDevice());
+
         int width = 0, height = 0;
         while (width == 0 || height == 0)
         {
             SDL_GetWindowSize(m_window, &width, &height);
         }
-
-        vkDeviceWaitIdle(m_logicalDevice->GetDevice());
 
         CleanupDrawingResources();
         CreateDrawingResources();

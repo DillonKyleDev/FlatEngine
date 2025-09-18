@@ -31,7 +31,7 @@ namespace FlatEngine
 #endif
 
     extern ValidationLayers VM_validationLayers;
-    const int VM_MAX_FRAMES_IN_FLIGHT = 2;
+    const int VM_MAX_FRAMES_IN_FLIGHT = 2; // Max number of frames that are not currently being presented, but are being prepared
     extern uint32_t VM_currentFrame;
     extern uint32_t VM_imageCount;
 

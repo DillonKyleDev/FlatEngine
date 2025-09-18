@@ -112,6 +112,7 @@ namespace FlatEngine
 
     void GraphicsPipeline::Cleanup(LogicalDevice& logicalDevice)
     {
+        vkDeviceWaitIdle(logicalDevice.GetDevice());
         vkDestroyPipeline(logicalDevice.GetDevice(), m_graphicsPipeline, nullptr);
         vkDestroyPipelineLayout(logicalDevice.GetDevice(), m_pipelineLayout, nullptr);
     }
@@ -156,45 +157,19 @@ namespace FlatEngine
 
     void GraphicsPipeline::CreatePushConstantRanges()
     {
-        VkPushConstantRange pushRange = {};
-        pushRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        pushRange.offset = (uint32_t)0;
-        pushRange.size = (uint32_t)(sizeof(PushConstants));
+        //VkPushConstantRange vertexPushRange = {};
+        //vertexPushRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        //vertexPushRange.offset = (uint32_t)0;
+        //vertexPushRange.size = (uint32_t)16;
 
+        //m_pushRanges.push_back(vertexPushRange);
 
-        //VkPushConstantRange translateRange = {};
-        //translateRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        //translateRange.offset = (uint32_t)0;
-        //translateRange.size = (uint32_t)16;
-        //VkPushConstantRange camPosRange = {};
-        //camPosRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        //camPosRange.offset = (uint32_t)16;
-        //camPosRange.size = (uint32_t)16;
-        //VkPushConstantRange timeRange = {};
-        //timeRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        //timeRange.offset = (uint32_t)32;
-        //timeRange.size = (uint32_t)16;
-        //VkPushConstantRange modelRange = {};
-        //modelRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        //modelRange.offset = (uint32_t)64;
-        //modelRange.size = (uint32_t)64;
-        //VkPushConstantRange viewRange = {};
-        //viewRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        //viewRange.offset = (uint32_t)128;
-        //viewRange.size = (uint32_t)64;
-        //VkPushConstantRange projectionRange = {};
-        //projectionRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        //projectionRange.offset = (uint32_t)192;
-        //projectionRange.size = (uint32_t)64;
+        VkPushConstantRange fragmentPushRange = {};
+        fragmentPushRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        fragmentPushRange.offset = (uint32_t)0;
+        fragmentPushRange.size = (uint32_t)(sizeof(PushConstants));
 
-        m_pushRanges.push_back(pushRange);
-
-        //m_pushRanges.push_back(translateRange);
-        //m_pushRanges.push_back(camPosRange);
-        //m_pushRanges.push_back(timeRange);
-        //m_pushRanges.push_back(modelRange);
-        //m_pushRanges.push_back(viewRange);
-        //m_pushRanges.push_back(projectionRange);
+        m_pushRanges.push_back(fragmentPushRange);
     }
 
     void GraphicsPipeline::CreateGraphicsPipeline(LogicalDevice& logicalDevice, WinSys& winSystem, RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout)

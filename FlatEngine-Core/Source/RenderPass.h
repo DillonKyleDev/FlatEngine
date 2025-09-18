@@ -9,6 +9,7 @@
 namespace FlatEngine
 {
 	class Mesh;
+	class GraphicsPipeline;
 
 	class RenderPass
 	{
@@ -32,7 +33,7 @@ namespace FlatEngine
 		void ConfigureFrameBufferImageViews(std::vector<VkImageView>& imageViews);
 		void CreateFrameBuffers();
 		void DestroyFrameBuffers();
-		void RecreateFrameBuffers();
+		void RecreateFrameBuffers(VkCommandPool commandPool);
 		std::vector<VkFramebuffer>& GetFrameBuffers();
 		void EnableMsaa();
 		void EnableDepthBuffering();
@@ -40,7 +41,7 @@ namespace FlatEngine
 		void CreateCommandBuffers(VkCommandPool commandPool);
 		void DestroyCommandBuffers();
 		std::vector<VkCommandBuffer>& GetCommandBuffers();
-		void RecordCommandBuffer(uint32_t imageIndex, Mesh& mesh);
+		void RecordCommandBuffer(GraphicsPipeline& graphicsPipeline);
 		void RecordCommandBuffer(VkPipelineLayout pipelineLayout, std::vector<uint32_t>& m_pushConstOffsets, std::vector<uint32_t>& m_pushConstSizes, std::vector<const void*>& m_pushValues);
 		void DrawIndexed(Mesh& mesh);
 		void BeginRenderPass(uint32_t imageIndex);

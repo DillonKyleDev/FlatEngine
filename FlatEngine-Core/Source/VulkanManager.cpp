@@ -620,7 +620,6 @@ namespace FlatEngine
 
             if (renderToTexture != nullptr)
             {
-                newMaterial->SetRenderToTexture(renderToTexture);
                 newMaterial->SetHandles(&m_instance, &m_winSystem, &m_physicalDevice, &m_logicalDevice, &m_commandPool, &m_renderToTextureRenderPass);
                 newMaterial->Init();
             }
@@ -826,7 +825,6 @@ namespace FlatEngine
         // manually reset the fence to the unsignaled state with the vkResetFences call:
         vkResetFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[VM_currentFrame]);
         
-        Model emptyModel = Model();
         std::vector<VkCommandBuffer> commandBuffers;
         
         bool b_sceneViewTextureDrawnTo = false;
@@ -845,8 +843,8 @@ namespace FlatEngine
                     {
                         if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
                         {
-                            mesh.second.GetModel().UpdateUniformBuffer(imageIndex, m_winSystem, &mesh.second, ViewportType::SceneView);
-                            material->RecordDefaultCommandBuffer(imageIndex, mesh.second);
+                            mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                            m_renderToTextureRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
                             m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
 
                             b_sceneViewTextureDrawnTo = true;
@@ -863,8 +861,8 @@ namespace FlatEngine
                     {
                         if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
                         {
-                            mesh.second.GetModel().UpdateUniformBuffer(imageIndex, m_winSystem, &mesh.second, ViewportType::SceneView);
-                            material->RecordDefaultCommandBuffer(imageIndex, mesh.second);
+                            mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                            m_renderToTextureRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
                             m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
 
                             b_sceneViewTextureDrawnTo = true;
@@ -877,7 +875,7 @@ namespace FlatEngine
             //{
             //    if (material->Initialized())
             //    {
-            //        material->HandleRenderPass(imageIndex, ViewportType::GameView);                     
+            //        material->HandleRenderPass(ViewportType::GameView);                     
             //    }
             //}
 
@@ -885,6 +883,7 @@ namespace FlatEngine
 
             if (b_sceneViewTextureDrawnTo) // Once VkImage has been written to from m_renderPass, that image can be used as a texture to render to using a different material and desired descriptorSets, so we'd need to create descriptor sets for it using that material's configuration
             {
+                Model emptyModel = Model();
                 std::vector<Texture> textures = std::vector<Texture>(1, m_sceneViewTexture); // m_sceneViewTexture was given to m_renderPass in each material and if m_name != imgui, it was written to in m_renderPass.DrawIndexed()
                 m_imGuiMaterial->GetAllocator().AllocateDescriptorSets(m_sceneViewTexture.GetDescriptorSets(), emptyModel, textures);
 
@@ -958,28 +957,27 @@ namespace FlatEngine
         m_winSystem.RecreateSwapChain();   
 
         m_sceneViewTexture.CreateRenderToTextureResources();
-        m_gameViewTexture.CreateRenderToTextureResources();
+        //m_gameViewTexture.CreateRenderToTextureResources();
 
-        m_renderToTextureRenderPass.ConfigureFrameBufferImageViews(m_sceneViewTexture.GetImageViews());
-        m_renderToTextureRenderPass.RecreateFrameBuffers();
+        m_renderToTextureRenderPass.ConfigureFrameBufferImageViews(m_sceneViewTexture.GetImageViews());        
+        m_renderToTextureRenderPass.RecreateFrameBuffers(m_commandPool);
 
         m_imGuiRenderPass.ConfigureFrameBufferImageViews(m_winSystem.GetSwapChainImageViews());
-        m_imGuiRenderPass.RecreateFrameBuffers();
+        m_imGuiRenderPass.RecreateFrameBuffers(m_commandPool);
 
-        m_imGuiMaterial->OnWindowResized();
-        for (std::shared_ptr<Material> material : m_engineMaterials)
-        {
-            material->OnWindowResized();
-        }
-        for (std::shared_ptr<Material> material : m_sceneViewMaterials)
-        {
-            material->OnWindowResized();
-        }
-        for (std::shared_ptr<Material> material : m_gameViewMaterials)
-        {
-            material->OnWindowResized();
-        }
-
+        //m_imGuiMaterial->RecreateGraphicsPipeline();
+        //for (std::shared_ptr<Material> material : m_engineMaterials)
+        //{
+        //    material->RecreateGraphicsPipeline();
+        //}
+        //for (std::shared_ptr<Material> material : m_sceneViewMaterials)
+        //{
+        //    material->RecreateGraphicsPipeline();
+        //}
+        //for (std::shared_ptr<Material> material : m_gameViewMaterials)
+        //{
+        //    material->RecreateGraphicsPipeline();
+        //}
 
         ImGui_ImplVulkan_SetMinImageCount(static_cast<uint32_t>(m_winSystem.GetSwapChainImageViews().size()));
     }

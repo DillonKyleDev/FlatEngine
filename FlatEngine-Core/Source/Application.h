@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include "GameLoop.h"
+
 #include <string>
 
 

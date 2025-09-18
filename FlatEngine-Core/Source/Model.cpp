@@ -247,7 +247,7 @@ namespace FlatEngine
         }
     }
 
-    void Model::UpdateUniformBuffer(uint32_t currentImage, WinSys& winSystem, Mesh* mesh, ViewportType viewport)
+    void Model::UpdateUniformBuffer(WinSys& winSystem, Mesh* mesh, ViewportType viewport)
     {        
         GameObject* parent = mesh->GetParentPtr();
         Transform* transform = parent->GetTransform();
@@ -289,7 +289,7 @@ namespace FlatEngine
             glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
             glm::mat4 model = meshRotation * meshScale;
             glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
-            glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up); // Look at camera direction not working right...
+            glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), up);
             float aspectRatio = (float)(winSystem.GetExtent().width / winSystem.GetExtent().height);
             glm::mat4 projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
             projection[1][1] *= -1;
@@ -300,7 +300,7 @@ namespace FlatEngine
             ubo.model = model;
             ubo.viewAndProjection = projection * view;
             ubo.time = (glm::float32)((glm::float32)GetEngineTime() / 1000.0f);
-            memcpy(m_uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+            memcpy(m_uniformBuffersMapped[VM_currentFrame], &ubo, sizeof(ubo));
         }
     }
 

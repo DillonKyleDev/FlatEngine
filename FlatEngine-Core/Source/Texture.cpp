@@ -204,7 +204,10 @@ namespace FlatEngine
 	void Texture::CreateRenderToTextureResources()
 	{
 		WinSys& windowSystem = F_VulkanManager->GetWinSystem();
-		VkDevice& logicalDevice = F_VulkanManager->GetLogicalDevice().GetDevice();
+		LogicalDevice& logicalDevice = F_VulkanManager->GetLogicalDevice();
+		VkDevice& device = logicalDevice.GetDevice();
+		//Cleanup(logicalDevice);
+
 		m_images.resize(VM_MAX_FRAMES_IN_FLIGHT);
 		m_imageViews.resize(VM_MAX_FRAMES_IN_FLIGHT);
 		m_imageMemory.resize(VM_MAX_FRAMES_IN_FLIGHT);
@@ -238,19 +241,11 @@ namespace FlatEngine
 			windowSystem.CopyBufferToImage(stagingBuffer, m_images[i], static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 			windowSystem.TransitionImageLayout(m_images[i], m_imageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
 
-			vkDestroyBuffer(logicalDevice, stagingBuffer, nullptr);
-			vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
+			vkDestroyBuffer(device, stagingBuffer, nullptr);
+			vkFreeMemory(device, stagingBufferMemory, nullptr);
 
 			windowSystem.CreateImageView(m_imageViews[i], m_images[i], m_imageFormat, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
 			windowSystem.CreateTextureSampler(m_sampler, mipLevels);
 		}		
-	}
-
-	void Texture::ConfigureImageResources(std::vector<VkImage>& images, std::vector<VkImageView>& imageViews, std::vector<VkDeviceMemory>& imageMemory, VkSampler& sampler)
-	{
-		m_images = images;
-		m_imageViews = imageViews;
-		m_imageMemory = imageMemory;
-		m_sampler = sampler;
 	}
 }

@@ -38,7 +38,7 @@ namespace FlatEngine
 		void SetFragmentPath(std::string path);
 		std::string GetVertexPath();
 		std::string GetFragmentPath();
-		VkPipeline& GetGraphicsPipeline();
+		GraphicsPipeline& GetGraphicsPipeline();
 		VkPipelineLayout& GetPipelineLayout();
 		VkDescriptorPool CreateDescriptorPool();
 		void CreateDescriptorSets(std::vector<VkDescriptorSet>& descriptorSets, Model& model, std::vector<Texture>& textures);
@@ -55,11 +55,8 @@ namespace FlatEngine
 		void SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos);
 		VkPipelineColorBlendAttachmentState& GetColorBlendAttachmentCreateInfos();
 
-		void RecordDefaultCommandBuffer(uint32_t imageIndex, Mesh& mesh);
+		void RecordDefaultCommandBuffer(uint32_t imageIndex);
 		RenderPass* GetRenderPass();
-
-		// For rendering to texture
-		void SetRenderToTexture(Texture* renderToTexture);
 
 	private:
 		void SetDefaultValues();
@@ -70,11 +67,6 @@ namespace FlatEngine
 		RenderPass* m_renderPass;
 		Allocator m_allocator;
 		uint32_t m_textureCount;
-
-		// For rendering to texture instead of to the screen
-		Texture* m_renderTexture;		
-		VkFormat m_imageFormat;
-		uint32_t m_mipLevels;
 
 		// handles
 		VkInstance* m_instance;

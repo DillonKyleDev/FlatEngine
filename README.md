@@ -12,6 +12,10 @@
 
 <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a>
 
+## Update - Sept. 18th, 2025 - Fixes
+
+Window resizing is now fixed and so is crashing immediately on launch, (at least on my native laptop screen).  The crash seemed to have something to do with it picking my integrated graphics card over my discrete GPU but more investigation is required.  There is still an issue with the final rendered image flickering in the Scene View that needs to be addressed.
+
 ## Update - Sept. 17th, 2025 - Disclaimer
 
 Due to the recent inclusion of Vulkan and my still incomplete understanding of it, FlatEngine may or may not launch without crashing immediately on your computer after downloading, compiling, and running it.  It works on my external monitor (a 27 inch 1920 x 1080 Asus) but not on my native laptop screen (higher native resolution, but even at 1920 x 1080 it does not work) and I've yet to dive in and figure out why.  Resizing the window currently doesn't work, and there are many other crashes and validation errors currently plaguing the implementation.  In addition, you will likely need to download and install the VulkanSDK and have it on your system.  I have it installed in `C:\VulkanSDK`.  You can download it here: https://vulkan.lunarg.com/

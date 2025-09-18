@@ -59,5 +59,7 @@ Fix Window resizing and what happens in RecreateFrameBuffers() method in VulkanM
 
 Deleting Mesh gameobjects and adding new ones after sometimes causes crashes.
 
+Deleting Mesh gameObjects does not work for all
+
 Crashes when changing Mesh material sometimes
 

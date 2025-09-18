@@ -10,7 +10,7 @@
     "name": "engineMaterial_zAxis",
     "rasterizerData": {
         "cullMode": 0,
-        "lineWidth": 2.0,
+        "lineWidth": 1.0,
         "polygonMode": 1
     },
     "textureCount": 1,

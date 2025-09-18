@@ -16,10 +16,12 @@ namespace FlatEngine
         bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface);
         int RateDeviceSuitability(VkPhysicalDevice device);
         uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+        VkBool32 FillModeNonSolidEnabled();
         void Cleanup();
 
     private:
         VkPhysicalDevice m_physicalDevice;
         VkPhysicalDeviceProperties m_physicalDeviceProperties;
+        VkBool32 m_b_fillModeNonSolid;
     };
 }

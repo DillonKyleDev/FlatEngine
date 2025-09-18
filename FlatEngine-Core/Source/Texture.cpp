@@ -23,7 +23,7 @@ namespace FlatEngine
 		m_imageMemory = std::vector<VkDeviceMemory>(VM_MAX_FRAMES_IN_FLIGHT, {});
 		m_sampler = VK_NULL_HANDLE;		
 		m_mipLevels = 1;
-		m_imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
+		m_imageFormat = VK_FORMAT_R8G8B8A8_UNORM; // ImGui format
 		m_aspectFlags = VK_IMAGE_ASPECT_COLOR_BIT;
 
 		if (path != "")
@@ -181,6 +181,16 @@ namespace FlatEngine
 		return m_mipLevels;
 	}
 
+	VkFormat Texture::GetImageFormat()
+	{
+		return m_imageFormat;
+	}
+
+	void Texture::SetImageFormat(VkFormat imageFormat)
+	{
+		m_imageFormat = imageFormat;
+	}
+
 	std::vector<VkDescriptorSet>& Texture::GetDescriptorSets()
 	{
 		return m_descriptorSets;
@@ -206,6 +216,7 @@ namespace FlatEngine
 		WinSys& windowSystem = F_VulkanManager->GetWinSystem();
 		LogicalDevice& logicalDevice = F_VulkanManager->GetLogicalDevice();
 		VkDevice& device = logicalDevice.GetDevice();
+		m_imageFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
 		//Cleanup(logicalDevice);
 
 		m_images.resize(VM_MAX_FRAMES_IN_FLIGHT);

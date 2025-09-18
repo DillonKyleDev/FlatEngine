@@ -86,6 +86,7 @@ namespace FlatEngine
         VkPhysicalDeviceFeatures deviceFeatures{};
         deviceFeatures.samplerAnisotropy = VK_TRUE; // Anisotropic texture filtering
         deviceFeatures.sampleRateShading = VK_TRUE; // enable sample shading feature for the device (at a potential performance cost)
+        deviceFeatures.fillModeNonSolid = physicalDevice.FillModeNonSolidEnabled();  // allows for wireframe rendering if enabled
         // ^^ Need to also change multisampling.sampleShadingEnable and multisampling.minSampleShading to correctly switch this on and off in createGraphicsPipeline() function
 
 

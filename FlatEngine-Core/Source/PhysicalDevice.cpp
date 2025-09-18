@@ -16,6 +16,7 @@ namespace FlatEngine
     {
         m_physicalDevice = VK_NULL_HANDLE;
         m_physicalDeviceProperties = VkPhysicalDeviceProperties();
+        m_b_fillModeNonSolid = VK_FALSE;
     }
 
     PhysicalDevice::~PhysicalDevice()
@@ -83,6 +84,8 @@ namespace FlatEngine
         // Get supported features list on GPU device
         VkPhysicalDeviceFeatures supportedFeatures;
         vkGetPhysicalDeviceFeatures(physicalDevice, &supportedFeatures);
+        
+        m_b_fillModeNonSolid = supportedFeatures.fillModeNonSolid;
 
         return indices.isComplete() && b_extensionsSupported && b_swapChainAdequate && supportedFeatures.samplerAnisotropy;
     }
@@ -99,6 +102,10 @@ namespace FlatEngine
 
         // Discrete GPUs have a significant performance advantage
         if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+            score += 1000;
+        }
+
+        if (deviceFeatures.fillModeNonSolid) {
             score += 1000;
         }
 
@@ -128,6 +135,11 @@ namespace FlatEngine
         }
 
         throw std::runtime_error("failed to find suitable memory type!");
+    }
+
+    VkBool32 PhysicalDevice::FillModeNonSolidEnabled()
+    {
+        return m_b_fillModeNonSolid;
     }
 
     void PhysicalDevice::Cleanup()

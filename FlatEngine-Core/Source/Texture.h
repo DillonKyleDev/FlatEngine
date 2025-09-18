@@ -59,6 +59,7 @@ namespace FlatEngine
 		VkSampler& GetSampler();
 		uint32_t GetMipLevels();
 		VkFormat GetImageFormat();
+		void SetImageFormat(VkFormat imageFormat);
 		std::vector<VkDescriptorSet>& GetDescriptorSets();
 
 		void CreateTextureImage();

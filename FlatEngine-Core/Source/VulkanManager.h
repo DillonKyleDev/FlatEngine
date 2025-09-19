@@ -79,7 +79,7 @@ namespace FlatEngine
         void AddSceneViewMaterial(std::shared_ptr<Material> material);
         void AddGameViewMaterial(std::shared_ptr<Material> material);
         std::shared_ptr<Material> GetMaterial(std::string materialName);
-        std::vector<std::shared_ptr<Material>> GetMaterials();
+        std::map<std::string, std::shared_ptr<Material>>& GetMaterials();
         void ReloadShaders();
 
         // ImGui
@@ -106,9 +106,9 @@ namespace FlatEngine
         RenderPass m_renderToTextureRenderPass;
         RenderPass m_imGuiRenderPass;
         std::shared_ptr<Material> m_imGuiMaterial;
-        std::vector<std::shared_ptr<Material>> m_engineMaterials;
-        std::vector<std::shared_ptr<Material>> m_sceneViewMaterials;
-        std::vector<std::shared_ptr<Material>> m_gameViewMaterials;
+        std::map<std::string, std::shared_ptr<Material>> m_engineMaterials;
+        std::map<std::string, std::shared_ptr<Material>> m_sceneViewMaterials;
+        std::map<std::string, std::shared_ptr<Material>> m_gameViewMaterials;
         Texture m_sceneViewTexture;
         Texture m_gameViewTexture;        
 

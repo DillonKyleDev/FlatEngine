@@ -59,9 +59,9 @@ namespace FlatEngine
         m_b_framebufferResized = false; 
 
         m_imGuiMaterial = std::shared_ptr<Material>();
-        m_engineMaterials = std::vector<std::shared_ptr<Material>>();
-        m_sceneViewMaterials = std::vector<std::shared_ptr<Material>>();
-        m_gameViewMaterials = std::vector<std::shared_ptr<Material>>();
+        m_engineMaterials = std::map<std::string, std::shared_ptr<Material>>();
+        m_sceneViewMaterials = std::map<std::string, std::shared_ptr<Material>>();
+        m_gameViewMaterials = std::map<std::string, std::shared_ptr<Material>>();
         m_sceneViewTexture = Texture();
         m_gameViewTexture = Texture();
 
@@ -88,13 +88,13 @@ namespace FlatEngine
 
         m_winSystem.CleanupDrawingResources();
 
-        for (std::shared_ptr<Material> material : m_sceneViewMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_sceneViewMaterials.begin(); material != m_sceneViewMaterials.end(); material++)
         {
-            material->Cleanup();
+            material->second->Cleanup();
         }
-        for (std::shared_ptr<Material> material : m_gameViewMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_gameViewMaterials.begin(); material != m_gameViewMaterials.end(); material++)
         {
-            material->Cleanup();
+            material->second->Cleanup();
         }
 
         vkDestroyCommandPool(m_logicalDevice.GetDevice(), m_commandPool, nullptr);
@@ -516,13 +516,13 @@ namespace FlatEngine
         CreateImGuiResources();
         m_imGuiMaterial->Init();
         // TODO: Remove m_renderToTexture reference
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_EmptyMaterial.mat", &m_sceneViewTexture));
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_Unlit.mat", &m_sceneViewTexture));
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_VerticesOnly.mat", &m_sceneViewTexture));
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_xAxis.mat", &m_sceneViewTexture));
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_yAxis.mat", &m_sceneViewTexture));
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_zAxis.mat", &m_sceneViewTexture));
-        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_UV.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_EmptyMaterial", LoadMaterial("../engine/materials/engineMaterial_EmptyMaterial.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_Unlit", LoadMaterial("../engine/materials/engineMaterial_Unlit.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_VerticesOnly", LoadMaterial("../engine/materials/engineMaterial_VerticesOnly.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_xAxis", LoadMaterial("../engine/materials/engineMaterial_xAxis.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_yAxis", LoadMaterial("../engine/materials/engineMaterial_yAxis.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_zAxis", LoadMaterial("../engine/materials/engineMaterial_zAxis.mat", &m_sceneViewTexture));
+        m_engineMaterials.emplace("engineMaterial_UV", LoadMaterial("../engine/materials/engineMaterial_UV.mat", &m_sceneViewTexture));
     }
 
     void VulkanManager::InitializeMaterials()
@@ -660,80 +660,73 @@ namespace FlatEngine
     // Only call add material after all material members have been filled
     void VulkanManager::AddSceneViewMaterial(std::shared_ptr<Material> material)
     {        
-        m_sceneViewMaterials.push_back(material);
+        m_sceneViewMaterials.emplace(material->GetName(), material);
     }
 
     void VulkanManager::AddGameViewMaterial(std::shared_ptr<Material> material)
     {        
-        m_gameViewMaterials.push_back(material);
+        m_gameViewMaterials.emplace(material->GetName(), material);
     }
 
     // Assume Scene View Materials for now
     std::shared_ptr<Material> VulkanManager::GetMaterial(std::string materialName)
     {                
-        for (std::shared_ptr<Material> material : m_engineMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_engineMaterials.begin(); material != m_engineMaterials.end(); material++)
         {
-            if (material->GetName() == materialName)
+            if (material->second->GetName() == materialName)
             {
-                return material;
+                return material->second;
             }
         }
-        for (std::shared_ptr<Material> material : m_sceneViewMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_sceneViewMaterials.begin(); material != m_sceneViewMaterials.end(); material++)
         {
-            if (material->GetName() == materialName)
+            if (material->second->GetName() == materialName)
             {
-                return material;
+                return material->second;
             }
         }
-        for (std::shared_ptr<Material> material : m_gameViewMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_gameViewMaterials.begin(); material != m_gameViewMaterials.end(); material++)
         {
-            if (material->GetName() == materialName)
+            if (material->second->GetName() == materialName)
             {
-                return material;
+                return material->second;
             }
         }
         if (materialName == "imgui")
         {
             return m_imGuiMaterial;
         }
-        for (std::shared_ptr<Material> material : m_engineMaterials)
-        {
-            if (material->GetName() == materialName)
-            {
-                return material;
-            }
-        }
 
         return nullptr;
     }
 
     // Assume Scene View Materials for now
-    std::vector<std::shared_ptr<Material>> VulkanManager::GetMaterials()
+    std::map<std::string, std::shared_ptr<Material>>& VulkanManager::GetMaterials()
     {
         return m_sceneViewMaterials;
     }
 
     void VulkanManager::ReloadShaders()
     {
-        for (std::shared_ptr<Material> material : m_engineMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_engineMaterials.begin(); material != m_engineMaterials.end(); material++)
         {
-            if (material->Initialized())
+            if (material->second->Initialized())
             {
-                material->RecreateGraphicsPipeline();
+                material->second->RecreateGraphicsPipeline();
             }
         }
-        for (std::shared_ptr<Material> material : m_sceneViewMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_sceneViewMaterials.begin(); material != m_sceneViewMaterials.end(); material++)
         {
-            if (material->Initialized())
+            if (material->second->Initialized())
             {
-                material->RecreateGraphicsPipeline();
+                material->second->RecreateGraphicsPipeline();
             }
         }
-        for (std::shared_ptr<Material> material : m_gameViewMaterials)
+        for (std::map<std::string, std::shared_ptr<Material>>::iterator material = m_gameViewMaterials.begin(); material != m_gameViewMaterials.end(); material++)
         {
-            if (material->Initialized())
+            if (material->second->Initialized())
             {
-                material->RecreateGraphicsPipeline();
+                material->second->RecreateGraphicsPipeline();
             }
         }
     }
@@ -835,86 +828,61 @@ namespace FlatEngine
         // manually reset the fence to the unsignaled state with the vkResetFences call:
         vkResetFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[VM_currentFrame]);
         
-        std::vector<VkCommandBuffer> commandBuffers;
-        
-        bool b_sceneViewTextureDrawnTo = false;
-        //bool b_gameViewTextureDrawnTo = false;
+
+
+        std::vector<VkCommandBuffer> commandBuffers;       
 
         if (m_renderToTextureRenderPass.Initialized())
         {
             m_renderToTextureRenderPass.BeginRenderPass(imageIndex);
 
-            // Scene View Grid Objects
-            for (std::shared_ptr<Material> material : m_engineMaterials)
+            for (std::pair<long, Mesh> mesh : F_sceneViewGridObjects.GetMeshes())
             {
-                if (material->Initialized())
+                std::string materialName = mesh.second.GetMaterialName();
+                if (mesh.second.Initialized() && materialName != "")
                 {
-                    for (std::pair<long, Mesh> mesh : F_sceneViewGridObjects.GetMeshes())
+                    if (m_engineMaterials.count(materialName))
                     {
-                        if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
-                        {
-                            mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
-                            m_renderToTextureRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                            m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
-
-                            b_sceneViewTextureDrawnTo = true;
-                        }
+                        mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                        m_renderToTextureRenderPass.RecordCommandBuffer(m_engineMaterials.at(materialName)->GetGraphicsPipeline());
+                        m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_sceneViewTexture's m_images member variable
+                    }                    
+                }
+            }
+           
+            for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
+            {
+                std::string materialName = mesh.second.GetMaterialName();
+                if (mesh.second.Initialized() && materialName != "")
+                {
+                    if (m_engineMaterials.count(materialName))
+                    {
+                        mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                        m_renderToTextureRenderPass.RecordCommandBuffer(m_engineMaterials.at(materialName)->GetGraphicsPipeline());
+                        m_renderToTextureRenderPass.DrawIndexed(mesh.second);
                     }
-                    for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
+                    else if (m_sceneViewMaterials.count(materialName))
                     {
-                        if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
-                        {
-                            mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
-                            m_renderToTextureRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                            m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
-
-                            b_sceneViewTextureDrawnTo = true;
-                        }
+                        mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                        m_renderToTextureRenderPass.RecordCommandBuffer(m_sceneViewMaterials.at(materialName)->GetGraphicsPipeline());
+                        m_renderToTextureRenderPass.DrawIndexed(mesh.second);
+                    }
+                    else if (m_gameViewMaterials.count(materialName))
+                    {
+                        mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                        m_renderToTextureRenderPass.RecordCommandBuffer(m_gameViewMaterials.at(materialName)->GetGraphicsPipeline());
+                        m_renderToTextureRenderPass.DrawIndexed(mesh.second);
                     }
                 }
             }
-            // Scene View GameObjects
-            for (std::shared_ptr<Material> material : m_sceneViewMaterials)
-            {
-                if (material->Initialized())
-                {
-                    for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
-                    {
-                        if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
-                        {
-                            mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
-                            m_renderToTextureRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                            m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
-
-                            b_sceneViewTextureDrawnTo = true;
-                        }
-                    }
-                }
-            }
-            // Game View
-            //for (std::shared_ptr<Material> material : m_gameViewMaterials)
-            //{
-            //    if (material->Initialized())
-            //    {
-            //        material->HandleRenderPass(ViewportType::GameView);                     
-            //    }
-            //}
 
             m_renderToTextureRenderPass.EndRenderPass();
 
-            if (b_sceneViewTextureDrawnTo) // Once VkImage has been written to from m_renderPass, that image can be used as a texture to render to using a different material and desired descriptorSets, so we'd need to create descriptor sets for it using that material's configuration
-            {
-                Model emptyModel = Model();
-                std::vector<Texture> textures = std::vector<Texture>(1, m_sceneViewTexture); // m_sceneViewTexture was given to m_renderPass in each material and if m_name != imgui, it was written to in m_renderPass.DrawIndexed()
-                m_imGuiMaterial->GetAllocator().AllocateDescriptorSets(m_sceneViewTexture.GetDescriptorSets(), emptyModel, textures);
-
-                commandBuffers.push_back(m_renderToTextureRenderPass.GetCommandBuffers()[VM_currentFrame]);
-            }
-            //if (b_gameViewTextureDrawnTo) // Once VkImage has been written to from m_renderPass, that image can be used as a texture to render to using a different material and desired descriptorSets, so we'd need to create descriptor sets for it using that material's configuration
-            //{
-            //    std::vector<Texture> textures = std::vector<Texture>(1, m_gameViewTexture); // m_sceneViewTexture was given to m_renderPass in each material and if m_name != imgui, it was written to in m_renderPass.DrawIndexed()
-            //    m_imGuiMaterial->GetAllocator().AllocateDescriptorSets(m_gameViewTexture.GetDescriptorSets(), emptyModel, textures);
-            //}
+            // Once VkImage has been written to from m_renderToTextureRenderPass, that image can be used as a texture to render to using a different material and desired descriptorSets, so we'd need to create descriptor sets for it using that material's configuration           
+            Model emptyModel = Model();
+            std::vector<Texture> textures = std::vector<Texture>(1, m_sceneViewTexture); // m_sceneViewTexture was given to m_renderToTextureRenderPass in each material and it was written to in m_renderToTextureRenderPass.DrawIndexed()
+            m_imGuiMaterial->GetAllocator().AllocateDescriptorSets(m_sceneViewTexture.GetDescriptorSets(), emptyModel, textures);
+            commandBuffers.push_back(m_renderToTextureRenderPass.GetCommandBuffers()[VM_currentFrame]);            
         }
  
         if (m_imGuiMaterial != nullptr)
@@ -925,7 +893,6 @@ namespace FlatEngine
         }
         commandBuffers.push_back(m_imGuiRenderPass.GetCommandBuffers()[VM_currentFrame]);
    
-
 
 
         VkSubmitInfo submitInfo{};

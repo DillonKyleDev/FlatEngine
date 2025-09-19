@@ -77,8 +77,7 @@ namespace FlatEngine
 
 	void Mesh::Cleanup()
 	{				
-		CleanupTextures();
-		m_material->Cleanup();
+		CleanupTextures();		
 		m_model.Cleanup(*m_logicalDevice);
 	}
 

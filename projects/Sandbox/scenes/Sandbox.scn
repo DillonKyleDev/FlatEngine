@@ -419,7 +419,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 7,
-                    "materialName": "VerticesOnly",
+                    "materialName": "engineMaterial_UV",
                     "modelPath": "..\\projects\\Sandbox\\models\\monkey.obj",
                     "textures": [
                         {
@@ -740,8 +740,8 @@
                     "xPosition": 8.800000190734863,
                     "xRotation": 0.0,
                     "xScale": 5.0,
-                    "yPosition": -1.7000000476837158,
-                    "yRotation": -12.5,
+                    "yPosition": -4.599999904632568,
+                    "yRotation": -10.0,
                     "yScale": 5.0,
                     "zPosition": 0.6000000238418579,
                     "zRotation": 142.49000549316406,
@@ -766,7 +766,7 @@
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 8.800000190734863,
-            "spawnLocationY": -1.7000000476837158,
+            "spawnLocationY": -4.599999904632568,
             "tags": [
                 {
                     "Ball": false
@@ -906,7 +906,7 @@
                     "xPosition": 4.599999904632568,
                     "xRotation": 0.0,
                     "xScale": 1.0,
-                    "yPosition": 3.5999999046325684,
+                    "yPosition": 1.5,
                     "yRotation": 0.0,
                     "yScale": 1.0,
                     "zPosition": 1.0,
@@ -932,7 +932,7 @@
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 4.599999904632568,
-            "spawnLocationY": 3.5999999046325684,
+            "spawnLocationY": 1.5,
             "tags": [
                 {
                     "Ball": false
@@ -1072,7 +1072,7 @@
                     "xPosition": 4.199999809265137,
                     "xRotation": 0.0,
                     "xScale": 1.0,
-                    "yPosition": -6.199999809265137,
+                    "yPosition": -9.899999618530273,
                     "yRotation": 0.0,
                     "yScale": 1.0,
                     "zPosition": 1.0,
@@ -1098,7 +1098,7 @@
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 4.199999809265137,
-            "spawnLocationY": -6.199999809265137,
+            "spawnLocationY": -9.899999618530273,
             "tags": [
                 {
                     "Ball": false
@@ -1239,9 +1239,9 @@
                     "xRotation": 0.0,
                     "xScale": 1.2999999523162842,
                     "yPosition": -2.0999999046325684,
-                    "yRotation": 0.0,
+                    "yRotation": 180.0,
                     "yScale": 0.7009999752044678,
-                    "zPosition": 14.300000190734863,
+                    "zPosition": 15.899999618530273,
                     "zRotation": 0.0,
                     "zScale": 1.0
                 },
@@ -1260,7 +1260,7 @@
                 }
             ],
             "id": 10,
-            "name": "GameObject(10)",
+            "name": "Waves",
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 0.699999988079071,
@@ -1404,10 +1404,10 @@
                     "xPosition": 0.0,
                     "xRotation": 0.0,
                     "xScale": 1.0,
-                    "yPosition": -11.100000381469727,
+                    "yPosition": -9.0,
                     "yRotation": 0.0,
                     "yScale": 1.0,
-                    "zPosition": 0.0,
+                    "zPosition": -0.699999988079071,
                     "zRotation": 0.0,
                     "zScale": 1.0
                 },
@@ -1415,7 +1415,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 25,
-                    "materialName": "Unlit",
+                    "materialName": "Lit",
                     "modelPath": "..\\projects\\Sandbox\\models\\torus.obj",
                     "textures": [
                         {
@@ -1426,11 +1426,11 @@
                 }
             ],
             "id": 12,
-            "name": "GameObject(12)",
+            "name": "Torus",
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 0.0,
-            "spawnLocationY": -11.100000381469727,
+            "spawnLocationY": -9.0,
             "tags": [
                 {
                     "Ball": false
@@ -1570,10 +1570,10 @@
                     "xPosition": 0.0,
                     "xRotation": 0.0,
                     "xScale": 1.0,
-                    "yPosition": -11.100000381469727,
+                    "yPosition": -9.0,
                     "yRotation": 0.0,
                     "yScale": 1.0,
-                    "zPosition": 1.600000023841858,
+                    "zPosition": 0.20000000298023224,
                     "zRotation": 0.0,
                     "zScale": 1.0
                 },
@@ -1581,7 +1581,7 @@
                     "_isActive": true,
                     "_isCollapsed": false,
                     "id": 29,
-                    "materialName": "Lit",
+                    "materialName": "engineMaterial_EmptyMaterial",
                     "modelPath": "..\\projects\\Sandbox\\models\\torus.obj",
                     "textures": [
                         {
@@ -1592,11 +1592,11 @@
                 }
             ],
             "id": 14,
-            "name": "GameObject(14)",
+            "name": "Torus",
             "parent": -1,
             "prefabName": "",
             "spawnLocationX": 0.0,
-            "spawnLocationY": -11.100000381469727,
+            "spawnLocationY": -9.0,
             "tags": [
                 {
                     "Ball": false

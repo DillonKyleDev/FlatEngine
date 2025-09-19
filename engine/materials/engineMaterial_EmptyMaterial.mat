@@ -2,17 +2,17 @@
     "colorBlendAttachmentData": {
         "alphaBlendOp": 0
     },
-    "fragmentShaderPath": "../projects/Sandbox/shaders/compiledShaders/waterFrag.spv",
+    "fragmentShaderPath": "../engine/shaders/compiledShaders/emptyFrag.spv",
     "inputAssemblyData": {
         "_primitiveRestartEnable": false,
         "topology": 3
     },
-    "name": "Water",
+    "name": "engineMaterial_EmptyMaterial",
     "rasterizerData": {
         "cullMode": 2,
         "lineWidth": 1.0,
         "polygonMode": 0
     },
     "textureCount": 1,
-    "vertexShaderPath": "../projects/Sandbox/shaders/compiledShaders/waterVert.spv"
+    "vertexShaderPath": "../engine/shaders/compiledShaders/emptyVert.spv"
 }

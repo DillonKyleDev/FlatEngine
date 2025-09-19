@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "FlatEngine.h"
+#include "VulkanManager.h"
 
 #include "json.hpp"
 using json = nlohmann::json;
@@ -15,7 +16,7 @@ namespace FlatEngine
 		SetType(T_Mesh);
 
 		m_model = Model();
-		m_material = nullptr;
+		m_material = F_VulkanManager->GetMaterial("engineMaterial_emptyMaterial");
 		m_descriptorSets = std::vector<VkDescriptorSet>(VM_MAX_FRAMES_IN_FLIGHT, {});
 		m_textures = std::vector<Texture>();
 		m_allocationPoolIndex = -1;
@@ -136,11 +137,6 @@ namespace FlatEngine
 
 	void Mesh::SetMaterial(std::shared_ptr<Material> material)
 	{		
-		if (m_material != nullptr)
-		{
-			m_material->Cleanup();
-		}
-
 		m_material = material;
 
 		if (m_material != nullptr)
@@ -152,11 +148,6 @@ namespace FlatEngine
 
 	void Mesh::SetMaterial(std::string materialName)
 	{
-		if (m_material != nullptr)
-		{
-			m_material->Cleanup();
-		}
-
 		m_material = F_VulkanManager->GetMaterial(materialName);
 		m_materialName = materialName;
 

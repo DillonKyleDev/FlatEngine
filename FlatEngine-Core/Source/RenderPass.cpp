@@ -459,7 +459,7 @@ namespace FlatEngine
             clearValues.push_back(msaa);
         }
 
-        m_renderPassInfo.framebuffer = m_framebuffers[VM_currentFrame]; // Was m_framebuffers[imageIndex]
+        m_renderPassInfo.framebuffer = m_framebuffers[VM_currentFrame]; // Was m_framebuffers[imageIndex] but changing it to VM_currentFrame removed frame bouncing/writing to the wrong frame
         m_renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
         m_renderPassInfo.pClearValues = clearValues.data();
         m_renderPassInfo.renderArea.extent = m_winSystem->GetExtent();

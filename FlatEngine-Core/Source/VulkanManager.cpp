@@ -511,15 +511,18 @@ namespace FlatEngine
 
     void VulkanManager::LoadEngineMaterials()
     {
+        // TODO: Do this programatically
         m_imGuiMaterial = LoadMaterial("../engine/materials/engineMaterial_imgui.mat");
         CreateImGuiResources();
         m_imGuiMaterial->Init();
-
+        // TODO: Remove m_renderToTexture reference
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_EmptyMaterial.mat", &m_sceneViewTexture));
         m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_Unlit.mat", &m_sceneViewTexture));
         m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_VerticesOnly.mat", &m_sceneViewTexture));
         m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_xAxis.mat", &m_sceneViewTexture));
         m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_yAxis.mat", &m_sceneViewTexture));
         m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_zAxis.mat", &m_sceneViewTexture));
+        m_engineMaterials.push_back(LoadMaterial("../engine/materials/engineMaterial_UV.mat", &m_sceneViewTexture));
     }
 
     void VulkanManager::InitializeMaterials()
@@ -693,6 +696,13 @@ namespace FlatEngine
         {
             return m_imGuiMaterial;
         }
+        for (std::shared_ptr<Material> material : m_engineMaterials)
+        {
+            if (material->GetName() == materialName)
+            {
+                return material;
+            }
+        }
 
         return nullptr;
     }
@@ -840,6 +850,17 @@ namespace FlatEngine
                 if (material->Initialized())
                 {
                     for (std::pair<long, Mesh> mesh : F_sceneViewGridObjects.GetMeshes())
+                    {
+                        if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
+                        {
+                            mesh.second.GetModel().UpdateUniformBuffer(m_winSystem, &mesh.second, ViewportType::SceneView);
+                            m_renderToTextureRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                            m_renderToTextureRenderPass.DrawIndexed(mesh.second); // Create final VkImage on m_renderTexture's m_images member
+
+                            b_sceneViewTextureDrawnTo = true;
+                        }
+                    }
+                    for (std::pair<long, Mesh> mesh : FlatEngine::GetMeshes())
                     {
                         if (mesh.second.Initialized() && mesh.second.GetMaterialName() == material->GetName())
                         {

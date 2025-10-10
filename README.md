@@ -1,11 +1,11 @@
-# FlatEngine - 2D and 3D Game Engine
+# FlatEngine - The 2D and 3D Game Engine
+<a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a></br>
 
 <img width="1920" height="1152" alt="2025-10-07" src="https://github.com/user-attachments/assets/ea75d70f-dc71-4066-b1b2-eb1f2517e67f" />
 
-
-<a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a>
-
-### Building From Source
+### FlatEngine2D, the 2D-only version of FlatEngine without Vulkan, just got a new major release: V2.0.  Check it out here:</br></br> https://github.com/DillonKyleDev/FlatEngine2D</br></br>
+----
+## Building FlatEngine From Source
 
 Note: I'm having issues with Github LFS that aren't allowing further clones of the repo to be made at the moment due to file limits.  I'll get around to fixing this in the near future.  In the meantime, you may not be able to clone the dependencies (Vendor) directory of the repo successfully.
 

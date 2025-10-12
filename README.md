@@ -10,7 +10,7 @@ https://github.com/DillonKyleDev/FlatEngine2D</br></br>
 
 ## Building FlatEngine From Source
 
-Note: I'm having issues with Github LFS that aren't allowing further clones of the repo to be made at the moment due to file limits.  I'll get around to fixing this in the near future.  In the meantime, you may not be able to clone the dependencies (Vendor) directory of the repo successfully.
+Note: I'm having issues with Github LFS and it's not allowing further clones of the large files in the repo to be made at the moment due to file limits.  I'll get around to fixing this in the near future.  In the meantime, you may not be able to clone the entire dependencies (Vendor) directory of the repo successfully.
 
 There currently is not a stable release for building from source, but if you are okay with some crashes and wish to proceed anyway, here's how to get setup:
 

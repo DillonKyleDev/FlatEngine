@@ -82,24 +82,12 @@ Best of luck to any who enter at this point.
 
 ## Sept. 4th, 2025 - Vulkan Inclusion
 
-FlatEngine2D is now just FlatEngine.  Instead of managing two separate codebases for a 2D and 3D engine and the nightmares that go along with that, I've decided to just merge them into a single engine and use Vulkan as the renderer along side SDL2 for window and event management.</br>
-
-My initial plan was to have a simple and light-weight 2D version of the engine, but in order to implement shaders and keep SDL2, the path of least resistance was to just add Vulkan since I was going to do so for the 3D version of the engine anyway.  And since I'm adding Vulkan and the 3D maths that go along with it, it just made sense to combine the two into one. Box2D will still work perfectly for my 2D physics and collision needs, and at some point in the future I'll be adding 3D physics, but for now, my focus is on getting Vulkan implemented correctly, ironing out the Box2D implementation, getting shaders working, and fixing everything that broke with the introduction of the 3rd dimension.</br>
-
-You are still able to download the last version of FlatEngine2D from before I added Vulkan. It can be found in the branch "LegacyNoVulkanImpl".</br>
+This repo has changed from FlatEngine2D to just FlatEngine. The 2D-only version of FlatEngine, FlatEngine2D, can now be found in it's own repo here: https://github.com/DillonKyleDev/FlatEngine2D</br>
 
 I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are broken and disorganized.</br>
 
 I still need to go through and edit the ReadMe to reflect the change from FlatEngine2D to FlatEngine, among many other things.
 
-
-## Jan. 1st 2025 - Initial Release
-
-There is now a published release for FlatEngine2D!  Please see the "Releases" section on the right-hand side for a download link and read up on the ReadMe for details on how to use FlatEngine.
-
-I've included a sample project inside FlatEngine2D called FlatSpace.  With it, hopefully you can get an idea of how to use FlatEngine.  But remember, FlatSpace is only one way to make a game using FlatEngine.  Get creative!  You are welcome to use any art assets I created that are in the release for anything you want but the audio is audio I purchased on the Unity asset store so that can't be used as far as I know, except to experiment with.
-
-As a note, FlatSpace was made before the implementation of persistant GameObjects which enable you to have some GameObjects stick around even when changing scenes.  Creation of new persistant GameObjects is located in the Assets dropdown menu.  Persistant objects are tied to the Project, so make sure to save your Scenes AND your Projects often to keep your progress saved!
 
 ## Documentation
 

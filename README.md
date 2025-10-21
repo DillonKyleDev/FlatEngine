@@ -3,6 +3,7 @@
 <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a></br>
 
 <img width="1920" height="1152" alt="2025-10-07" src="https://github.com/user-attachments/assets/ea75d70f-dc71-4066-b1b2-eb1f2517e67f" /></br>
+<img width="1920" height="1032" alt="2025-10-04_2" src="https://github.com/user-attachments/assets/6684bf43-943e-4d3b-b149-3b637d598bfc" />
 
 **Update:** FlatEngine2D, the 2D-only version of FlatEngine without Vulkan, just got a new major release: V2.0.  It can be found here:</br>
 

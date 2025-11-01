@@ -39,21 +39,11 @@ You're now set up to use the engine and edit it's source code as you wish. ~~Fro
 
 # Updates
 
-## Oct. 5th, 2025 - CPU Bottleneck
-
-I need to learn much more about multithreading before implementing it in FlatEngine and I've commented out the multithreading implementation for now, however I need to find more ways to improve the CPU bottleneck FlatEngine is currently suffering from.</br>
-
-My next step is look into more ways of decreasing time spent on the CPU side submitting Mesh data to the GPU.  In that spirit, my sights are currently set on VkDrawIndexedIndirect() for submitting multiple draw commands at once to be sent to the GPU for execution.  Further investigation is required.
-
-## Oct. 4th, 2025 - Multiple Viewport Rendering
-
-Minor update: Even after simply grouping objects to render by Material/Graphics Pipeline, the performance improvement was substantial.  I still plan on implementing multi-threading when I have the opportunity.
+## Oct. 5th, 2025 - Multiple Viewport Rendering & CPU Bottleneck
 
 I was able to get the Game View viewport rendering through a Camera component in the scene using a second renderpass.</br>
 
-There is a serious amount of optimization that still needs to be done to improve frame rate.  ~~I still need to find the best way to group objects before rendering them, and after that I need to implement multi-threading to further improve performance.~~  There are many minor tweaks I can make to improve performance and those will come as my understanding of Vulkan improves.</br>
-
-So far I've just been getting things working and only worrying about optimization once I fully understand the needs of my specific systems, but given the substantial decrease in frames as objects are added, optimization has moved it's way up the list.
+There are many tweaks I can make to improve performance and those will come as my understanding of Vulkan and the needs of my engine improves, but after simply grouping objects to render by Material/Graphics Pipeline, the performance improvement was substantial.  My next step is look into VkDrawIndexedIndirect() for submitting multiple draw commands at once to be sent to the GPU for execution, and multithreading.  Further investigation is required.
 
 ## Sept. 24th, 2025 - Custom Material UBOs
 

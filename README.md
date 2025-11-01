@@ -21,11 +21,7 @@ There currently is not a stable release for building from source, but if you are
 4. Open the solution file that was created in the root directory. In Visual Studio, click Build -> Build Solution.
 5. Run the app.
 
-You're now set up to use the engine and edit it's source code as you wish. ~~From here, building a final game project is the same as it is with the main Release.~~
-
-~~When you are finished editing the source code, you need to build the Editor project and the Runtime project in Release mode again. If you've made changes to the Core library, the Runtime project needs to know about those changes.~~
-
-~~Now you should be able to go into the build location and open the FlatEngine-Runtime.exe with all of your source code changes present in the build.~~ << (Not applicable in the engines current state.)
+You're now set up to use the engine and edit it's source code as you wish.
 
 ### Disclaimer
 
@@ -47,29 +43,19 @@ There are many tweaks I can make to improve performance and those will come as m
 
 ## Sept. 24th, 2025 - Custom Material UBOs
 
-~~Unfortunately, there is a chance that if you download and build the engine in it's current state that you will get a compilation/linking error.  I haven't had the time to sort out what the problem is yet but I am having that issue on my second desktop PC when compiling, so I apologize if that's a problem anyone else is facing.~~
-
 Because I am using GitHub LFS (Large File Storage) to push changes to this repository, you MUST clone the repository instead of downloading it directly.  This is because when you download it directly, the large files only contain pointers to the full large files and will cause compilation errors stating there are corrupt files present in the build.  If you clone the repository using your preferred method you shouldn't have any issues compiling and running the current build so long as you have the VulkanSDK installed on your PC.
 
 I've added a Light Component and I've just begun to implement per-material Uniform Buffer Objects using preset sized arrays of glm::vec4s so they can be edited using scripts within the engine at runtime.  I got it working in it's most basic form but quite a bit still needs to be done to flesh it out.  At the moment, all Materials are initialized with the same glm::vec4s for testing purposes.
-
-Tomorrow is my first day back to school so unfortunately progress will be slow, if not stopped completely, until I have a handle on my coursework.  Wish me luck!
 
 ## Sept. 18th, 2025 - Fixes
 
 Window resizing is now fixed and so is crashing immediately on launch, (at least on my native laptop monitor).  The crash seemed to have something to do with it picking my integrated graphics card over my discrete GPU but more investigation is required and more VkPhysicalDevice selection options need to be created.  I also fixed up several validation errors.  There is still a bug in VulkanMangager::DrawFrame() that is causing an issue with semaphores, fences, and aquiring the next available image that only seems to appear when my laptop is not connected to my external monitor.
 
-## Sept. 17th, 2025 - Disclaimer
-
-Due to the recent inclusion of Vulkan and my still incomplete understanding of it, FlatEngine may or may not launch without crashing immediately on your computer after downloading, compiling, and running it.  It works on my external monitor (a 27 inch 1920 x 1080 Asus) but not on my native laptop screen (higher native resolution, but even at 1920 x 1080 it does not work) and I've yet to dive in and figure out why.  Resizing the window currently doesn't work, and there are many other crashes and validation errors currently plaguing the implementation.  In addition, you will likely need to download and install the VulkanSDK if you haven't already and have it on your system.  I have it installed in `C:\VulkanSDK`.  You can download it here: https://vulkan.lunarg.com/
-
-FlatEngine2D, the 2D-only engine without Vulkan, found in the branch "LegacyNoVulkanImpl", shouldn't give you too much trouble when downloading and compiling it though if you wanted to check that out.  Fair warning though: it's ReadMe's documentation is a bit out of date.
-
 Best of luck to any who enter at this point.
 
 ## Sept. 4th, 2025 - Vulkan Inclusion
 
-This repo has changed from FlatEngine2D to just FlatEngine. The 2D-only version of FlatEngine, FlatEngine2D, can now be found in it's own repo here: https://github.com/DillonKyleDev/FlatEngine2D</br>
+This repo is for the 3D version of FlatEngine that uses Vulkan. The 2D-only version of FlatEngine, FlatEngine2D, can now be found in it's own repo here: https://github.com/DillonKyleDev/FlatEngine2D</br>
 
 I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are broken and disorganized.</br>
 

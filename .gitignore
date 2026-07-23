@@ -1,6 +1,8 @@
 .vs/
 FlatEngine.sln
 log_output.txt
+Build
+Build/linux-x86_64
 Build/Intermediates
 Build/windows-x86_64/Debug/FlatEngine-Core/FlatEngine-Core.idb
 Build/windows-x86_64/Debug/FlatEngine-Core/FlatEngine-Core.lib
@@ -17,3 +19,5 @@ Build/windows-x86_64/Release/FlatEngine-Editor/FlatEngine-Editor.pdb
 Build/windows-x86_64/Release/FlatEngine-Runtime/FlatEngine-Runtime.exe
 Build/windows-x86_64/Release/FlatEngine-Runtime/FlatEngine-Runtime.pdb
 engine/dev
+Vendor/
+Vendor

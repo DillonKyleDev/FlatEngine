@@ -11,7 +11,7 @@ layout(location = 0) out vec4 outColor;
 layout(binding = 1) uniform sampler2D texSampler;
 
 void main() {    
-    float xyAdjust = pow(fragColor.x, 3) * 10000;
+    float xyAdjust = pow(fragColor.x, 2);
     float zAdjust = clamp(pow(fragColor.z, 2) * 500, .5, 1);
     float transparency = xyAdjust;
 

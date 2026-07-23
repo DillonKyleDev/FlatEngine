@@ -1,13 +1,13 @@
-#include "FlatEngine.h"
-#include "FlatGui.h"
-#include "MappingContext.h"
+#include "GuiCore.h"
+#include "managers/Assets.h"
+#include "managers/Controls.h"
+#include "Modals.h"
+#include "tools/Logger.h"
 
 #include "imgui.h"
 
-
 namespace FL = FlatEngine;
 
-using MappingContext = FL::MappingContext;
 
 namespace FlatGui 
 {
@@ -15,16 +15,16 @@ namespace FlatGui
 	bool b_openCreateContextModal = false;
 
 
-	void RenderInputAction(MappingContext* context, FL::ActionMapping& actionMapping, float width)
+	void RenderInputAction(FL::Controls::MappingContext* context, FL::Controls::ActionMapping& actionMapping, float width)
 	{
 		std::string actionName = actionMapping.actionName;
 		std::string keyCode = actionMapping.keyCode;
-		FL::PressType pressType = actionMapping.pressType;
+		FL::Controls::PressType pressType = actionMapping.pressType;
 
 		static int currentPressType = (int)pressType;
 		int selectedPressType = 0;
 
-		for (int i = 0; i < (int)FL::PressType::PT_Size; i++)
+		for (int i = 0; i < (int)FL::Controls::PressType::PressType_Size; i++)
 		{
 			if (currentPressType == i)
 			{
@@ -34,7 +34,7 @@ namespace FlatGui
 		
 		std::string textLabelID = "##EditInputActionName" + keyCode + std::to_string((int)pressType);
 		
-		if (FL::RenderInput(textLabelID.c_str(), FL::F_PressTypeStrings[(int)pressType], actionName, false, width))
+		if (FL::GuiCore::RenderInput(textLabelID.c_str(), FL::Controls::pressTypeStrings[(int)pressType], actionName, false, width))
 		{			
 			if (!context->InputActionNameTaken(actionName, keyCode))
 			{
@@ -42,46 +42,48 @@ namespace FlatGui
 			}
 			else
 			{
-				FL::LogString("Duplicate action names not allowed in the same Mapping Context.");
+				FL::Logger::log.Warn("Duplicate action names not allowed in the same Mapping Context.");
 			}
 		}
 	}
 
-	void RenderMappingContextEditor()
+	void RenderMappingContextEditor(bool& b_show)
 	{
-		FL::BeginWindow("Mapping Context Editor", FG_b_showMappingContextEditor);
-		// {
-			
+		if (!b_show)
+			return;
+		
+		if (FL::GuiCore::BeginWindow("Mapping Context Editor", b_show))
+		{			
 			float widthAvailable = ImGui::GetContentRegionAvail().x;
 			static int currentContext = 0;
 					
-			if (FL::F_MappingContexts.size() > 0)
+			if (FL::Controls::mappingContexts.size() > 0)
 			{
-				MappingContext* currentContext = FL::GetMappingContext(FL::F_selectedMappingContextName);
+				FL::Controls::MappingContext* currentContext = FL::Controls::GetMappingContext(FL::Controls::selectedMappingContextName);
 
 
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("innerWindow"));
-				ImGui::BeginChild("Context Selection", Vector2(0), FL::F_headerFlags);
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("innerWindow"));
+				ImGui::BeginChild("Context Selection", FL::Vector2(0), FL::GuiCore::headerFlags);
 				ImGui::PopStyleColor();
 				// {
 						
-					FL::MoveScreenCursor(10, 5);
+					FL::GuiCore::MoveScreenCursor(10, 5);
 					ImGui::Text("Select mapping context to edit:");
-					FL::MoveScreenCursor(0, 5);
+					FL::GuiCore::MoveScreenCursor(0, 5);
 
-					if (FL::F_MappingContexts.size() > 0)
+					if (FL::Controls::mappingContexts.size() > 0)
 					{
-						FL::PushComboStyles();
+						FL::GuiCore::PushComboStyles();
 						ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 144);
-						if (ImGui::BeginCombo("##contexts", FL::F_selectedMappingContextName.c_str()))
+						if (ImGui::BeginCombo("##contexts", FL::Controls::selectedMappingContextName.c_str()))
 						{
-							for (int i = 0; i < FL::F_MappingContexts.size(); i++)
+							for (int i = 0; i < FL::Controls::mappingContexts.size(); i++)
 							{
-								bool b_isSelected = (FL::F_MappingContexts.at(i).GetName() == FL::F_selectedMappingContextName);
-								ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::GetColor("outerWindow"));
-								if (ImGui::Selectable(FL::F_MappingContexts.at(i).GetName().c_str(), b_isSelected))
+								bool b_isSelected = (FL::Controls::mappingContexts.at(i).GetName() == FL::Controls::selectedMappingContextName);
+								ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::Assets::assetManager.GetColor("outerWindow"));
+								if (ImGui::Selectable(FL::Controls::mappingContexts.at(i).GetName().c_str(), b_isSelected))
 								{
-									FL::F_selectedMappingContextName = FL::F_MappingContexts.at(i).GetName();
+									FL::Controls::selectedMappingContextName = FL::Controls::mappingContexts.at(i).GetName();
 								}
 								if (b_isSelected)
 								{
@@ -91,19 +93,19 @@ namespace FlatGui
 							}
 							ImGui::EndCombo();
 						}
-						FL::PopComboStyles();
+						FL::GuiCore::PopComboStyles();
 
 						ImGui::SameLine();
 
-						if (FL::F_MappingContexts.size() > 0)
+						if (FL::Controls::mappingContexts.size() > 0)
 						{
-							if (FL::RenderButton("Save"))
+							if (FL::GuiCore::RenderButton("Save"))
 							{
 								SaveMappingContext(currentContext->GetPath(), *currentContext);
 							}
 						}
 						ImGui::SameLine(0, 5);
-						if (FL::RenderButton("New Context"))
+						if (FL::GuiCore::RenderButton("New Context"))
 						{
 							b_openCreateContextModal = true;
 						}
@@ -113,20 +115,20 @@ namespace FlatGui
 				ImGui::EndChild(); // Context Selection
 				
 				
-				FL::RenderSeparator(10, 10);
+				FL::GuiCore::RenderSeparator(10, 10);
 
 
 				ImGui::BeginDisabled(currentContext == nullptr);
 				// {
 
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("innerWindow"));
-					ImGui::BeginChild("Create New Input Action", Vector2(0), FL::F_headerFlags);
+					ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("innerWindow"));
+					ImGui::BeginChild("Create New Input Action", FL::Vector2(), FL::GuiCore::headerFlags);
 					ImGui::PopStyleColor();
 					// {
 
-						FL::MoveScreenCursor(10, 5);					
+						FL::GuiCore::MoveScreenCursor(10, 5);					
 						ImGui::Text("Create new Input Action:");
-						FL::MoveScreenCursor(0, 5);
+						FL::GuiCore::MoveScreenCursor(0, 5);
 
 						static int currentInput = 0;
 						static int currentPressType = 0;
@@ -134,60 +136,60 @@ namespace FlatGui
 						float itemWidth = ImGui::GetContentRegionAvail().x / 3;
 
 						ImGui::Text("Input Source");
-						FL::PushComboStyles();										
+						FL::GuiCore::PushComboStyles();										
 						ImGui::SetNextItemWidth(itemWidth);
-						if (ImGui::BeginCombo("##CreateInputActionInputSelector", FL::F_KeyBindingsAvailable[currentInput].c_str()))
+						if (ImGui::BeginCombo("##CreateInputActionInputSelector", FL::Controls::keyBindingsAvailable[currentInput].c_str()))
 						{
-							for (int n = 0; n < FL::F_KeyBindingsAvailable.size(); n++)
+							for (int n = 0; n < FL::Controls::keyBindingsAvailable.size(); n++)
 							{
-								bool b_isSelected = (FL::F_KeyBindingsAvailable[currentInput] == FL::F_KeyBindingsAvailable[n]);
-								if (ImGui::Selectable(FL::F_KeyBindingsAvailable[n].c_str(), b_isSelected))
+								bool b_isSelected = (FL::Controls::keyBindingsAvailable[currentInput] == FL::Controls::keyBindingsAvailable[n]);
+								if (ImGui::Selectable(FL::Controls::keyBindingsAvailable[n].c_str(), b_isSelected))
 								{
 									currentInput = n;									
 								}							
 							}
 							ImGui::EndCombo();
 						}
-						FL::PopComboStyles();
+						FL::GuiCore::PopComboStyles();
 
 
 						ImGui::SameLine();
-						Vector2 cursorPos = ImGui::GetCursorScreenPos();
-						FL::MoveScreenCursor(0, -25);
+						FL::Vector2 cursorPos = ImGui::GetCursorScreenPos();
+						FL::GuiCore::MoveScreenCursor(0, -25);
 						ImGui::Text("Press Type");
 						ImGui::SetCursorScreenPos(cursorPos);
-						FL::PushComboStyles();
+						FL::GuiCore::PushComboStyles();
 						ImGui::SetNextItemWidth(itemWidth);
-						if (ImGui::BeginCombo("##NewInputActionPressTypeSelector", FL::F_PressTypeStrings[currentPressType].c_str()))
+						if (ImGui::BeginCombo("##NewInputActionPressTypeSelector", FL::Controls::pressTypeStrings[currentPressType].c_str()))
 						{
-							for (int n = 0; n < FL::F_PressTypeStrings.size(); n++)
+							for (int n = 0; n < FL::Controls::pressTypeStrings.size(); n++)
 							{
-								bool b_isSelected = (FL::F_PressTypeStrings[currentPressType] == FL::F_PressTypeStrings[n]);
-								if (ImGui::Selectable(FL::F_PressTypeStrings[n].c_str(), b_isSelected))
+								bool b_isSelected = (FL::Controls::pressTypeStrings[currentPressType] == FL::Controls::pressTypeStrings[n]);
+								if (ImGui::Selectable(FL::Controls::pressTypeStrings[n].c_str(), b_isSelected))
 								{
 									currentPressType = n;
 								}
 							}
 							ImGui::EndCombo();
 						}
-						FL::PopComboStyles();
+						FL::GuiCore::PopComboStyles();
 
 
 						ImGui::SameLine();
 
 
-						FL::MoveScreenCursor(0, -25);
+						FL::GuiCore::MoveScreenCursor(0, -25);
 						cursorPos = ImGui::GetCursorScreenPos();
 						ImGui::Text("Action Name:");
-						ImGui::SetCursorScreenPos(Vector2(cursorPos.x, cursorPos.y + 25));		
+						ImGui::SetCursorScreenPos(FL::Vector2(cursorPos.x, cursorPos.y + 25));		
 						ImGui::SetNextItemWidth(itemWidth);
-						FL::RenderInput("##InputActionName", "", inputText, false, ImGui::GetContentRegionAvail().x - 40, ImGuiInputTextFlags_AutoSelectAll);
+						FL::GuiCore::RenderInput("##InputActionName", "", inputText, false, ImGui::GetContentRegionAvail().x - 40, ImGuiInputTextFlags_AutoSelectAll);
 
 
 						ImGui::SameLine();
-						if (FL::RenderButton("Add"))
+						if (FL::GuiCore::RenderButton("Add"))
 						{
-							currentContext->AddKeyBinding(FL::F_KeyBindingsAvailable[currentInput].c_str(), inputText, (FL::PressType)currentPressType);
+							currentContext->AddKeyBinding(FL::Controls::keyBindingsAvailable[currentInput].c_str(), inputText, (FL::Controls::PressType)currentPressType);
 							inputText = "";
 						}
 
@@ -195,24 +197,24 @@ namespace FlatGui
 					ImGui::EndChild(); // Create New Input Action
 
 
-					FL::RenderSeparator(10, 10);
+					FL::GuiCore::RenderSeparator(10, 10);
 
 
-					ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::GetColor("innerWindow"));
-					ImGui::BeginChild("Existing Bindings", Vector2(0), FL::F_headerFlags);
+					ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("innerWindow"));
+					ImGui::BeginChild("Existing Bindings", FL::Vector2(), FL::GuiCore::headerFlags);
 					// {
 
 						ImGui::PopStyleColor();
-						FL::MoveScreenCursor(10, 5);					
+						FL::GuiCore::MoveScreenCursor(10, 5);					
 						ImGui::Text("Existing Bindings:");
-						FL::MoveScreenCursor(0, 5);
+						FL::GuiCore::MoveScreenCursor(0, 5);
 
 						if (currentContext != nullptr)
 						{					
-							for (std::pair<std::string, std::shared_ptr<FL::InputMapping>> inputAction : currentContext->GetInputActions())
+							for (std::pair<std::string, std::shared_ptr<FL::Controls::InputMapping>> inputAction : currentContext->GetInputActions())
 							{
-								FL::MoveScreenCursor(0, 5);
-								ImGui::Text(inputAction.second->keyCode.c_str());
+								FL::GuiCore::MoveScreenCursor(0, 5);
+								ImGui::Text("%s", inputAction.second->keyCode.c_str());
 								float halfWidth = ImGui::GetContentRegionAvail().x / 2;
 
 								RenderInputAction(currentContext, inputAction.second->pressActions.downAction, halfWidth);
@@ -234,14 +236,13 @@ namespace FlatGui
 			
 
 			// Create new Mapping Context modal
-			if (FL::RenderInputModal("Create New Mapping Context", "Enter a name for the new Mapping Context", newMappingContextFileName, b_openCreateContextModal))
+			if (Modals::RenderInputModal("Create New Mapping Context", "Enter a name for the new Mapping Context", newMappingContextFileName, b_openCreateContextModal))
 			{
-				FL::CreateNewMappingContextFile(newMappingContextFileName);
-				FL::F_selectedMappingContextName = newMappingContextFileName;
-				FG_b_showMappingContextEditor = true;
-			}
-
-		// }
-		FL::EndWindow();
+				FL::Controls::CreateNewMappingContextFile(newMappingContextFileName);
+				FL::Controls::selectedMappingContextName = newMappingContextFileName;				
+			}			
+		}	
+		
+		FL::GuiCore::EndWindow(); // MappingContext Editor
 	}
 }

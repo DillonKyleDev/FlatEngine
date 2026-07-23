@@ -1,11 +1,10 @@
 #pragma once
-#include "Vector2.h"
-#include "Canvas.h"
-#include "Button.h"
+#include "components/Button.h"
+#include "components/Canvas.h"
 
-#include <string>
-#include <vector>
 #include "SDL.h" // Uint32
+#include <vector>
+
 
 namespace FlatEngine
 {
@@ -13,18 +12,17 @@ namespace FlatEngine
 	{
 	public:
 		GameLoop();
-		~GameLoop();
 
 		void Start();
-		void Update(float gridstep, Vector2 viewportCenter);
+		void Update();
 		void Stop();
 		void Pause();
 		void Unpause();
 		bool IsGamePaused();
 		void PauseGame();
 		void UnpauseGame();
-		float TimeEllapsedInSec();
-		long TimeEllapsedInMs();
+		float TimeElapsedInSec();
+		long TimeElapsedInMs();
 		bool IsStarted();
 		bool IsPaused();
 		void AddFrame();
@@ -44,6 +42,7 @@ namespace FlatEngine
 		void ResetHoveredButtons();
 		int GetFirstUnblockedLayer();
 		Canvas GetFirstUnblockedCanvas();
+		void HandleAnimations();
 		void RunUpdateOnScripts();
 		void AddObjectToDeleteQueue(long objectID);
 		void DeleteObjectsInDeleteQueue();

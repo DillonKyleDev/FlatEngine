@@ -1,7 +1,9 @@
 #pragma once
-#include <vector>
+
+#include <cstdint>
 #include <map>
 #include <string>
+#include <vector>
 
 
 namespace FlatEngine
@@ -11,8 +13,7 @@ namespace FlatEngine
 	public:
 		TagList();
 		TagList(long owner);
-		TagList(TagList* toCopy);
-		~TagList();
+		TagList(TagList* toCopy);		
 
 		void SetOwnerID(long ownerID);
 		void UpdateAvailableTags();
@@ -40,7 +41,6 @@ namespace FlatEngine
 		uint64_t m_categoryBits;
 		uint64_t m_maskBits;
 	};
-
 }
 
 

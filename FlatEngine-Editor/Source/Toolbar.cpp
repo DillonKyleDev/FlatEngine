@@ -1,18 +1,19 @@
 #include "FlatEngine.h"
 #include "GameLoop.h"
-#include "Vector2.h"
+#include "GuiCore.h"
+#include "managers/Assets.h"
+#include "tools/Vector2.h"
 
+#include <cstddef>
 
 namespace FL = FlatEngine;
+
 
 namespace FlatGui 
 {
 	void RenderToolbar()
-	{
-		bool b_controlPanelWindow = false;
-		FL::PushWindowStyles();
-		ImGui::Begin("Gameloop Control Panel", &b_controlPanelWindow, ImGuiDockNodeFlags_::ImGuiDockNodeFlags_NoUndocking);
-		FL::PopWindowStyles();
+	{		
+		ImGui::Begin("Gameloop Control Panel", NULL, ImGuiDockNodeFlags_::ImGuiDockNodeFlags_NoUndocking);
 		// {
 
 			std::string playID = "##PlayGameloopIcon";
@@ -29,9 +30,9 @@ namespace FlatGui
 			ImGui::PushStyleVar(ImGuiStyleVar_DisabledAlpha, 0.4f);
 
 			float windowWidth = ImGui::GetWindowSize().x;
-			FL::MoveScreenCursor(3, 3);
+			FL::GuiCore::MoveScreenCursor(3, 3);
 			ImGui::BeginDisabled(FL::GameLoopStarted());
-			if (FL::RenderImageButton(playID.c_str(), FL::GetTexture("play"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
+			if (FL::GuiCore::RenderImageButton(playID.c_str(), FL::Assets::assetManager.GetTexture("play"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::StartGameLoop();				
 			}
@@ -39,7 +40,7 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 		
 			ImGui::BeginDisabled(!FL::GameLoopStarted());
-			if (FL::RenderImageButton(pauseID.c_str(), FL::GetTexture("pause"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
+			if (FL::GuiCore::RenderImageButton(pauseID.c_str(), FL::Assets::assetManager.GetTexture("pause"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::PauseGameLoop();				
 			}
@@ -47,7 +48,7 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 
 			ImGui::BeginDisabled(!FL::GameLoopStarted());
-			if (FL::RenderImageButton(stopID.c_str(), FL::GetTexture("stop"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
+			if (FL::GuiCore::RenderImageButton(stopID.c_str(), FL::Assets::assetManager.GetTexture("stop"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::StopGameLoop();
 			}
@@ -55,36 +56,36 @@ namespace FlatGui
 			ImGui::SameLine(0, 5);
 		
 			ImGui::BeginDisabled(!FL::GameLoopPaused());
-			if (FL::RenderImageButton(nextFrameID.c_str(), FL::GetTexture("nextFrame"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
+			if (FL::GuiCore::RenderImageButton(nextFrameID.c_str(), FL::Assets::assetManager.GetTexture("nextFrame"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{
 				FL::F_Application->GetGameLoop()->SkipFrames(1);
 			}
 			ImGui::EndDisabled();
 			if (ImGui::IsItemHovered())
 			{
-				FL::RenderTextToolTip("Advance 1");
+				FL::GuiCore::RenderTextToolTip("Advance 1");
 			}
 			ImGui::SameLine(0, 5);
 
 			ImGui::BeginDisabled(!FL::GameLoopPaused());
-			if (FL::RenderImageButton(skipFramesID.c_str(), FL::GetTexture("skipFrames"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
+			if (FL::GuiCore::RenderImageButton(skipFramesID.c_str(), FL::Assets::assetManager.GetTexture("skipFrames"), FL::Vector2(24, 24), 0, FL::Vector2(0)))
 			{				
 				FL::F_Application->GetGameLoop()->SkipFrames(framesToSkip);
 			}
 			ImGui::EndDisabled();
 			if (ImGui::IsItemHovered())
 			{
-				FL::RenderTextToolTip("Advance " + std::to_string(framesToSkip));
+				FL::GuiCore::RenderTextToolTip("Advance " + std::to_string(framesToSkip));
 			}
 
 			ImGui::SameLine(0, 5); 
-			FL::MoveScreenCursor(3, 5);
-			ImGui::PushStyleColor(ImGuiCol_Text, FL::GetColor("logText"));
+			FL::GuiCore::MoveScreenCursor(3, 5);
+			ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("logText"));
 			ImGui::Text("Frames to advance ");
 			ImGui::PopStyleColor();
 			ImGui::SameLine();
-			FL::MoveScreenCursor(-12, 2);
-			FL::RenderDragInt(framesToSkipDragID.c_str(), 30, framesToSkip, 1, 1, 360);
+			FL::GuiCore::MoveScreenCursor(-12, 2);
+			FL::GuiCore::RenderDragInt(framesToSkipDragID.c_str(), 30, framesToSkip, 1, 1, 360);
 		
 
 			ImGui::PopStyleVar();

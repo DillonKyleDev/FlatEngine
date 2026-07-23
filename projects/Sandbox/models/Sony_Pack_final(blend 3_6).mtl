@@ -1,0 +1,105 @@
+# Blender 5.0.0 MTL File: 'Sony_Pack_final(blend 3_6).blend'
+# www.blender.org
+
+newmtl plugs
+Ns 39.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl ps1_body_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/ps1_body_mat_BaseColor.jpg
+map_Ns C:/ps1_body_mat_Roughness.jpg
+map_Bump -bm 1.000000 C:/ps1_body_mat_Normal.png
+
+newmtl ps1_cable_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/ps1_cable_mat_BaseColor.jpg
+map_Ns C:/ps1_cable_mat_Roughness.jpg
+map_Bump -bm 1.000000 C:/ps1_cable_mat_Normal.png
+
+newmtl ps1_controller
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/ps1_controller_BaseColor.jpg
+map_Ns C:/ps1_controller_Roughness.jpg
+map_refl C:/ps1_controller_Metallic.jpg
+map_Bump -bm 1.000000 C:/ps1_controller_Normal.png
+
+newmtl ps1_details_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.450000
+illum 2
+map_Kd C:/ps1_details_mat_BaseColor.jpg
+map_Ns C:/ps1_details_mat_Roughness.jpg
+map_refl C:/ps1_details_mat_Metallic.jpg
+map_Ke C:/ps1_details_mat_Emissive.jpg
+map_d C:/ps1_details_mat_Alpha.jpg
+map_Bump -bm 1.000000 C:/ps1_details_mat_Normal.png
+
+newmtl pvm_front_and_back_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/pvm_front_and_back_mat_BaseColor.jpg
+map_Ns C:/pvm_front_and_back_mat_Roughness.jpg
+map_refl C:/pvm_front_and_back_mat_Metallic.jpg
+map_Bump -bm 1.000000 C:/pvm_front_and_back_mat_Normal.png
+
+newmtl pvm_panel_and_more_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/pvm_panel_and_more_mat_BaseColor.jpg
+map_Ns C:/pvm_panel_and_more_mat_Roughness.jpg
+map_refl C:/pvm_panel_and_more_mat_Metallic.jpg
+map_Bump -bm 1.000000 C:/pvm_panel_and_more_mat_Normal.png
+
+newmtl pvm_screen_and_details_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd C:/pvm_screen_and_details_mat_BaseColor.jpg
+map_Ns C:/pvm_screen_and_details_mat_Roughness.jpg
+map_d C:/pvm_screen_and_details_mat_Alpha.jpg
+map_Bump -bm 1.000000 C:/pvm_screen_and_details_mat_Normal.png
+
+newmtl pvm_side_body_mat
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/pvm_side_body_mat_BaseColor.jpg
+map_Ns C:/pvm_side_body_mat_Roughness.jpg
+map_refl C:/pvm_side_body_mat_Metallic.jpg
+map_Bump -bm 1.000000 C:/pvm_side_body_mat_Normal.png

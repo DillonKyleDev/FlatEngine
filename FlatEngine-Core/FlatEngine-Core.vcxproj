@@ -364,6 +364,7 @@
     <ClInclude Include="Source\WheelJoint.h" />
     <ClInclude Include="Source\WinSys.h" />
     <ClInclude Include="Source\ViewportManager.h" />
+    <ClInclude Include="Source\ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp" />
@@ -450,6 +451,7 @@
     <ClCompile Include="Source\WheelJoint.cpp" />
     <ClCompile Include="Source\WinSys.cpp" />
     <ClCompile Include="Source\ViewportManager.cpp" />
+    <ClCompile Include="Source\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib" />

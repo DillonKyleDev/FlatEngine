@@ -1,0 +1,19 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
+    "fragmentShaderPath": "../engine/shaders/compiledShaders/emptyFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 3
+    },
+    "name": "fl_empty",
+    "rasterizerData": {
+        "cullMode": 2,
+        "lineWidth": 1.0,
+        "polygonMode": 0
+    },
+    "texturePipelineData": {},
+    "uboVec4Names": {},
+    "vertexShaderPath": "../engine/shaders/compiledShaders/emptyVert.spv"
+}

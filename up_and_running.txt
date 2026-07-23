@@ -1,0 +1,36 @@
+Just these steps:
+
+Run the install script
+
+bash./install-deps-linux.sh
+
+Generate makefiles
+
+bashpremake5 gmake
+
+Build
+
+bashmake config=debug
+
+Generate compile_commands.json for clangd (optional, for VSCodium intellisense)
+
+bashbear -- make config=debug
+That's it. Everything else is either in your repo (source, vendor headers, lua files) or installed by the script (system libs, build tools).
+The only gotcha is VSCodium itself — the install script doesn't set that up. If you want it on the new machine add the repo and install it as we did earlier, then install the CodeLLDB and clangd extensions manually. You could add that to the script too if you want it fully automated.
+
+# After adding a new file, run: 
+
+# premake5 gmake   # regenerate Makefiles so new file is a build target
+# bear -- make      # rebuild + regenerate compile_commands.json
+
+premake5 gmake
+bear -- make
+
+Might need to run this first:
+make clean && bear -- make
+
+# You add NewFile.cpp to src/.
+# The Lua config still just says "src/**.cpp" — that part is fine, it'll match the new file next time it's evaluated.
+# But the generated Makefile on disk still has the old, frozen list of .o targets from the last time you ran premake5 gmake2 — it has no idea NewFile.cpp exists.
+# Running premake5 gmake2 again re-reads the Lua, re-expands the wildcard, and rewrites the Makefiles with the new file included.
+# make then sees NewFile.cpp as a build target for the first time and compiles it.

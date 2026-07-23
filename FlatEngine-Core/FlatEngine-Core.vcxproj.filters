@@ -717,6 +717,7 @@
     <ClInclude Include="Source\ViewportManager.h" />
     <ClInclude Include="Source\PipelineManager.h" />
     <ClInclude Include="Source\Light.h" />
+    <ClInclude Include="Source\ThreadPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Vendor\includes\ImGui\Backends\imgui_impl_sdl2.cpp">
@@ -965,6 +966,7 @@
     <ClCompile Include="Source\ViewportManager.cpp" />
     <ClCompile Include="Source\PipelineManager.cpp" />
     <ClCompile Include="Source\Light.cpp" />
+    <ClCompile Include="Source\ThreadPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Vendor\includes\Box2D\lib\box2d.lib">

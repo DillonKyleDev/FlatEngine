@@ -1,15 +1,10 @@
+#include "managers/Assets.h"
+#include "managers/SceneManager.h"
 #include "TagList.h"
-#include "FlatEngine.h"
-#include "GameLoop.h"
-#include "Scene.h"
-
-#include <map>
 
 
 namespace FlatEngine 
 {
-	std::vector<std::string> F_TagsAvailable = std::vector<std::string>();
-
 	TagList::TagList()
 	{
 		m_ownerID = -1;
@@ -28,6 +23,7 @@ namespace FlatEngine
 
 	TagList::TagList(TagList* toCopy)
 	{
+		m_ownerID = -1;
 		std::map<std::string, bool>::iterator iterator;
 		for (iterator = toCopy->m_tags.begin(); iterator != toCopy->m_tags.end(); iterator++)
 		{
@@ -40,15 +36,21 @@ namespace FlatEngine
 				m_tags.emplace(iterator->first, iterator->second);
 			}
 		}
+		for (iterator = toCopy->m_collidesTags.begin(); iterator != toCopy->m_collidesTags.end(); iterator++)
+		{
+			if (m_collidesTags.count(iterator->first) > 0)
+			{
+				m_collidesTags.at(iterator->first) = iterator->second;
+			}
+			else
+			{
+				m_collidesTags.emplace(iterator->first, iterator->second);
+			}
+		}
 
 		m_categoryBits = 0;
 		m_maskBits = 0;
 	}
-
-	TagList::~TagList()
-	{
-	}
-
 
 	void TagList::SetOwnerID(long ownerID)
 	{
@@ -57,7 +59,7 @@ namespace FlatEngine
 
 	void TagList::UpdateAvailableTags()
 	{
-		for (std::string tag : F_TagsAvailable)
+		for (std::string tag : Assets::assetManager.GetTags())
 		{
 			if (m_tags.count(tag) == 0)
 			{
@@ -77,10 +79,10 @@ namespace FlatEngine
 			m_tags.at(tag) = b_value;
 		}
 
-		GameObject* owner = GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->GetBody() != nullptr)
+		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->Get<Body>() != nullptr)
 		{
-			owner->GetBody()->RecreateLiveBody();
+			owner->Get<Body>()->RecreateLiveBody();
 		}
 	}
 
@@ -91,10 +93,10 @@ namespace FlatEngine
 			m_tags.at(tag) = !m_tags.at(tag);
 		}
 
-		GameObject* owner = GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->GetBody() != nullptr)
+		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->Get<Body>() != nullptr)
 		{
-			owner->GetBody()->RecreateLiveBody();
+			owner->Get<Body>()->RecreateLiveBody();
 		}
 	}
 
@@ -117,10 +119,10 @@ namespace FlatEngine
 			m_collidesTags.at(tag) = b_value;
 		}
 
-		GameObject* owner = GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->GetBody() != nullptr)
+		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->Get<Body>() != nullptr)
 		{
-			owner->GetBody()->RecreateLiveBody();
+			owner->Get<Body>()->RecreateLiveBody();
 		}
 	}
 
@@ -131,10 +133,10 @@ namespace FlatEngine
 			m_collidesTags.at(tag) = !m_collidesTags.at(tag);
 		}
 
-		GameObject* owner = GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->GetBody() != nullptr)
+		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
+		if (owner != nullptr && owner->Get<Body>() != nullptr)
 		{
-			owner->GetBody()->RecreateLiveBody();
+			owner->Get<Body>()->RecreateLiveBody();
 		}
 	}
 

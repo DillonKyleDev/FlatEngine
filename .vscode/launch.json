@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Editor",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/linux-x86_64/Debug/FlatEngine-Editor/FlatEngine-Editor",
+            "args": [],
+            "cwd": "${workspaceFolder}/Build/linux-x86_64/Debug/FlatEngine-Editor",
+            "preLaunchTask": "Build Debug",
+            "stopOnEntry": false
+        },
+        {
+            "name": "Debug Runtime",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/linux-x86_64/Debug/FlatEngine-Runtime/FlatEngine-Runtime",
+            "args": [],
+            "cwd": "${workspaceFolder}/Build/linux-x86_64/Debug/FlatEngine-Runtime",
+            "preLaunchTask": "Build Debug",
+            "stopOnEntry": false
+        },
+        {
+            "name": "Run Release Editor",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/linux-x86_64/Release/FlatEngine-Editor/FlatEngine-Editor",
+            "args": [],
+            "cwd": "${workspaceFolder}/Build/linux-x86_64/Release/FlatEngine-Editor",
+            "stopOnEntry": false
+        },
+        {
+            "name": "Run Release Runtime",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/Build/linux-x86_64/Release/FlatEngine-Runtime/FlatEngine-Runtime",
+            "args": [],
+            "cwd": "${workspaceFolder}/Build/linux-x86_64/Release/FlatEngine-Runtime",
+            "stopOnEntry": false
+        }
+    ]
+}

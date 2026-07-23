@@ -1,34 +1,33 @@
-#include "FlatEngine.h"
 #include "Application.h"
-#include "AssetManager.h"
-#include "VulkanManager.h"
-
-#include "SDL.h"
-
+#include "FlatEngine.h"
+#include "GuiCore.h"
+#include "managers/SceneManager.h"
+#include "render/VulkanManager.h"
 
 namespace FL = FlatEngine;
+
 
 namespace FlatEngine
 {
 	void Application::BeginRender()
 	{
-		FL::BeginImGuiRender();
+		FL::GuiCore::BeginImGuiRender();
 	}
 
 	void Application::EndRender()
 	{
-		FL::EndImGuiRender();
+		FL::GuiCore::EndImGuiRender();
 		
 		if (m_b_windowResized)
 		{
 			m_b_windowResized = false;
-			F_VulkanManager->RecreateSwapChainAndFrameBuffers();
+			VulkanManager::vulkan.RecreateSwapChainAndFrameBuffers();
 		}
 
 		if (F_b_loadNewScene)
 		{
 			F_b_loadNewScene = false;
-			FL::LoadScene(F_sceneToBeLoaded);
+			SceneManager::LoadScene(F_sceneToBeLoaded);
 			F_sceneToBeLoaded = "";
 		}
 	}

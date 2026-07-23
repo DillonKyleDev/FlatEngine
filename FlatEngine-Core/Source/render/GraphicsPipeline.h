@@ -1,0 +1,56 @@
+#pragma once
+#include "render/RenderPass.h"
+
+#include <string>
+#include <vector>
+
+
+namespace FlatEngine
+{
+	class GraphicsPipeline
+	{
+	public:
+		GraphicsPipeline(std::string vertexPath = "", std::string fragmentPath = "");		
+		~GraphicsPipeline();
+		void Cleanup();
+
+		void SetVertexPath(std::string path);
+		void SetFragmentPath(std::string path);
+		std::string GetVertexPath();
+		std::string GetFragmentPath();
+		VkShaderModule CreateShaderModule(const std::vector<char>& code);
+		void CreatePushConstantRanges();
+		void CreateGraphicsPipeline(RenderPass& renderPass, VkDescriptorSetLayout& descriptorSetLayout);
+		VkPipeline& GetGraphicsPipeline();
+		VkPipelineLayout& GetPipelineLayout();
+		// Pipeline Configuration
+		VkPipelineInputAssemblyStateCreateInfo& GetInputAssemblyInfos();
+		void SetInputAssemblyInfos(VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos);
+		VkPipelineRasterizationStateCreateInfo& GetRasterizerCreateInfos();		
+		void SetRasterizerCreateInfos(VkPipelineRasterizationStateCreateInfo rasterizerInfos);
+		void SetColorBlendAttachmentCreateInfos(VkPipelineColorBlendAttachmentState colorBlendAttachmentInfos);
+		VkPipelineColorBlendAttachmentState& GetColorBlendAttachmentCreateInfos();
+
+	private:
+		VkPipeline m_graphicsPipeline;
+		VkPipelineLayout m_pipelineLayout;
+		std::string m_vertexPath;
+		std::string m_fragmentPath;
+
+		// structs
+		VkPipelineInputAssemblyStateCreateInfo m_inputAssembly{};
+		VkViewport m_viewport{};
+		VkRect2D m_scissor{};
+		std::vector<VkDynamicState> m_dynamicStatesUsed{};
+		VkPipelineDynamicStateCreateInfo m_dynamicState{};
+		VkPipelineViewportStateCreateInfo m_viewportState{};
+		VkPipelineRasterizationStateCreateInfo m_rasterizer{};
+		VkPipelineMultisampleStateCreateInfo m_multisampling{};
+		VkPipelineColorBlendAttachmentState m_colorBlendAttachment{};
+		VkPipelineColorBlendStateCreateInfo m_colorBlending{};
+		VkPipelineDepthStencilStateCreateInfo m_depthStencil{};
+		std::vector<VkPushConstantRange> m_pushRanges{};
+		VkPipelineLayoutCreateInfo m_pipelineLayoutInfo{};
+		VkGraphicsPipelineCreateInfo m_pipelineInfo{};
+	};
+}

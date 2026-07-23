@@ -17,8 +17,6 @@ end
 
 function Update()
      local data = GetInstanceData("Alpha", my_id)
-
-     data.mesh:SetUBOVec4("Alpha", Vector4:new(GetTime() / 1000, 1.0, 1.0, 1.0))
 end
 
 -- each of these functions must be present in each Lua script file otherwise other script's implementations will be used with this object instead

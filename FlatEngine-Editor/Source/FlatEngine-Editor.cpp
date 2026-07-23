@@ -1,37 +1,26 @@
-#pragma once
+#include "Application.h"
+#include "EntryPoint.h"
 #include "FlatEngine.h"
 #include "FlatGui.h"
-#include "EntryPoint.h"
-#include "Application.h"
 #include "GameLoop.h"
-#include "AssetManager.h"
-#include "Project.h"
-#include "Process.h"
-#include "GameObject.h"
-#include "Component.h"
-#include "Script.h"
-#include "PrefabManager.h"
-#include "Scene.h"
+#include "managers/ProjectManager.h"
+#include "managers/SceneManager.h"
+#include "managers/Settings.h"
+#include "tools/FileHelper.h"
+#include "tools/Profiler.h"
+#include "tools/Time.h"
 
-#include <vector>
 #include <SDL_mixer.h>
 #include <string>
 #include <memory>
 
-
 namespace FL = FlatEngine;
-
-using GameObject = FL::GameObject;
-using Component = FL::Component;
-using Script = FL::Script;
 
 
 int main(int argc, char* args[])
 {
-	// Initializes FlatEngine
 	return FL::Main(argc, args);
 }
-
 
 // Define our Applications main GameLoop
 class EditorGameLoop : public FL::GameLoop
@@ -40,47 +29,49 @@ public:
 	EditorGameLoop() 
 	{
 		m_startedScenePath = "";
-		m_startedPersistantScenePath = "";
+		m_startedPersistantScriptsPath = "";
 	};
 	~EditorGameLoop() {};
 
 	void Start()
 	{
-		FL::AddProfilerProcess("GameLoop (variable executions)");		
-		FL::AddProfilerProcess("Not GameLoop");
-		FL::AddProfilerProcess("Collision Testing");	
-		m_startedScenePath = FL::GetLoadedScenePath();
-		m_startedPersistantScenePath = FL::GetLoadedProject().GetPersistantGameObjectsScenePath();
-		FL::SaveScene(FL::GetLoadedScene(), "..\\engine\\tempFiles\\" + FL::GetLoadedScene()->GetName() + ".scn");
-		if (m_startedPersistantScenePath != "" && FL::GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
+		FL::Profiler::AddProfilerProcess("GameLoop (variable executions)");		
+		FL::Profiler::AddProfilerProcess("Not GameLoop");
+		FL::Profiler::AddProfilerProcess("Collision Testing");	
+		FL::SceneManager::CreateSceneBackup(); // Backup existing scene save
+		m_startedScenePath = FL::SceneManager::loadedScene.path;
+		m_startedPersistantScriptsPath = FL::ProjectManager::loadedProject.persistantScriptPath;
+		FL::SceneManager::SaveScene(&FL::SceneManager::loadedScene, "../engine/tempFiles/" + FL::SceneManager::loadedScene.name + "_start_snapshot.scn");
+		if (m_startedPersistantScriptsPath != "")
 		{
-			FL::F_LoadedProject.SavePersistantScene("..\\engine\\tempFiles\\" + FL::GetLoadedProject().GetPersistantGameObjectScene()->GetName() + ".scn");
-		}
+			FL::ProjectManager::loadedProject.persistantScriptPath = "../engine/tempFiles/" + FL::SceneManager::loadedScene.name + "_scripts_start_snapshot.json";
+			FL::ProjectManager::loadedProject.SavePersistantScript();
+		}	
 		FL::GameLoop::Start();
 	};
 	void Stop()
 	{
-		FL::RemoveProfilerProcess("GameLoop (variable executions)");
-		FL::RemoveProfilerProcess("Not GameLoop");
-		FL::RemoveProfilerProcess("Collision Testing");
+		FL::Profiler::RemoveProfilerProcess("GameLoop (variable executions)");
+		FL::Profiler::RemoveProfilerProcess("Not GameLoop");
+		FL::Profiler::RemoveProfilerProcess("Collision Testing");
 		FL::GameLoop::Stop();
-		if (m_startedPersistantScenePath != "")
+		if (m_startedPersistantScriptsPath != "")
 		{
-			FL::GetLoadedProject().LoadPersistantScene("..\\engine\\tempFiles\\" + FL::GetFilenameFromPath(m_startedPersistantScenePath, true));
+			FL::ProjectManager::loadedProject.LoadPersistantScript("../engine/tempFiles/" + FL::FileHelper::GetFilenameFromPath(m_startedPersistantScriptsPath, false) + "_scripts_start_snapshot.json");
 		}
-		FL::LoadScene("..\\engine\\tempFiles\\" + FL::GetFilenameFromPath(m_startedScenePath, true), m_startedScenePath);		
+		FL::SceneManager::LoadScene("../engine/tempFiles/" + FL::FileHelper::GetFilenameFromPath(m_startedScenePath, false) + "_start_snapshot.scn", m_startedScenePath);
 	};
 	void Update()
 	{
 		// Call base class GameLoop Update function
-		FL::GameLoop::Update(FlatGui::FG_sceneViewGridStep.x, FlatGui::FG_sceneViewCenter);
+		FL::GameLoop::Update();
 		
 		// Other, application specific updates here if needed
 		//
 	};
 private:
 	std::string m_startedScenePath;
-	std::string m_startedPersistantScenePath;
+	std::string m_startedPersistantScriptsPath;
 };
 
 
@@ -110,17 +101,16 @@ public:
 		{
 			RunOnceAfterInitialization();
 
-			static Uint32 frameStart = FL::GetEngineTime();
+			static Uint32 frameStart = FL::Time::Time();
 			Uint32 renderStartTime = 0;
-			renderStartTime = FL::GetEngineTime(); // Profiler
+			renderStartTime = FL::Time::Time(); // Profiler
 
 			BeginRender();
-			FL::AddProcessData("Render", (float)(FL::GetEngineTime() - renderStartTime)); // Profiler
+			FL::Profiler::AddProcessData("Render", (float)(FL::Time::Time() - renderStartTime)); // Profiler
 
 			if ((GameLoopStarted() && !GameLoopPaused()) || (GameLoopPaused() && A_GameLoop->IsFrameSkipped()))
 			{
-				int iterations = 0;
-				int minIter = 1;
+				int iterations = 0;				
 				static int framesSkipped = 0;		
 
 				if (GameLoopPaused() && A_GameLoop->IsFrameSkipped())
@@ -139,17 +129,21 @@ public:
 				// Profiler
 				Uint32 updateLoopStart = 0;
 				static Uint32 updateLoopEnd = 0;
-				updateLoopStart = FL::GetEngineTime();
+				updateLoopStart = FL::Time::Time();
 				Uint32 everythingElseHangTime = updateLoopStart - updateLoopEnd;
-				FL::AddProcessData("Not GameLoop", (float)everythingElseHangTime);
+				FL::Profiler::AddProcessData("Not GameLoop", (float)everythingElseHangTime);
 				updateLoopEnd = updateLoopStart;
 
-				float frameTime = (float)(FL::GetEngineTime() - frameStart) / 1000.0f; // actual deltaTime (in seconds)
+				float frameTime = (float)(FL::Time::Time() - frameStart) / 1000.0f; // actual deltaTime (in seconds)
 
 				// Only add accumulated time if the GameLoop is not paused or if a frame was skipped while paused, then add a small fixed amount of time
 				if (!GameLoopPaused())
 				{
 					A_GameLoop->m_accumulator += frameTime;
+					if (A_GameLoop->m_accumulator > 0.25f)
+					{
+						A_GameLoop->m_accumulator = 0.25f; // prevent death spiral
+					}
 				}
 				else if (A_GameLoop->IsFrameSkipped())
 				{
@@ -158,9 +152,10 @@ public:
 
 				if (!GameLoopPaused() || A_GameLoop->IsFrameSkipped())
 				{
-					while (iterations < minIter || A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
+					FL::HandleEvents(b_hasQuit);
+
+					while (A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
 					{
-						FL::HandleEvents(b_hasQuit);
 						A_GameLoop->Update();
 
 						A_GameLoop->m_time += A_GameLoop->m_deltaTime;
@@ -174,17 +169,17 @@ public:
 				}
 				
 				// Get time it took to get back to GameLoopUpdate()
-				frameStart = FL::GetEngineTime();
+				frameStart = FL::Time::Time();
 
 				// Artificially slow GameLoop if frameTime is less than 
-				if (!FL::F_LoadedProject.IsVsyncEnabled() && frameTime < A_GameLoop->m_deltaTime)
+				if (!FL::Settings::settings.b_vsyncEnabled && frameTime < A_GameLoop->m_deltaTime)
 				{
 					SDL_Delay((Uint32)(A_GameLoop->m_deltaTime - frameTime) * 1000);
 				}
 
-				Uint32 hangTime = FL::GetEngineTime() - updateLoopStart;
-				FL::AddProcessData("GameLoop (variable executions)", (float)hangTime);				
-				updateLoopEnd = FL::GetEngineTime();				
+				Uint32 hangTime = FL::Time::Time() - updateLoopStart;
+				FL::Profiler::AddProcessData("GameLoop (variable executions)", (float)hangTime);				
+				updateLoopEnd = FL::Time::Time();				
 			}
 			else
 			{
@@ -194,10 +189,9 @@ public:
 			// If gameloop isn't running, make sure our framestart keeps up with current engine time otherwise it will cause a freeze on initially starting gameloop
 			if (!A_GameLoop->IsStarted() || A_GameLoop->IsPaused())
 			{
-				frameStart = FL::GetEngineTime();
+				frameStart = FL::Time::Time();
 			}
 
-			FL::UpdateSceneViewCamera();			
 
 			EndRender();
 
@@ -216,7 +210,7 @@ public:
 
 		if (!b_hasRunOnce)
 		{
-			FlatGui::RunOnceAfterInitialization();
+			FL::Profiler::SetupProfilerProcesses();
 
 			b_hasRunOnce = true;
 		}
@@ -227,7 +221,7 @@ public:
 		{
 			//FL::F_Window->ResizeWindow(1920, 1040);
 			//FL::F_Window->ResizeWindow(800, 600);
-			//FL::F_Window->SetFullscreen(true);
+			// FL::F_Window->SetFullscreen(true);
 			m_b_recreateWindow = false;
 		}
 
@@ -257,10 +251,10 @@ public:
 
 
 		// Render the project selection screen
-		if (!FL::F_b_projectSelected)
+		if (!FL::ProjectManager::b_projectSelected)
 		{			
-			FlatGui::RenderProjectHub(FL::F_b_projectSelected, m_startupProject);
-			if (FL::F_b_projectSelected)
+			FlatGui::RenderProjectHub(FL::ProjectManager::b_projectSelected, m_startupProject);
+			if (FL::ProjectManager::b_projectSelected)
 			{
 				m_b_recreateWindow = true;				
 			}
@@ -280,23 +274,23 @@ public:
 		// If window was recreated this frame ( for after selecting a project )
 		if (m_b_recreateWindow)
 		{
-			FlatGui::LoadProject(m_startupProject);
+			FL::ProjectManager::LoadProject(m_startupProject);
 		}
 	}
 	void Quit()
 	{
 		FL::Application::Quit();
-		FlatGui::Cleanup();
+		FL::Profiler::CleanupProfilerProcesses();
 	}
 	void OnLoadScene(std::string sceneName)
 	{
-		if (FL::GetObjectByID(FlatGui::GetFocusedGameObjectID()) == nullptr)
+		if (FL::SceneManager::loadedScene.GetObjectByID(FL::ProjectManager::loadedProject.focusedGameObjectID) == nullptr)
 		{
-			FlatGui::SetFocusedGameObjectID(-1);
+			FL::ProjectManager::loadedProject.focusedGameObjectID = -1;
 		}
 		if (GameLoopStarted())
 		{
-			FL::RunSceneAwakeAndStart();
+			FL::LuaManager::RunSceneAwakeAndStart();
 		}
 	}
 	FL::GameLoop* GetGameLoop()

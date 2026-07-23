@@ -1,0 +1,178 @@
+{
+    "Name": "Sphere",
+    "Prefab": [
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Cup": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                },
+                {
+                    "Wall": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 17,
+                    "type": "Transform",
+                    "xPosition": 0.0,
+                    "xRotation": 0.0,
+                    "xScale": 1.0,
+                    "yPosition": 0.0,
+                    "yRotation": 0.0,
+                    "yScale": 1.0,
+                    "zPosition": 0.0,
+                    "zRotation": 0.0,
+                    "zScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 18,
+                    "materialName": "Lit",
+                    "modelPath": "..\\projects\\Sandbox\\models\\icoSphere.obj",
+                    "textures": {
+                        "0": "..\\projects\\Sandbox\\images\\colors\\orange.png"
+                    },
+                    "type": "Mesh",
+                    "uboVec4s": {
+                        "Smoothness": {
+                            "w": 0.0,
+                            "x": 0.17000000178813934,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
+                }
+            ],
+            "id": 7,
+            "name": "Sphere",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 0.0,
+            "spawnLocationY": 0.0,
+            "spawnLocationZ": 0.0,
+            "tags": [
+                {
+                    "Ball": false
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Cup": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                },
+                {
+                    "Wall": false
+                }
+            ]
+        }
+    ]
+}

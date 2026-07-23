@@ -1,0 +1,21 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
+    "fragmentShaderPath": "../projects/Sandbox/shaders/compiledShaders/coloredFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 3
+    },
+    "name": "Colored",
+    "rasterizerData": {
+        "cullMode": 2,
+        "lineWidth": 1.0,
+        "polygonMode": 0
+    },
+    "texturePipelineData": {},
+    "uboVec4Names": {
+        "0": "Color"
+    },
+    "vertexShaderPath": "../projects/Sandbox/shaders/compiledShaders/coloredVert.spv"
+}

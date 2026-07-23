@@ -1,0 +1,216 @@
+{
+    "Name": "IcoSphere",
+    "Prefab": [
+        {
+            "_isActive": true,
+            "_isPersistant": false,
+            "_isPrefab": false,
+            "children": [],
+            "collidesTags": [
+                {
+                    "Ball": true
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Cup": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": true
+                },
+                {
+                    "Wall": false
+                }
+            ],
+            "components": [
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 17,
+                    "type": "Transform",
+                    "xPosition": 0.0,
+                    "xRotation": 0.0,
+                    "xScale": 1.0,
+                    "yPosition": 0.0,
+                    "yRotation": -10.008671760559082,
+                    "yScale": 1.0,
+                    "zPosition": 6.400000095367432,
+                    "zRotation": 0.0,
+                    "zScale": 1.0
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "id": 18,
+                    "materialName": "Colored",
+                    "modelPath": "..\\projects\\Sandbox\\models\\icoSphere.obj",
+                    "textures": {
+                        "0": "..\\projects\\Sandbox\\images\\colors\\purple.png"
+                    },
+                    "type": "Mesh",
+                    "uboVec4s": {
+                        "Color": {
+                            "w": 1.0,
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
+                },
+                {
+                    "_isActive": true,
+                    "_isCollapsed": false,
+                    "_lockedRotation": false,
+                    "_lockedXAxis": false,
+                    "_lockedYAxis": false,
+                    "angularDamping": 0.0,
+                    "bodyType": 2,
+                    "gravityScale": 1.0,
+                    "id": 19,
+                    "linearDamping": 0.0,
+                    "shapes": [
+                        {
+                            "_enableContactEvents": true,
+                            "_enableSensorEvents": true,
+                            "_horizontal": false,
+                            "_isLoop": false,
+                            "_isSensor": false,
+                            "capsuleLength": 4.0,
+                            "cornerRadius": 0.0,
+                            "density": 1.0,
+                            "friction": 0.800000011920929,
+                            "height": 1.0,
+                            "points": [],
+                            "radius": 1.0,
+                            "restitution": 0.20000000298023224,
+                            "rollingResistance": 0.0,
+                            "rotationOffsetCos": 1.0,
+                            "rotationOffsetSin": 0.0,
+                            "shape": 2,
+                            "tangentSpeed": 0.0,
+                            "width": 1.0,
+                            "xOffset": 0.0,
+                            "yOffset": 0.0
+                        }
+                    ],
+                    "type": "Body"
+                }
+            ],
+            "id": 7,
+            "name": "IcoSphere",
+            "parent": -1,
+            "prefabName": "",
+            "spawnLocationX": 0.0,
+            "spawnLocationY": 0.0,
+            "spawnLocationZ": 6.400000095367432,
+            "tags": [
+                {
+                    "Ball": true
+                },
+                {
+                    "Collectable": false
+                },
+                {
+                    "Cup": false
+                },
+                {
+                    "Enemy": false
+                },
+                {
+                    "EnemyDamage": false
+                },
+                {
+                    "EnemyTrigger": false
+                },
+                {
+                    "EnvironmentalDamage": false
+                },
+                {
+                    "EnvironmentalTrigger": false
+                },
+                {
+                    "InteractableObject": false
+                },
+                {
+                    "Npc": false
+                },
+                {
+                    "NpcTrigger": false
+                },
+                {
+                    "Player": false
+                },
+                {
+                    "PlayerDamage": false
+                },
+                {
+                    "PlayerTrigger": false
+                },
+                {
+                    "Pocket": false
+                },
+                {
+                    "PocketBlocker": false
+                },
+                {
+                    "Projectile": false
+                },
+                {
+                    "Table": false
+                },
+                {
+                    "Terrain": false
+                },
+                {
+                    "Wall": false
+                }
+            ]
+        }
+    ]
+}

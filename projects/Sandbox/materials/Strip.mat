@@ -1,0 +1,31 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
+    "fragmentShaderPath": "../projects/Sandbox/shaders/compiledShaders/stripFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 3
+    },
+    "name": "Strip",
+    "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 1.0,
+        "polygonMode": 0
+    },
+    "texturePipelineData": {
+        "0": {
+            "descriptorType": 1,
+            "shaderStage": 16
+        },
+        "1": {
+            "descriptorType": 1,
+            "shaderStage": 1
+        }
+    },
+    "uboVec4Names": {
+        "0": "Color",
+        "1": "Disturbance"
+    },
+    "vertexShaderPath": "../projects/Sandbox/shaders/compiledShaders/stripVert.spv"
+}

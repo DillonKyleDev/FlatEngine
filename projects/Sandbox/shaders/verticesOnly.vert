@@ -4,7 +4,8 @@ layout(set = 0, binding = 0) uniform UniformBufferObject {
     vec4 meshPosition;
     vec4 cameraPosition;
     mat4 model;
-    mat4 viewAndProjection;        
+    mat4 view;        
+    mat4 projection;       
     vec4 vec4s[32];
 } ubo;
 
@@ -18,7 +19,7 @@ layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 normal;
 
 void main() {    
-    gl_Position =  ubo.viewAndProjection * (ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1) + ubo.meshPosition);  
+    gl_Position =  ubo.projection * ubo.view * (ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1) + ubo.meshPosition);  
     fragColor = vec4(inColor, 1);
     fragTexCoord = inTexCoord;
 }

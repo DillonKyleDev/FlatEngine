@@ -1,0 +1,47 @@
+{
+    "colorBlendAttachmentData": {
+        "alphaBlendOp": 0
+    },
+    "fragmentShaderPath": "../projects/Sandbox/shaders/compiledShaders/stripParticleFrag.spv",
+    "inputAssemblyData": {
+        "_primitiveRestartEnable": false,
+        "topology": 3
+    },
+    "name": "StripParticle",
+    "rasterizerData": {
+        "cullMode": 0,
+        "lineWidth": 1.0,
+        "polygonMode": 0
+    },
+    "texturePipelineData": {
+        "0": {
+            "descriptorType": 1,
+            "shaderStage": 16
+        },
+        "1": {
+            "descriptorType": 1,
+            "shaderStage": 1
+        }
+    },
+    "uboVec4Names": {
+        "0": "Color",
+        "1": "Disturbance",
+        "10": "vert8Move",
+        "11": "vert9Move",
+        "12": "vert10Move",
+        "13": "vert11Move",
+        "14": "vert12Move",
+        "15": "vert13Move",
+        "16": "vert14Move",
+        "17": "vert15Move",
+        "2": "vert0Move",
+        "3": "vert1Move",
+        "4": "vert2Move",
+        "5": "vert3Move",
+        "6": "vert4Move",
+        "7": "vert5Move",
+        "8": "vert6Move",
+        "9": "vert7Move"
+    },
+    "vertexShaderPath": "../projects/Sandbox/shaders/compiledShaders/stripParticleVert.spv"
+}

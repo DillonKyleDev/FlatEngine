@@ -4,7 +4,8 @@ layout(set = 0, binding = 0) uniform UniformBufferObject {
     vec4 meshPosition;
     vec4 cameraPosition;
     mat4 model;
-    mat4 viewAndProjection;        
+    mat4 view;        
+    mat4 projection;             
     vec4 vec4s[32];
 } ubo;
 
@@ -15,12 +16,15 @@ layout(location = 3) in vec3 inNormal;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
-layout(location = 2) out vec3 normal;
 
 void main() {    
     vec4 localPos = ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1);
-    vec4 worldPos = vec4(localPos.x + ubo.meshPosition.x, localPos.y + ubo.meshPosition.y, ubo.meshPosition.z + localPos.z + (.1 * sin(localPos.x + ubo.vec4s[0].x)) + (.1 * sin(localPos.y + ubo.vec4s[0].x)), 1);
-    gl_Position = ubo.viewAndProjection * worldPos;    
+    float xPos = localPos.x + ubo.meshPosition.x;
+    float yPos = localPos.y + ubo.meshPosition.y;
+    float zDistruption = (2 * sin(localPos.x + ubo.vec4s[0].x)) + (1.6 * sin(3 * (localPos.y + ubo.vec4s[0].x))) + (0.2 * cos(2 * (localPos.x + ubo.vec4s[0].x)));
+    float zPos = ubo.meshPosition.z + localPos.z + zDistruption;
+    vec4 worldPos = vec4(xPos, yPos, zPos, 1);
+    gl_Position = ubo.projection * ubo.view * worldPos;    
     fragTexCoord = inTexCoord;
-    fragColor = vec4(sin(localPos.x + ubo.vec4s[0].x) + sin(localPos.y + ubo.vec4s[0].x));
+    fragColor = vec4(zDistruption);
 }

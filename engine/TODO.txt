@@ -80,3 +80,49 @@ Grid is rendering over scene objects
 Other objects rendering through other objects
 
 Handle non-consumed vertex and fragment data in shaders, probably by leaving them in the shader files and not using them or by creating separate pipelines
+
+Add separate files for vertex and fragment shaders that users code in and parse them in the engine, grabbing keywords for variables and using those keywords and the following variables to create the dynamic uniform buffer object data.  Then, after parsing, write the actual shader code to real shader files and compile them into sprv files for the engine to read.
+
+uniform vec4 inputVariable;
+uniform float nextVariable;
+
+layout(.. = 0) out vec4 outputVariable // for fragment shader
+layout(.. = 0) out float outputFloat // for fragment shader
+
+main {
+	outputVariable = inputVariable;
+	outFloat = nextVariable;
+}
+
+
+Translates to .vert file as:
+
+
+........ uniformBufferObject {
+	vec4s[32];
+	floats[32];
+} ubo;
+
+layout(.. = 0) out vec4 outputVariable // for fragment shader
+layout(.. = 0) out float outputFloat // for fragment shader
+
+main {
+	outputVariable = vec4s[0];
+	outputFloat = floats[0];
+}
+
+instead of vector<std::string> that we need to sort, 
+std::map<int index, std::string> maybe?
+
+To use the depth information of a rendered scene image, try creating a separate renderpass like we did to render to imgui texture, but instead of color resources, create depth resources, then create an additional subpass dependency step in the sceneviewrendertexture renderpass setup that uses that depth image? (half baked thought)
+
+Render order independant algorithm for transparent materials:
+https://docs.vulkan.org/samples/latest/samples/api/oit_linked_lists/README.html
+
+Still a bug with transparent textures showing artifacts through models when viewing the other side of the model through transparent texture.
+
+Fix scene files with textures and ubo json saved wrong.
+
+Add descriptor sets into meshes for both scene view and game view and when setting material and creating resources, create resources for both descriptor sets sets
+
+Create a model for each viewport so there are unique uniform buffers being written to and used in each.

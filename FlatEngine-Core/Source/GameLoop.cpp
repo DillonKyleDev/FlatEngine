@@ -1,24 +1,17 @@
-#include "GameLoop.h"
+#include "components/Animation.h"
+#include "components/CharacterController.h"
+#include "components/Transform.h"
 #include "FlatEngine.h"
+#include "GameLoop.h"
 #include "GameObject.h"
-#include "Scene.h"
-#include "Transform.h"
-#include "Script.h"
-#include "Button.h"
-#include "Canvas.h"
-#include "TagList.h"
-#include "Camera.h"
-#include "Project.h"
-#include "CharacterController.h"
-#include "MappingContext.h"
-#include "Physics.h"
+#include "managers/PhysicsManager.h"
+#include "managers/SceneManager.h"
+#include "tools/Time.h"
 
-#include <vector>
-#include <process.h>
+#ifdef _WINDOWS
 #include <crtdefs.h>
-
-
-namespace FL = FlatEngine;
+#endif
+#include <vector>
 
 
 namespace FlatEngine
@@ -41,10 +34,6 @@ namespace FlatEngine
 		m_objectsQueuedForDelete = std::vector<long>();
 	}
 
-	GameLoop::~GameLoop()
-	{
-	}
-
 	void GameLoop::Start()
 	{
 		m_time = 0.0f;
@@ -54,12 +43,12 @@ namespace FlatEngine
 
 		// Save the name of the scene we started with so we can load it back up when we stop
 		m_b_started = true;
-		RunSceneAwakeAndStart();
-		RunPersistantAwakeAndStart();
-		m_currentTime = GetEngineTime();
+		LuaManager::RunSceneAwakeAndStart();
+		LuaManager::RunPersistantAwakeAndStart();
+		m_currentTime = Time::Time();
 	}
 
-	void GameLoop::Update(float gridstep, Vector2 viewportCenter)
+	void GameLoop::Update()
 	{
 		AddFrame();
 		m_activeTime = m_time - m_pausedTime;
@@ -68,9 +57,10 @@ namespace FlatEngine
 		ResetCharacterControllers();
 		HandleButtons();
 		RunUpdateOnScripts();
-		F_Physics->Update(GetDeltaTime());
+		HandleAnimations();
+		PhysicsManager::physics.Update(GetDeltaTime());
 
-		std::map<long, Body> bodies = GetLoadedScene()->GetBodies();
+		std::map<long, Body> bodies = SceneManager::loadedScene.GetAll<Body>();
 		for (std::map<long, Body>::iterator iterator = bodies.begin(); iterator != bodies.end(); iterator++)
 		{
 			//LogInt(iterator->second.GetBoxes().size());
@@ -132,14 +122,14 @@ namespace FlatEngine
 
 	void GameLoop::ResetCurrentTime()
 	{
-		m_currentTime = GetEngineTime();
+		m_currentTime = Time::Time();
 	}
 
 	void GameLoop::HandleCamera()
 	{
-		if (GetPrimaryCamera() != nullptr)
+		if (SceneManager::loadedScene.GetPrimaryCamera() != nullptr)
 		{
-			GetPrimaryCamera()->Update();
+			SceneManager::loadedScene.GetPrimaryCamera()->Update();
 		}
 	}
 
@@ -163,8 +153,8 @@ namespace FlatEngine
 			{
 				if (hovered.GetActiveLayer() >= GetFirstUnblockedLayer())
 				{
-					GameObject* owner = hovered.GetParent();
-					std::shared_ptr<Animation::S_Event> functionParams = hovered.GetFunctionParams();					
+					GameObject* owner = hovered.GetParentObject();
+					LuaManager::LuaParameter functionParams = hovered.GetFunctionParams();					
 					std::string functionName = hovered.GetFunctionName();
 
 					if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !b_hasLeftClicked)
@@ -177,23 +167,23 @@ namespace FlatEngine
 							hovered.OnLeftClick();
 						}
 
-						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonLeftClick);
+						CallLuaButtonEventFunction(owner, LuaManager::LuaEventFunction::OnButtonLeftClick);
 						
 
 						// For Button On Click events in Button Inspector Component
 						if (hovered.GetLeftClick() && functionName != "")
 						{													
-							if (functionParams->b_cppEvent)
-							{
-								if (F_CPPAnimationEventFunctions.count(functionName))
-								{
-									F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParent(), functionParams->parameters);
-								}
-							}
-							else if (functionParams->b_luaEvent)
-							{
-								CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
-							}
+							// if (functionParams->b_cppEvent)
+							// {
+							// 	if (F_CPPAnimationEventFunctions.count(functionName))
+							// 	{
+							// 		F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParentObject(), functionParams->parameters);
+							// 	}
+							// }
+							// else if (functionParams->b_luaEvent)
+							// {
+								CallLuaButtonOnClickFunction(owner, functionName, functionParams);
+							// }
 						}
 					}					
 					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
@@ -211,22 +201,22 @@ namespace FlatEngine
 							hovered.OnRightClick();
 						}
 
-						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonRightClick);
+						CallLuaButtonEventFunction(owner, LuaManager::LuaEventFunction::OnButtonRightClick);
 
 						// Inspector
 						if (hovered.GetRightClick() && functionName != "")
 						{
-							if (functionParams->b_cppEvent)
-							{
-								if (F_CPPAnimationEventFunctions.count(functionName))
-								{
-									F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParent(), functionParams->parameters);
-								}
-							}
-							else if (functionParams->b_luaEvent)
-							{						
-								CallLuaButtonOnClickFunction(owner, functionName, functionParams->parameters);
-							}							
+							// if (functionParams->b_cppEvent)
+							// {
+							// 	if (F_CPPAnimationEventFunctions.count(functionName))
+							// 	{
+							// 		F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParentObject(), functionParams->parameters);
+							// 	}
+							// }
+							// else if (functionParams->b_luaEvent)
+							// {						
+								CallLuaButtonOnClickFunction(owner, functionName, functionParams);
+							// }							
 						}
 					}					
 					else if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
@@ -243,14 +233,13 @@ namespace FlatEngine
 		std::vector<Button> lastHovered = m_hoveredButtons;
 		ResetHoveredButtons();
 
-		std::map<long, Button>& sceneButtons = GetLoadedScene()->GetButtons();
-		std::map<long, Button>& persistantButtons = GetLoadedProject().GetPersistantGameObjectScene()->GetButtons();
+		std::map<long, Button>& sceneButtons = SceneManager::loadedScene.GetAll<Button>();
 
 		for (std::pair<long, Button> buttonPair : sceneButtons)
 		{
-			if (buttonPair.second.IsActive() && buttonPair.second.GetParent()->IsActive())
+			if (buttonPair.second.IsActive() && buttonPair.second.GetParentObject()->IsActive())
 			{
-				Transform* transform = buttonPair.second.GetParent()->GetTransform();
+				Transform* transform = buttonPair.second.GetParentObject()->Get<Transform>();
 				Vector4 activeEdges = buttonPair.second.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
@@ -260,40 +249,14 @@ namespace FlatEngine
 					{
 						m_hoveredButtons.push_back(buttonPair.second);
 						buttonPair.second.SetMouseIsOver(true);
-						GameObject* owner = buttonPair.second.GetParent();
+						GameObject* owner = buttonPair.second.GetParentObject();
 
 						if (buttonPair.second.MouseOverSet())
 						{
 							buttonPair.second.OnMouseOver();
 						}
 
-						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonMouseOver);
-					}
-				}
-			}
-		}
-		for (std::pair<long, Button> buttonPair : persistantButtons)
-		{
-			if (buttonPair.second.IsActive() && buttonPair.second.GetParent()->IsActive())
-			{
-				Transform* transform = buttonPair.second.GetParent()->GetTransform();
-				Vector4 activeEdges = buttonPair.second.GetActiveEdges();
-				Vector2 mousePos = ImGui::GetIO().MousePos;
-
-				if (AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
-				{
-					if (buttonPair.second.GetActiveLayer() >= GetFirstUnblockedLayer())
-					{
-						m_hoveredButtons.push_back(buttonPair.second);
-						buttonPair.second.SetMouseIsOver(true);
-						GameObject* owner = buttonPair.second.GetParent();
-
-						if (buttonPair.second.MouseOverSet())
-						{
-							buttonPair.second.OnMouseOver();
-						}
-
-						CallLuaButtonEventFunction(owner, LuaEventFunction::OnButtonMouseOver);					
+						CallLuaButtonEventFunction(owner, LuaManager::LuaEventFunction::OnButtonMouseOver);
 					}
 				}
 			}
@@ -317,7 +280,7 @@ namespace FlatEngine
 					hoveredButton.OnMouseEnter();
 				}
 
-				CallLuaButtonEventFunction(hoveredButton.GetParent(), LuaEventFunction::OnButtonMouseEnter);			
+				CallLuaButtonEventFunction(hoveredButton.GetParentObject(), LuaManager::LuaEventFunction::OnButtonMouseEnter);			
 			}
 		}
 
@@ -332,14 +295,14 @@ namespace FlatEngine
 					b_stillHovered = true;
 				}
 			}
-			if (!b_stillHovered && lastHovered.GetParent() != nullptr)
+			if (!b_stillHovered && lastHovered.GetParentObject() != nullptr)
 			{
 				if (lastHovered.MouseLeaveSet())
 				{
 					lastHovered.OnMouseLeave();
 				}
 
-				CallLuaButtonEventFunction(lastHovered.GetParent(), LuaEventFunction::OnButtonMouseLeave);			
+				CallLuaButtonEventFunction(lastHovered.GetParentObject(), LuaManager::LuaEventFunction::OnButtonMouseLeave);			
 			}
 		}
 
@@ -374,7 +337,7 @@ namespace FlatEngine
 		Canvas lowestUnblockedCanvas = Canvas(-1);
 		int lowestUnblockedLayer = 0;
 		Vector2 mousePos = ImGui::GetIO().MousePos;
-		std::map<long, Canvas> &canvases = GetLoadedScene()->GetCanvases();
+		std::map<long, Canvas> &canvases = SceneManager::loadedScene.GetAll<Canvas>();
 
 		for (std::pair<long, Canvas> canvasPair : canvases)
 		{
@@ -395,21 +358,25 @@ namespace FlatEngine
 
 	void GameLoop::ResetCharacterControllers()
 	{
-		for (std::pair<const long, CharacterController>& owner : FL::GetLoadedScene()->GetCharacterControllers())
-		{
-			owner.second.SetMoving(false);
-		}
-		for (std::pair<const long, CharacterController>& owner : FL::GetLoadedProject().GetPersistantGameObjectScene()->GetCharacterControllers())
+		for (std::pair<const long, CharacterController>& owner : SceneManager::loadedScene.GetAll<CharacterController>())
 		{
 			owner.second.SetMoving(false);
 		}
 	}
 
+	void GameLoop::HandleAnimations()
+	{
+		for (std::pair<const long, Animation>& owner : SceneManager::loadedScene.GetAll<Animation>())
+		{
+			owner.second.PlayAnimations(TimeElapsedInMs());
+		}
+	}
+
 	void GameLoop::RunUpdateOnScripts()
 	{
-		//float processTime = (float)GetEngineTime();
-		RunLuaFuncOnAllScripts("Update");
-		//processTime = (float)GetEngineTime() - processTime;
+		//float processTime = (float)Time::Time();
+		LuaManager::RunLuaFuncOnAllScripts("Update");
+		//processTime = (float)Time::Time() - processTime;
 		//LogFloat(processTime, "Update Scripts: ");
 
 		//F_CPPScriptsMap.at("Bonker")->Awake();
@@ -424,7 +391,7 @@ namespace FlatEngine
 	{		
 		for (long objectID : m_objectsQueuedForDelete)
 		{
-			DeleteGameObject(objectID);
+			SceneManager::loadedScene.DeleteGameObject(objectID);
 		}
 		m_objectsQueuedForDelete.clear();
 	}
@@ -444,7 +411,7 @@ namespace FlatEngine
 		m_b_gamePaused = false;
 	}
 
-	float GameLoop::TimeEllapsedInSec()
+	float GameLoop::TimeElapsedInSec()
 	{
 		if (m_b_started)
 		{
@@ -453,7 +420,7 @@ namespace FlatEngine
 		return 0;
 	}
 
-	long GameLoop::TimeEllapsedInMs()
+	long GameLoop::TimeElapsedInMs()
 	{
 		if (m_b_started)
 		{

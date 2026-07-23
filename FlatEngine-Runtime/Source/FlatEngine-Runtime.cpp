@@ -1,23 +1,22 @@
-#pragma once
-#include "FlatEngine.h"
-#include "EntryPoint.h"
 #include "Application.h"
+#include "EntryPoint.h"
+#include "tools/FileHelper.h"
+#include "FlatEngine.h"
 #include "GameLoop.h"
-#include "AssetManager.h"
-#include "PrefabManager.h"
-#include "Project.h"
-#include "Logger.h"
+#include "render/GameView.h"
+#include "GuiCore.h"
+#include "managers/ProjectManager.h"
+#include "managers/Settings.h"
+#include "tools/Time.h"
 
 #include <string>
 #include <memory>
-#include "imgui_internal.h"
 
 namespace FL = FlatEngine;
 
 
 int main(int argc, char* args[])
 {
-	// Initializes FlatEngine
 	return FL::Main(argc, args);
 }
 
@@ -40,7 +39,7 @@ public:
 	void Update()
 	{
 		// Call base class GameLoop Update function
-		FL::GameLoop::Update(FL::F_gameViewGridStep.x, FL::F_gameViewCenter);
+		FL::GameLoop::Update();
 
 		// Other, application specific updates here if needed
 		//
@@ -80,7 +79,7 @@ public:
 		{
 			RunOnceAfterInitialization();
 
-			static Uint32 frameStart = FL::GetEngineTime();	
+			static Uint32 frameStart = FL::Time::Time();	
 
 			int iterations = 0;
 			int minIter = 1;
@@ -94,7 +93,7 @@ public:
 
 			if ((GameLoopStarted() && !GameLoopPaused()) || (GameLoopPaused() && A_GameLoop->IsFrameSkipped()))
 			{
-				float frameTime = (float)(FL::GetEngineTime() - frameStart) / 1000.0f; // actual deltaTime (in seconds)
+				float frameTime = (float)(FL::Time::Time() - frameStart) / 1000.0f; // actual deltaTime (in seconds)
 
 				if (!GameLoopPaused())
 				{
@@ -123,10 +122,10 @@ public:
 				}
 
 				// Get time it took to get back to GameLoopUpdate()
-				frameStart = FL::GetEngineTime();
+				frameStart = FL::Time::Time();
 
 				// Artificially slow GameLoop if frameTime is less than 
-				if (!FL::F_LoadedProject.IsVsyncEnabled() && frameTime < A_GameLoop->m_deltaTime)
+				if (!FL::Settings::settings.b_vsyncEnabled && frameTime < A_GameLoop->m_deltaTime)
 				{
 					SDL_Delay((Uint32)(A_GameLoop->m_deltaTime - frameTime) * 1000);
 				}
@@ -139,7 +138,7 @@ public:
 			// If gameloop isn't running, make sure our framestart keeps up with current engine time otherwise it will cause a freeze on initially starting gameloop
 			if (!GameLoopStarted())
 			{
-				frameStart = FL::GetEngineTime();
+				frameStart = FL::Time::Time();
 			}			
 
 			EndRender();
@@ -159,8 +158,7 @@ public:
 
 		if (!b_hasRunOnce)
 		{
-			json projectJson;
-			FL::LoadGameProject(FL::FindAllFilesWithExtension("..\\", ".prj").front(), projectJson);
+			FL::ProjectManager::LoadProject(FL::FileHelper::FindAllFilesWithExtension("../", ".prj").front());
 			//FL::F_AssetManager.CollectDirectories();
 			//FL::F_AssetManager.UpdateProjectDirs(m_startupProject);
 			//FL::F_AssetManager.CollectColors();
@@ -179,9 +177,9 @@ public:
 		Application::BeginRender();
 
 		// Application specific rendering	
-		FL::SetNextViewportToFillWindow();  // Maximize viewport
+		FL::GuiCore::SetNextViewportToFillWindow();  // Maximize viewport
 		bool b_inRuntime = true;
-		FL::Game_RenderView(b_inRuntime);
+		FL::GameView::RenderGameView(b_inRuntime);
 			
 	}
 	void EndRender()
@@ -199,7 +197,7 @@ public:
 	{
 		if (GameLoopStarted())
 		{
-			FL::RunSceneAwakeAndStart();
+			FL::LuaManager::RunSceneAwakeAndStart();
 		}
 	}
 	FL::GameLoop* GetGameLoop()

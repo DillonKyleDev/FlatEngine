@@ -1,81 +1,68 @@
-# FlatEngine - 2D and 3D Game Engine
+# FlatEngine - 3D + 2D Game Engine </br>
 
+<a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a></br>
 
-<img width="1920" height="1032" alt="Screenshot 2025-09-24 142253" src="https://github.com/user-attachments/assets/385879f3-4c8b-4da5-8686-0e7f7cdfe165" />
+<img width="1920" height="1152" alt="2025-10-07" src="https://github.com/user-attachments/assets/ea75d70f-dc71-4066-b1b2-eb1f2517e67f" /></br>
+<img width="1920" height="1032" alt="2025-10-04_2" src="https://github.com/user-attachments/assets/6684bf43-943e-4d3b-b149-3b637d598bfc" />
 
-<img width="1920" height="1032" alt="Screenshot 2025-09-24 142314" src="https://github.com/user-attachments/assets/a92cb5d8-e4c2-4dcc-9b01-8b97c8c0d91f" />
+**Update:** FlatEngine2D, the 2D-only version of FlatEngine without Vulkan, just got a new major release: V2.0.  It can be found here:</br>
 
+https://github.com/DillonKyleDev/FlatEngine2D</br></br>
 
+## Building FlatEngine From Source
 
-<a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a>
+Note: I'm having issues with Github LFS and it's not allowing further clones of the large files in the repo to be made at the moment due to file limits.  I'll get around to fixing this in the near future.  In the meantime, you may not be able to clone the entire dependencies (Vendor) directory of the repo successfully.
 
-## Update - Sept. 24th, 2025 - Custom Material UBOs
+There currently is not a stable release for building from source, but if you are okay with some crashes and wish to proceed anyway, here's how to get setup:
 
-Unfortunately, there is a chance that if you download and build the engine in it's current state that you will get a compilation/linking error.  I haven't had the time to sort out what the problem is yet but I am having that issue on my second desktop PC when compiling, so I apologize if that's a problem anyone else is facing.
+1. Download the VulkanSDK onto your computer. I have it installed in `C:\VulkanSDK`.  You can download it here: https://vulkan.lunarg.com/
+2. Clone the repo.. ~~Download the .zip and extract~~
+3. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
+4. Open the solution file that was created in the root directory. In Visual Studio, click Build -> Build Solution.
+5. Run the app.
+
+You're now set up to use the engine and edit it's source code as you wish.
+
+### Disclaimer
+
+- This project is in active development.
+- This is a hobby project. It is not currently in a production state and won't be for a while.  FlatEngine is likely more useful to you in it's current state as a code reference than a game development tool, though I am far from an expert in this field so use your own judgement when using FlatEngine as a reference.</br>
+- Things will change with updates.</br>
+- Key systems are not optimized.</br>
+- The engine will likely crash eventually so save often. There is no autosave function. However, when loading into a new scene, or when starting the game loop, FlatEngine2D saves a temporary copy of your scene in `engine/tempFiles`. The engine will then load this copy once you stop the game loop, preserving changes made after last save but before starting the game loop.</br>
+- The Box2D implementation is only partly complete and the components section has yet to be updated to reflect the changes. Expect ReadMe documentation changes to accompany the next major release of FlatEngine2D.</br>
+- The ReadMe's Documentation section in general should be considered mostly out of date.
+
+# Updates
+
+## Oct. 5th, 2025 - Multiple Viewport Rendering & CPU Bottleneck
+
+I was able to get the Game View viewport rendering through a Camera component in the scene using a second renderpass.</br>
+
+There are many tweaks I can make to improve performance and those will come as my understanding of Vulkan and the needs of my engine improves, but after simply grouping objects to render by Material/Graphics Pipeline, the performance improvement was substantial.  My next step is look into VkDrawIndexedIndirect() for submitting multiple draw commands at once to be sent to the GPU for execution, and multithreading.  Further investigation is required.
+
+## Sept. 24th, 2025 - Custom Material UBOs
+
+Because I am using GitHub LFS (Large File Storage) to push changes to this repository, you MUST clone the repository instead of downloading it directly.  This is because when you download it directly, the large files only contain pointers to the full large files and will cause compilation errors stating there are corrupt files present in the build.  If you clone the repository using your preferred method you shouldn't have any issues compiling and running the current build so long as you have the VulkanSDK installed on your PC.
 
 I've added a Light Component and I've just begun to implement per-material Uniform Buffer Objects using preset sized arrays of glm::vec4s so they can be edited using scripts within the engine at runtime.  I got it working in it's most basic form but quite a bit still needs to be done to flesh it out.  At the moment, all Materials are initialized with the same glm::vec4s for testing purposes.
 
-Tomorrow is my first day back to school so unfortunately progress will be slow, if not stopped completely, until I have a handle on my coursework.  Wish me luck!
-
-## Update - Sept. 18th, 2025 - Fixes
+## Sept. 18th, 2025 - Fixes
 
 Window resizing is now fixed and so is crashing immediately on launch, (at least on my native laptop monitor).  The crash seemed to have something to do with it picking my integrated graphics card over my discrete GPU but more investigation is required and more VkPhysicalDevice selection options need to be created.  I also fixed up several validation errors.  There is still a bug in VulkanMangager::DrawFrame() that is causing an issue with semaphores, fences, and aquiring the next available image that only seems to appear when my laptop is not connected to my external monitor.
 
-## Update - Sept. 17th, 2025 - Disclaimer
-
-Due to the recent inclusion of Vulkan and my still incomplete understanding of it, FlatEngine may or may not launch without crashing immediately on your computer after downloading, compiling, and running it.  It works on my external monitor (a 27 inch 1920 x 1080 Asus) but not on my native laptop screen (higher native resolution, but even at 1920 x 1080 it does not work) and I've yet to dive in and figure out why.  Resizing the window currently doesn't work, and there are many other crashes and validation errors currently plaguing the implementation.  In addition, you will likely need to download and install the VulkanSDK if you haven't already and have it on your system.  I have it installed in `C:\VulkanSDK`.  You can download it here: https://vulkan.lunarg.com/
-
-FlatEngine2D, the 2D-only engine without Vulkan, found in the branch "LegacyNoVulkanImpl", shouldn't give you too much trouble when downloading and compiling it though if you wanted to check that out.  Fair warning though: it's ReadMe's documentation is a bit out of date.
-
 Best of luck to any who enter at this point.
 
-## Update - Sept. 4th, 2025 - Vulkan Inclusion
+## Sept. 4th, 2025 - Vulkan Inclusion
 
-FlatEngine2D is now just FlatEngine.  Instead of managing two separate codebases for a 2D and 3D engine and the nightmares that go along with that, I've decided to just merge them into a single engine and use Vulkan as the renderer along side SDL2 for window and event management.</br>
-
-My initial plan was to have a simple and light-weight 2D version of the engine, but in order to implement shaders and keep SDL2, the path of least resistance was to just add Vulkan since I was going to do so for the 3D version of the engine anyway.  And since I'm adding Vulkan and the 3D maths that go along with it, it just made sense to combine the two into one. Box2D will still work perfectly for my 2D physics and collision needs, and at some point in the future I'll be adding 3D physics, but for now, my focus is on getting Vulkan implemented correctly, ironing out the Box2D implementation, getting shaders working, and fixing everything that broke with the introduction of the 3rd dimension.</br>
-
-You are still able to download the last version of FlatEngine2D from before I added Vulkan. It can be found in the branch "LegacyNoVulkanImpl".</br>
+This repo is for the 3D version of FlatEngine that uses Vulkan. The 2D-only version of FlatEngine, FlatEngine2D, can now be found in it's own repo here: https://github.com/DillonKyleDev/FlatEngine2D</br>
 
 I'll be starting my next year at college later this month though so progress will be slow until spring break.  The engine is in a rough state and a lot of things are broken and disorganized.</br>
 
 I still need to go through and edit the ReadMe to reflect the change from FlatEngine2D to FlatEngine, among many other things.
 
 
-## Update - Jan. 1st 2025 - Initial Release
-
-There is now a published release for FlatEngine2D!  Please see the "Releases" section on the right-hand side for a download link and read up on the ReadMe for details on how to use FlatEngine.
-
-I've included a sample project inside FlatEngine2D called FlatSpace.  With it, hopefully you can get an idea of how to use FlatEngine.  But remember, FlatSpace is only one way to make a game using FlatEngine.  Get creative!  You are welcome to use any art assets I created that are in the release for anything you want but the audio is audio I purchased on the Unity asset store so that can't be used as far as I know, except to experiment with.
-
-As a note, FlatSpace was made before the implementation of persistant GameObjects which enable you to have some GameObjects stick around even when changing scenes.  Creation of new persistant GameObjects is located in the Assets dropdown menu.  Persistant objects are tied to the Project, so make sure to save your Scenes AND your Projects often to keep your progress saved!
-
 ## Documentation
-
-### Building and using FlatEngine from source
-
-If you are using the Release build of FlatEngine found in Releases you can safely ignore this section.  There currently is not a stable release for building from source so it is not recommended to do so at this time.  But if you wish to proceed anyway, here's how to get setup:
-
-1. Download the .zip and extract
-2. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
-3. Open the solution file that was created in the root directory. Right click and build each project in the solution, (`Core/FlatEngine-Core`, `FlatEngine-Editor`, and `FlatEngine-Runtime`) in Debug configuration for debugging, and when you're ready for release, do the same in the Release configuration.
-
-You're now set up to use the engine and edit it's source code as you wish.  From here, building a final game project is the same as it is with the main Release.
-
-When you are finished editing the source code, you need to build the Editor project and the Runtime project in Release mode again. If you've made changes to the Core library, the Runtime project needs to know about those changes.
-
-Now you should be able to go into the build location and open the FlatEngine-Runtime.exe with all of your source code changes present in the build.</br>
-
-### Disclaimer
-
-This project is in active development.
-
-This is a hobby project.
-It will likely crash eventually so save often. THERE IS NO AUTOSAVE. However, when loading into a new scene, or when starting the game loop, FlatEngine2D saves a temporary copy of your scene in `engine/tempFiles`. The engine will then load this copy once you stop the game loop, preserving changes made after last save but before starting the game loop.
-Things will change with updates.
-Your results and the usefulness of FlatEngine may vary.
-Some key systems are not optimized.
-The Box2D implementation is only partly complete and the components section has yet to be updated to reflect the changes. Expect ReadMe documentation changes to accompany the next major release of FlatEngine2D.
 
 --------------------------------------------------------------------------------------
 Quick links:

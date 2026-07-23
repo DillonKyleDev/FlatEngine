@@ -1,28 +1,29 @@
 #include "GameObject.h"
-#include "Scene.h"
-#include "Transform.h"
-#include "Sprite.h"
-#include "Camera.h"
-#include "Text.h"
-#include "Script.h"
-#include "Animation.h"
-#include "Audio.h"
-#include "Button.h"
-#include "Canvas.h"
-#include "CharacterController.h"
-#include "TileMap.h"
-#include "Mesh.h"
-#include "Light.h"
-#include "Project.h"
+#include "components/Animation.h"
+#include "components/Audio.h"
+#include "components/Button.h"
+#include "components/Camera.h"
+#include "components/Canvas.h"
+#include "components/CharacterController.h"
+#include "components/Component.h"
+#include "components/Light.h"
+#include "components/Mesh.h"
+#include "components/Script.h"
+#include "components/Sprite.h"
+#include "components/Text.h"
+#include "components/TileMap.h"
+#include "components/Transform.h"
+#include "managers/SceneManager.h"
 
 
 namespace FlatEngine
 {
+	namespace SceneManager { class Scene; }
 	GameObject::GameObject(long newParentID, long myID)
 	{
 		if (myID == -1)
 		{
-			m_ID = GetNextGameObjectID();
+			m_ID = SceneManager::loadedScene.GetNextGameObjectID();
 		}
 		else
 		{
@@ -31,20 +32,13 @@ namespace FlatEngine
 		m_b_isPrefab = false;
 		m_prefabName = "";
 		m_b_isPrefabsChild = false;
-		m_prefabSpawnLocation = Vector2();
+		m_prefabSpawnLocation = Vector3();
 		m_tagList = TagList(m_ID);
 		m_parentID = newParentID;
-		m_name = "GameObject(" + std::to_string(m_ID) + ")";
-		m_components = std::vector<Component*>();
+		m_name = "GameObject(" + std::to_string(m_ID) + ")";		
 		m_b_isActive = true;
 		m_childrenIDs = std::vector<long>();
-		m_b_persistant = false;
-		m_b_isSceneViewGridObject = false;
 		m_hierarchyPosition = 0;
-	}
-
-	GameObject::~GameObject()
-	{
 	}
 
 	void GameObject::SetIsPrefab(bool b_isPrefab)
@@ -77,12 +71,12 @@ namespace FlatEngine
 		return m_prefabName;
 	}
 
-	void GameObject::SetPrefabSpawnLocation(Vector2 spawnLocation)
+	void GameObject::SetPrefabSpawnLocation(Vector3 spawnLocation)
 	{
 		m_prefabSpawnLocation = spawnLocation;
 	}
 
-	Vector2 GameObject::GetPrefabSpawnLocation()
+	Vector3 GameObject::GetPrefabSpawnLocation()
 	{
 		return m_prefabSpawnLocation;
 	}
@@ -131,941 +125,104 @@ namespace FlatEngine
 	{
 		m_tagList.SetCollides(tagName, b_hasTag);
 	}
+	
+	template<> Animation*           GameObject::Get<Animation>()  		   { return SceneManager::loadedScene.Get<Animation>(m_ID); }
+	template<> Audio*      			GameObject::Get<Audio>()      		   { return SceneManager::loadedScene.Get<Audio>(m_ID); }
+	template<> Body*      			GameObject::Get<Body>()      		   { return SceneManager::loadedScene.Get<Body>(m_ID); }
+	template<> Button*     			GameObject::Get<Button>() 	 		   { return SceneManager::loadedScene.Get<Button>(m_ID); }
+	template<> Camera*     			GameObject::Get<Camera>() 			   { return SceneManager::loadedScene.Get<Camera>(m_ID); }
+	template<> Canvas*     			GameObject::Get<Canvas>() 	 		   { return SceneManager::loadedScene.Get<Canvas>(m_ID); }
+	template<> CharacterController* GameObject::Get<CharacterController>() { return SceneManager::loadedScene.Get<CharacterController>(m_ID); }
+	template<> JointMaker* 			GameObject::Get<JointMaker>()		   { return SceneManager::loadedScene.Get<JointMaker>(m_ID); }
+	template<> Light*      			GameObject::Get<Light>()      		   { return SceneManager::loadedScene.Get<Light>(m_ID); }
+	template<> Mesh*       			GameObject::Get<Mesh>() 			   { return SceneManager::loadedScene.Get<Mesh>(m_ID); }
+	template<> Script*     			GameObject::Get<Script>()    		   { return SceneManager::loadedScene.Get<Script>(m_ID); }
+	template<> Sprite*     			GameObject::Get<Sprite>()    		   { return SceneManager::loadedScene.Get<Sprite>(m_ID); }
+	template<> Text*       			GameObject::Get<Text>() 			   { return SceneManager::loadedScene.Get<Text>(m_ID); }
+	template<> TileMap*    			GameObject::Get<TileMap>() 	 		   { return SceneManager::loadedScene.Get<TileMap>(m_ID); }
+	template<> Transform*    		GameObject::Get<Transform>() 	 	   { return SceneManager::loadedScene.Get<Transform>(m_ID); }
+	
+	template<> Animation*           GameObject::Add<Animation>(long componentID, json componentJson)  		   { Animation* component = SceneManager::loadedScene.Add<Animation>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Audio*      			GameObject::Add<Audio>(long componentID, json componentJson)      		   { Audio* component = SceneManager::loadedScene.Add<Audio>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Body*      			GameObject::Add<Body>(long componentID, json componentJson)      		   { Body* component = SceneManager::loadedScene.Add<Body>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Button*     			GameObject::Add<Button>(long componentID, json componentJson) 	 		   { Button* component = SceneManager::loadedScene.Add<Button>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Camera*     			GameObject::Add<Camera>(long componentID, json componentJson) 			   { Camera* component = SceneManager::loadedScene.Add<Camera>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Canvas*     			GameObject::Add<Canvas>(long componentID, json componentJson) 	 		   { Canvas* component = SceneManager::loadedScene.Add<Canvas>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> CharacterController* GameObject::Add<CharacterController>(long componentID, json componentJson) { CharacterController* component = SceneManager::loadedScene.Add<CharacterController>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> JointMaker* 			GameObject::Add<JointMaker>(long componentID, json componentJson)		   { JointMaker* component = SceneManager::loadedScene.Add<JointMaker>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Light*      			GameObject::Add<Light>(long componentID, json componentJson)      		   { Light* component = SceneManager::loadedScene.Add<Light>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Mesh*       			GameObject::Add<Mesh>(long componentID, json componentJson) 			   { Mesh* component = SceneManager::loadedScene.Add<Mesh>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Script*    			GameObject::Add<Script>(long componentID, json componentJson) 	 		   { Script* component = SceneManager::loadedScene.Add<Script>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Sprite*     			GameObject::Add<Sprite>(long componentID, json componentJson)    		   { Sprite* component = SceneManager::loadedScene.Add<Sprite>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Text*       			GameObject::Add<Text>(long componentID, json componentJson) 			   { Text* component = SceneManager::loadedScene.Add<Text>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> TileMap*    			GameObject::Add<TileMap>(long componentID, json componentJson) 	 		   { TileMap* component = SceneManager::loadedScene.Add<TileMap>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Transform*           GameObject::Add<Transform>(long componentID, json componentJson)		   { Transform* component = SceneManager::loadedScene.Add<Transform>(m_ID, componentID); component->PutData(componentJson); return component; }
 
-	bool GameObject::HasScript(std::string scriptName)
+	Component* GameObject::AddComponent(ComponentType type, long componentID, json componentJson)
 	{
-		bool b_hasScript = false;
-
-		for (Script* script : GetScripts())
+		switch (type)
 		{
-			if (script != nullptr && script->GetAttachedScript() == scriptName)
-			{
-				b_hasScript = true;
-			}
+			case ComponentType_Animation:  			return Add<Animation>(componentID, componentJson);
+			case ComponentType_Audio:      			return Add<Audio>(componentID, componentJson);
+			case ComponentType_Body:       			return Add<Body>(componentID, componentJson);
+			case ComponentType_Button:     			return Add<Button>(componentID, componentJson);
+			case ComponentType_Camera:     			return Add<Camera>(componentID, componentJson);
+			case ComponentType_Canvas:     			return Add<Canvas>(componentID, componentJson);
+			case ComponentType_CharacterController: return Add<CharacterController>(componentID, componentJson);
+			case ComponentType_JointMaker: 			return Add<JointMaker>(componentID, componentJson);
+			case ComponentType_Light:      			return Add<Light>(componentID, componentJson);
+			case ComponentType_Mesh:       			return Add<Mesh>(componentID, componentJson);
+			case ComponentType_Script:     			return Add<Script>(componentID, componentJson);
+			case ComponentType_Sprite:     			return Add<Sprite>(componentID, componentJson);
+			case ComponentType_Text:       			return Add<Text>(componentID, componentJson);
+			case ComponentType_TileMap:    			return Add<TileMap>(componentID, componentJson);
+			case ComponentType_Transform:  			return Add<Transform>(componentID, componentJson);
+			default:                       			return nullptr;
 		}
-
-		return b_hasScript;
 	}
 
-	Script* GameObject::GetScript(std::string scriptName)
-	{
-		for (Script* script : GetScripts())
-		{
-			if (script != nullptr && script->GetAttachedScript() == scriptName)
-			{
-				return script;
-			}
-		}
-
-		return nullptr;
-	}
+	template<> void GameObject::Remove<Animation>(long ownerID)  		   { return SceneManager::loadedScene.Remove<Animation>(ownerID); }
+	template<> void GameObject::Remove<Audio>(long ownerID)      		   { return SceneManager::loadedScene.Remove<Audio>(ownerID); }
+	template<> void GameObject::Remove<Body>(long ownerID)      		   { return SceneManager::loadedScene.Remove<Body>(ownerID); }
+	template<> void GameObject::Remove<Button>(long ownerID) 	 		   { return SceneManager::loadedScene.Remove<Button>(ownerID); }
+	template<> void GameObject::Remove<Camera>(long ownerID) 			   { return SceneManager::loadedScene.Remove<Camera>(ownerID); }
+	template<> void GameObject::Remove<Canvas>(long ownerID) 	 		   { return SceneManager::loadedScene.Remove<Canvas>(ownerID); }
+	template<> void GameObject::Remove<CharacterController>(long ownerID)  { return SceneManager::loadedScene.Remove<CharacterController>(ownerID); }
+	template<> void GameObject::Remove<JointMaker>(long ownerID)		   { return SceneManager::loadedScene.Remove<JointMaker>(ownerID); }
+	template<> void GameObject::Remove<Light>(long ownerID)      		   { return SceneManager::loadedScene.Remove<Light>(ownerID); }
+	template<> void GameObject::Remove<Mesh>(long ownerID) 			       { return SceneManager::loadedScene.Remove<Mesh>(ownerID); }
+	template<> void GameObject::Remove<Script>(long ownerID)    		   { return SceneManager::loadedScene.Remove<Script>(ownerID); }
+	template<> void GameObject::Remove<Sprite>(long ownerID)    		   { return SceneManager::loadedScene.Remove<Sprite>(ownerID); }
+	template<> void GameObject::Remove<Text>(long ownerID) 			       { return SceneManager::loadedScene.Remove<Text>(ownerID); }
+	template<> void GameObject::Remove<TileMap>(long ownerID) 	 		   { return SceneManager::loadedScene.Remove<TileMap>(ownerID); }
+	template<> void GameObject::Remove<Transform>(long ownerID) 	 	   { return SceneManager::loadedScene.Remove<Transform>(ownerID); }
 
 	void GameObject::RemoveComponent(Component* component)
-	{
-		if (component != nullptr)
-		{
-			// Remove from ECSManager
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				GetLoadedProject().GetPersistantGameObjectScene()->RemoveComponent(component);
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				GetLoadedScene()->RemoveComponent(component);
-			}
-
-			for (std::vector<Component*>::iterator iter = m_components.begin(); iter != m_components.end();)
-			{
-				if ((*iter)->GetID() == component->GetID())
-				{
-					// Remove GameObject ptr to it
-					m_components.erase(iter);
-					break;
-				}
-				iter++;
-			}
-		}
+	{		
+		SceneManager::loadedScene.RemoveComponent(component);			
 	}
 
-	void GameObject::DeleteComponents()
+	Component* GameObject::GetComponent(ComponentType type)
 	{
-		m_components.clear();
-	}
-
-	Transform* GameObject::AddTransform(long id, bool b_active, bool b_collapsed)
-	{
-		long nextID = id;
-		if (nextID == -1)
-		{
-			if (m_b_isSceneViewGridObject)
-			{
-				nextID = F_sceneViewGridObjects.GetNextComponentID();
-			}
-			else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Transform transform = Transform(this, nextID, m_ID);
-		transform.SetActive(b_active);
-		transform.SetCollapsed(b_collapsed);
-
-		// Set transforms origin to parents true position
-		if (m_parentID != -1)
-		{
-			GameObject *parent = GetObjectByID(m_parentID);
-			if (parent != nullptr && parent->HasComponent("Transform"))
-			{
-				Transform* parentTransform = parent->GetTransform();
-				Vector3 parentTruePosition = parentTransform->GetAbsolutePosition();				
-			}
-		}
-
-		Transform* transformPtr = nullptr;
-		if (m_b_isSceneViewGridObject)
-		{
-			transformPtr = F_sceneViewGridObjects.AddTransform(transform, m_ID);
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			transformPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddTransform(transform, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			transformPtr = GetLoadedScene()->AddTransform(transform, m_ID);
-		}
-
-		if (transformPtr != nullptr)
-		{
-			m_components.push_back(transformPtr);
-		}
-		return transformPtr;
-	}
-
-	Sprite* GameObject::AddSprite(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Sprite sprite = Sprite(nextID, m_ID);
-		sprite.SetActive(b_active);
-		sprite.SetCollapsed(b_collapsed);
-		
-		Sprite* spritePtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			spritePtr = GetLoadedProject().GetPersistantGameObjectScene()->AddSprite(sprite, m_ID);
-		}
-		else
-		{
-			spritePtr = GetLoadedScene()->AddSprite(sprite, m_ID);
-		}
-
-		if (spritePtr != nullptr)
-		{
-			m_components.push_back(spritePtr);
-		}
-		return spritePtr;
-	}
-
-	Camera* GameObject::AddCamera(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_isSceneViewGridObject)
-			{
-				nextID = F_sceneViewGridObjects.GetNextComponentID();
-			}
-			else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Camera camera = Camera(nextID, m_ID);
-		camera.SetActive(b_active);
-		camera.SetCollapsed(b_collapsed);
-		
-		Camera* cameraPtr = nullptr;
-		if (m_b_isSceneViewGridObject)
-		{
-			cameraPtr = F_sceneViewGridObjects.AddCamera(camera, m_ID);
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			cameraPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCamera(camera, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			cameraPtr = GetLoadedScene()->AddCamera(camera, m_ID);
-		}
-
-		if (cameraPtr != nullptr)
-		{
-			m_components.push_back(cameraPtr);
-		}
-		return cameraPtr;
-	}
-
-	Script* GameObject::AddScript(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Script script = Script(nextID, m_ID);
-		script.SetActive(b_active);
-		script.SetCollapsed(b_collapsed);
-
-		Script* scriptPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			scriptPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddScript(script, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			scriptPtr = GetLoadedScene()->AddScript(script, m_ID);
-		}
-
-		if (scriptPtr != nullptr)
-		{
-			m_components.push_back(scriptPtr);
-		}
-		return scriptPtr;
-	}
-
-	Button* GameObject::AddButton(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Button button = Button(nextID, m_ID);
-		button.SetActive(b_active);
-		button.SetCollapsed(b_collapsed);
-		
-		Button* buttonPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			buttonPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddButton(button, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			buttonPtr = GetLoadedScene()->AddButton(button, m_ID);
-		}
-
-		if (buttonPtr != nullptr)
-		{
-			m_components.push_back(buttonPtr);
-		}
-		return buttonPtr;
-	}
-
-	Canvas* GameObject::AddCanvas(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Canvas canvas = Canvas(nextID, m_ID);
-		canvas.SetActive(b_active);
-		canvas.SetCollapsed(b_collapsed);
-
-		Canvas* canvasPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			canvasPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCanvas(canvas, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			canvasPtr = GetLoadedScene()->AddCanvas(canvas, m_ID);
-		}
-
-		if (canvasPtr != nullptr)
-		{
-			m_components.push_back(canvasPtr);
-		}
-		return canvasPtr;
-	}
-
-	Animation* GameObject::AddAnimation(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Animation animation = Animation(nextID, m_ID);
-		animation.SetActive(b_active);
-		animation.SetCollapsed(b_collapsed);
-	
-		Animation* animationPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			animationPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddAnimation(animation, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			animationPtr = GetLoadedScene()->AddAnimation(animation, m_ID);
-		}
-
-		if (animationPtr != nullptr)
-		{
-			m_components.push_back(animationPtr);
-		}
-		return animationPtr;
-	}
-
-	Audio* GameObject::AddAudio(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Audio audio = Audio(nextID, m_ID);
-		audio.SetActive(b_active);
-		audio.SetCollapsed(b_collapsed);
-
-		Audio* audioPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			audioPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddAudio(audio, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			audioPtr = GetLoadedScene()->AddAudio(audio, m_ID);
-		}
-
-		if (audioPtr != nullptr)
-		{
-			m_components.push_back(audioPtr);
-		}
-		return audioPtr;
-	}
-
-	Text* GameObject::AddText(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Text text = Text(nextID, m_ID);
-		text.SetActive(b_active);
-		text.SetCollapsed(b_collapsed);
-		
-		Text* textPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			textPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddText(text, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			textPtr = GetLoadedScene()->AddText(text, m_ID);
-		}
-
-		if (textPtr != nullptr)
-		{
-			m_components.push_back(textPtr);
-		}
-		return textPtr;
-	}
-
-	Body* GameObject::AddBody(Physics::BodyProps bodyProps, long ID, bool b_active, bool b_collapsed)
-	{
-		Vector3 position = GetTransform()->GetPosition();
-		float rotation = GetTransform()->GetRotation();
-
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Body body = Body(nextID, m_ID);
-		body.SetCollapsed(b_collapsed);
-
-		bodyProps.position = Vector2(position.x, position.z);
-		bodyProps.rotation = b2MakeRot(DegreesToRadians(rotation));
-
-		Body* bodyPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			bodyPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddBody(body, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			bodyPtr = GetLoadedScene()->AddBody(body, m_ID);
-		}
-
-		if (bodyPtr != nullptr)
-		{
-			m_components.push_back(bodyPtr);
-			bodyPtr->SetBodyProps(bodyProps);			
-		}
-
-		bodyPtr->CreateBody();
-		bodyPtr->SetActive(b_active);
-
-		return bodyPtr;
-	}
-
-	JointMaker* GameObject::AddJointMaker(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		JointMaker jointMaker = JointMaker(nextID, m_ID);
-		jointMaker.SetCollapsed(b_collapsed);
-		jointMaker.SetActive(b_active);
-
-		JointMaker* jointMakerPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			jointMakerPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddJointMaker(jointMaker, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			jointMakerPtr = GetLoadedScene()->AddJointMaker(jointMaker, m_ID);
-		}
-
-		if (jointMakerPtr != nullptr)
-		{
-			m_components.push_back(jointMakerPtr);
-		}
-
-		return jointMakerPtr;
-	}
-
-	CharacterController* GameObject::AddCharacterController(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		CharacterController characterController = CharacterController(nextID, m_ID);
-		characterController.SetActive(b_active);
-		characterController.SetCollapsed(b_collapsed);
-
-		CharacterController* characterControllerPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			characterControllerPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddCharacterController(characterController, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			characterControllerPtr = GetLoadedScene()->AddCharacterController(characterController, m_ID);
-		}
-		
-		if (characterControllerPtr != nullptr)
-		{
-			m_components.push_back(characterControllerPtr);
-		}
-		return characterControllerPtr;
-	}
-
-	TileMap* GameObject::AddTileMap(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		TileMap tileMap = TileMap(nextID, m_ID);
-		tileMap.SetActive(b_active);
-		tileMap.SetCollapsed(b_collapsed);
-		TileMap* tileMapPtr = nullptr;
-
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			tileMapPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddTileMap(tileMap, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			tileMapPtr = GetLoadedScene()->AddTileMap(tileMap, m_ID);
-		}
-
-		if (tileMapPtr != nullptr)
-		{
-			m_components.push_back(tileMapPtr);
-		}
-		return tileMapPtr;
-	}
-
-	Mesh* GameObject::AddMesh(GameObject* parent, long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (m_b_isSceneViewGridObject)
-			{
-				nextID = F_sceneViewGridObjects.GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Mesh mesh = Mesh(parent, nextID, m_ID);
-		mesh.SetActive(b_active);
-		mesh.SetCollapsed(b_collapsed);
-
-		Mesh* meshPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			meshPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddMesh(mesh, m_ID);
-		}
-		else if (m_b_isSceneViewGridObject)
-		{
-			meshPtr = F_sceneViewGridObjects.AddMesh(mesh, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			meshPtr = GetLoadedScene()->AddMesh(mesh, m_ID);
-		}
-
-		if (meshPtr != nullptr)
-		{
-			m_components.push_back(meshPtr);
-		}
-		return meshPtr;
-	}
-
-	Light* GameObject::AddLight(long ID, bool b_active, bool b_collapsed)
-	{
-		long nextID = ID;
-		if (nextID == -1)
-		{
-			if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-			{
-				nextID = GetLoadedProject().GetPersistantGameObjectScene()->GetNextComponentID();
-			}
-			else if (m_b_isSceneViewGridObject)
-			{
-				nextID = F_sceneViewGridObjects.GetNextComponentID();
-			}
-			else if (GetLoadedScene() != nullptr)
-			{
-				nextID = GetLoadedScene()->GetNextComponentID();
-			}
-		}
-
-		Light light = Light(nextID, m_ID);
-		light.SetActive(b_active);
-		light.SetCollapsed(b_collapsed);
-
-		Light* lightPtr = nullptr;
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			lightPtr = GetLoadedProject().GetPersistantGameObjectScene()->AddLight(light, m_ID);
-		}
-		else if (m_b_isSceneViewGridObject)
-		{
-			lightPtr = F_sceneViewGridObjects.AddLight(light, m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			lightPtr = GetLoadedScene()->AddLight(light, m_ID);
-		}
-
-		if (lightPtr != nullptr)
-		{
-			m_components.push_back(lightPtr);
-		}
-		return lightPtr;
-	}
-
-	Component* GameObject::GetComponent(ComponentTypes type)
-	{
-		for (int i = 0; i < m_components.size(); i++)
-		{
-			if (m_components[i]->GetType() == type)
-			{
-				return m_components[i];
-			}
-		}
-		return nullptr;
-	}
-
-	bool GameObject::HasComponent(ComponentTypes type)
-	{
-		return GetComponent(type) != nullptr;
-	}
-
-	bool GameObject::HasComponent(std::string type)
-	{
-		for (Component* component : m_components)
-		{
-			if (component->GetTypeString() == type)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool GameObject::HasComponentLua(std::string componentString)
-	{
-		return HasComponent(componentString);
-	}
-
-	Transform* GameObject::GetTransform()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return F_sceneViewGridObjects.GetTransformByOwner(m_ID);
-		}
-		if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetTransformByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetTransformByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Sprite* GameObject::GetSprite()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetSpriteByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetSpriteByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Camera* GameObject::GetCamera()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return F_sceneViewGridObjects.GetCameraByOwner(m_ID);
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCameraByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCameraByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Animation* GameObject::GetAnimation()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetAnimationByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetAnimationByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Audio* GameObject::GetAudio()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetAudioByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetAudioByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Button* GameObject::GetButton()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetButtonByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetButtonByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Canvas* GameObject::GetCanvas()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCanvasByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCanvasByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	std::vector<Script*> GameObject::GetScripts()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return std::vector<Script*>();
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetScriptsByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetScriptsByOwner(m_ID);
-		}
-		return std::vector<Script*>();
-	}
-	Text* GameObject::GetText()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetTextByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetTextByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	CharacterController* GameObject::GetCharacterController()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetCharacterControllerByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetCharacterControllerByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	Body* GameObject::GetBody()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetBodyByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetBodyByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	JointMaker* GameObject::GetJointMaker()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetJointMakerByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetJointMakerByOwner(m_ID);
-		}
-		return nullptr;
-	}
-	TileMap* GameObject::GetTileMap()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return nullptr;
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetTileMapByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetTileMapByOwner(m_ID);
-		}
-		return nullptr;
-	}
-
-	Mesh* GameObject::GetMesh()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return F_sceneViewGridObjects.GetMeshByOwner(m_ID);
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetMeshByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetMeshByOwner(m_ID);
-		}
-		return nullptr;
-	}
-
-	Light* GameObject::GetLight()
-	{
-		if (m_b_isSceneViewGridObject)
-		{
-			return F_sceneViewGridObjects.GetLightByOwner(m_ID);
-		}
-		else if (m_b_persistant && GetLoadedProject().GetPersistantGameObjectScene() != nullptr)
-		{
-			return GetLoadedProject().GetPersistantGameObjectScene()->GetLightByOwner(m_ID);
-		}
-		else if (GetLoadedScene() != nullptr)
-		{
-			return GetLoadedScene()->GetLightByOwner(m_ID);
+		switch (type)
+		{
+			case ComponentType_Animation:  			return Get<Animation>();
+			case ComponentType_Audio:      			return Get<Audio>();
+			case ComponentType_Body:       			return Get<Body>();
+			case ComponentType_Button:     			return Get<Button>();
+			case ComponentType_Camera:     			return Get<Camera>();
+			case ComponentType_Canvas:     			return Get<Canvas>();
+			case ComponentType_CharacterController: return Get<CharacterController>();
+			case ComponentType_JointMaker: 			return Get<JointMaker>();
+			case ComponentType_Light:      			return Get<Light>();
+			case ComponentType_Mesh:       			return Get<Mesh>();
+			case ComponentType_Script:     			return Get<Script>();
+			case ComponentType_Sprite:     			return Get<Sprite>();
+			case ComponentType_Text:       			return Get<Text>();
+			case ComponentType_TileMap:    			return Get<TileMap>();
+			case ComponentType_Transform:  			return Get<Transform>();
+			default:                       			return nullptr;
 		}
-		return nullptr;
-	}
-
-	std::vector<Component*> GameObject::GetComponents()
-	{
-		return m_components;
 	}
 
 	void GameObject::SetParentID(long newParentID)
@@ -1111,16 +268,16 @@ namespace FlatEngine
 
 	GameObject *GameObject::GetFirstChild()
 	{
-		return GetObjectByID(m_childrenIDs[0]);
+		return SceneManager::loadedScene.GetObjectByID(m_childrenIDs[0]);
 	}
 
 	GameObject *GameObject::FindChildByName(std::string name)
 	{
 		for (int i = 0; i < m_childrenIDs.size(); i++)
 		{
-			if (GetObjectByID(m_childrenIDs[i]) != nullptr && GetObjectByID(m_childrenIDs[i])->GetName() == name)
+			if (SceneManager::loadedScene.GetObjectByID(m_childrenIDs[i]) != nullptr && SceneManager::loadedScene.GetObjectByID(m_childrenIDs[i])->GetName() == name)
 			{
-				return GetObjectByID(m_childrenIDs[i]);
+				return SceneManager::loadedScene.GetObjectByID(m_childrenIDs[i]);
 			}
 		}
 
@@ -1143,9 +300,9 @@ namespace FlatEngine
 
 		//for (long child : GetChildren())
 		//{
-		//	if (GetObjectByID(child) != nullptr)
+		//	if (SceneManager::loadedScene.GetObjectByID(child) != nullptr)
 		//	{
-		//		GetObjectByID(child)->SetActive(b_active);
+		//		SceneManager::loadedScene.GetObjectByID(child)->SetActive(b_active);
 		//	}
 		//}
 	}
@@ -1155,19 +312,9 @@ namespace FlatEngine
 		return m_b_isActive;
 	}
 
-	void GameObject::SetPersistant(bool b_persistant)
-	{
-		m_b_persistant = b_persistant;
-	}
-
-	bool GameObject::IsPersistant()
-	{
-		return m_b_persistant;
-	}
-
 	GameObject *GameObject::GetParent()
 	{
-		return GetObjectByID(m_parentID);
+		return SceneManager::loadedScene.GetObjectByID(m_parentID);
 	}
 
 	void GameObject::SetHierarchyPosition(long position)
@@ -1178,10 +325,5 @@ namespace FlatEngine
 	long GameObject::GetHierarchyPosition()
 	{
 		return m_hierarchyPosition;
-	}
-
-	void GameObject::SetIsSceneViewGridObject(bool b_isSceneViewGridObject)
-	{
-		m_b_isSceneViewGridObject = b_isSceneViewGridObject;
 	}
 }

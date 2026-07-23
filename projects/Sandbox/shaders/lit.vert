@@ -4,7 +4,8 @@ layout(set = 0, binding = 0) uniform CustomUBO {
     vec4 meshPosition;
     vec4 cameraPosition;
     mat4 model;
-    mat4 viewAndProjection;    
+    mat4 view;        
+    mat4 projection;  
     vec4 vec4s[32];
 } ubo;
 
@@ -24,7 +25,7 @@ void main() {
     // vec4 bumpHeight = texture(bumpSampler, inTexCoord);    
     vec4 localPos = ubo.model * vec4(inPosition.x, inPosition.y, inPosition.z, 1);
     vec4 worldPos = vec4(localPos.x + ubo.meshPosition.x, localPos.y + ubo.meshPosition.y, localPos.z + ubo.meshPosition.z, 1);
-    gl_Position = ubo.viewAndProjection * worldPos;    
+    gl_Position = ubo.projection * ubo.view * worldPos;    
     fragTexCoord = inTexCoord;
     vec4 rotatedNormal = ubo.model * vec4(inNormal.x, inNormal.y, inNormal.z, 1);
     normal = normalize(vec3(rotatedNormal.x, rotatedNormal.y, rotatedNormal.z));

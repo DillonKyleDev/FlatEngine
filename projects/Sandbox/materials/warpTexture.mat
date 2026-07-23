@@ -13,6 +13,24 @@
         "lineWidth": 1.0,
         "polygonMode": 0
     },
-    "textureCount": 1,
+    "texturePipelineData": {
+        "0": {
+            "descriptorType": 1,
+            "shaderStage": 16
+        },
+        "1": {
+            "descriptorType": 1,
+            "shaderStage": 16
+        },
+        "2": {
+            "descriptorType": 1,
+            "shaderStage": 16
+        }
+    },
+    "uboVec4Names": {
+        "0": "BaseColor",
+        "1": "SecondaryColor",
+        "2": "Disturbance"
+    },
     "vertexShaderPath": "../projects/Sandbox/shaders/compiledShaders/textureWarpVert.spv"
 }

@@ -20,10 +20,9 @@ function Update()
      local data = GetInstanceData("Move", my_id)
 
      if (data.mappingContext:ActionPressed("Move")) then
-          LogString("Moved")
+          -- LogString("Jumped")
           data.body:ApplyForceToCenter(Vector2:new(100,1000))
      end
-
 end
 
 -- each of these functions must be present in each Lua script file otherwise other script's implementations will be used with this object instead

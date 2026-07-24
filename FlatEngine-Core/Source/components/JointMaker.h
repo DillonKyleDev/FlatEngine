@@ -7,10 +7,8 @@
 #include "joints/MouseJoint.h"
 #include "joints/WeldJoint.h"
 #include "joints/WheelJoint.h"
-#include "tools/JsonHelper.h"
 
 #include <list>
-#include <string>
 
 
 namespace FlatEngine
@@ -21,8 +19,8 @@ namespace FlatEngine
     {
     public:
         JointMaker(long myID = -1, long parentObjectID = -1);        
-        std::string GetData();
-        void PutData(json componentJson);
+        json GetData();
+        void PutData(json componentJson, std::string objectName);
         
         void AddDistanceJoint(Joint::BaseProps baseProps = Joint::BaseProps(), DistanceJoint::DistanceJointProps jointProps = DistanceJoint::DistanceJointProps());
         void AddPrismaticJoint(Joint::BaseProps baseProps = Joint::BaseProps(), PrismaticJoint::PrismaticJointProps jointProps = PrismaticJoint::PrismaticJointProps());

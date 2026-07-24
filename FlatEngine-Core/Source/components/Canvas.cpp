@@ -19,36 +19,31 @@ namespace FlatEngine
 		m_activeEdges = Vector4();
 	}
 
-	std::string Canvas::GetData()
+	json Canvas::GetData()
 	{
 		json jsonData = {
-			{ "type", "Canvas" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "width", m_width },
 			{ "height", m_height },
 			{ "layerNumber", m_layerNumber },
-			{ "_blocksLayers", m_b_blocksLayers },
+			{ "b_blocksLayers", m_b_blocksLayers },
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	    void Canvas::PutData(json componentJson)
+	void Canvas::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Canvas GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+
 		SetDimensions(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName));
 		SetLayerNumber(JsonHelper::CheckJsonInt(componentJson, "layerNumber", objectName));
-		SetBlocksLayers(JsonHelper::CheckJsonBool(componentJson, "_blocksLayers", objectName));
+		SetBlocksLayers(JsonHelper::CheckJsonBool(componentJson, "b_blocksLayers", objectName));
     }
 
 	float Canvas::GetWidth()

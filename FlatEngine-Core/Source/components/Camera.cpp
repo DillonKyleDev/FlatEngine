@@ -27,22 +27,22 @@ namespace FlatEngine
 		m_verticalViewAngle = 0.0f;
 	}
 
-	std::string Camera::GetData()
+	json Camera::GetData()
 	{
 		json jsonData = {
-			{ "type", "Camera" },
+			{ "type", (int)GetType()},
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "width", m_width },
 			{ "height", m_height },
-			{ "_isPrimaryCamera", m_b_isPrimaryCamera },
+			{ "b_isPrimaryCamera", m_b_isPrimaryCamera },
 			{ "zoom", m_zoom },
 			{ "frustrumRed", m_frustrumColor.x },
 			{ "frustrumGreen", m_frustrumColor.y },
 			{ "frustrumBlue", m_frustrumColor.z },
 			{ "frustrumAlpha", m_frustrumColor.w },
-			{ "_follow", m_b_shouldFollow },
+			{ "b_follow", m_b_shouldFollow },
 			{ "followSmoothing", m_followSmoothing },
 			{ "following", m_toFollowID },
 			{ "perspectiveAngle", m_perspectiveAngle },
@@ -52,21 +52,16 @@ namespace FlatEngine
 			{ "verticalViewAngle", m_verticalViewAngle }			
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	void Camera::PutData(json componentJson)
+	void Camera::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Camera GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
-		bool b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "_isPrimaryCamera", objectName);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+		
+		bool b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "b_isPrimaryCamera", objectName);
 		SetDimensions(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName));
 		SetPrimaryCamera(b_isPrimaryCamera);
 		SceneManager::loadedScene.SetPrimaryCamera(this);                                    
@@ -82,7 +77,7 @@ namespace FlatEngine
 		SetFarClippingDistance(JsonHelper::CheckJsonFloat(componentJson, "farClippingDistance", objectName));
 		SetHorizontalViewAngle(JsonHelper::CheckJsonFloat(componentJson, "horizontalViewAngle", objectName));
 		SetVerticalViewAngle(JsonHelper::CheckJsonFloat(componentJson, "verticalViewAngle", objectName));
-		SetShouldFollow(JsonHelper::CheckJsonBool(componentJson, "_follow", objectName));
+		SetShouldFollow(JsonHelper::CheckJsonBool(componentJson, "b_follow", objectName));
 		SetFollowSmoothing(JsonHelper::CheckJsonFloat(componentJson, "followSmoothing", objectName));
 		SetToFollowID(JsonHelper::CheckJsonLong(componentJson, "following", objectName));
     }

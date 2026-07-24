@@ -1,4 +1,5 @@
 #pragma once
+#include "tools/JsonHelper.h"
 
 #include <string>
 #include <vector>
@@ -52,8 +53,8 @@ namespace FlatEngine
 	{
 	public:
 		Component();		
-		virtual std::string GetData() { return "{}"; };
-		virtual void PutData() {};
+		virtual json GetData() { return "{}"; };
+		virtual void PutData(json componentJson, std::string objectName) {};
 
 		void SetType(ComponentType type);
 		ComponentType GetType();

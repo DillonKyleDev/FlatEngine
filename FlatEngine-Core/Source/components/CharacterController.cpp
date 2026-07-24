@@ -17,31 +17,27 @@ namespace FlatEngine
 		m_b_isMoving = false;
 	}
 
-	std::string CharacterController::GetData()
+	json CharacterController::GetData()
 	{
 		json jsonData = {
-			{ "type", "CharacterController" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },			
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },			
 			{ "maxAcceleration", m_maxAcceleration },
 			{ "maxSpeed", m_maxSpeed },
 			{ "airControl", m_airControl }
 		};
 
-		std::string data = jsonData.dump();
-		return data;
+		return jsonData;
 	}
 
-	    void CharacterController::PutData(json componentJson)
+	void CharacterController::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "CharacterController GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+
 		SetMaxAcceleration(JsonHelper::CheckJsonFloat(componentJson, "maxAcceleration", objectName));
 		SetMaxSpeed(JsonHelper::CheckJsonFloat(componentJson, "maxSpeed", objectName));
 		SetAirControl(JsonHelper::CheckJsonFloat(componentJson, "airControl", objectName));

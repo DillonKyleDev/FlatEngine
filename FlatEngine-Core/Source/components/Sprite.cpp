@@ -28,13 +28,13 @@ namespace FlatEngine
 		RemoveTexture();
 	}
 
-	std::string Sprite::GetData()
+	json Sprite::GetData()
 	{
 		json jsonData = { 
-			{ "type", "Sprite" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "path", m_path },
 			{ "xScale", m_scale.x },
 			{ "yScale", m_scale.y },
@@ -47,17 +47,15 @@ namespace FlatEngine
 			{ "tintColorW", m_tintColor.w },
 			{ "renderOrder", m_renderOrder }	
 		};
-		std::string data = jsonData.dump();
-		return data;
+		
+		return jsonData;
 	}
 
-	void Sprite::PutData(json componentJson)
+	void Sprite::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Sprite GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
 		std::string pivotPoint = "Center";
 		SetPivotPoint(JsonHelper::CheckJsonString(componentJson, "pivotPoint", objectName));

@@ -44,11 +44,7 @@ namespace FlatEngine
 		x = b2Vec2.x;
 		y = b2Vec2.y;
 	}
-
-	Vector2::~Vector2()
-	{
-	}
-
+	
 	Vector2 Vector2::Normalize(Vector2 vec)
 	{		
 		Vector2 temp = Vector2();
@@ -108,32 +104,6 @@ namespace FlatEngine
 		return b2Vec2(vec.x, vec.y);
 	}
 
-	float Vector2::GetX()
-	{
-		return x;
-	}
-
-	float Vector2::GetY()
-	{
-		return y;
-	}
-
-	void Vector2::SetX(float newX)
-	{
-		x = newX;
-	}
-
-	void Vector2::SetY(float newY)
-	{
-		y = newY;
-	}
-
-	void Vector2::_xy(float newX, float newY)
-	{
-		x = newX;
-		y = newY;
-	}
-
 	Vector2 Vector2::operator=(ImVec2& right)
 	{
 		x = right.x;
@@ -173,14 +143,38 @@ namespace FlatEngine
 		return Vector2(x * scalar, y * scalar);
 	}
 
+	Vector2& Vector2::operator*=(float scalar)
+	{
+		x *= scalar;
+		y *= scalar;
+		
+		return *this;
+	}
+
 	Vector2 Vector2::operator+(Vector2 right)
 	{
 		return Vector2(x + right.x, y + right.y);
 	}
 
+	Vector2& Vector2::operator+=(Vector2 right)
+	{
+		x += right.x;
+		y += right.y;
+		
+		return *this;
+	}
+
 	Vector2 Vector2::operator-(Vector2 right)
 	{
 		return Vector2(x - right.x, y - right.y);
+	}
+
+	Vector2& Vector2::operator-=(Vector2 right)
+	{
+		x -= right.x;
+		y -= right.y;
+
+		return *this;
 	}
 
 	void Vector2::Normalize()

@@ -10,8 +10,8 @@ namespace FlatEngine
 	{
 	public:
 		Canvas(long myID = -1, long parentObjectID = -1);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		float GetWidth();
 		float GetHeight();

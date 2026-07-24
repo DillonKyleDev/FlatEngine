@@ -15,10 +15,8 @@ namespace FlatEngine
 		public:
 			Project();
 	
-			void SavePersistantScript(std::string path = ""); // path for temp files when starting scene
-			void LoadPersistantScript(std::string path = "");			
-			Script& GetPersistantScript();
-			void SetPersistantScript(Script persistantScript);
+			void SavePersistentScript(std::string path = ""); // path for temp files when starting scene
+			void LoadPersistentScript(std::string path = "");			
 			void SetMusicVolume(int volume);
 			int GetMusicVolume();
 			void SetEffectsVolume(int volume);
@@ -27,7 +25,7 @@ namespace FlatEngine
 			const tm GetSavedTime();
 
 			std::string path;
-			std::string persistantScriptPath;
+			std::string persistentScriptPath;
 			std::string buildPath;
 			std::string loadedScenePath;
 			std::string sceneToLoadAtRuntime;
@@ -35,9 +33,9 @@ namespace FlatEngine
 			std::string currentFileDirectory;		
 			long focusedGameObjectID;
 			bool b_autoSave;
-			Script persistantScript;
+			Script persistentScript;
 
-		private:
+		private:			
 			int m_musicVolume;
 			int m_effectsVolume;
 			tm m_timeSinceSave;
@@ -46,6 +44,7 @@ namespace FlatEngine
 		extern bool b_projectSelected;
 		extern Project loadedProject;		
 		extern std::map<std::string, Text> projectNameTexts;
+		extern const int PERSISTENT_SCRIPT_ID;
 		
 		extern void RecreateProjectNameTexts();
 		extern std::vector<std::string> RetrieveProjectPaths();

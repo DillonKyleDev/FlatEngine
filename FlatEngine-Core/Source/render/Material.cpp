@@ -66,7 +66,7 @@ namespace FlatEngine
 	{
 		json inputAssemblyData = {
 			{ "topology", (int)m_inputAssembly.topology },
-			{ "_primitiveRestartEnable", (bool)m_inputAssembly.primitiveRestartEnable }
+			{ "b_primitiveRestartEnable", (bool)m_inputAssembly.primitiveRestartEnable }
 		};
 
 		json rasterizerData = {

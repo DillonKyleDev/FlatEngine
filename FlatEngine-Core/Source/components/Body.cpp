@@ -35,7 +35,7 @@ namespace FlatEngine
 		m_distanceJoints = std::list<DistanceJoint*>();
 	}
 
-	std::string Body::GetData()
+	json Body::GetData()
 	{
 		json shapesArray = json::array();		
 
@@ -45,32 +45,30 @@ namespace FlatEngine
 		}
 
 		json jsonData = {
-			{ "type", "Body"},
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "bodyType", (int)m_bodyProps.type },
-			{ "_lockedRotation", m_bodyProps.b_lockedRotation },
-			{ "_lockedXAxis", m_bodyProps.b_lockedXAxis },
-			{ "_lockedYAxis", m_bodyProps.b_lockedYAxis },
+			{ "b_lockedRotation", m_bodyProps.b_lockedRotation },
+			{ "b_lockedXAxis", m_bodyProps.b_lockedXAxis },
+			{ "b_lockedYAxis", m_bodyProps.b_lockedYAxis },
 			{ "gravityScale", m_bodyProps.gravityScale },
 			{ "linearDamping", m_bodyProps.linearDamping },
 			{ "angularDamping", m_bodyProps.angularDamping },
 			{ "shapes", shapesArray }
 		};
-
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		
+		return jsonData;
 	}
 
 
 	void RetrieveShapeProps(Shape::ShapeProps& shapeProps, json componentJson, std::string objectName)
 	{
 		shapeProps.shape = (Shape::ShapeType)(JsonHelper::CheckJsonInt(componentJson, "shape", objectName));
-		shapeProps.b_enableContactEvents = JsonHelper::CheckJsonBool(componentJson, "_enableContactEvents", objectName);
-		shapeProps.b_enableSensorEvents = JsonHelper::CheckJsonBool(componentJson, "_enableSensorEvents", objectName);
-		shapeProps.b_isSensor = JsonHelper::CheckJsonBool(componentJson, "_isSensor", objectName);
+		shapeProps.b_enableContactEvents = JsonHelper::CheckJsonBool(componentJson, "b_enableContactEvents", objectName);
+		shapeProps.b_enableSensorEvents = JsonHelper::CheckJsonBool(componentJson, "b_enableSensorEvents", objectName);
+		shapeProps.b_isSensor = JsonHelper::CheckJsonBool(componentJson, "b_isSensor", objectName);
 		shapeProps.positionOffset = Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName));
 		shapeProps.rotationOffset.c = JsonHelper::CheckJsonFloat(componentJson, "rotationOffsetCos", objectName);
 		shapeProps.rotationOffset.s = JsonHelper::CheckJsonFloat(componentJson, "rotationOffsetSin", objectName);
@@ -81,8 +79,8 @@ namespace FlatEngine
 		shapeProps.cornerRadius = JsonHelper::CheckJsonFloat(componentJson, "cornerRadius", objectName);
 		shapeProps.radius = JsonHelper::CheckJsonFloat(componentJson, "radius", objectName);
 		shapeProps.capsuleLength = JsonHelper::CheckJsonFloat(componentJson, "capsuleLength", objectName);
-		shapeProps.b_horizontal = JsonHelper::CheckJsonBool(componentJson, "_horizontal", objectName);
-		shapeProps.b_isLoop = JsonHelper::CheckJsonBool(componentJson, "_isLoop", objectName);
+		shapeProps.b_horizontal = JsonHelper::CheckJsonBool(componentJson, "b_horizontal", objectName);
+		shapeProps.b_isLoop = JsonHelper::CheckJsonBool(componentJson, "b_isLoop", objectName);
 		shapeProps.tangentSpeed = JsonHelper::CheckJsonFloat(componentJson, "tangentSpeed", objectName);
 		shapeProps.rollingResistance = JsonHelper::CheckJsonFloat(componentJson, "rollingResistance", objectName);
 		std::vector<Vector2> points = std::vector<Vector2>();
@@ -107,23 +105,19 @@ namespace FlatEngine
 	void RetrieveBodyProps(PhysicsManager::BodyProps& bodyProps, json componentJson, std::string objectName)
 	{
 		bodyProps.type = (b2BodyType)JsonHelper::CheckJsonInt(componentJson, "bodyType", objectName);
-		bodyProps.b_lockedRotation = JsonHelper::CheckJsonBool(componentJson, "_lockedRotation", objectName);
-		bodyProps.b_lockedXAxis = JsonHelper::CheckJsonBool(componentJson, "_lockedXAxis", objectName);
-		bodyProps.b_lockedYAxis = JsonHelper::CheckJsonBool(componentJson, "_lockedYAxis", objectName);
+		bodyProps.b_lockedRotation = JsonHelper::CheckJsonBool(componentJson, "b_lockedRotation", objectName);
+		bodyProps.b_lockedXAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedXAxis", objectName);
+		bodyProps.b_lockedYAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedYAxis", objectName);
 		bodyProps.gravityScale = JsonHelper::CheckJsonFloat(componentJson, "gravityScale", objectName);
 		bodyProps.linearDamping = JsonHelper::CheckJsonFloat(componentJson, "linearDamping", objectName);
 		bodyProps.angularDamping = JsonHelper::CheckJsonFloat(componentJson, "angularDamping", objectName);
 	}
 
-	void Body::PutData(json componentJson)
+	void Body::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Body GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
 		PhysicsManager::BodyProps bodyProps;
 		RetrieveBodyProps(bodyProps, componentJson, objectName);

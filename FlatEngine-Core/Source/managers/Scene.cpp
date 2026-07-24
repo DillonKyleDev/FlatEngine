@@ -77,6 +77,26 @@ namespace FlatEngine
 	GameObject* Scene::AddSceneObject(GameObject sceneObject)
 	{
 		long ID = sceneObject.GetID();
+
+		if (ID == -1)
+			ID = GetNextGameObjectID();
+		
+		if (m_IDToIndex.count(ID))
+		{
+			Logger::log.Err("GameObject not created, ID taken already: {}", std::to_string(ID));
+			return nullptr;
+		}
+
+		sceneObject.SetID(ID);
+
+		long parentID = sceneObject.GetParentID();
+
+		// For objects created after initial Scene load
+		if (parentID != -1 && GetObjectByID(parentID) != nullptr)
+		{
+			GetObjectByID(parentID)->AddChild(ID);
+		}	
+
 		sceneObject.SetHierarchyPosition((int)m_sceneObjects.size());		    
 
 		m_IDToIndex[ID] = m_sceneObjects.size();

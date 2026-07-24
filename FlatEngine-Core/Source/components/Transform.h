@@ -1,11 +1,9 @@
 #pragma once
 #include "components/Component.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector3.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <gtx/hash.hpp>
-#include <string>
 
 
 namespace FlatEngine
@@ -16,8 +14,8 @@ namespace FlatEngine
 	{
 	public:
 		Transform(long myID = -1, long parentID = -1);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		static float ClampRotation(float rotation, float min = -180.0f, float max = 180.0f);				
 

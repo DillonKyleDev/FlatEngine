@@ -13,7 +13,7 @@ namespace FlatEngine
         m_sounds = std::vector<SoundData>();
     }
 
-    std::string Audio::GetData()
+    json Audio::GetData()
     {
         json soundData = json::array();
 
@@ -28,26 +28,21 @@ namespace FlatEngine
         }
 
         json jsonData = {
-            { "type", "Audio" },
+            { "type", (int)GetType() },
             { "id", GetID() },
-            { "_isCollapsed", IsCollapsed() },
-            { "_isActive", IsActive() },
+            { "b_isCollapsed", IsCollapsed() },
+            { "b_isActive", IsActive() },
             { "soundData", soundData }
         };
 
-        std::string data = jsonData.dump();		
-        return data;
+        return jsonData;
     }
 
-    void Audio::PutData(json componentJson)
+    void Audio::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Audio GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-        SetActive(b_isActive);
-        SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
         if (JsonHelper::JsonContains(componentJson, "soundData", objectName))
         {

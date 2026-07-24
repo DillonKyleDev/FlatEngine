@@ -52,6 +52,70 @@ namespace FlatEngine
 		m_maskBits = 0;
 	}
 
+	json TagList::GetData()
+	{
+		json tagsObjectArray = json::array();
+		for (std::map<std::string, bool>::iterator tagIter = m_tags.begin(); tagIter != m_tags.end(); tagIter++)
+		{
+			// For making sure we don't save any stale tags that aren't available in the Tags.lua file
+			for (std::string availableTag : Assets::assetManager.GetTags())
+			{
+				if (tagIter->first == availableTag)
+				{
+					json tag = json::object({ { tagIter->first, tagIter->second } });
+					tagsObjectArray.push_back(tag);
+				}
+			}
+		}
+
+		json collidesTagsObjectArray = json::array();
+		for (std::map<std::string, bool>::iterator tagIter = m_collidesTags.begin(); tagIter != m_collidesTags.end(); tagIter++)
+		{
+			// For making sure we don't save any stale collides tags that aren't available in the Tags.lua file
+			for (std::string availableTag : Assets::assetManager.GetTags())
+			{
+				if (tagIter->first == availableTag)
+				{
+					json collides = json::object({ { tagIter->first, tagIter->second } });
+					collidesTagsObjectArray.push_back(collides);
+				}
+			}
+		}
+
+		json tagListJson = json::object({
+			{ "tags", tagsObjectArray },
+			{ "collidesTags", collidesTagsObjectArray }
+		});
+
+		return tagListJson;
+	}
+	
+	void TagList::PutData(json taglistJson)
+	{
+		std::string name = "TagList for GameObject";
+		if (JsonHelper::JsonContains(taglistJson, "tags", name))
+		{
+			json tagsJson = taglistJson["tags"];
+			for (json jsonTag : tagsJson)
+			{
+				std::string tag = jsonTag.items().begin().key();
+				bool b_hasTag = jsonTag.items().begin().value();
+				SetTag(tag, b_hasTag);
+			}
+		}
+		
+		if (JsonHelper::JsonContains(taglistJson, "collidesTags", name))
+		{
+			json collidesTagsJson = taglistJson["collidesTags"];
+			for (json jsonCollidesTag : collidesTagsJson)
+			{
+				std::string collidesTag = jsonCollidesTag.items().begin().key();
+				bool b_collidesTag = jsonCollidesTag.items().begin().value();
+				SetCollides(collidesTag, b_collidesTag);
+			}
+		}			
+	}
+
 	void TagList::SetOwnerID(long ownerID)
 	{
 		m_ownerID = ownerID;

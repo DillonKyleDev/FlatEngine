@@ -2,7 +2,6 @@
 #include "components/Component.h"
 #include "render/Model.h"
 #include "render/Material.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector4.h"
 
 #include <map>
@@ -18,8 +17,8 @@ namespace FlatEngine
 	{
 	public:
 		Mesh(long myID = -1, long parentObjectID = -1);		
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 		void CleanupTextures();
 		void CleanupUniformBuffers();
 		void Cleanup();

@@ -1,7 +1,6 @@
 #pragma once
 #include "components/Component.h"
 #include "TagList.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector3.h"
 
 #include <string>
@@ -10,33 +9,13 @@
 
 namespace FlatEngine
 {
-	class Audio;	
-	class Button;
-	class Canvas;
-	class Script;
-	class Animation;
-	class Sprite;
-	class Camera;
-	class Transform;
-	class Text;	
-	class CharacterController;
-	class CompositeCollider;
-	class TileMap;
-	class Body;
-	class Box;
-	class Circle;
-	class Capsule;
-	class Polygon;	
-	class Chain;
-	class JointMaker;
-	class Mesh;
-	class Light;
-
 	class GameObject
 	{
 	public:
 		
-		GameObject(long parentID, long myID);		
+		GameObject(long parentID = -1, long myID = -1);		
+		json GetData();
+		void PutData(json objectJson);
 
 		void SetIsPrefab(bool b_isPrefab);
 		bool IsPrefab();

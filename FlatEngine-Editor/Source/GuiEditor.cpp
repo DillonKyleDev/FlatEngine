@@ -3,8 +3,10 @@
 #include "GuiEditor.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
+#include "tools/Vector4.h"
 
 #include "imgui.h"
+#include "tools/Vector4.h"
 
 namespace FL = FlatEngine;
 
@@ -13,203 +15,144 @@ namespace FlatGui
 {
 	namespace GuiEditor
 	{
-		void RenderTransformTable(std::string ID, FL::Vector3& position, FL::Vector3& rotation, FL::Vector3& scale)
+		void RenderLabelTable(std::string ID, std::string label, float width, bool b_light, std::string bgColor)
 		{
-			float labelWidth = 68;
-			if (FL::GuiCore::PushTable("##TransformProperties" + ID, 1, FL::GuiCore::tableFlags, FL::Vector2(labelWidth, 0)))
-			{
-				ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("noEditTableText"));
-				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2(4,4));
+			FL::Vector4 color = FL::Assets::assetManager.GetColor(bgColor);
+			if (!b_light)
+				color *= 0.75f;
 
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);						
-				FL::GuiCore::MoveScreenCursor(4, 0);		
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(FL::Assets::assetManager.GetColor("noEditTableRowValueBg")));
-				ImGui::Text("POSITION");			
-				ImGui::PushID("PositionFields");
-				ImGui::PopID();
-
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);						
-				FL::GuiCore::MoveScreenCursor(4, 0);			
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(FL::Assets::assetManager.GetColor("noEditTableRowValueBg")));
-				ImGui::Text("ROTATION");				
-				ImGui::PushID("RotationFields");
-				ImGui::PopID();
-
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);						
-				FL::GuiCore::MoveScreenCursor(4, 0);			
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(FL::Assets::assetManager.GetColor("noEditTableRowValueBg")));
-				ImGui::Text("   SCALE");			
-				ImGui::PushID("ScaleFields");
-				ImGui::PopID();
-
-				ImGui::PopStyleVar();
-				ImGui::PopStyleColor();
-				FL::GuiCore::PopTable();
-			}
-
-			ImGui::SameLine(0,0);
-			FL::Vector2 tableSize = FL::Vector2((ImGui::GetContentRegionAvail().x) / 3.0f, 0.0f);
-
-			std::vector<float> widths { 16, 0 };
-			FL::GuiCore::MoveScreenCursor(-1, 0);
-			if (FL::GuiCore::PushTable("##TransformPropertiesX" + ID, 2, FL::GuiCore::tableFlags, tableSize, widths))
-			{
-				FL::GuiCore::RenderFloatDragTableRow("##XPosition" + ID, "X", position.x, 0.1f, -FLT_MAX, FLT_MAX, "transformXBGLight");
-				FL::GuiCore::RenderFloatDragTableRow("##XRotation" + ID, "X", rotation.x, 0.5f, -FLT_MAX, FLT_MAX, "transformXBGDark");
-				FL::GuiCore::RenderFloatDragTableRow("##XScale" + ID, "X", scale.x, 0.1f, 0.001f, 1000, "transformXBGLight");
-				FL::GuiCore::PopTable();
-			}
-					
-			ImGui::SameLine(0,0);
-			FL::GuiCore::MoveScreenCursor(-1, 0);
-
-			if (FL::GuiCore::PushTable("##TransformPropertiesY" + ID, 2, FL::GuiCore::tableFlags, tableSize, widths))
-			{
-				FL::GuiCore::RenderFloatDragTableRow("##YPosition" + ID, "Y", position.y, 0.1f, -FLT_MAX, FLT_MAX, "transformYBGLight");
-				FL::GuiCore::RenderFloatDragTableRow("##YRotation" + ID, "Y", rotation.y, 0.5f, -FLT_MAX, FLT_MAX, "transformYBGDark");
-				FL::GuiCore::RenderFloatDragTableRow("##YScaleDrag" + ID, "Y", scale.y, 0.1f, 0.001f, 1000, "transformYBGLight");
-				FL::GuiCore::PopTable();
-			}
-
-			ImGui::SameLine(0,0);
-			FL::GuiCore::MoveScreenCursor(-1, 0);		
-
-			if (FL::GuiCore::PushTable("##TransformPropertiesZ" + ID, 2, FL::GuiCore::tableFlags, FL::Vector2(ImGui::GetContentRegionAvail().x, 0.0f), widths))
-			{
-				FL::GuiCore::RenderFloatDragTableRow("##ZPosition" + ID, "Z", position.z, 0.1f, -FLT_MAX, FLT_MAX, "transformZBGLight");
-				FL::GuiCore::RenderFloatDragTableRow("##ZRotation" + ID, "Z", rotation.z, 0.5f, -FLT_MAX, FLT_MAX, "transformZBGDark");
-				FL::GuiCore::RenderFloatDragTableRow("##ZScaleDrag" + ID, "Z", scale.z, 0.1f, 0.001f, 1000, "transformZBGLight");
-				FL::GuiCore::PopTable();
-			}		
-		}
-
-		void RenderVector2Table(std::string ID, std::string label, FL::Vector2& vec2, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light)
-		{						
-			std::string column0Label = ID + std::to_string(0);
-			std::string column1Label = ID + std::to_string(1);
-			std::string column2Label = ID + std::to_string(2);
-						
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2(4,4));
-			if (FL::GuiCore::PushTable(ID, 1, ImGuiTableFlags_RowBg, FL::Vector2(labelWidth, 0)))			
+			if (FL::GuiCore::PushTable(ID, 1, ImGuiTableFlags_RowBg, FL::Vector2(width, 0)))			
 			{						 	
 				ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("noEditTableText"));
 				
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);						
 				FL::GuiCore::MoveScreenCursor(4, 0);		
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32("noEditTableRowValueBg"));
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(color));
 				ImGui::Text("%s", label.c_str());			
-				ImGui::PushID(column0Label.c_str());
+				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
 
 				ImGui::PopStyleColor();				
 				FL::GuiCore::PopTable();
 			}
-			ImGui::PopStyleVar();	
-			ImGui::SameLine(0,0);
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
-			std::vector<float> widths { 16, 0, 16, 0 };
-			std::string valueColor = b_light ? "tableCellLight" : "";			
-			
-			if (FL::GuiCore::PushTable("##" + column1Label + "Table", 4, FL::GuiCore::tableFlags, innerTableSize, widths))
+			ImGui::PopStyleVar();
+		}
+
+		void RenderVerticalSeparator(bool b_show)
+		{
+			if (b_show)
 			{
-				ImGui::TableNextRow();			
+				FL::Vector2 p0 = FL::Vector2(ImGui::GetCursorScreenPos().x - 1, ImGui::GetCursorScreenPos().y);			
+				FL::Vector2 p1 = FL::Vector2(p0.x, p0.y + 21);
+				ImGui::GetWindowDrawList()->AddLine(p0, p1, FL::Assets::assetManager.GetColor32("tableLabelVerticalSeparator"), 1.0f);
+			}
+		}
 
-				ImGui::TableSetColumnIndex(0);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[0]));	
-				FL::GuiCore::MoveScreenCursor(4, 4);
-				ImGui::Text("X");		
-				ImGui::TableSetColumnIndex(1);	
+		void RenderStringTable(std::string ID, std::string label, std::string& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		{
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			{
+				ImGui::TableNextRow();	
+				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column1Label.c_str(), 0, vec2.x, 0.1f, -FLT_MAX, FLT_MAX);
-
-				ImGui::TableSetColumnIndex(2);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[1]));	
-				FL::GuiCore::MoveScreenCursor(5, 0);
-				ImGui::Text("Y");		
-				ImGui::TableSetColumnIndex(3);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column2Label.c_str(), 0, vec2.y, 0.1f, -FLT_MAX, FLT_MAX);
-
+				FL::GuiCore::RenderInput(column1Label.c_str(), "", value);
+				ImGui::PushID(ID.c_str());
+				ImGui::PopID();
 				FL::GuiCore::PopTable();
 			}
 		}
 
-		void RenderVector3Table(std::string ID, std::string label, FL::Vector3& vec3, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light)
+		void RenderFloatTableColumns(std::string ID, std::string label, float& value, std::string labelColor, std::string valueColor, float labelWidth, int labelIndex, int valueIndex)
+		{									
+			float textWidth = ImGui::CalcTextSize(label.c_str()).x;
+			float offsetX = (labelWidth - textWidth) * 0.5f;
+
+			ImGui::TableSetColumnIndex(labelIndex);		
+			if (labelColor != "")				
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(labelColor));	
+			ImGui::AlignTextToFramePadding();	
+			if (offsetX > 0.0f)		
+				FL::GuiCore::MoveScreenCursor(offsetX, 0);
+			ImGui::Text("%s", label.c_str());					
+			ImGui::TableSetColumnIndex(valueIndex);	
+			if (valueColor != "")						
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+			FL::GuiCore::RenderDragFloat(ID.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
+		}
+
+		void RenderVector2Table(std::string ID, std::string label, FL::Vector2& vec2, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		{						
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+			std::string column2Label = ID + std::to_string(2);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::vector<float> widths { 16, 0, 16, 0 };
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+						
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 4, FL::GuiCore::tableFlags, innerTableSize, widths))
+			{
+				ImGui::TableNextRow();			
+				RenderFloatTableColumns(column1Label, "X", vec2.x, valueLabelColors[0], valueColor, 16, 0, 1);
+				RenderFloatTableColumns(column2Label, "Y", vec2.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				FL::GuiCore::PopTable();
+			}
+		}
+
+		void RenderVector3Table(std::string ID, std::string label, FL::Vector3& vec3, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{						
 			std::string column0Label = ID + std::to_string(0);
 			std::string column1Label = ID + std::to_string(1);
 			std::string column2Label = ID + std::to_string(2);
 			std::string column3Label = ID + std::to_string(3);
 						
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2(4,4));
-			if (FL::GuiCore::PushTable(ID, 1, ImGuiTableFlags_RowBg, FL::Vector2(labelWidth, 0)))			
-			{						 	
-				ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("noEditTableText"));
-				
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);						
-				FL::GuiCore::MoveScreenCursor(4, 0);		
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32("noEditTableRowValueBg"));
-				ImGui::Text("%s", label.c_str());			
-				ImGui::PushID(column0Label.c_str());
-				ImGui::PopID();
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
 
-				ImGui::PopStyleColor();				
-				FL::GuiCore::PopTable();
-			}
-			ImGui::PopStyleVar();	
 			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
 			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0 };
-			std::string valueColor = b_light ? "tableCellLight" : "";			
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			
-			if (FL::GuiCore::PushTable("##" + column1Label + "Table", 6, FL::GuiCore::tableFlags, innerTableSize, widths))
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 6, FL::GuiCore::tableFlags, innerTableSize, widths))
 			{
-				ImGui::TableNextRow();			
-
-				ImGui::TableSetColumnIndex(0);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[0]));	
-				FL::GuiCore::MoveScreenCursor(4, 4);
-				ImGui::Text("X");		
-				ImGui::TableSetColumnIndex(1);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column1Label.c_str(), 0, vec3.x, 0.1f, -FLT_MAX, FLT_MAX);
-
-				ImGui::TableSetColumnIndex(2);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[1]));	
-				FL::GuiCore::MoveScreenCursor(5, 0);
-				ImGui::Text("Y");		
-				ImGui::TableSetColumnIndex(3);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column2Label.c_str(), 0, vec3.y, 0.1f, -FLT_MAX, FLT_MAX);
-
-				ImGui::TableSetColumnIndex(4);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[2]));	
-				FL::GuiCore::MoveScreenCursor(4, 0);
-				ImGui::Text("Z");		
-				ImGui::TableSetColumnIndex(5);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column3Label.c_str(), 0, vec3.z, 0.1f, -FLT_MAX, FLT_MAX);
-
+				ImGui::TableNextRow();					
+				RenderFloatTableColumns(column1Label, "X", vec3.x, valueLabelColors[0], valueColor, 16, 0, 1);
+				RenderFloatTableColumns(column2Label, "Y", vec3.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				RenderFloatTableColumns(column3Label, "Z", vec3.z, valueLabelColors[2], valueColor, 16, 4, 5);
 				FL::GuiCore::PopTable();
 			}
 		}
 
-		void RenderVector4Table(std::string ID, std::string label, FL::Vector4& vec4, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light)
+		void RenderVector4Table(std::string ID, std::string label, FL::Vector4& vec4, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{						
 			std::string column0Label = ID + std::to_string(0);
 			std::string column1Label = ID + std::to_string(1);
@@ -217,74 +160,179 @@ namespace FlatGui
 			std::string column3Label = ID + std::to_string(3);
 			std::string column4Label = ID + std::to_string(4);
 						
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2(4,4));
-			if (FL::GuiCore::PushTable(ID, 1, FL::GuiCore::tableFlags, FL::Vector2(labelWidth, 0)))			
-			{						 	
-				ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("noEditTableText"));
-				
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);						
-				FL::GuiCore::MoveScreenCursor(4, 0);		
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32("noEditTableRowValueBg"));
-				ImGui::Text("%s", label.c_str());			
-				ImGui::PushID(column0Label.c_str());
-				ImGui::PopID();
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
 
-				ImGui::PopStyleColor();				
-				FL::GuiCore::PopTable();
-			}						
 			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+			
 			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0, 16, 0 };
-			std::string valueColor = b_light ? "tableCellLight" : "";
-			ImGui::PopStyleVar();
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";
 			
-			if (FL::GuiCore::PushTable("##" + column1Label + "Table", 8, FL::GuiCore::tableFlags, innerTableSize, widths))
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 8, FL::GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();			
+				RenderFloatTableColumns(column1Label, "X", vec4.x, valueLabelColors[0], valueColor, 16, 0, 1);
+				RenderFloatTableColumns(column2Label, "Y", vec4.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				RenderFloatTableColumns(column3Label, "Z", vec4.z, valueLabelColors[2], valueColor, 16, 4, 5);
+				RenderFloatTableColumns(column4Label, "W", vec4.w, valueLabelColors[3], valueColor, 16, 6, 7);
+				FL::GuiCore::PopTable();
+			}
+		}
 
-				ImGui::TableSetColumnIndex(0);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[0]));	
-				FL::GuiCore::MoveScreenCursor(4, 4);
-				ImGui::Text("X");		
-				ImGui::TableSetColumnIndex(1);	
+		void RenderTransformTable(std::string ID, FL::Vector3& position, FL::Vector3& rotation, FL::Vector3& scale)
+		{
+			float labelWidth = 68;
+			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
+			FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
+
+			RenderVector3Table("##TransformComponentTable", "POSITION", position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors); FL::GuiCore::MoveScreenCursor(0,-4);
+			RenderVector3Table("##TransformComponentTable", "ROTATION", rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false); FL::GuiCore::MoveScreenCursor(0,-4);
+			RenderVector3Table("##TransformComponentTable", "SCALE",    scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
+		}
+
+		void RenderFloatTable(std::string ID, std::string label, float& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		{
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			{
+				ImGui::TableNextRow();	
+				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column1Label.c_str(), 0, vec4.x, 0.1f, -FLT_MAX, FLT_MAX);
-
-				ImGui::TableSetColumnIndex(2);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[1]));	
-				FL::GuiCore::MoveScreenCursor(5, 0);
-				ImGui::Text("Y");		
-				ImGui::TableSetColumnIndex(3);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column2Label.c_str(), 0, vec4.y, 0.1f, -FLT_MAX, FLT_MAX);
-
-				ImGui::TableSetColumnIndex(4);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[2]));	
-				FL::GuiCore::MoveScreenCursor(4, 0);
-				ImGui::Text("Z");		
-				ImGui::TableSetColumnIndex(5);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column3Label.c_str(), 0, vec4.z, 0.1f, -FLT_MAX, FLT_MAX);
-
-				ImGui::TableSetColumnIndex(6);		
-				if (labelColor != "")				
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueLabelColors[3]));	
-				FL::GuiCore::MoveScreenCursor(4, 0);
-				ImGui::Text("W");		
-				ImGui::TableSetColumnIndex(7);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				FL::GuiCore::RenderDragFloat(column4Label.c_str(), 0, vec4.w, 0.1f, -FLT_MAX, FLT_MAX);
+				FL::GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
+				FL::GuiCore::PopTable();
+			}
+		}
 
+		void RenderDoubleTable(std::string ID, std::string label, double& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		{
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			{
+				ImGui::TableNextRow();	
+				ImGui::TableSetColumnIndex(0);	
+				if (valueColor != "")						
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+				FL::GuiCore::RenderDragDouble(column1Label.c_str(), 0, value, 0.1f);
+				ImGui::PushID(ID.c_str());
+				ImGui::PopID();
+				FL::GuiCore::PopTable();
+			}
+		}
+
+		void RenderInt32Table(std::string ID, std::string label, int& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		{
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			{
+				ImGui::TableNextRow();	
+				ImGui::TableSetColumnIndex(0);	
+				if (valueColor != "")						
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+				FL::GuiCore::RenderDragInt(column1Label.c_str(), 0, value, 1, -INT_MAX, INT_MAX);
+				ImGui::PushID(ID.c_str());
+				ImGui::PopID();
+				FL::GuiCore::PopTable();
+			}
+		}
+
+		void RenderInt64Table(std::string ID, std::string label, long& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		{
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			{
+				ImGui::TableNextRow();	
+				ImGui::TableSetColumnIndex(0);	
+				if (valueColor != "")						
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+				FL::GuiCore::RenderDragLong(column1Label.c_str(), 0, value);
+				ImGui::PushID(ID.c_str());
+				ImGui::PopID();
+				FL::GuiCore::PopTable();
+			}
+		}
+
+		void RenderBoolTable(std::string ID, std::string label, bool& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		{
+			std::string column0Label = ID + std::to_string(0);
+			std::string column1Label = ID + std::to_string(1);
+						
+			if (labelWidth == 0) 
+				labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+			RenderLabelTable(column0Label, label, labelWidth, b_light, labelColor);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(b_vertSeperator);
+
+			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			std::vector<std::string> trueFalse = { "false", "true" };
+			int currentBool = value ? 1 : 0;
+			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			{
+				ImGui::TableNextRow();	
+				ImGui::TableSetColumnIndex(0);	
+				if (valueColor != "")						
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+				if (FL::GuiCore::RenderCombo(column1Label.c_str(), value ? "true" : "false", trueFalse, currentBool, innerTableSize.x)) 
+					value = (bool)currentBool;			
+				ImGui::PushID(ID.c_str());
+				ImGui::PopID();
 				FL::GuiCore::PopTable();
 			}
 		}

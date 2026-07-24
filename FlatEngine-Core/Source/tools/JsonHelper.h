@@ -28,7 +28,7 @@ namespace FlatEngine
         extern bool CheckJsonBool(json obj, std::string checkFor, std::string loadedName, std::string& errorMessage);
         extern bool JsonContains(json obj, std::string checkFor, std::string loadedName);
 
-        extern json CreateJsonFromObject(GameObject* gameObject);
-        extern void CreateObjectFromJson(json objectJson, Scene* scene, GameObject* loadedObject);
+        // extern json CreateJsonFromObject(GameObject* gameObject);
+        // extern void CreateObjectFromJson(json objectJson, Scene* scene, GameObject* loadedObject);
     }
 }

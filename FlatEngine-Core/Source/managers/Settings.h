@@ -24,7 +24,7 @@ namespace FlatEngine
                 bool b_showSceneView;
                 bool b_showGameView;
                 bool b_showHierarchy;
-                bool b_showPersistantScript;
+                bool b_showPersistentScript;
                 bool b_showInspector;
                 bool b_showAnimator;
                 bool b_showAnimationPreview;

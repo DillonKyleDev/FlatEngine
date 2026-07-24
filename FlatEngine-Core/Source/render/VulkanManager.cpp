@@ -802,7 +802,7 @@ namespace FlatEngine
 
                     VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfos = newMaterial->GetInputAssemblyCreateInfos(); // Maybe just use initialized VkPipelineInputAssemblyStateCreateInfo instead
                     inputAssemblyInfos.topology = (VkPrimitiveTopology)JsonHelper::CheckJsonInt(inputAssemblyData, "topology", name);
-                    inputAssemblyInfos.primitiveRestartEnable = (bool)JsonHelper::CheckJsonBool(inputAssemblyData, "_primitiveRestartEnable", name);
+                    inputAssemblyInfos.primitiveRestartEnable = (bool)JsonHelper::CheckJsonBool(inputAssemblyData, "b_primitiveRestartEnable", name);
                     newMaterial->SetInputAssemblyCreateInfos(inputAssemblyInfos);
                 }
                 if (JsonHelper::JsonContains(materialData, "rasterizerData", name))

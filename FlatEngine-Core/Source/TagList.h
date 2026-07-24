@@ -1,4 +1,5 @@
 #pragma once
+#include "tools/JsonHelper.h"
 
 #include <cstdint>
 #include <map>
@@ -14,6 +15,8 @@ namespace FlatEngine
 		TagList();
 		TagList(long owner);
 		TagList(TagList* toCopy);		
+		json GetData();
+		void PutData(json taglistJson);
 
 		void SetOwnerID(long ownerID);
 		void UpdateAvailableTags();

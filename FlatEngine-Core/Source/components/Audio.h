@@ -1,7 +1,6 @@
 #pragma once
 #include "components/Component.h"
 #include "managers/AudioManager.h"
-#include "tools/JsonHelper.h"
 
 #include <memory>
 #include <string>
@@ -22,8 +21,8 @@ namespace FlatEngine
     {
     public:
         Audio(long myID = -1, long parentObjectID = -1);
-        std::string GetData();
-        void PutData(json componentJson);
+        json GetData();
+        void PutData(json componentJson, std::string objectName);
 
         std::vector<SoundData>& GetSounds();
         std::string GetPath(std::string soundName);

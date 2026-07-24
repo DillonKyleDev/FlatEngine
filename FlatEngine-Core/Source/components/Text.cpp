@@ -33,13 +33,13 @@ namespace FlatEngine
 		TTF_CloseFont(m_font);
 	}
 
-	std::string Text::GetData()
+	json Text::GetData()
 	{
 		json jsonData = {
-			{ "type", "Text" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "fontPath", m_fontPath },
 			{ "text", m_text },
 			{ "fontSize", m_fontSize },
@@ -52,19 +52,16 @@ namespace FlatEngine
 			{ "yOffset", m_offset.y },
 			{ "renderOrder", m_renderOrder },
 		};
-		std::string data = jsonData.dump();
-		return data;
+		
+		return jsonData;
 	}
 
-	    void Text::PutData(json componentJson)
+	void Text::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Text GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+
 		std::string fontPath = JsonHelper::CheckJsonString(componentJson, "fontPath", objectName);
 		if (!FileHelper::DoesFileExist(fontPath))
 		{

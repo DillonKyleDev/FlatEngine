@@ -1,6 +1,5 @@
 #pragma once
 #include "components/Component.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector4.h"
 #include "tools/Vector3.h"
 
@@ -14,8 +13,8 @@ namespace FlatEngine
 	{
 	public:
 		Camera(long myID = -1, long parentObjectID = -1);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		void SetPrimaryCamera(bool b_isPrimary);
 		bool IsPrimary();

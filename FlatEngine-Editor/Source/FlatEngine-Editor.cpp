@@ -29,7 +29,7 @@ public:
 	EditorGameLoop() 
 	{
 		m_startedScenePath = "";
-		m_startedPersistantScriptsPath = "";
+		m_startedPersistentScriptsPath = "";
 	};
 	~EditorGameLoop() {};
 
@@ -40,12 +40,12 @@ public:
 		FL::Profiler::AddProfilerProcess("Collision Testing");	
 		FL::SceneManager::CreateSceneBackup(); // Backup existing scene save
 		m_startedScenePath = FL::SceneManager::loadedScene.path;
-		m_startedPersistantScriptsPath = FL::ProjectManager::loadedProject.persistantScriptPath;
+		m_startedPersistentScriptsPath = FL::ProjectManager::loadedProject.persistentScriptPath;
 		FL::SceneManager::SaveScene(&FL::SceneManager::loadedScene, "../engine/tempFiles/" + FL::SceneManager::loadedScene.name + "_start_snapshot.scn");
-		if (m_startedPersistantScriptsPath != "")
+		if (m_startedPersistentScriptsPath != "")
 		{
-			FL::ProjectManager::loadedProject.persistantScriptPath = "../engine/tempFiles/" + FL::SceneManager::loadedScene.name + "_scripts_start_snapshot.json";
-			FL::ProjectManager::loadedProject.SavePersistantScript();
+			FL::ProjectManager::loadedProject.persistentScriptPath = "../engine/tempFiles/" + FL::SceneManager::loadedScene.name + "_scripts_start_snapshot.json";
+			FL::ProjectManager::loadedProject.SavePersistentScript();
 		}	
 		FL::GameLoop::Start();
 	};
@@ -55,9 +55,9 @@ public:
 		FL::Profiler::RemoveProfilerProcess("Not GameLoop");
 		FL::Profiler::RemoveProfilerProcess("Collision Testing");
 		FL::GameLoop::Stop();
-		if (m_startedPersistantScriptsPath != "")
+		if (m_startedPersistentScriptsPath != "")
 		{
-			FL::ProjectManager::loadedProject.LoadPersistantScript("../engine/tempFiles/" + FL::FileHelper::GetFilenameFromPath(m_startedPersistantScriptsPath, false) + "_scripts_start_snapshot.json");
+			FL::ProjectManager::loadedProject.LoadPersistentScript("../engine/tempFiles/" + FL::FileHelper::GetFilenameFromPath(m_startedPersistentScriptsPath, false) + "_scripts_start_snapshot.json");
 		}
 		FL::SceneManager::LoadScene("../engine/tempFiles/" + FL::FileHelper::GetFilenameFromPath(m_startedScenePath, false) + "_start_snapshot.scn", m_startedScenePath);
 	};
@@ -71,7 +71,7 @@ public:
 	};
 private:
 	std::string m_startedScenePath;
-	std::string m_startedPersistantScriptsPath;
+	std::string m_startedPersistentScriptsPath;
 };
 
 

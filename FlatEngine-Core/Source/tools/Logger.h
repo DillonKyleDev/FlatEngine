@@ -22,7 +22,7 @@ namespace FlatEngine
 		struct LogLineInfo 
 		{
 			int startOffset;  // byte offset into buffer where this line starts
-			ImVec4 color;
+			Vector4 color;
 			bool selected = false;
 			spdlog::level::level_enum level;
 		};
@@ -46,11 +46,18 @@ namespace FlatEngine
 				m_logger->debug(fmt::runtime(prefixedFmt), std::forward<Args>(args)...);
 			}
 
-			template <typename... Args>
-			void LuaDebug(std::string message, std::string callingScript, long my_id) 
+			void LuaDebug(std::string message, std::string callingScript, std::string my_id) 
 			{
-				std::string prefixedFmt = "] [" + callingScript + " ID:" + std::to_string(my_id) + "] " + message;
-				m_logger->debug(fmt::runtime(prefixedFmt));				
+				std::string truncatedName = callingScript.substr(0, callingScript.size() - 6);
+				std::string prefixedFmt = "] [lua] [" + truncatedName + "] [ID:" + my_id + "] " + message;
+				m_logger->debug(fmt::runtime(prefixedFmt));	
+			}
+
+			void PersistentDebug(std::string message, std::string callingScript, std::string my_id) 
+			{
+				std::string truncatedName = callingScript.substr(0, callingScript.size() - 6);
+				std::string prefixedFmt = "] [pst] [" + truncatedName + "] " + message;
+				m_logger->debug(fmt::runtime(prefixedFmt));
 			}
 
 			template <typename... Args>
@@ -89,7 +96,6 @@ namespace FlatEngine
 			}		
 
 			Log();
-			~Log();
 			void LogVector2(Vector2 vector, std::string line = "", std::string from = "[C++]");
 			void LogVector3(Vector3 vector, std::string line = "", std::string from = "[C++]");
 			void LogVector4(Vector4 vector, std::string line = "", std::string from = "[C++]");
@@ -99,7 +105,7 @@ namespace FlatEngine
 			void DrawPoint(Vector2 point, std::string color, ImDrawList* drawlist);
 			ImGuiTextBuffer &GetBuffer();
 			void ClearBuffer();
-			void AddLog(const std::string& message,  spdlog::level::level_enum level);
+			void AddLog(const std::string& message, spdlog::level::level_enum level);
 			void CopyToClipboard();
 
 			std::mutex m_mutex;
@@ -108,7 +114,9 @@ namespace FlatEngine
 
 		private:
 			void TrimOldest();
-			ImVec4 GetColorForLevel(spdlog::level::level_enum level);
+			void LuaDebugImpl(const std::string& message, const std::string& callingScript, const std::string& my_id, const std::string& tag);
+			Vector4 GetColorForLevel(spdlog::level::level_enum level);
+			Vector4 GetColorForMessage(const std::string& message, spdlog::level::level_enum level);
 
 			std::shared_ptr<spdlog::logger> m_logger;
 			std::shared_ptr<spdlog::sinks::stdout_color_sink_mt> m_consoleSink;
@@ -122,15 +130,15 @@ namespace FlatEngine
 			public:
 				Log* logger;
 
-			protected:
-				void sink_it_(const spdlog::details::log_msg& msg) override 
+			protected:			
+				void sink_it_(const spdlog::details::log_msg& message) override 
 				{
 					spdlog::memory_buf_t formatted;
-					formatter_->format(msg, formatted);
+					formatter_->format(message, formatted);
 					std::string text = fmt::to_string(formatted);					
 					if (!text.empty() && text.back() == '\n') text.pop_back();
 
-					logger->AddLog(text, msg.level);
+					logger->AddLog(text, message.level);
 				}
 				void flush_() override {}
 		};

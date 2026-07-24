@@ -1,4 +1,5 @@
 #include "managers/Assets.h"
+#include "tools/Vector4.h"
 #include "tools/Logger.h"
 
 #include <memory>
@@ -44,10 +45,6 @@ namespace FlatEngine
 			spdlog::register_logger(logger);
 			m_logger = spdlog::get("Engine");
 			m_logger->set_level(spdlog::level::trace);
-		}
-
-		Log::~Log()
-		{
 		}
 
 		void Log::LogVector2(Vector2 vector, std::string line, std::string from)
@@ -103,7 +100,13 @@ namespace FlatEngine
 			m_lineInfos.clear();
 		}
 
-		ImVec4 Log::GetColorForLevel(spdlog::level::level_enum level)
+		void Log::LuaDebugImpl(const std::string& message, const std::string& callingScript, const std::string& my_id, const std::string& tag)
+		{
+			std::string prefixedFmt = "[" + tag + "] [" + callingScript + " ID:" + my_id + "] " + message;
+			m_logger->debug(fmt::runtime(prefixedFmt));
+		}
+
+		Vector4 Log::GetColorForLevel(spdlog::level::level_enum level)
 		{
 			switch (level) {
 				case spdlog::level::trace:    return Assets::assetManager.GetColor("trace");
@@ -116,9 +119,22 @@ namespace FlatEngine
 			}
 		}
 
-		void Log::AddLog(const std::string& message, spdlog::level::level_enum level)
+		Vector4 Log::GetColorForMessage(const std::string& message, spdlog::level::level_enum level)
 		{
-			ImVec4 color = GetColorForLevel(level);
+			if (message.find("[pst]", 0) != std::string::npos)
+			{
+				return Assets::assetManager.GetColor("persistent");
+			}
+			if (message.find("[lua]", 0) != std::string::npos)
+			{
+				return Assets::assetManager.GetColor("debug");
+			}
+			return GetColorForLevel(level);
+		}
+
+		void Log::AddLog(const std::string& message, spdlog::level::level_enum level)
+		{			
+			Vector4 color = GetColorForMessage(message, level);
 			std::lock_guard<std::mutex> lock(m_mutex);
 			int startOffset = m_buffer.size();
 			m_buffer.append(message.c_str());
@@ -133,8 +149,6 @@ namespace FlatEngine
 
 		void Log::TrimOldest()
 		{		
-			// Drop the oldest ~10% of lines at once, rather than one-at-a-time,
-			// so this doesn't run on every single log call once you're at the cap.
 			int trimCount = m_MAX_LOG_LINES * 0.001f;
 			int cutoffOffset = m_lineInfos[trimCount].startOffset;
 

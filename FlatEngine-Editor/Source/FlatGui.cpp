@@ -40,7 +40,7 @@ namespace FlatGui
 
 		RenderFileExplorer(FL::Settings::settings.b_showFileExplorer);
 		RenderHierarchy(FL::Settings::settings.b_showHierarchy);
-		RenderPersistantScript(FL::Settings::settings.b_showPersistantScript);
+		RenderPersistentScript(FL::Settings::settings.b_showPersistentScript);
 		RenderInspector(FL::Settings::settings.b_showInspector);
 		FL::GameView::RenderGameView(FL::Settings::settings.b_showGameView, false);
 		FL::SceneView::RenderSceneView(FL::Settings::settings.b_showSceneView);

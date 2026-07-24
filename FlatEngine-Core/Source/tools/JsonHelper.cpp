@@ -45,90 +45,89 @@ namespace FlatEngine
             }
         }
         
-        json CreateJsonFromObject(GameObject* currentObject)
-        {		
-            if (currentObject == nullptr)
-                return json::object();
+        // json CreateJsonFromObject(GameObject* currentObject)
+        // {		
+            // if (currentObject == nullptr)
+            //     return json::object();
 
-            json componentsArray = json::array();
+            // json componentsArray = json::array();
 
-            for (int i = 1; i < FL::ComponentType_Size; i++)
-            {
-                FL::Component* component = currentObject->GetComponent((FL::ComponentType)i);
-                if (component != nullptr)
-                {
-                    std::string typeString = component->GetTypeString();
+            // for (int i = 1; i < FL::ComponentType_Size; i++)
+            // {
+            //     FL::Component* component = currentObject->GetComponent((FL::ComponentType)i);
+            //     if (component != nullptr)
+            //     {
+            //         std::string typeString = component->GetTypeString();
 
-                    if (typeString != "Null")
-                    {
-                        std::string data = component->GetData();
-                        componentsArray.push_back(json::parse(data));
-                    }
-                }
-            }
+            //         if (typeString != "Null")
+            //         {                        
+            //             componentsArray.push_back(component->GetData());
+            //         }
+            //     }
+            // }
             
-            json childrenArray = json::array();
+            // json childrenArray = json::array();
 
-            for (int c = 0; c < currentObject->GetChildren().size(); c++)
-            {
-                childrenArray.push_back(currentObject->GetChildren()[c]);
-            }
+            // for (int c = 0; c < currentObject->GetChildren().size(); c++)
+            // {
+            //     childrenArray.push_back(currentObject->GetChildren()[c]);
+            // }
             
-            std::map <std::string, bool> tagList = currentObject->GetTagList().GetTagsMap();
-            std::map <std::string, bool> collidesTagList = currentObject->GetTagList().GetCollidesTagsMap();
+            // std::map <std::string, bool> tagList = currentObject->GetTagList().GetTagsMap();
+            // std::map <std::string, bool> collidesTagList = currentObject->GetTagList().GetCollidesTagsMap();
 
-            json tagsObjectArray = json::array();
-            for (std::map<std::string, bool>::iterator tagIter = tagList.begin(); tagIter != tagList.end(); tagIter++)
-            {
-                // For making sure we don't save any stale tags that aren't available in the Tags.lua file
-                for (std::string availableTag : Assets::assetManager.GetTags())
-                {
-                    if (tagIter->first == availableTag)
-                    {
-                        json tag = json::object({ { tagIter->first, tagIter->second } });
-                        tagsObjectArray.push_back(tag);
-                    }
-                }
-            }
-            json collidesTagsObjectArray = json::array();
-            for (std::map<std::string, bool>::iterator tagIter = collidesTagList.begin(); tagIter != collidesTagList.end(); tagIter++)
-            {
-                // For making sure we don't save any stale collides tags that aren't available in the Tags.lua file
-                for (std::string availableTag : Assets::assetManager.GetTags())
-                {
-                    if (tagIter->first == availableTag)
-                    {
-                        json collides = json::object({ { tagIter->first, tagIter->second } });
-                        collidesTagsObjectArray.push_back(collides);
-                    }
-                }
-            }
+            // json tagsObjectArray = json::array();
+            // for (std::map<std::string, bool>::iterator tagIter = tagList.begin(); tagIter != tagList.end(); tagIter++)
+            // {
+            //     // For making sure we don't save any stale tags that aren't available in the Tags.lua file
+            //     for (std::string availableTag : Assets::assetManager.GetTags())
+            //     {
+            //         if (tagIter->first == availableTag)
+            //         {
+            //             json tag = json::object({ { tagIter->first, tagIter->second } });
+            //             tagsObjectArray.push_back(tag);
+            //         }
+            //     }
+            // }
+            // json collidesTagsObjectArray = json::array();
+            // for (std::map<std::string, bool>::iterator tagIter = collidesTagList.begin(); tagIter != collidesTagList.end(); tagIter++)
+            // {
+            //     // For making sure we don't save any stale collides tags that aren't available in the Tags.lua file
+            //     for (std::string availableTag : Assets::assetManager.GetTags())
+            //     {
+            //         if (tagIter->first == availableTag)
+            //         {
+            //             json collides = json::object({ { tagIter->first, tagIter->second } });
+            //             collidesTagsObjectArray.push_back(collides);
+            //         }
+            //     }
+            // }
             
-            std::string objectName = currentObject->GetName();
-            Vector3 spawnLocation = currentObject->GetPrefabSpawnLocation();
-            if (currentObject->Get<Transform>())
-            {
-                spawnLocation = currentObject->Get<Transform>()->GetPosition();
-            }
+            // std::string objectName = currentObject->GetName();
+            // Vector3 spawnLocation = currentObject->GetPrefabSpawnLocation();
+            // if (currentObject->Get<Transform>())
+            // {
+            //     spawnLocation = currentObject->Get<Transform>()->GetPosition();
+            // }
             
-            json gameObjectJson = json::object({
-                { "b_isPrefab", currentObject->IsPrefab() },
-                { "prefabName", currentObject->GetPrefabName() },
-                { "spawnLocationX", spawnLocation.x },
-                { "spawnLocationY", spawnLocation.y },
-                { "spawnLocationZ", spawnLocation.z },
-                { "name", objectName },
-                { "id", currentObject->GetID() },
-                { "_isActive", currentObject->IsActive() },
-                { "parent", currentObject->GetParentID() },
-                { "children", childrenArray },
-                { "components", componentsArray },
-                { "tags", tagsObjectArray },
-                { "collidesTags", collidesTagsObjectArray },
-            });
+            // json gameObjectJson = json::object({
+            //     { "b_isPrefab", currentObject->IsPrefab() },
+            //     { "prefabName", currentObject->GetPrefabName() },
+            //     { "spawnLocationX", spawnLocation.x },
+            //     { "spawnLocationY", spawnLocation.y },
+            //     { "spawnLocationZ", spawnLocation.z },
+            //     { "name", objectName },
+            //     { "id", currentObject->GetID() },
+            //     { "b_isActive", currentObject->IsActive() },
+            //     { "parent", currentObject->GetParentID() },
+            //     { "children", childrenArray },
+            //     { "components", componentsArray },
+            //     { "tags", tagsObjectArray },
+            //     { "collidesTags", collidesTagsObjectArray },
+            // });
 
-            return gameObjectJson;
-        }
+            // return gameObjectJson;
+        // }
 
         bool JsonContains(json obj, std::string checkFor, std::string loadedName)
         {
@@ -311,109 +310,88 @@ namespace FlatEngine
             return value;
         }
 
-        void CreateObjectFromJson(json objectJson, Scene* scene, GameObject* loadedObject)
-        {
-            std::string objectName = CheckJsonString(objectJson, "name", "Name");
-            bool b_isActive = CheckJsonBool(objectJson, "b_isActive", objectName);
-            bool b_isPrefab = CheckJsonBool(objectJson, "b_isPrefab", objectName);            
-            std::string prefabName = CheckJsonString(objectJson, "prefabName", objectName);
-            Vector3 spawnLocation = Vector3(0, 0, 0);
-            spawnLocation.x = CheckJsonFloat(objectJson, "spawnLocationX", objectName); // SetOrigin() is taken care of by Instantiate() using parentID
-            spawnLocation.y = CheckJsonFloat(objectJson, "spawnLocationY", objectName);
-            spawnLocation.z = CheckJsonFloat(objectJson, "spawnLocationZ", objectName);
-            long loadedID = CheckJsonLong(objectJson, "id", objectName);
-            long loadedParentID = CheckJsonLong(objectJson, "parent", objectName);
-            std::vector<long> loadedChildrenIDs = std::vector<long>();
-            TagList tags = TagList(loadedID);
+        // void CreateObjectFromJson(json objectJson, Scene* scene, GameObject* loadedObject)
+        // {
+        //     std::string objectName = CheckJsonString(objectJson, "name", "Name");
+        //     bool b_isActive = CheckJsonBool(objectJson, "b_isActive", objectName);
+        //     bool b_isPrefab = CheckJsonBool(objectJson, "b_isPrefab", objectName);            
+        //     std::string prefabName = CheckJsonString(objectJson, "prefabName", objectName);
+        //     Vector3 spawnLocation = Vector3(0, 0, 0);
+        //     spawnLocation.x = CheckJsonFloat(objectJson, "spawnLocationX", objectName); // SetOrigin() is taken care of by Instantiate() using parentID
+        //     spawnLocation.y = CheckJsonFloat(objectJson, "spawnLocationY", objectName);
+        //     spawnLocation.z = CheckJsonFloat(objectJson, "spawnLocationZ", objectName);
+        //     long loadedID = CheckJsonLong(objectJson, "id", objectName);
+        //     long loadedParentID = CheckJsonLong(objectJson, "parent", objectName);
+        //     std::vector<long> loadedChildrenIDs = std::vector<long>();
+        //     TagList tags = TagList(loadedID);
 
-            if (JsonContains(objectJson, "children", objectName))
-            {
-                for (int c = 0; c < objectJson["children"].size(); c++)
-                {
-                    loadedChildrenIDs.push_back(objectJson["children"][c]);
-                }
-            }
+        //     if (JsonContains(objectJson, "children", objectName))
+        //     {
+        //         for (int c = 0; c < objectJson["children"].size(); c++)
+        //         {
+        //             loadedChildrenIDs.push_back(objectJson["children"][c]);
+        //         }
+        //     }
 
-            if (b_isPrefab)
-            {
-                loadedObject = PrefabManager::Instantiate(prefabName, spawnLocation, scene, loadedParentID, loadedID);
-                if (loadedObject != nullptr)
-                {
-                    loadedObject->SetName(objectName);
-                }
-            }
-            else
-            {			                
-                GameObject* loadedObject = FL::SceneManager::loadedScene.CreateEmptyGameObject(loadedParentID, loadedID);                
+        //     if (b_isPrefab)
+        //     {
+        //         loadedObject = PrefabManager::Instantiate(prefabName, spawnLocation, scene, loadedParentID, loadedID);
+        //         if (loadedObject != nullptr)
+        //         {
+        //             loadedObject->SetName(objectName);
+        //         }
+        //     }
+        //     else
+        //     {			                
+        //         GameObject* loadedObject = FL::SceneManager::loadedScene.CreateEmptyGameObject(loadedParentID, loadedID);                
 
-                if (loadedObject != nullptr)
-                {
-                    loadedObject->SetName(objectName);				
-                    loadedObject->SetActive(b_isActive);
+        //         if (loadedObject != nullptr)
+        //         {
+        //             loadedObject->SetName(objectName);				
+        //             loadedObject->SetActive(b_isActive);
                     
-                    // TagList			
-                    if (JsonContains(objectJson, "tags", objectName))
-                    {
-                        json tagsJson = objectJson["tags"];
-                        for (json jsonTag : tagsJson)
-                        {
-                            std::string tag = jsonTag.items().begin().key();
-                            bool b_hasTag = jsonTag.items().begin().value();
-                            tags.SetTag(tag, b_hasTag);
-                        }
-                    }
-                    if (JsonContains(objectJson, "collidesTags", objectName))
-                    {
-                        json collidesTagsJson = objectJson["collidesTags"];
-                        for (json jsonCollidesTag : collidesTagsJson)
-                        {
-                            std::string collidesTag = jsonCollidesTag.items().begin().key();
-                            bool b_collidesTag = jsonCollidesTag.items().begin().value();
-                            tags.SetCollides(collidesTag, b_collidesTag);
-                        }
-                    }				
-
-                    loadedObject->SetTagList(tags);
+        //             tags.PutData(objectJson);
+        //             loadedObject->SetTagList(tags);
                                     
-                    try
-                    {
-                        if (objectJson.contains("components"))
-                        {
-                            for (int j = 0; j < objectJson.at("components").size(); j++)
-                            {
-                                json componentJson = objectJson.at("components").at(j);
-                                std::string typeString = CheckJsonString(componentJson, "type", objectName);
-                                long id = CheckJsonLong(componentJson, "id", objectName);
-                                // ComponentType type = (ComponentType)CheckJsonInt(componentJson, "type", objectName); move to this later, change save process.
-                                for (int i = 1; i < ComponentType_Size; i++)
-                                {
-                                    if (typeString == ComponentTypeStrings[i])
-                                    {
-                                        Component* component = loadedObject->AddComponent((ComponentType)i, id, componentJson);                                          
-                                    }
-                                }                                                   
-                            }
-                        }
-                    } // Is this even doing anything??? vvv
-                    catch (const json::out_of_range& e)
-                    {
-                        Logger::log.Err("{}", e.what());			
-                    }
-                    catch (const json::type_error& e)
-                    {
-                        Logger::log.Err("{}", e.what());	
-                    }
-                }
-            }
+        //             try
+        //             {
+        //                 if (objectJson.contains("components"))
+        //                 {
+        //                     for (int j = 0; j < objectJson.at("components").size(); j++)
+        //                     {
+        //                         json componentJson = objectJson.at("components").at(j);
+        //                         std::string typeString = CheckJsonString(componentJson, "type", objectName);
+        //                         long id = CheckJsonLong(componentJson, "id", objectName);
+        //                         // ComponentType type = (ComponentType)CheckJsonInt(componentJson, "type", objectName); move to this later, change save process.
+        //                         for (int i = 1; i < ComponentType_Size; i++)
+        //                         {
+        //                             if (typeString == ComponentTypeStrings[i])
+        //                             {
+        //                                 Component* component = loadedObject->AddComponent((ComponentType)i, id, componentJson);                                          
+        //                             }
+        //                         }                                                   
+        //                     }
+        //                 }
+        //             } // Is this even doing anything??? vvv
+        //             catch (const json::out_of_range& e)
+        //             {
+        //                 Logger::log.Err("{}", e.what());			
+        //             }
+        //             catch (const json::type_error& e)
+        //             {
+        //                 Logger::log.Err("{}", e.what());	
+        //             }
+        //         }
+        //     }
 
-            // Update the moment of inertia if applicable
-            if (loadedObject != nullptr)
-            {
-                if (loadedObject->Get<Button>() != nullptr)
-                {
-                    loadedObject->Get<Button>()->CalculateActiveEdges();
-                }
-            }
-        }
+        //     // Update the moment of inertia if applicable
+        //     if (loadedObject != nullptr)
+        //     {
+        //         if (loadedObject->Get<Button>() != nullptr)
+        //         {
+        //             loadedObject->Get<Button>()->CalculateActiveEdges();
+        //         }
+        //     }
+        // }
     }
 }

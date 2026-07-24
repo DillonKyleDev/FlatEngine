@@ -24,7 +24,7 @@ namespace FlatEngine
 		m_collisionAreas = std::map<std::string, std::vector<CollisionAreaData>>();	
 	}
 
-	std::string TileMap::GetData()
+	json TileMap::GetData()
 	{
 		json tileSetNames = json::array();
 		json tileData = json::array();
@@ -81,10 +81,10 @@ namespace FlatEngine
 		}
 
 		json jsonData = {
-			{ "type", "TileMap" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "width", m_width },
 			{ "height", m_height },
 			{ "tileWidth", m_tileWidth },
@@ -94,17 +94,15 @@ namespace FlatEngine
 			{ "collisionAreas", collisionAreaData }
 		};
 
-		std::string data = jsonData.dump();		
-		return data;
+		return jsonData;
 	}
 
-	void TileMap::PutData(json componentJson)
+	void TileMap::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "TileMap GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+
 		SetWidth(JsonHelper::CheckJsonInt(componentJson, "width", objectName));
 		SetHeight(JsonHelper::CheckJsonInt(componentJson, "height", objectName));
 		SetTileWidth(JsonHelper::CheckJsonInt(componentJson, "tileWidth", objectName));

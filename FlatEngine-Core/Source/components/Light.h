@@ -1,10 +1,7 @@
 #pragma once
 #include "components/Component.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
-
-#include <string>
 
 
 namespace FlatEngine
@@ -18,8 +15,8 @@ namespace FlatEngine
 	{
 	public:
 		Light(long myID = -1, long parentObjectID = -1);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		void SetLightType(LightType lightType);
 		LightType GetLightType();

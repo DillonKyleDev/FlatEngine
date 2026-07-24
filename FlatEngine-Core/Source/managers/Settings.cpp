@@ -28,7 +28,7 @@ namespace FlatEngine
             b_showSceneView = true;
             b_showGameView = true;
             b_showHierarchy = true;
-            b_showPersistantScript = true;
+            b_showPersistentScript = true;
             b_showInspector = true;
             b_showAnimator = true;
             b_showAnimationPreview = false;
@@ -70,7 +70,7 @@ namespace FlatEngine
                 b_showFileExplorer = JsonHelper::CheckJsonBool(settings, "b_showFileExplorer", name);
                 b_showTileSetEditor = JsonHelper::CheckJsonBool(settings, "b_showTileSetEditor", name);
                 b_showHierarchy = JsonHelper::CheckJsonBool(settings, "b_showHierarchy", name);
-                b_showPersistantScript = JsonHelper::CheckJsonBool(settings, "b_showPersistantScript", name);
+                b_showPersistentScript = JsonHelper::CheckJsonBool(settings, "b_showPersistentScript", name);
                 b_showInspector = JsonHelper::CheckJsonBool(settings, "b_showInspector", name);
                 b_showAnimator = JsonHelper::CheckJsonBool(settings, "b_showAnimator", name);
                 b_fullscreen = JsonHelper::CheckJsonBool(settings, "b_fullscreen", name);
@@ -128,7 +128,7 @@ namespace FlatEngine
                 { "b_showSceneView",                 b_showSceneView },
                 { "b_showGameView",                  b_showGameView },
                 { "b_showHierarchy",                 b_showHierarchy },
-                { "b_showPersistantScript",          b_showPersistantScript },
+                { "b_showPersistentScript",          b_showPersistentScript },
                 { "b_showInspector",                 b_showInspector },
                 { "b_showAnimator",                  b_showAnimator },
                 { "b_showAnimationPreview",          b_showAnimationPreview },

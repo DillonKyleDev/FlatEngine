@@ -1,6 +1,5 @@
 #pragma once
 #include "components/Component.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
 #include <map>
@@ -31,8 +30,8 @@ namespace FlatEngine
     {
     public:
         TileMap(long myID = -1, long parentObjectID = -1);        
-        std::string GetData();
-        void PutData(json componentJson);
+        json GetData();
+        void PutData(json componentJson, std::string objectName);
 
         int GetWidth();
         int GetHeight();

@@ -17,13 +17,13 @@ namespace FlatEngine
 		m_rotation = Vector3();
 	}
 
-	std::string Transform::GetData()
+	json Transform::GetData()
 	{
 		json jsonData = {
-			{ "type", "Transform" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "xPosition", m_position.x },
 			{ "yPosition", m_position.y },
 			{ "zPosition", m_position.z },
@@ -35,21 +35,15 @@ namespace FlatEngine
 			{ "zScale", m_scale.z }
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	void Transform::PutData(json componentJson)
+	void Transform::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Transform GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetID(componentID);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);								
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+
 		SetPosition(Vector3(JsonHelper::CheckJsonFloat(componentJson, "xPosition", objectName), JsonHelper::CheckJsonFloat(componentJson, "yPosition", objectName), JsonHelper::CheckJsonFloat(componentJson, "zPosition", objectName)));
 		SetScale(Vector3(JsonHelper::CheckJsonFloat(componentJson, "xScale", objectName), JsonHelper::CheckJsonFloat(componentJson, "yScale", objectName), JsonHelper::CheckJsonFloat(componentJson, "zScale", objectName)));
 		SetRotation(Vector3(JsonHelper::CheckJsonFloat(componentJson, "xRotation", objectName), JsonHelper::CheckJsonFloat(componentJson, "yRotation", objectName), JsonHelper::CheckJsonFloat(componentJson, "zRotation", objectName)));										

@@ -951,7 +951,7 @@ namespace FlatEngine
 			return b_isClicked;
 		}
 
-		bool RenderDragFloat(std::string text, float width, float& value, float increment, float min, float max, ImGuiSliderFlags flags, std::string bgColor)
+		bool RenderDragFloat(std::string ID, float width, float& value, float increment, float min, float max, ImGuiSliderFlags flags, std::string bgColor)
 		{
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor(bgColor));
 			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, Assets::assetManager.GetColor("dragHovered"));
@@ -966,7 +966,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 
-			bool b_sliderChanged = ImGui::DragFloat(text.c_str(), &value, increment, min, max, "%.3f", flags);
+			bool b_sliderChanged = ImGui::DragFloat(ID.c_str(), &value, increment, min, max, "%.3f", flags);
 
 			if (ImGui::IsItemHovered())
 			{
@@ -978,7 +978,7 @@ namespace FlatEngine
 			return b_sliderChanged;
 		}
 
-		bool RenderDragDouble(std::string text, float width, double& value, double increment, std::string bgColor)
+		bool RenderDragDouble(std::string ID, float width, double& value, double increment, std::string bgColor)
 		{
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor(bgColor));
 			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, Assets::assetManager.GetColor("dragHovered"));
@@ -993,7 +993,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 
-			bool b_sliderChanged = ImGui::DragScalar(text.c_str(), ImGuiDataType_Double, &value, increment, "%.3f");			
+			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_Double, &value, increment, "%.3f");			
 
 			if (ImGui::IsItemHovered())
 			{
@@ -1005,7 +1005,7 @@ namespace FlatEngine
 			return b_sliderChanged;
 		}
 
-		bool RenderDragInt(std::string text, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags, std::string bgColor)
+		bool RenderDragInt(std::string ID, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags, std::string bgColor)
 		{
 			if (bgColor != "")
 			{
@@ -1027,7 +1027,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 			
-			bool b_sliderChanged = ImGui::DragInt(text.c_str(), &value, speed, min, max, "%d", flags);
+			bool b_sliderChanged = ImGui::DragInt(ID.c_str(), &value, speed, min, max, "%d", flags);
 			
 			if (ImGui::IsItemHovered())
 			{
@@ -1039,7 +1039,7 @@ namespace FlatEngine
 			return b_sliderChanged;
 		}
 
-		bool RenderDragLong(std::string text, float width, long& value, std::string bgColor)
+		bool RenderDragLong(std::string ID, float width, long& value, std::string bgColor)
 		{
 			if (bgColor != "")
 			{
@@ -1061,7 +1061,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 			
-			bool b_sliderChanged = ImGui::DragScalar(text.c_str(), ImGuiDataType_S64, &value, 1.0f);			
+			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_S64, &value, 1.0f);			
 			
 			if (ImGui::IsItemHovered())
 			{

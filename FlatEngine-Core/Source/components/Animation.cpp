@@ -117,7 +117,7 @@ namespace FlatEngine
         m_animations = std::vector<AnimationData>();
     }
 
-    std::string Animation::GetData()
+    json Animation::GetData()
     {
         json animationData = json::array();
 
@@ -132,26 +132,21 @@ namespace FlatEngine
         }
 
         json jsonData = {
-            { "type", "Animation" },
+            { "type", (int)GetType() },
             { "id", GetID() },
-            { "_isCollapsed", IsCollapsed() },
-            { "_isActive", IsActive() },
+            { "b_isCollapsed", IsCollapsed() },
+            { "b_isActive", IsActive() },
             { "animationData", animationData }
         };
 
-        std::string data = jsonData.dump();
-        return data;
+        return jsonData;
     }
 
-    void Animation::PutData(json componentJson)
+    void Animation::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Animation GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-        SetActive(b_isActive);
-        SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
         if (JsonHelper::JsonContains(componentJson, "animationData", objectName))
         {

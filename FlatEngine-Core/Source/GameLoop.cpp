@@ -44,7 +44,7 @@ namespace FlatEngine
 		// Save the name of the scene we started with so we can load it back up when we stop
 		m_b_started = true;
 		LuaManager::RunSceneAwakeAndStart();
-		LuaManager::RunPersistantAwakeAndStart();
+		LuaManager::RunPersistentAwakeAndStart();
 		m_currentTime = Time::Time();
 	}
 

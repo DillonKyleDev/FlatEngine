@@ -32,10 +32,6 @@ namespace FlatEngine
 		z = toCopy.z;
 	}
 
-	Vector3::~Vector3()
-	{
-	}
-
 	Vector3 Vector3::Normalize(Vector3 vec)
 	{
 		Vector3 temp = Vector3(0);
@@ -53,43 +49,6 @@ namespace FlatEngine
 		}
 
 		return temp;
-	}
-
-	void Vector3::_xyz(float newX, float newY, float newZ)
-	{
-		x = newX;
-		y = newY;
-		z = newZ;
-	}
-
-	float Vector3::GetX()
-	{
-		return x;
-	}
-
-	float Vector3::GetY()
-	{
-		return y;
-	}
-
-	float Vector3::GetZ()
-	{
-		return z;
-	}
-
-	void Vector3::SetX(float newX)
-	{
-		x = newX;
-	}
-
-	void Vector3::SetY(float newY)
-	{
-		y = newY;
-	}
-
-	void Vector3::SetZ(float newZ)
-	{
-		z = newZ;
 	}
 
 	glm::vec3 Vector3::GetGLMVec3()
@@ -139,6 +98,16 @@ namespace FlatEngine
 
 	Vector3 Vector3::operator*(float scalar)
 	{
+		Vector3 result = Vector3(x, y, z);
+		result.x *= scalar;
+		result.y *= scalar;
+		result.z *= scalar;
+		
+		return result;
+	}
+
+	Vector3& Vector3::operator*=(float scalar)
+	{
 		x *= scalar;
 		y *= scalar;
 		z *= scalar;
@@ -179,6 +148,15 @@ namespace FlatEngine
 		return result;
 	}
 
+	Vector3& Vector3::operator+=(Vector3 right)
+	{
+		x += right.x;
+		y += right.y;
+		z += right.z;
+
+		return *this;
+	}
+
 	Vector3 Vector3::operator-(Vector3 right)
 	{
 		Vector3 result = Vector3(x, y, z);
@@ -188,6 +166,15 @@ namespace FlatEngine
 		result.z -= right.z;
 
 		return result;
+	}
+
+	Vector3& Vector3::operator-=(Vector3 right)
+	{
+		x -= right.x;
+		y -= right.y;
+		z -= right.z;
+
+		return *this;
 	}
 
 	bool Vector3::operator==(Vector3 right)

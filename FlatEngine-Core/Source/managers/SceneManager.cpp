@@ -48,11 +48,11 @@ namespace FlatEngine
 				std::vector<GameObject>& sceneObjects = scene->GetSceneObjects();
 				if (sceneObjects.size() > 0)
 				{
-					for (GameObject sceneObject : sceneObjects)
+					for (GameObject& sceneObject : sceneObjects)
 					{
 						if (!sceneObject.IsPrefabChild())
 						{
-							sceneObjectsJsonArray.push_back(JsonHelper::CreateJsonFromObject(&sceneObject));
+							sceneObjectsJsonArray.push_back(sceneObject.GetData());
 						}
 					}
 				}
@@ -143,87 +143,63 @@ namespace FlatEngine
 			file_obj.close();
 			if (file_obj.good() && fileContent != "")
 			{
-				try
+				loadedScene = Scene();
+				loadedScenePath = pointToPath;
+				loadedScene.path = pointToPath;
+				loadedScene.name = FileHelper::GetFilenameFromPath(pointToPath, false);
+
+				json fileContentJson = json::parse(fileContent);
+				std::vector<json> prefabsJson = std::vector<json>();
+
+				if (fileContentJson.contains("Scene GameObjects") && fileContentJson.at("Scene GameObjects").at(0) != "NULL")
 				{
-					loadedScene = Scene();
-					loadedScenePath = pointToPath;
-					loadedScene.path = pointToPath;
-					loadedScene.name = FileHelper::GetFilenameFromPath(pointToPath, false);
+					auto sceneObjectsjson = fileContentJson.at("Scene GameObjects");
+					
+					for (int i = 0; i < sceneObjectsjson.size(); i++)
+					{																		
+						json objectJson = fileContentJson.at("Scene GameObjects").at(i);
 
-					json fileContentJson = json::parse(fileContent);
-					std::vector<json> prefabsJson = std::vector<json>();
-
-					try
-					{
-						if (fileContentJson.contains("Scene GameObjects") && fileContentJson.at("Scene GameObjects").at(0) != "NULL")
+						if (JsonHelper::CheckJsonBool(objectJson, "b_isPrefab", "GameObject"))
 						{
-							auto sceneObjectsjson = fileContentJson.at("Scene GameObjects");
-							
-							for (int i = 0; i < sceneObjectsjson.size(); i++)
-							{												
-								try
-								{
-									json objectJson = fileContentJson.at("Scene GameObjects").at(i);
-
-									if (JsonHelper::CheckJsonBool(objectJson, "_isPrefab", "GameObject"))
-									{
-										prefabsJson.push_back(objectJson);
-									}
-									else
-									{
-										JsonHelper::CreateObjectFromJson(objectJson, &loadedScene, nullptr);						
-									}
-								}
-								catch (const json::out_of_range& e)
-								{
-									Logger::log.Err("{}", e.what());
-								}
-							}
-
-							// Create prefabs after regular objects so that prefab children don't steal "unused" GameObject IDs from regular objects and then get overwritten by those objects
-							for (json objectJson : prefabsJson)
-							{
-								try
-								{
-									JsonHelper::CreateObjectFromJson(objectJson, &loadedScene, nullptr);
-								}
-								catch (const json::out_of_range& e)
-								{
-									Logger::log.Err("{}", e.what());
-								}
-							}
-
-							// Just in case any parent objects had not been created at the time of children being created on scene load,
-							// loop through objects with parents and add them as children to their parent objects
-							for (GameObject& sceneObject : loadedScene.GetSceneObjects())
-							{
-								long myID = sceneObject.GetID();
-								long parentID = sceneObject.GetParentID();
-
-								if (parentID != -1)
-								{
-									if (loadedScene.GetObjectByID(parentID) != nullptr)
-									{
-										loadedScene.GetObjectByID(parentID)->AddChild(myID);
-									}
-								}
-							}
-
-							loadedScene.SortSceneObjects();
-							loadedScene.CreateJoints();
-
-							F_Application->OnLoadScene(pointToPath);
+							prefabsJson.push_back(objectJson);
+						}
+						else
+						{
+							GameObject loadedObject = GameObject();
+							loadedObject.PutData(objectJson);
+							loadedScene.AddSceneObject(loadedObject);							
 						}
 					}
-					catch (const json::out_of_range& e)
+
+					// Create prefabs after regular objects so that prefab children don't steal "unused" GameObject IDs from regular objects and then get overwritten by those objects
+					for (json objectJson : prefabsJson)
 					{
-						Logger::log.Err("{}", e.what());
+						GameObject loadedObject = GameObject();
+						loadedObject.PutData(objectJson);
+						loadedScene.AddSceneObject(loadedObject);															
 					}
+
+					// // Just in case any parent objects had not been created at the time of children being created on scene load,
+					// // loop through objects with parents and add them as children to their parent objects
+					// for (GameObject& sceneObject : loadedScene.GetSceneObjects())
+					// {
+					// 	long myID = sceneObject.GetID();
+					// 	long parentID = sceneObject.GetParentID();
+
+					// 	if (parentID != -1)
+					// 	{
+					// 		if (loadedScene.GetObjectByID(parentID) != nullptr)
+					// 		{
+					// 			loadedScene.GetObjectByID(parentID)->AddChild(myID);
+					// 		}
+					// 	}
+					// }
+
+					loadedScene.SortSceneObjects();
+					loadedScene.CreateJoints();
+					F_Application->OnLoadScene(pointToPath);
 				}
-				catch (json::exception err)
-				{
-					Logger::log.Err("{}", err.what());
-				}
+
 			}
 			else
 			{

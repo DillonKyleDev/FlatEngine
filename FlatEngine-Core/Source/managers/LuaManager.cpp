@@ -33,10 +33,10 @@ namespace FlatEngine
 	{
 		sol::state lua;	
 		std::map<std::string, sol::protected_function> loadedSceneScriptFiles = std::map<std::string, sol::protected_function>();
-		std::map<std::string, sol::protected_function> loadedPersistantScriptFiles = std::map<std::string, sol::protected_function>();
+		std::map<std::string, sol::protected_function> loadedPersistentScriptFiles = std::map<std::string, sol::protected_function>();
 		std::vector<std::string> luaScriptPaths = std::vector<std::string>();
 		std::vector<std::string> luaScriptNames = std::vector<std::string>();
-		std::map<std::string, std::string> luaScriptsMap = std::map<std::string, std::string>();
+		std::map<std::string, std::string> luaScriptsMap = std::map<std::string, std::string>();		
 
 		void InitLua()
 		{
@@ -181,27 +181,39 @@ namespace FlatEngine
 			};
 			lua["GetScriptParam"] = [](std::string paramName, long ID, std::optional<std::string> scriptName)
 			{
-				GameObject* thisObject = SceneManager::loadedScene.GetObjectByID(ID);
 				LuaParameter parameter = LuaParameter();
 				std::string defaultScriptName = lua["calling_script_name"].get_or<std::string>("Script (Lua)");
-				std::string truncatedName = defaultScriptName.substr(0, defaultScriptName.size() - 6);
+				// std::string truncatedName = defaultScriptName.substr(0, defaultScriptName.size() - 6);
+				GameObject* thisObject = SceneManager::loadedScene.GetObjectByID(ID);
+				ScriptData* scriptData = nullptr;
+				std::string objectName = "<OBJECT NOT VALID>";
 
-				if (thisObject != nullptr)
+				if (ID == FL::ProjectManager::PERSISTENT_SCRIPT_ID)
 				{
-					ScriptData* script = thisObject->Get<Script>()->FindScript(scriptName.value_or(defaultScriptName));
-					if (script != nullptr)
+					scriptData = FL::ProjectManager::loadedProject.persistentScript.FindScript(scriptName.value_or(defaultScriptName));
+					objectName = "Persistent Script";
+				}
+				else if (thisObject != nullptr)
+				{
+					scriptData = thisObject->Get<Script>()->FindScript(scriptName.value_or(defaultScriptName));
+					objectName = thisObject->GetName();
+				}								
+
+				if (thisObject != nullptr || ID == FL::ProjectManager::PERSISTENT_SCRIPT_ID)
+				{					
+					if (scriptData != nullptr)
 					{
-						parameter = script->GetScriptParameter(paramName);
+						parameter = scriptData->GetScriptParameter(paramName);
 
 						if (parameter.type == ParameterType_None)
 						{
-							std::string errorMessage = "No parameter with the name \"" + paramName + "\" found in " + scriptName.value_or(defaultScriptName) + " Script on the " + thisObject->GetName() + " GameObject";
+							std::string errorMessage = "No parameter with the name \"" + paramName + "\" found in " + scriptName.value_or(defaultScriptName) + " Script on the " + objectName + " GameObject";
 							Logger::log.Err("{}", errorMessage);
 						}
 					}
 					else
 					{
-						std::string errorMessage = thisObject->GetName() + " does not contain the Script named " + scriptName.value_or(defaultScriptName);
+						std::string errorMessage = objectName + " does not contain the Script named " + scriptName.value_or(defaultScriptName);
 						Logger::log.Err("{}", errorMessage);
 					}
 				}
@@ -252,7 +264,11 @@ namespace FlatEngine
 					message += LuaObjectToString(v);
 					message += " ";
 				}
-				Logger::log.LuaDebug(message, lua["calling_script_name"], lua["my_id"]);
+				
+				if (lua["my_id"] == FL::ProjectManager::PERSISTENT_SCRIPT_ID)
+					Logger::log.PersistentDebug(message, lua["calling_script_name"], "PS");
+				else
+				 	Logger::log.LuaDebug(message, lua["calling_script_name"], std::to_string((long)lua["my_id"]));				
 			};
 			lua["GetMappingContext"] = [](std::string contextName)
 			{
@@ -361,12 +377,9 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Vector2>("Vector2",
-				sol::constructors<Vector2(), Vector2(float x,float y)>(),
-				"SetX", &Vector2::SetX,
-				"x", sol::readonly(&Vector2::x),
-				"SetY", &Vector2::SetY,
-				"y", sol::readonly(&Vector2::y),
-				"SetXY", &Vector2::_xy,
+				sol::constructors<Vector2(), Vector2(float x,float y)>(),				
+				"x", &Vector2::x,				
+				"y", &Vector2::y,				
 				"Normalize", &Vector2::NormalizeSelf,
 				"Rotate", &Vector2::RotateSelf,
 				"GetMagnitude", &Vector2::GetMagnitude,
@@ -379,26 +392,18 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Vector3>("Vector3",
-				sol::constructors<Vector3(), Vector3(float x, float y, float z)>(),
-				"SetX", &Vector3::SetX,
-				"x", sol::readonly(&Vector3::x),
-				"SetY", &Vector3::SetY,
-				"y", sol::readonly(&Vector3::y),
-				"SetZ", &Vector3::SetZ,
-				"z", sol::readonly(&Vector3::z)
+				sol::constructors<Vector3(), Vector3(float x, float y, float z)>(),				
+				"x", &Vector3::x,				
+				"y", &Vector3::y,				
+				"z", &Vector3::z
 			);
 
 			lua.new_usertype<Vector4>("Vector4",
 				sol::constructors<Vector4(), Vector4(float x, float y, float z, float w)>(),		
-				"SetX", &Vector4::SetX,
-				"x", sol::readonly(&Vector4::x),
-				"SetY", &Vector4::SetY,
-				"y", sol::readonly(&Vector4::y),
-				"SetZ", &Vector4::SetZ,
-				"z", sol::readonly(&Vector4::z),
-				"SetW", &Vector4::SetW,
-				"w", sol::readonly(&Vector4::w),
-				"SetXYZW", &Vector4::_xyzw
+				"x", &Vector4::x,
+				"y", &Vector4::y,
+				"z", &Vector4::z,
+				"w", &Vector4::w
 			);
 
 			lua.new_usertype<GameObject>("GameObject",
@@ -686,11 +691,11 @@ namespace FlatEngine
 					}
 				}
 			}
-			Script& persistantScript = ProjectManager::loadedProject.persistantScript;
+			Script& persistentScript = ProjectManager::loadedProject.persistentScript;
 
-			if (persistantScript.IsActive())
+			if (persistentScript.IsActive())
 			{
-				for (ScriptData scriptData : persistantScript.GetScripts())
+				for (ScriptData scriptData : persistentScript.GetScripts())
 				{
 					RunLuaFuncOnSingleScript(scriptData, nullptr, functionName);
 				}
@@ -703,7 +708,7 @@ namespace FlatEngine
 
 			if (attachedScript != "")
 			{
-				if (loadedSceneScriptFiles.count(attachedScript) || loadedPersistantScriptFiles.count(attachedScript))
+				if (loadedSceneScriptFiles.count(attachedScript) || loadedPersistentScriptFiles.count(attachedScript))
 				{
 					std::string message = "";
 					if (ReadyScriptFile(attachedScript, message))
@@ -774,21 +779,21 @@ namespace FlatEngine
 			}
 		}
 
-		void RunPersistantAwakeAndStart()
+		void RunPersistentAwakeAndStart()
 		{
-			loadedPersistantScriptFiles.clear();
-			Script& persistantScript = ProjectManager::loadedProject.persistantScript;
+			loadedPersistentScriptFiles.clear();
+			Script& persistentScript = ProjectManager::loadedProject.persistentScript;
 
-			if (persistantScript.IsActive())
+			if (persistentScript.IsActive())
 			{
-				for (ScriptData scriptData : persistantScript.GetScripts())
+				for (ScriptData scriptData : persistentScript.GetScripts())
 				{
-					InitLuaScript(scriptData, nullptr, loadedPersistantScriptFiles);
+					InitLuaScript(scriptData, nullptr, loadedPersistentScriptFiles);
 					RunLuaFuncOnSingleScript(scriptData, nullptr, "Awake");
 				}
-				for (ScriptData scriptData : persistantScript.GetScripts())
+				for (ScriptData scriptData : persistentScript.GetScripts())
 				{
-					InitLuaScript(scriptData, nullptr, loadedPersistantScriptFiles);
+					InitLuaScript(scriptData, nullptr, loadedPersistentScriptFiles);
 					RunLuaFuncOnSingleScript(scriptData, nullptr, "Start");
 				}
 			}
@@ -920,14 +925,10 @@ namespace FlatEngine
 		{
 			// Store the name of the script being called in the Lua state (for hands-off named logging from Lua)
 			lua["calling_script_name"] = scriptName;
-
-			if (object != nullptr)
-			{			
-				// Store this object object the Lua state to be accessed by the next Lua function calls
-				lua["this_object"] = object;
-				// Store object id
-				lua["my_id"] = object->GetID();
-			}
+			// Store this object object the Lua state to be accessed by the next Lua function calls
+			lua["this_object"] = object != nullptr ? sol::make_object(lua, object) : sol::make_object(lua, sol::lua_nil);
+			// Store object id
+			lua["my_id"] = object != nullptr ? object->GetID() : FL::ProjectManager::PERSISTENT_SCRIPT_ID;
 		}
 
 		// Checks that the script filePath is good and sends the Lua state contextual data
@@ -998,9 +999,9 @@ namespace FlatEngine
 				}
 				return true;
 			}
-			else if (loadedPersistantScriptFiles.count(scriptToLoad))
+			else if (loadedPersistentScriptFiles.count(scriptToLoad))
 			{
-				sol::protected_function loadedScriptFile = loadedPersistantScriptFiles.at(scriptToLoad);
+				sol::protected_function loadedScriptFile = loadedPersistentScriptFiles.at(scriptToLoad);
 				sol::protected_function_result scriptResult;
 				scriptResult = loadedScriptFile(); // invoke the script and get the result
 				lua["loaded_script_file"] = scriptToLoad;

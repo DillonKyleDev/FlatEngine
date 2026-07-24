@@ -16,8 +16,8 @@ namespace FlatEngine
 	{
 	public:
 		Button(long myID = -1, long parentObjectID = -1);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		void SetActiveDimensions(float width, float height);
 		void SetActiveOffset(Vector2 offset);

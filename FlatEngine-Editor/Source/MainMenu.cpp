@@ -143,9 +143,9 @@ namespace FlatGui
 					FL::Settings::settings.SaveSettings();	
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-				if (ImGui::MenuItem(" Persistant Scripts", NULL, FL::Settings::settings.b_showPersistantScript))
+				if (ImGui::MenuItem(" Persistent Scripts", NULL, FL::Settings::settings.b_showPersistentScript))
 				{
-					FL::Settings::settings.b_showPersistantScript = !FL::Settings::settings.b_showPersistantScript;
+					FL::Settings::settings.b_showPersistentScript = !FL::Settings::settings.b_showPersistentScript;
 					FL::Settings::settings.SaveSettings();	
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
@@ -219,9 +219,9 @@ namespace FlatGui
 					FL::ProjectManager::loadedProject.focusedGameObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1)->GetID();				
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-				if (ImGui::MenuItem(" Persistant Script"))
+				if (ImGui::MenuItem(" Persistent Script"))
 				{
-					FL::ProjectManager::loadedProject.persistantScript.AddScript();
+					FL::ProjectManager::loadedProject.persistentScript.AddScript();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 				if (ImGui::BeginMenu(" Components"))

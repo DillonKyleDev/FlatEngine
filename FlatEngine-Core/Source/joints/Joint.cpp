@@ -21,7 +21,7 @@ namespace FlatEngine
 			{ "jointType", (int)m_baseProps.jointType },
 			{ "bodyAID", m_baseProps.bodyAID },
 			{ "bodyBID", m_baseProps.bodyBID },
-			{ "_collideConnected", m_baseProps.b_collideConnected },
+			{ "b_collideConnected", m_baseProps.b_collideConnected },
 			{ "anchorAX", m_baseProps.anchorA.x },
 			{ "anchorAY", m_baseProps.anchorA.y },
 			{ "anchorBX", m_baseProps.anchorB.x },

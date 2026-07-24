@@ -1,7 +1,6 @@
 #pragma once
 #include "components/Component.h"
 #include "render/Texture.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
 
@@ -13,8 +12,8 @@ namespace FlatEngine
 	public:
 		Sprite(long myID = -1, long parentObjectID = -1);
 		~Sprite();
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		void SetTexture(std::string path);
 		VkDescriptorSet GetTexture();

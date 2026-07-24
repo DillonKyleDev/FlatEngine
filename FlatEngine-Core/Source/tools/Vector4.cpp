@@ -35,58 +35,6 @@ namespace FlatEngine
 		w = toCopy.w;
 	}
 
-	Vector4::~Vector4()
-	{
-	}
-
-	void Vector4::_xyzw(float newX, float newY, float newZ, float newW)
-	{
-		x = newX;
-		y = newY;
-		z = newZ;
-		w = newW;
-	}
-
-	float Vector4::GetX()
-	{
-		return x;
-	}
-
-	float Vector4::GetY()
-	{
-		return y;
-	}
-
-	float Vector4::GetZ()
-	{
-		return z;
-	}
-
-	float Vector4::GetW()
-	{
-		return w;
-	}
-
-	void Vector4::SetX(float newX)
-	{
-		x = newX;
-	}
-
-	void Vector4::SetY(float newY)
-	{
-		y = newY;
-	}
-
-	void Vector4::SetZ(float newZ)
-	{
-		z = newZ;
-	}
-
-	void Vector4::SetW(float newW)
-	{
-		w = newW;
-	}
-
 	Vector4 Vector4::operator=(ImVec4& toCopy)
 	{
 		x *= toCopy.x;
@@ -119,6 +67,50 @@ namespace FlatEngine
 		result.w *= right.w;
 
 		return result;
+	}
+
+	Vector4 Vector4::operator*(float& right)
+	{
+		Vector4 result = Vector4(x, y, z, w);
+
+		result.x *= right;
+		result.y *= right;
+		result.z *= right;
+		result.w *= right;
+
+		return result;
+	}
+
+	Vector4& Vector4::operator*=(float right)
+	{
+		x *= right;
+		y *= right;
+		z *= right;
+		w *= right;
+
+		return *this;
+	}
+
+	Vector4 Vector4::operator+(Vector4& right)
+	{
+		Vector4 result = Vector4(x, y, z, w);
+
+		result.x += right.x;
+		result.y += right.y;
+		result.z += right.z;
+		result.w += right.w;
+
+		return result;
+	}
+
+	Vector4& Vector4::operator+=(float right)
+	{
+		x += right;
+		y += right;
+		z += right;
+		w += right;
+
+		return *this;
 	}
 
 	bool Vector4::operator==(const Vector4& right)

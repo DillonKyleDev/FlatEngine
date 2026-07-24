@@ -16,9 +16,9 @@ namespace FlatEngine
 
 		json jsonData = {			
 			{ "dampingRatio", m_jointProps.dampingRatio },
-			{ "_enableLimit", m_jointProps.b_enableLimit },
-			{ "_enableMotor", m_jointProps.b_enableMotor },
-			{ "_enableSpring", m_jointProps.b_enableSpring },
+			{ "b_enableLimit", m_jointProps.b_enableLimit },
+			{ "b_enableMotor", m_jointProps.b_enableMotor },
+			{ "b_enableSpring", m_jointProps.b_enableSpring },
 			{ "hertz", m_jointProps.hertz },
 			{ "minLength", m_jointProps.minLength },
 			{ "maxLength", m_jointProps.maxLength },

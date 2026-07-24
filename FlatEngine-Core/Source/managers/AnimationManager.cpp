@@ -66,8 +66,8 @@ namespace FlatEngine
             // 	json jsonData = {
             // 		{ "functionName", eventProp->functionName },
             // 		{ "time", eventProp->time },
-            // 		{ "_cppEvent", eventProp->b_cppEvent },
-            // 		{ "_luaEvent", eventProp->b_luaEvent }
+            // 		{ "b_cppEvent", eventProp->b_cppEvent },
+            // 		{ "b_luaEvent", eventProp->b_luaEvent }
             // 	};
 
             // 	json parameters = {
@@ -106,9 +106,9 @@ namespace FlatEngine
                     { "xScale", transformProp->scale.x },
                     { "yScale", transformProp->scale.y },
                     { "zScale", transformProp->scale.z },
-                    { "_posAnimated", transformProp->b_posAnimated },
-                    { "_scaleAnimated", transformProp->b_scaleAnimated },
-                    { "_rotationAnimated", transformProp->b_rotationAnimated }
+                    { "b_posAnimated", transformProp->b_posAnimated },
+                    { "b_scaleAnimated", transformProp->b_scaleAnimated },
+                    { "b_rotationAnimated", transformProp->b_rotationAnimated }
                 };
                 std::string data = jsonData.dump();
                 transformProps.push_back(json::parse(data));
@@ -128,11 +128,11 @@ namespace FlatEngine
             // 		{ "tintColorY", spriteProp->tintColor.y },
             // 		{ "tintColorZ", spriteProp->tintColor.z },
             // 		{ "tintColorW", spriteProp->tintColor.w },
-            // 		{ "_instantTintChange", spriteProp->b_instantTintChange },
-            // 		{ "_pathAnimated", spriteProp->b_pathAnimated },
-            // 		{ "_offsetAnimated", spriteProp->b_offsetAnimated },
-            // 		{ "_scaleAnimated", spriteProp->b_scaleAnimated },
-            // 		{ "_tintColorAnimated", spriteProp->b_tintColorAnimated }
+            // 		{ "b_instantTintChange", spriteProp->b_instantTintChange },
+            // 		{ "b_pathAnimated", spriteProp->b_pathAnimated },
+            // 		{ "b_offsetAnimated", spriteProp->b_offsetAnimated },
+            // 		{ "b_scaleAnimated", spriteProp->b_scaleAnimated },
+            // 		{ "b_tintColorAnimated", spriteProp->b_tintColorAnimated }
             // 	};
 
             // 	std::string data = jsonData.dump();
@@ -144,7 +144,7 @@ namespace FlatEngine
             // {
             // 	json jsonData = {
             // 		{ "time", cameraProp->time },
-            // 		{ "_isPrimaryCamera", cameraProp->b_isPrimaryCamera }
+            // 		{ "b_isPrimaryCamera", cameraProp->b_isPrimaryCamera }
             // 	};
             // 	std::string data = jsonData.dump();
             // 	cameraProps.push_back(json::parse(data));
@@ -166,7 +166,7 @@ namespace FlatEngine
             // 	json jsonData = {
             // 		{ "time", audioProp->time },
             // 		{ "soundName", audioProp->soundName },
-            // 		{ "_stopAllOtherSounds", audioProp->b_stopAllOtherSounds }
+            // 		{ "b_stopAllOtherSounds", audioProp->b_stopAllOtherSounds }
             // 	};
             // 	std::string data = jsonData.dump();
             // 	audioProps.push_back(json::parse(data));
@@ -185,11 +185,11 @@ namespace FlatEngine
             // 		{ "tintColorY", textProp->tintColor.y },
             // 		{ "tintColorZ", textProp->tintColor.z },
             // 		{ "tintColorW", textProp->tintColor.w },
-            // 		{ "_instantTintChange", textProp->b_instantTintChange },
-            // 		{ "_fontPathAnimated", textProp->b_fontPathAnimated },
-            // 		{ "_textAnimated", textProp->b_textAnimated },
-            // 		{ "_tintColorAnimated", textProp->b_tintColorAnimated },
-            // 		{ "_offsetAnimated", textProp->b_offsetAnimated }
+            // 		{ "b_instantTintChange", textProp->b_instantTintChange },
+            // 		{ "b_fontPathAnimated", textProp->b_fontPathAnimated },
+            // 		{ "b_textAnimated", textProp->b_textAnimated },
+            // 		{ "b_tintColorAnimated", textProp->b_tintColorAnimated },
+            // 		{ "b_offsetAnimated", textProp->b_offsetAnimated }
             // 	};
             // 	std::string data = jsonData.dump();
             // 	textProps.push_back(json::parse(data));
@@ -200,7 +200,7 @@ namespace FlatEngine
             // {
             // 	json jsonData = {
             // 		{ "time", characterControllerProp->time },
-            // 		{ "_isActive", characterControllerProp->b_isActive }
+            // 		{ "b_isActive", characterControllerProp->b_isActive }
             // 	};
             // 	std::string data = jsonData.dump();
             // 	characterControllerProps.push_back(json::parse(data));
@@ -220,8 +220,8 @@ namespace FlatEngine
             json animationData = json::object({
                 { "name", animData.name },
                 { "length", animData.length },
-                { "_loop", animData.b_loop },
-                { "_startAtOrigin", animData.b_startAtOrigin },
+                { "b_loop", animData.b_loop },
+                { "b_startAtOrigin", animData.b_startAtOrigin },
                 { "animationProperties", animProps }
             });
             
@@ -263,8 +263,8 @@ namespace FlatEngine
                     std::string animName = JsonHelper::CheckJsonString(animationJson, "name", "name");
                     animProps.name = animName;
                     animProps.length = JsonHelper::CheckJsonFloat(animationJson, "length", animName);
-                    animProps.b_loop = JsonHelper::CheckJsonBool(animationJson, "_loop", animName);
-                    animProps.b_startAtOrigin = JsonHelper::CheckJsonBool(animationJson, "_startAtOrigin", animName);
+                    animProps.b_loop = JsonHelper::CheckJsonBool(animationJson, "b_loop", animName);
+                    animProps.b_startAtOrigin = JsonHelper::CheckJsonBool(animationJson, "b_startAtOrigin", animName);
                     
                     // json eventProps = animationJson["animationProperties"]["event"];
                     // for (int i = 0; i < eventProps.size(); i++)
@@ -275,8 +275,8 @@ namespace FlatEngine
                     // 		frame->name = "Event";
                     // 		frame->functionName = CheckJsonString(eventProps.at(i), "functionName", animName);
                     // 		frame->time = CheckJsonFloat(eventProps.at(i), "time", animName);
-                    // 		frame->b_cppEvent = CheckJsonBool(eventProps.at(i), "_cppEvent", animName);
-                    // 		frame->b_luaEvent = CheckJsonBool(eventProps.at(i), "_luaEvent", animName);
+                    // 		frame->b_cppEvent = CheckJsonBool(eventProps.at(i), "b_cppEvent", animName);
+                    // 		frame->b_luaEvent = CheckJsonBool(eventProps.at(i), "b_luaEvent", animName);
 
                     // 		json parameters = eventProps.at(i)["parameters"];
                     // 		EventPropFunctionParam parameter;
@@ -311,9 +311,9 @@ namespace FlatEngine
                             frame->position = Vector3(JsonHelper::CheckJsonFloat(transformProps.at(i), "xPosition", animName),JsonHelper::CheckJsonFloat(transformProps.at(i), "yPosition", animName), JsonHelper::CheckJsonFloat(transformProps.at(i), "zPosition", animName));
                             frame->rotation = Vector3(JsonHelper::CheckJsonFloat(transformProps.at(i), "xRotation", animName), JsonHelper::CheckJsonFloat(transformProps.at(i), "yRotation", animName), JsonHelper::CheckJsonFloat(transformProps.at(i), "zRotation", animName));
                             frame->scale = Vector3(JsonHelper::CheckJsonFloat(transformProps.at(i), "xScale", animName), JsonHelper::CheckJsonFloat(transformProps.at(i), "yScale", animName), JsonHelper::CheckJsonFloat(transformProps.at(i), "zScale", animName));
-                            frame->b_posAnimated = JsonHelper::CheckJsonBool(transformProps.at(i), "_posAnimated", animName);
-                            frame->b_scaleAnimated = JsonHelper::CheckJsonBool(transformProps.at(i), "_scaleAnimated", animName);
-                            frame->b_rotationAnimated = JsonHelper::CheckJsonBool(transformProps.at(i), "_rotationAnimated", animName);
+                            frame->b_posAnimated = JsonHelper::CheckJsonBool(transformProps.at(i), "b_posAnimated", animName);
+                            frame->b_scaleAnimated = JsonHelper::CheckJsonBool(transformProps.at(i), "b_scaleAnimated", animName);
+                            frame->b_rotationAnimated = JsonHelper::CheckJsonBool(transformProps.at(i), "b_rotationAnimated", animName);
                             animProps.props.push_back(std::move(frame));
                         }
                         catch (const json::out_of_range& e)
@@ -335,17 +335,17 @@ namespace FlatEngine
                     // 		frame->xOffset = CheckJsonFloat(spriteProps.at(i), "xOffset", animName);
                     // 		frame->yOffset = CheckJsonFloat(spriteProps.at(i), "yOffset", animName);
                     // 		frame->path = CheckJsonString(spriteProps.at(i), "path", animName);
-                    // 		frame->b_instantTintChange = CheckJsonBool(spriteProps.at(i), "_instantTintChange", animName);
+                    // 		frame->b_instantTintChange = CheckJsonBool(spriteProps.at(i), "b_instantTintChange", animName);
                     // 		frame->tintColor = Vector4(
                     // 			CheckJsonFloat(spriteProps.at(i), "tintColorX", animName),
                     // 			CheckJsonFloat(spriteProps.at(i), "tintColorY", animName),
                     // 			CheckJsonFloat(spriteProps.at(i), "tintColorZ", animName),
                     // 			CheckJsonFloat(spriteProps.at(i), "tintColorW", animName)
                     // 		);
-                    // 		frame->b_pathAnimated = CheckJsonBool(spriteProps.at(i), "_pathAnimated", animName);
-                    // 		frame->b_scaleAnimated = CheckJsonBool(spriteProps.at(i), "_scaleAnimated", animName);
-                    // 		frame->b_offsetAnimated = CheckJsonBool(spriteProps.at(i), "_offsetAnimated", animName);
-                    // 		frame->b_tintColorAnimated = CheckJsonBool(spriteProps.at(i), "_tintColorAnimated", animName);
+                    // 		frame->b_pathAnimated = CheckJsonBool(spriteProps.at(i), "b_pathAnimated", animName);
+                    // 		frame->b_scaleAnimated = CheckJsonBool(spriteProps.at(i), "b_scaleAnimated", animName);
+                    // 		frame->b_offsetAnimated = CheckJsonBool(spriteProps.at(i), "b_offsetAnimated", animName);
+                    // 		frame->b_tintColorAnimated = CheckJsonBool(spriteProps.at(i), "b_tintColorAnimated", animName);
                     // 		animProps.spriteProps.push_back(frame);
                     // 	}
                     // 	catch (const json::out_of_range& e)
@@ -362,7 +362,7 @@ namespace FlatEngine
                     // 		std::shared_ptr<S_Camera> frame = std::make_shared<S_Camera>();
                     // 		frame->name = "Camera";
                     // 		frame->time = CheckJsonFloat(cameraProps.at(i), "time", animName);
-                    // 		frame->b_isPrimaryCamera = CheckJsonBool(cameraProps.at(i), "_isPrimaryCamera", animName);
+                    // 		frame->b_isPrimaryCamera = CheckJsonBool(cameraProps.at(i), "b_isPrimaryCamera", animName);
                     // 		animProps.cameraProps.push_back(frame);
                     // 	}
                     // 	catch (const json::out_of_range& e)
@@ -396,7 +396,7 @@ namespace FlatEngine
                     // 		frame->name = "Audio";
                     // 		frame->time = CheckJsonFloat(audioProps.at(i), "time", animName);
                     // 		frame->soundName = CheckJsonString(audioProps.at(i), "soundName", animName);
-                    // 		frame->b_stopAllOtherSounds = CheckJsonBool(audioProps.at(i), "_stopAllOtherSounds", animName);
+                    // 		frame->b_stopAllOtherSounds = CheckJsonBool(audioProps.at(i), "b_stopAllOtherSounds", animName);
                     // 		animProps.audioProps.push_back(frame);
                     // 	}
                     // 	catch (const json::out_of_range& e)
@@ -421,10 +421,10 @@ namespace FlatEngine
                     // 			CheckJsonFloat(textProps.at(i), "tintColorZ", frame->name),
                     // 			CheckJsonFloat(textProps.at(i), "tintColorW", frame->name)
                     // 		);
-                    // 		frame->b_fontPathAnimated = CheckJsonBool(textProps.at(i), "_fontPathAnimated", animName);
-                    // 		frame->b_textAnimated = CheckJsonBool(textProps.at(i), "_textAnimated", animName);
-                    // 		frame->b_tintColorAnimated = CheckJsonBool(textProps.at(i), "_tintColorAnimated", animName);
-                    // 		frame->b_offsetAnimated = CheckJsonBool(textProps.at(i), "_offsetAnimated", animName);
+                    // 		frame->b_fontPathAnimated = CheckJsonBool(textProps.at(i), "b_fontPathAnimated", animName);
+                    // 		frame->b_textAnimated = CheckJsonBool(textProps.at(i), "b_textAnimated", animName);
+                    // 		frame->b_tintColorAnimated = CheckJsonBool(textProps.at(i), "b_tintColorAnimated", animName);
+                    // 		frame->b_offsetAnimated = CheckJsonBool(textProps.at(i), "b_offsetAnimated", animName);
                     // 		animProps.textProps.push_back(frame);
                     // 	}
                     // 	catch (const json::out_of_range& e)
@@ -441,7 +441,7 @@ namespace FlatEngine
                     // 		std::shared_ptr<S_CharacterController> frame = std::make_shared<S_CharacterController>();
                     // 		frame->name = "CharacterController";
                     // 		frame->time = CheckJsonFloat(characterControllerProps.at(i), "time", animName);
-                    // 		frame->b_isActive = CheckJsonBool(characterControllerProps.at(i), "_isActive", animName);
+                    // 		frame->b_isActive = CheckJsonBool(characterControllerProps.at(i), "b_isActive", animName);
                     // 		animProps.characterControllerProps.push_back(frame);
                     // 	}
                     // 	catch (const json::out_of_range& e)

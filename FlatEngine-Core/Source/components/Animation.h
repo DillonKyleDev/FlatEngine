@@ -1,7 +1,6 @@
 #pragma once
 #include "components/Component.h"
 #include "managers/LuaManager.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
 
@@ -213,8 +212,8 @@ namespace FlatEngine
     {
     public:
         Animation(long myID = -1, long parentObjectID = -1);
-        std::string GetData();
-        void PutData(json componentJson);
+        json GetData();
+        void PutData(json componentJson, std::string objectName);
 
         void AddAnimation(std::string name, std::string filePath);
         bool ContainsName(std::string name);

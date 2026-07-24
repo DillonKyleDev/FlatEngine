@@ -26,7 +26,7 @@ namespace FlatGui
 	extern void RenderMappingContextEditor(bool& b_show);
 	extern void RenderMaterialEditor(bool& b_show);
 	extern void RenderModals();
-	extern void RenderPersistantScript(bool& b_show);
+	extern void RenderPersistentScript(bool& b_show);
 	extern void RenderProfiler(bool& b_show);
 	extern void RenderProjectHub(bool& b_projectSelected, std::string& projectPath);
 	extern void RenderSettings(bool& b_show);

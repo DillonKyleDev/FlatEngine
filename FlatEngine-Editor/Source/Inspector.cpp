@@ -544,24 +544,22 @@ namespace FlatGui
 
 						ImGui::SameLine(0,3);
 						int trashButtonWidth = 23;
-						float labelWidth = 60;
+						float labelWidth = 0;
 						float inputWidth = ImGui::GetContentRegionAvail().x - trashButtonWidth;	
-						std::vector<std::string> trueFalse = { "false", "true" };
-						int currentBool = param.p_bool ? 1 : 0;
 						std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
 						std::string inputElementID = "LuaScript_" + std::to_string(scriptCounter) + std::to_string(paramCounter);		
 						FL::Vector2 inputSize = FL::Vector2(ImGui::GetContentRegionAvail().x - trashButtonWidth, 0);	
 						switch(param.type)
 						{
-							case FL::LuaManager::ParameterType_String: FL::GuiCore::RenderInput("##String" + inputElementID, "", param.p_string, false, inputWidth); break;						
-							case FL::LuaManager::ParameterType_Int32:  FL::GuiCore::RenderDragInt("##Int" + inputElementID, inputWidth, param.p_int32, 1, INT_MIN, INT_MAX, 0, "input"); break;
-							case FL::LuaManager::ParameterType_Int64:  FL::GuiCore::RenderDragLong("##Long" + inputElementID, inputWidth, param.p_int64, "input"); break;
-							case FL::LuaManager::ParameterType_Float:  FL::GuiCore::RenderDragFloat("##Float" + inputElementID, inputWidth, param.p_float, 0.01f, -FLT_MAX, FLT_MAX, 0, "input"); break;
-							case FL::LuaManager::ParameterType_Double: FL::GuiCore::RenderDragDouble("##Float" + inputElementID, inputWidth, param.p_double, 0.01f, "input"); break;
-							case FL::LuaManager::ParameterType_Bool:   if (FL::GuiCore::RenderCombo("##BooleanDropdown" + inputElementID, param.p_bool ? "true" : "false", trueFalse, currentBool, inputWidth)) { param.p_bool = (bool)currentBool; } break;
-							case FL::LuaManager::ParameterType_Vec2:   GuiEditor::RenderVector2Table("Vector2" + inputElementID, param.name, param.p_vec2, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;															
-							case FL::LuaManager::ParameterType_Vec3:   GuiEditor::RenderVector3Table("Vector2" + inputElementID, param.name, param.p_vec3, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;													
-							case FL::LuaManager::ParameterType_Vec4:   GuiEditor::RenderVector4Table("Vector2" + inputElementID, param.name, param.p_vec4, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;										
+							case FL::LuaManager::ParameterType_String: GuiEditor::RenderStringTable("##String" + inputElementID, param.name, param.p_string, inputWidth, labelWidth, "noEditTableRowFieldBg"); break;
+							case FL::LuaManager::ParameterType_Int32:  GuiEditor::RenderInt32Table("##Int32" + inputElementID, param.name, param.p_int32, inputWidth, labelWidth, "noEditTableRowFieldBg"); break;
+							case FL::LuaManager::ParameterType_Int64:  GuiEditor::RenderInt64Table("##Int64" + inputElementID, param.name, param.p_int64, inputWidth, labelWidth, "noEditTableRowFieldBg"); break;
+							case FL::LuaManager::ParameterType_Float:  GuiEditor::RenderFloatTable("##Float" + inputElementID, param.name, param.p_float, inputSize, labelWidth, "noEditTableRowFieldBg"); break;
+							case FL::LuaManager::ParameterType_Double: GuiEditor::RenderDoubleTable("##Double" + inputElementID, param.name, param.p_double, inputSize, labelWidth, "noEditTableRowFieldBg"); break;
+							case FL::LuaManager::ParameterType_Bool:   GuiEditor::RenderBoolTable("##Bool" + inputElementID, param.name, param.p_bool, inputSize, labelWidth, "noEditTableRowFieldBg"); break;
+							case FL::LuaManager::ParameterType_Vec2:   GuiEditor::RenderVector2Table("##Vector2" + inputElementID, param.name, param.p_vec2, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;															
+							case FL::LuaManager::ParameterType_Vec3:   GuiEditor::RenderVector3Table("##Vector3" + inputElementID, param.name, param.p_vec3, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;													
+							case FL::LuaManager::ParameterType_Vec4:   GuiEditor::RenderVector4Table("##Vector4" + inputElementID, param.name, param.p_vec4, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;										
 							default: break;
 						}
 

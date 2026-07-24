@@ -1,8 +1,6 @@
 #pragma once
 #include "components/Component.h"
 #include "managers/LuaManager.h"
-// #include "scripting/CPPScript.h"
-#include "tools/JsonHelper.h"
 #include "tools/Logger.h"
 
 #include <memory>
@@ -112,8 +110,8 @@ namespace FlatEngine
 	public:		
 		Script(long myID = -1, long parentObjectID = -1);	
 		~Script();	
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 		std::vector<ScriptData>& GetScripts();
 		ScriptData* FindScript(std::string name);
 		void AddScript(ScriptData scriptData = ScriptData());

@@ -38,7 +38,7 @@ namespace FlatEngine
 		m_uboVec4s = std::map<std::string, glm::vec4>();
 	}
 
-	std::string Mesh::GetData()
+	json Mesh::GetData()
 	{
 		json texturesData = json::object();
 		for (std::map<uint32_t, Texture>::iterator textureData = m_texturesByIndex.begin(); textureData != m_texturesByIndex.end(); textureData++)
@@ -77,28 +77,24 @@ namespace FlatEngine
 		}
 
 		json jsonData = {
-			{ "type", "Mesh"},
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "textures", texturesData },
 			{ "materialName", m_materialName },
 			{ "modelPath", modelPath },
 			{ "uboVec4s", uboVec4s }
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	void Mesh::PutData(json componentJson)
+	void Mesh::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Mesh GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
 		std::string materialName = JsonHelper::CheckJsonString(componentJson, "materialName", objectName);
 		std::string modelPath = JsonHelper::CheckJsonString(componentJson, "modelPath", objectName);
@@ -443,7 +439,7 @@ namespace FlatEngine
 				primaryCamera = &SceneView::sceneViewCamera;
 				cameraPosition = Vector3();
 			}
-			else
+			else if (primaryCamera->GetParentObject() != nullptr)
 				cameraPosition = primaryCamera->GetParentObject()->Get<Transform>()->GetPosition();
 			
 			materialVec4s = m_gameViewMaterial->GetUBOVec4Names();

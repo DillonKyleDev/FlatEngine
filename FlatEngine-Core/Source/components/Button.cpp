@@ -39,43 +39,37 @@ namespace FlatEngine
 		m_b_onRightClickCallbackSet = false;
 	}
 
-	std::string Button::GetData()
+	json Button::GetData()
 	{
 		json jsonData = {
-			{ "type", "Button" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "activeWidth", m_activeWidth },
 			{ "activeHeight", m_activeHeight },
 			{ "activeOffsetX", m_activeOffset.x },
 			{ "activeOffsetY", m_activeOffset.y },
 			{ "activeLayer", m_activeLayer },
 			{ "functionName", m_functionName },
-			{ "_luaFunction", m_b_luaFunction },
-			{ "_cppFunction", m_b_cppFunction },
-			{ "_leftClick", m_b_leftClick },
-			{ "_rightClick", m_b_rightClick },
+			{ "b_luaFunction", m_b_luaFunction },
+			{ "b_cppFunction", m_b_cppFunction },
+			{ "b_leftClick", m_b_leftClick },
+			{ "b_rightClick", m_b_rightClick },
 		};
 
 		json parameters = m_functionParams.GetData();
 		
 		jsonData.push_back({ "functionParameters", parameters });
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	void Button::PutData(json componentJson)
+	void Button::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Button GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);		
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));	
 
 		LuaManager::LuaParameter parameter;
 		parameter.PutData(componentJson.at("functionParameters"), objectName);
@@ -85,10 +79,10 @@ namespace FlatEngine
 		SetActiveOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "activeOffsetX", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
 		SetActiveLayer(JsonHelper::CheckJsonInt(componentJson, "activeLayer", objectName));
 		SetFunctionName(JsonHelper::CheckJsonString(componentJson, "functionName", objectName));
-		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "_cppEvent", objectName));
-		SetIsLua(JsonHelper::CheckJsonBool(componentJson, "_luaEvent", objectName));								
-		SetLeftClick(JsonHelper::CheckJsonBool(componentJson, "_leftClick", objectName));
-		SetRightClick(JsonHelper::CheckJsonBool(componentJson, "_rightClick", objectName));	
+		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "b_cppEvent", objectName));
+		SetIsLua(JsonHelper::CheckJsonBool(componentJson, "b_luaEvent", objectName));								
+		SetLeftClick(JsonHelper::CheckJsonBool(componentJson, "b_leftClick", objectName));
+		SetRightClick(JsonHelper::CheckJsonBool(componentJson, "b_rightClick", objectName));	
     }
 
 	void Button::SetActiveDimensions(float width, float height)

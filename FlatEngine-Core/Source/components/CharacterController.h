@@ -4,8 +4,6 @@
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
-#include <string>
-
 
 namespace FlatEngine 
 {
@@ -15,8 +13,8 @@ namespace FlatEngine
 	{
 	public:
 		CharacterController(long myID, long parentObjectID);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 
 		Capsule& GetCapsule();
 		void Move(Vector2 direction);

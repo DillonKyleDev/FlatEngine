@@ -14,6 +14,7 @@
 #include "components/TileMap.h"
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
+#include "tools/JsonHelper.h"
 
 
 namespace FlatEngine
@@ -40,6 +41,114 @@ namespace FlatEngine
 		m_childrenIDs = std::vector<long>();
 		m_hierarchyPosition = 0;
 	}
+
+	template<> Button*     			GameObject::Get<Button>() 	 		   { return SceneManager::loadedScene.Get<Button>(m_ID); }
+	template<> Transform*    		GameObject::Get<Transform>() 	 	   { return SceneManager::loadedScene.Get<Transform>(m_ID); }
+
+	json GameObject::GetData()
+	{
+		json componentsArray = json::array();
+
+		for (int i = 1; i < FL::ComponentType_Size; i++)
+		{
+			FL::Component* component = GetComponent((FL::ComponentType)i);
+			if (component != nullptr)
+			{               
+				componentsArray.push_back(component->GetData());
+			}
+		}
+		
+		json childrenArray = json::array();
+		for (int c = 0; c < m_childrenIDs.size(); c++)
+		{
+			childrenArray.push_back(m_childrenIDs[c]);
+		}	
+		
+		std::string objectName = GetName();
+		Vector3 spawnLocation = GetPrefabSpawnLocation();
+		if (Get<Transform>())
+		{
+			spawnLocation = Get<Transform>()->GetPosition();
+		}
+		
+		json gameObjectJson = json::object({
+			{ "b_isPrefab", IsPrefab() },
+			{ "prefabName", GetPrefabName() },
+			{ "spawnLocationX", spawnLocation.x },
+			{ "spawnLocationY", spawnLocation.y },
+			{ "spawnLocationZ", spawnLocation.z },
+			{ "name", objectName },
+			{ "id", GetID() },
+			{ "b_isActive", IsActive() },
+			{ "parent", GetParentID() },
+			{ "children", childrenArray },
+			{ "components", componentsArray },
+			{ "tags", m_tagList.GetData() }		
+		});
+
+		return gameObjectJson;
+	}
+
+	void GameObject::PutData(json objectJson)
+	{
+		m_name = JsonHelper::CheckJsonString(objectJson, "name", "Name");
+		SetActive(JsonHelper::CheckJsonBool(objectJson, "b_isActive", m_name));
+		SetIsPrefab(JsonHelper::CheckJsonBool(objectJson, "b_isPrefab", m_name));
+		SetID(JsonHelper::CheckJsonLong(objectJson, "id", m_name));
+		SetParentID(JsonHelper::CheckJsonLong(objectJson, "parent", m_name));	
+		SetPrefabName(JsonHelper::CheckJsonString(objectJson, "prefabName", m_name));
+		Vector3 spawnLocation = Vector3(JsonHelper::CheckJsonFloat(objectJson, "spawnLocationX", m_name), JsonHelper::CheckJsonFloat(objectJson, "spawnLocationY", m_name), JsonHelper::CheckJsonFloat(objectJson, "spawnLocationZ", m_name));
+		m_tagList = TagList(GetID());				
+
+		if (JsonHelper::JsonContains(objectJson, "children", m_name))
+		{
+			for (int c = 0; c < objectJson["children"].size(); c++)
+			{
+				m_childrenIDs.push_back(objectJson["children"][c]);
+			}
+		}
+
+		// if (b_isPrefab)
+		// {
+		// 	loadedObject = PrefabManager::Instantiate(prefabName, spawnLocation, scene, loadedParentID, loadedID);
+		// 	if (loadedObject != nullptr)
+		// 	{
+		// 		SetName(m_name);
+		// 	}
+		// }
+		// else
+		// {			                
+		// loadedObject = FL::SceneManager::loadedScene.CreateEmptyGameObject(loadedParentID, loadedID);                
+
+		if (JsonHelper::JsonContains(objectJson, "tags", m_name))
+			m_tagList.PutData(objectJson.at("tags"));		
+
+		if (objectJson.contains("components"))
+		{
+			for (int j = 0; j < objectJson.at("components").size(); j++)
+			{
+				json componentJson = objectJson.at("components").at(j);
+				// std::string typeString = JsonHelper::CheckJsonString(componentJson, "type", m_name);
+				long id = JsonHelper::CheckJsonLong(componentJson, "id", m_name);
+				ComponentType type = (ComponentType)JsonHelper::CheckJsonInt(componentJson, "type", m_name);
+				AddComponent(type, id, componentJson); 
+				// for (int i = 1; i < ComponentType_Size; i++)
+				// {
+				// 	if (typeString == ComponentTypeStrings[i])
+				// 	{
+				// 		Component* component = AddComponent((ComponentType)i, id, componentJson);                                          
+				// 	}
+				// }                                                   
+			}
+		}
+
+		// Update the moment of inertia if applicable
+		if (Get<Button>() != nullptr)
+		{
+			Get<Button>()->CalculateActiveEdges();
+		}
+	}
+
 
 	void GameObject::SetIsPrefab(bool b_isPrefab)
 	{
@@ -129,7 +238,6 @@ namespace FlatEngine
 	template<> Animation*           GameObject::Get<Animation>()  		   { return SceneManager::loadedScene.Get<Animation>(m_ID); }
 	template<> Audio*      			GameObject::Get<Audio>()      		   { return SceneManager::loadedScene.Get<Audio>(m_ID); }
 	template<> Body*      			GameObject::Get<Body>()      		   { return SceneManager::loadedScene.Get<Body>(m_ID); }
-	template<> Button*     			GameObject::Get<Button>() 	 		   { return SceneManager::loadedScene.Get<Button>(m_ID); }
 	template<> Camera*     			GameObject::Get<Camera>() 			   { return SceneManager::loadedScene.Get<Camera>(m_ID); }
 	template<> Canvas*     			GameObject::Get<Canvas>() 	 		   { return SceneManager::loadedScene.Get<Canvas>(m_ID); }
 	template<> CharacterController* GameObject::Get<CharacterController>() { return SceneManager::loadedScene.Get<CharacterController>(m_ID); }
@@ -140,23 +248,23 @@ namespace FlatEngine
 	template<> Sprite*     			GameObject::Get<Sprite>()    		   { return SceneManager::loadedScene.Get<Sprite>(m_ID); }
 	template<> Text*       			GameObject::Get<Text>() 			   { return SceneManager::loadedScene.Get<Text>(m_ID); }
 	template<> TileMap*    			GameObject::Get<TileMap>() 	 		   { return SceneManager::loadedScene.Get<TileMap>(m_ID); }
-	template<> Transform*    		GameObject::Get<Transform>() 	 	   { return SceneManager::loadedScene.Get<Transform>(m_ID); }
+
 	
-	template<> Animation*           GameObject::Add<Animation>(long componentID, json componentJson)  		   { Animation* component = SceneManager::loadedScene.Add<Animation>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Audio*      			GameObject::Add<Audio>(long componentID, json componentJson)      		   { Audio* component = SceneManager::loadedScene.Add<Audio>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Body*      			GameObject::Add<Body>(long componentID, json componentJson)      		   { Body* component = SceneManager::loadedScene.Add<Body>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Button*     			GameObject::Add<Button>(long componentID, json componentJson) 	 		   { Button* component = SceneManager::loadedScene.Add<Button>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Camera*     			GameObject::Add<Camera>(long componentID, json componentJson) 			   { Camera* component = SceneManager::loadedScene.Add<Camera>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Canvas*     			GameObject::Add<Canvas>(long componentID, json componentJson) 	 		   { Canvas* component = SceneManager::loadedScene.Add<Canvas>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> CharacterController* GameObject::Add<CharacterController>(long componentID, json componentJson) { CharacterController* component = SceneManager::loadedScene.Add<CharacterController>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> JointMaker* 			GameObject::Add<JointMaker>(long componentID, json componentJson)		   { JointMaker* component = SceneManager::loadedScene.Add<JointMaker>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Light*      			GameObject::Add<Light>(long componentID, json componentJson)      		   { Light* component = SceneManager::loadedScene.Add<Light>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Mesh*       			GameObject::Add<Mesh>(long componentID, json componentJson) 			   { Mesh* component = SceneManager::loadedScene.Add<Mesh>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Script*    			GameObject::Add<Script>(long componentID, json componentJson) 	 		   { Script* component = SceneManager::loadedScene.Add<Script>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Sprite*     			GameObject::Add<Sprite>(long componentID, json componentJson)    		   { Sprite* component = SceneManager::loadedScene.Add<Sprite>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Text*       			GameObject::Add<Text>(long componentID, json componentJson) 			   { Text* component = SceneManager::loadedScene.Add<Text>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> TileMap*    			GameObject::Add<TileMap>(long componentID, json componentJson) 	 		   { TileMap* component = SceneManager::loadedScene.Add<TileMap>(m_ID, componentID); component->PutData(componentJson); return component; }
-	template<> Transform*           GameObject::Add<Transform>(long componentID, json componentJson)		   { Transform* component = SceneManager::loadedScene.Add<Transform>(m_ID, componentID); component->PutData(componentJson); return component; }
+	template<> Animation*           GameObject::Add<Animation>(long componentID, json componentJson)  		   { Animation* component = SceneManager::loadedScene.Add<Animation>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Audio*      			GameObject::Add<Audio>(long componentID, json componentJson)      		   { Audio* component = SceneManager::loadedScene.Add<Audio>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Body*      			GameObject::Add<Body>(long componentID, json componentJson)      		   { Body* component = SceneManager::loadedScene.Add<Body>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Button*     			GameObject::Add<Button>(long componentID, json componentJson) 	 		   { Button* component = SceneManager::loadedScene.Add<Button>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Camera*     			GameObject::Add<Camera>(long componentID, json componentJson) 			   { Camera* component = SceneManager::loadedScene.Add<Camera>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Canvas*     			GameObject::Add<Canvas>(long componentID, json componentJson) 	 		   { Canvas* component = SceneManager::loadedScene.Add<Canvas>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> CharacterController* GameObject::Add<CharacterController>(long componentID, json componentJson) { CharacterController* component = SceneManager::loadedScene.Add<CharacterController>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> JointMaker* 			GameObject::Add<JointMaker>(long componentID, json componentJson)		   { JointMaker* component = SceneManager::loadedScene.Add<JointMaker>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Light*      			GameObject::Add<Light>(long componentID, json componentJson)      		   { Light* component = SceneManager::loadedScene.Add<Light>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Mesh*       			GameObject::Add<Mesh>(long componentID, json componentJson) 			   { Mesh* component = SceneManager::loadedScene.Add<Mesh>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Script*    			GameObject::Add<Script>(long componentID, json componentJson) 	 		   { Script* component = SceneManager::loadedScene.Add<Script>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Sprite*     			GameObject::Add<Sprite>(long componentID, json componentJson)    		   { Sprite* component = SceneManager::loadedScene.Add<Sprite>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Text*       			GameObject::Add<Text>(long componentID, json componentJson) 			   { Text* component = SceneManager::loadedScene.Add<Text>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> TileMap*    			GameObject::Add<TileMap>(long componentID, json componentJson) 	 		   { TileMap* component = SceneManager::loadedScene.Add<TileMap>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
+	template<> Transform*           GameObject::Add<Transform>(long componentID, json componentJson)		   { Transform* component = SceneManager::loadedScene.Add<Transform>(m_ID, componentID); component->PutData(componentJson, m_name); return component; }
 
 	Component* GameObject::AddComponent(ComponentType type, long componentID, json componentJson)
 	{

@@ -25,7 +25,7 @@ namespace FlatEngine
 			GameObjectPrefabData object;
 			object.name = JsonHelper::CheckJsonString(objectJson, "name", "Name");
 			std::string objectName = object.name;
-			object.b_isActive = JsonHelper::CheckJsonBool(objectJson, "_isActive", objectName);
+			object.b_isActive = JsonHelper::CheckJsonBool(objectJson, "b_isActive", objectName);
 			object.ID = JsonHelper::CheckJsonLong(objectJson, "id", objectName);
 			object.parentID = JsonHelper::CheckJsonLong(objectJson, "parent", objectName);
 			TagList tags = TagList(object.ID);
@@ -70,8 +70,8 @@ namespace FlatEngine
 				json componentJson = objectJson["components"][j];
 				std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
 				long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-				bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-				bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+				bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName);
+				bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 
 				// connect this component to the object being saved
 				object.componentIDs.push_back(componentID);
@@ -80,7 +80,7 @@ namespace FlatEngine
 				if (type == "Transform")
 				{
 					std::shared_ptr<TransformPrefabData> transform = std::make_shared<TransformPrefabData>();
-					transform->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					transform->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					transform->type = "Transform";
 					transform->id = componentID;
 					transform->b_isActive = b_isActive;
@@ -96,7 +96,7 @@ namespace FlatEngine
 				else if (type == "Sprite")
 				{
 					std::shared_ptr<SpritePrefabData> sprite = std::make_shared<SpritePrefabData>();
-					sprite->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					sprite->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					sprite->type = "Sprite";
 					sprite->id = componentID;
 					sprite->b_isActive = b_isActive;
@@ -124,7 +124,7 @@ namespace FlatEngine
 				else if (type == "Camera")
 				{
 					std::shared_ptr<CameraPrefabData> camera = std::make_shared<CameraPrefabData>();
-					camera->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					camera->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					camera->type = "Camera";
 					camera->id = componentID;
 					camera->b_isActive = b_isActive;
@@ -132,7 +132,7 @@ namespace FlatEngine
 					camera->ownerId = object.ID;
 					camera->width = JsonHelper::CheckJsonFloat(componentJson, "width", objectName);
 					camera->height = JsonHelper::CheckJsonFloat(componentJson, "height", objectName);
-					camera->b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "_isPrimaryCamera", objectName);
+					camera->b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "b_isPrimaryCamera", objectName);
 					camera->zoom = JsonHelper::CheckJsonFloat(componentJson, "zoom", objectName);
 					camera->frustrumColor = Vector4(
 						JsonHelper::CheckJsonFloat(componentJson, "frustrumRed", objectName),
@@ -140,7 +140,7 @@ namespace FlatEngine
 						JsonHelper::CheckJsonFloat(componentJson, "frustrumBlue", objectName),
 						JsonHelper::CheckJsonFloat(componentJson, "frustrumAlpha", objectName)
 					);
-					camera->b_shouldFollow = JsonHelper::CheckJsonBool(componentJson, "_follow", objectName);
+					camera->b_shouldFollow = JsonHelper::CheckJsonBool(componentJson, "b_follow", objectName);
 					camera->followSmoothing = JsonHelper::CheckJsonFloat(componentJson, "followSmoothing", objectName);
 					camera->toFollowID = JsonHelper::CheckJsonLong(componentJson, "following", objectName);
 
@@ -149,7 +149,7 @@ namespace FlatEngine
 				else if (type == "Script")
 				{
 					std::shared_ptr<ScriptPrefabData> script = std::make_shared<ScriptPrefabData>();
-					script->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					script->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					script->type = "Script";
 					script->id = componentID;
 					script->b_isActive = b_isActive;
@@ -172,7 +172,7 @@ namespace FlatEngine
 				else if (type == "Button")
 				{
 					std::shared_ptr<ButtonPrefabData> button = std::make_shared<ButtonPrefabData>();
-					button->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					button->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					button->type = "Button";
 					button->ownerId = object.ID;
 					button->id = componentID;
@@ -182,15 +182,15 @@ namespace FlatEngine
 					button->activeOffset = Vector2(JsonHelper::CheckJsonFloat(componentJson, "activeOffsetX", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeOffsetY", objectName));
 					button->activeLayer = JsonHelper::CheckJsonInt(componentJson, "activeLayer", objectName);
 					button->functionName = JsonHelper::CheckJsonString(componentJson, "functionName", objectName);
-					button->b_cppEvent = JsonHelper::CheckJsonBool(componentJson, "_cppEvent", objectName);
-					button->b_luaEvent = JsonHelper::CheckJsonBool(componentJson, "_luaEvent", objectName);
+					button->b_cppEvent = JsonHelper::CheckJsonBool(componentJson, "b_cppEvent", objectName);
+					button->b_luaEvent = JsonHelper::CheckJsonBool(componentJson, "b_luaEvent", objectName);
 
 					prefab.components.emplace(componentID, button);
 				}
 				else if (type == "Canvas")
 				{
 					std::shared_ptr<CanvasPrefabData> canvas = std::make_shared<CanvasPrefabData>();
-					canvas->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					canvas->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					canvas->type = "Canvas";
 					canvas->ownerId = object.ID;
 					canvas->id = componentID;
@@ -199,14 +199,14 @@ namespace FlatEngine
 					canvas->width = JsonHelper::CheckJsonFloat(componentJson, "width", objectName);
 					canvas->height = JsonHelper::CheckJsonFloat(componentJson, "height", objectName);
 					canvas->layerNumber = JsonHelper::CheckJsonInt(componentJson, "layerNumber", objectName);
-					canvas->b_blocksLayers = JsonHelper::CheckJsonBool(componentJson, "_blocksLayers", objectName);
+					canvas->b_blocksLayers = JsonHelper::CheckJsonBool(componentJson, "b_blocksLayers", objectName);
 
 					prefab.components.emplace(componentID, canvas);
 				}
 				else if (type == "Animation")
 				{
 					std::shared_ptr<AnimationPrefabData> animation = std::make_shared<AnimationPrefabData>();
-					animation->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					animation->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					animation->type = "Animation";
 					animation->ownerId = object.ID;
 					animation->id = componentID;
@@ -234,7 +234,7 @@ namespace FlatEngine
 				else if (type == "Audio")
 				{
 					std::shared_ptr<AudioPrefabData> audio = std::make_shared<AudioPrefabData>();
-					audio->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					audio->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					audio->type = "Audio";
 					audio->ownerId = object.ID;
 					audio->id = componentID;
@@ -277,7 +277,7 @@ namespace FlatEngine
 				else if (type == "Text")
 				{
 					std::shared_ptr<TextPrefabData> text = std::make_shared<TextPrefabData>();
-					text->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					text->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					text->type = "Text";
 					text->ownerId = object.ID;
 					text->id = componentID;
@@ -300,7 +300,7 @@ namespace FlatEngine
 				else if (type == "CharacterController")
 				{
 					std::shared_ptr<CharacterControllerPrefabData> characterController = std::make_shared<CharacterControllerPrefabData>();
-					characterController->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					characterController->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					characterController->type = "CharacterController";
 					characterController->ownerId = object.ID;
 					characterController->id = componentID;
@@ -316,16 +316,16 @@ namespace FlatEngine
 				{
 
 					std::shared_ptr<BodyPrefabData> body = std::make_shared<BodyPrefabData>();
-					body->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);				
+					body->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);				
 					body->type = "Body";
 					body->ownerId = object.ID;
 					body->id = componentID;
 					body->b_isActive = b_isActive;
 					body->b_isCollapsed = b_isCollapsed;
 					body->bodyType = (b2BodyType)JsonHelper::CheckJsonInt(componentJson, "bodyType", objectName);
-					body->b_lockedRotation = JsonHelper::CheckJsonBool(componentJson, "_lockedRotation", objectName);
-					body->b_lockedXAxis = JsonHelper::CheckJsonBool(componentJson, "_lockedXAxis", objectName);
-					body->b_lockedYAxis = JsonHelper::CheckJsonBool(componentJson, "_lockedYAxis", objectName);				
+					body->b_lockedRotation = JsonHelper::CheckJsonBool(componentJson, "b_lockedRotation", objectName);
+					body->b_lockedXAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedXAxis", objectName);
+					body->b_lockedYAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedYAxis", objectName);				
 					body->linearDamping = JsonHelper::CheckJsonFloat(componentJson, "linearDamping", objectName);
 					body->angularDamping = JsonHelper::CheckJsonFloat(componentJson, "angularDamping", objectName);
 					body->gravityScale = JsonHelper::CheckJsonFloat(componentJson, "gravityScale", objectName);
@@ -339,9 +339,9 @@ namespace FlatEngine
 								json shapeJson = componentJson.at("shapes").at(i);
 								std::shared_ptr<ShapePrefabData> shape = std::make_shared<ShapePrefabData>();
 
-								shape->b_enableContactEvents = JsonHelper::CheckJsonBool(shapeJson, "_enableContactEvents", objectName);;
-								shape->b_enableSensorEvents = JsonHelper::CheckJsonBool(shapeJson, "_enableSensorEvents", objectName);;
-								shape->b_isSensor = JsonHelper::CheckJsonBool(shapeJson, "_isSensor", objectName);;
+								shape->b_enableContactEvents = JsonHelper::CheckJsonBool(shapeJson, "b_enableContactEvents", objectName);;
+								shape->b_enableSensorEvents = JsonHelper::CheckJsonBool(shapeJson, "b_enableSensorEvents", objectName);;
+								shape->b_isSensor = JsonHelper::CheckJsonBool(shapeJson, "b_isSensor", objectName);;
 								shape->shape = (Shape::ShapeType)JsonHelper::CheckJsonInt(shapeJson, "shape", objectName);
 								shape->positionOffset = Vector2(JsonHelper::CheckJsonFloat(shapeJson, "xOffset", objectName) , JsonHelper::CheckJsonFloat(shapeJson, "yOffset", objectName));
 								shape->rotationOffset.c = JsonHelper::CheckJsonFloat(shapeJson, "rotationOffsetCos", objectName);
@@ -352,7 +352,7 @@ namespace FlatEngine
 								shape->dimensions = Vector2(JsonHelper::CheckJsonFloat(shapeJson, "width", objectName) , JsonHelper::CheckJsonFloat(shapeJson, "height", objectName));
 								shape->radius = JsonHelper::CheckJsonFloat(shapeJson, "radius", objectName);
 								shape->capsuleLength = JsonHelper::CheckJsonFloat(shapeJson, "capsuleLength", objectName);
-								shape->b_horizontal = JsonHelper::CheckJsonBool(shapeJson, "_horizontal", objectName);
+								shape->b_horizontal = JsonHelper::CheckJsonBool(shapeJson, "b_horizontal", objectName);
 								shape->cornerRadius = JsonHelper::CheckJsonFloat(shapeJson, "cornerRadius", objectName);
 								
 								if (JsonHelper::JsonContains(shapeJson, "points", objectName))
@@ -371,7 +371,7 @@ namespace FlatEngine
 									}
 								}						
 
-								shape->b_isLoop = JsonHelper::CheckJsonBool(componentJson, "_lockedRotation", objectName);
+								shape->b_isLoop = JsonHelper::CheckJsonBool(componentJson, "b_lockedRotation", objectName);
 								shape->tangentSpeed = JsonHelper::CheckJsonFloat(componentJson, "linearDamping", objectName);
 								shape->rollingResistance = JsonHelper::CheckJsonFloat(componentJson, "linearDamping", objectName);
 								
@@ -472,7 +472,7 @@ namespace FlatEngine
 				else if (type == "Mesh")
 				{
 					std::shared_ptr<MeshPrefabData> mesh = std::make_shared<MeshPrefabData>();
-					mesh->b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
+					mesh->b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
 					mesh->type = "Mesh";
 					mesh->ownerId = object.ID;
 					mesh->id = componentID;
@@ -556,12 +556,12 @@ namespace FlatEngine
 			gameObject.SetParentID(-1);
 			gameObject.SetPrefabSpawnLocation(Vector3(0, 0, 0));
 
-			prefabObjectJsonArray.push_back(JsonHelper::CreateJsonFromObject(&gameObject));
+			// prefabObjectJsonArray.push_back(JsonHelper::CreateJsonFromObject(&gameObject));
 
 			std::vector<long> childIDs = gameObject.GetChildren();
 			for (int i = 0; i < childIDs.size(); i++)
 			{
-				prefabObjectJsonArray.push_back(JsonHelper::CreateJsonFromObject(SceneManager::loadedScene.GetObjectByID(childIDs[i])));
+				// prefabObjectJsonArray.push_back(JsonHelper::CreateJsonFromObject(SceneManager::loadedScene.GetObjectByID(childIDs[i])));
 			}
 
 			json prefabObject = json::object({ { "Prefab", prefabObjectJsonArray }, { "Name", prefabName } });
@@ -618,275 +618,275 @@ namespace FlatEngine
 
 		GameObject* InstantiateSelfAndChildren(long parentID, long childIDToFind, Prefab prefab, Scene* scene, Vector3 spawnLocation)
 		{
-			GameObject* self = SceneManager::loadedScene.CreateGameObject(parentID, -1);			
+			// GameObject self = SceneManager::loadedScene.CreateGameObject(parentID, -1);			
 
-			if (prefab.objects.count(childIDToFind) > 0)
-			{
-				GameObjectPrefabData myData = prefab.objects.at(childIDToFind);
+			// if (prefab.objects.count(childIDToFind) > 0)
+			// {
+			// 	GameObjectPrefabData myData = prefab.objects.at(childIDToFind);
 
-				// Root object settings
-				if (parentID == -1)
-				{
-					self->SetIsPrefab(true);
-					self->SetPrefabName(prefab.name);
-					self->SetPrefabSpawnLocation(spawnLocation);
-				}
+			// 	// Root object settings
+			// 	if (parentID == -1)
+			// 	{
+			// 		self->SetIsPrefab(true);
+			// 		self->SetPrefabName(prefab.name);
+			// 		self->SetPrefabSpawnLocation(spawnLocation);
+			// 	}
 
-				self->SetName(myData.name);
-				self->SetActive(myData.b_isActive);
-				self->SetTagList(myData.tagList);
-				self->GetTagList().SetOwnerID(self->GetID());
+			// 	self->SetName(myData.name);
+			// 	self->SetActive(myData.b_isActive);
+			// 	self->SetTagList(myData.tagList);
+			// 	self->GetTagList().SetOwnerID(self->GetID());
 
-				for (long componentID : myData.componentIDs)
-				{
-					// if (prefab.components.count(componentID) > 0)
-					// {
-					// 	if (prefab.components.at(componentID)->type == "Transform")
-					// 	{
-					// 		std::shared_ptr<TransformPrefabData> transformData = std::static_pointer_cast<TransformPrefabData>(prefab.components.at(componentID));
-					// 		Transform* transform = self->GetTransform();
-					// 		transform->SetActive(transformData->b_isActive);
-					// 		transform->SetCollapsed(transformData->b_isCollapsed);
-					// 		transform->SetScale(transformData->scale);
-					// 		transform->SetRotation(transformData->rotation);						
+			// 	for (long componentID : myData.componentIDs)
+			// 	{
+			// 		// if (prefab.components.count(componentID) > 0)
+			// 		// {
+			// 		// 	if (prefab.components.at(componentID)->type == "Transform")
+			// 		// 	{
+			// 		// 		std::shared_ptr<TransformPrefabData> transformData = std::static_pointer_cast<TransformPrefabData>(prefab.components.at(componentID));
+			// 		// 		Transform* transform = self->GetTransform();
+			// 		// 		transform->SetActive(transformData->b_isActive);
+			// 		// 		transform->SetCollapsed(transformData->b_isCollapsed);
+			// 		// 		transform->SetScale(transformData->scale);
+			// 		// 		transform->SetRotation(transformData->rotation);						
 
-					// 		if (parentID != -1)
-					// 		{
-					// 			Vector3 parentPosition = SceneManager::loadedScene.GetObjectByID(parentID)->GetTransform()->GetAbsolutePosition();							
-					// 			transform->SetPosition(transformData->position);
-					// 		}
-					// 		else
-					// 		{							
-					// 			transform->SetPosition(spawnLocation);
-					// 		}
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Sprite")
-					// 	{
-					// 		std::shared_ptr<SpritePrefabData> spriteData = std::static_pointer_cast<SpritePrefabData>(prefab.components.at(componentID));
-					// 		Sprite* sprite = self->AddSprite(-1, spriteData->b_isActive, spriteData->b_isCollapsed);
-					// 		sprite->SetTexture(spriteData->path);
-					// 		if (spriteData->path != "" && !FileHelper::DoesFileExist(spriteData->path))
-					// 		{
-					// 			Logger::log.Err("Sprite file not found for Prefab: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, spriteData->path);
-					// 		}
-					// 		sprite->SetScale(spriteData->scale);
-					// 		sprite->SetPivotPoint(spriteData->pivotPoint);
-					// 		sprite->SetOffset(spriteData->offset);
-					// 		sprite->SetRenderOrder(spriteData->renderOrder);
-					// 		sprite->SetTintColor(spriteData->tintColor);
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Camera")
-					// 	{
-					// 		std::shared_ptr<CameraPrefabData> cameraData = std::static_pointer_cast<CameraPrefabData>(prefab.components.at(componentID));
-					// 		Camera* camera = self->AddCamera(-1, cameraData->b_isActive, cameraData->b_isCollapsed);
-					// 		camera->SetDimensions(cameraData->width, cameraData->height);
-					// 		camera->SetZoom(cameraData->zoom);
-					// 		camera->SetFrustrumColor(cameraData->frustrumColor);
-					// 		camera->SetPrimaryCamera(cameraData->b_isPrimaryCamera);
-					// 		camera->SetToFollowID(cameraData->toFollowID);
-					// 		camera->SetShouldFollow(cameraData->b_shouldFollow);
-					// 		camera->SetFollowSmoothing(cameraData->followSmoothing);
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Script")
-					// 	{
-					// 		std::shared_ptr<ScriptPrefabData> scriptData = std::static_pointer_cast<ScriptPrefabData>(prefab.components.at(componentID));
-					// 		Script* script = self->AddScript(-1, scriptData->b_isActive, scriptData->b_isCollapsed);
-					// 		script->SetAttachedScript(scriptData->attachedScript);
-					// 		script->SetScriptParams(scriptData->scriptParams);
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Button")
-					// 	{
-					// 		std::shared_ptr<ButtonPrefabData> buttonData = std::static_pointer_cast<ButtonPrefabData>(prefab.components.at(componentID));
-					// 		Button* button = self->AddButton(-1, buttonData->b_isActive, buttonData->b_isCollapsed);
-					// 		button->SetActiveDimensions(buttonData->activeDimensions.x, buttonData->activeDimensions.y);
-					// 		button->SetActiveOffset(buttonData->activeOffset);
-					// 		button->SetActiveLayer(buttonData->activeLayer);
-					// 		button->SetFunctionName(buttonData->functionName);
-					// 		button->SetIsCPP(buttonData->b_cppEvent);
-					// 		button->SetIsLua(buttonData->b_luaEvent);
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Canvas")
-					// 	{
-					// 		std::shared_ptr<CanvasPrefabData> canvasData = std::static_pointer_cast<CanvasPrefabData>(prefab.components.at(componentID));
-					// 		Canvas* canvas = self->AddCanvas(-1, canvasData->b_isActive, canvasData->b_isCollapsed);
-					// 		canvas->SetLayerNumber(canvasData->layerNumber);
-					// 		canvas->SetBlocksLayers(canvasData->b_blocksLayers);
-					// 		canvas->SetDimensions(canvasData->width, canvasData->height);
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Animation")
-					// 	{
-					// 		std::shared_ptr<AnimationPrefabData> animationData = std::static_pointer_cast<AnimationPrefabData>(prefab.components.at(componentID));
-					// 		Animation* animation = self->AddAnimation(-1, animationData->b_isActive, animationData->b_isCollapsed);
+			// 		// 		if (parentID != -1)
+			// 		// 		{
+			// 		// 			Vector3 parentPosition = SceneManager::loadedScene.GetObjectByID(parentID)->GetTransform()->GetAbsolutePosition();							
+			// 		// 			transform->SetPosition(transformData->position);
+			// 		// 		}
+			// 		// 		else
+			// 		// 		{							
+			// 		// 			transform->SetPosition(spawnLocation);
+			// 		// 		}
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Sprite")
+			// 		// 	{
+			// 		// 		std::shared_ptr<SpritePrefabData> spriteData = std::static_pointer_cast<SpritePrefabData>(prefab.components.at(componentID));
+			// 		// 		Sprite* sprite = self->AddSprite(-1, spriteData->b_isActive, spriteData->b_isCollapsed);
+			// 		// 		sprite->SetTexture(spriteData->path);
+			// 		// 		if (spriteData->path != "" && !FileHelper::DoesFileExist(spriteData->path))
+			// 		// 		{
+			// 		// 			Logger::log.Err("Sprite file not found for Prefab: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, spriteData->path);
+			// 		// 		}
+			// 		// 		sprite->SetScale(spriteData->scale);
+			// 		// 		sprite->SetPivotPoint(spriteData->pivotPoint);
+			// 		// 		sprite->SetOffset(spriteData->offset);
+			// 		// 		sprite->SetRenderOrder(spriteData->renderOrder);
+			// 		// 		sprite->SetTintColor(spriteData->tintColor);
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Camera")
+			// 		// 	{
+			// 		// 		std::shared_ptr<CameraPrefabData> cameraData = std::static_pointer_cast<CameraPrefabData>(prefab.components.at(componentID));
+			// 		// 		Camera* camera = self->AddCamera(-1, cameraData->b_isActive, cameraData->b_isCollapsed);
+			// 		// 		camera->SetDimensions(cameraData->width, cameraData->height);
+			// 		// 		camera->SetZoom(cameraData->zoom);
+			// 		// 		camera->SetFrustrumColor(cameraData->frustrumColor);
+			// 		// 		camera->SetPrimaryCamera(cameraData->b_isPrimaryCamera);
+			// 		// 		camera->SetToFollowID(cameraData->toFollowID);
+			// 		// 		camera->SetShouldFollow(cameraData->b_shouldFollow);
+			// 		// 		camera->SetFollowSmoothing(cameraData->followSmoothing);
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Script")
+			// 		// 	{
+			// 		// 		std::shared_ptr<ScriptPrefabData> scriptData = std::static_pointer_cast<ScriptPrefabData>(prefab.components.at(componentID));
+			// 		// 		Script* script = self->AddScript(-1, scriptData->b_isActive, scriptData->b_isCollapsed);
+			// 		// 		script->SetAttachedScript(scriptData->attachedScript);
+			// 		// 		script->SetScriptParams(scriptData->scriptParams);
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Button")
+			// 		// 	{
+			// 		// 		std::shared_ptr<ButtonPrefabData> buttonData = std::static_pointer_cast<ButtonPrefabData>(prefab.components.at(componentID));
+			// 		// 		Button* button = self->AddButton(-1, buttonData->b_isActive, buttonData->b_isCollapsed);
+			// 		// 		button->SetActiveDimensions(buttonData->activeDimensions.x, buttonData->activeDimensions.y);
+			// 		// 		button->SetActiveOffset(buttonData->activeOffset);
+			// 		// 		button->SetActiveLayer(buttonData->activeLayer);
+			// 		// 		button->SetFunctionName(buttonData->functionName);
+			// 		// 		button->SetIsCPP(buttonData->b_cppEvent);
+			// 		// 		button->SetIsLua(buttonData->b_luaEvent);
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Canvas")
+			// 		// 	{
+			// 		// 		std::shared_ptr<CanvasPrefabData> canvasData = std::static_pointer_cast<CanvasPrefabData>(prefab.components.at(componentID));
+			// 		// 		Canvas* canvas = self->AddCanvas(-1, canvasData->b_isActive, canvasData->b_isCollapsed);
+			// 		// 		canvas->SetLayerNumber(canvasData->layerNumber);
+			// 		// 		canvas->SetBlocksLayers(canvasData->b_blocksLayers);
+			// 		// 		canvas->SetDimensions(canvasData->width, canvasData->height);
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Animation")
+			// 		// 	{
+			// 		// 		std::shared_ptr<AnimationPrefabData> animationData = std::static_pointer_cast<AnimationPrefabData>(prefab.components.at(componentID));
+			// 		// 		Animation* animation = self->AddAnimation(-1, animationData->b_isActive, animationData->b_isCollapsed);
 
-					// 		for (AnimationData animData : animationData->animations)
-					// 		{
-					// 			animation->AddAnimation(animData.name, animData.path);
-					// 			if (!FileHelper::DoesFileExist(animData.path))
-					// 			{
-					// 				Logger::log.Err("Animation file not found for Prefab: {} - on Animation: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, animData.name, animData.path);
-					// 			}
-					// 		}
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Audio")
-					// 	{
-					// 		std::shared_ptr<AudioPrefabData> audioData = std::static_pointer_cast<AudioPrefabData>(prefab.components.at(componentID));
-					// 		Audio* audio = self->AddAudio(-1, audioData->b_isActive, audioData->b_isCollapsed);
-					// 		audio->SetSounds(audioData->sounds);
-					// 		for (SoundData sound : audioData->sounds)
-					// 		{
-					// 			if (!FileHelper::DoesFileExist(sound.path))
-					// 			{
-					// 				Logger::log.Err("Audio file not found for Prefab: {} - on Audio: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, sound.name, sound.path);
-					// 			}
-					// 		}
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Text")
-					// 	{
-					// 		std::shared_ptr<TextPrefabData> textData = std::static_pointer_cast<TextPrefabData>(prefab.components.at(componentID));
-					// 		Text* text = self->AddText(-1, textData->b_isActive, textData->b_isCollapsed);
-					// 		if (!FileHelper::DoesFileExist(textData->fontPath))
-					// 		{
-					// 			Logger::log.Err("Font file not found for Prefab: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, textData->fontPath);
-					// 		}
-					// 		text->SetFontPath(textData->fontPath);
-					// 		text->SetFontSize(textData->fontSize);
-					// 		text->SetColor(textData->color);
-					// 		text->SetText(textData->text);
-					// 		text->SetOffset(textData->offset);
-					// 		text->SetRenderOrder(textData->renderOrder);
-					// 		text->LoadText();
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Body")
-					// 	{
-					// 		std::shared_ptr<BodyPrefabData> bodyData = std::static_pointer_cast<BodyPrefabData>(prefab.components.at(componentID));					
-					// 		PhysicsManager::BodyProps bodyProps;
-					// 		bodyProps.type = bodyData->bodyType;						;
-					// 		bodyProps.b_lockedRotation = bodyData->b_lockedRotation;
-					// 		bodyProps.b_lockedXAxis = bodyData->b_lockedXAxis;
-					// 		bodyProps.b_lockedYAxis = bodyData->b_lockedYAxis;
-					// 		bodyProps.linearDamping = bodyData->linearDamping;
-					// 		bodyProps.angularDamping = bodyData->angularDamping;
-					// 		bodyProps.gravityScale = bodyData->gravityScale;
+			// 		// 		for (AnimationData animData : animationData->animations)
+			// 		// 		{
+			// 		// 			animation->AddAnimation(animData.name, animData.path);
+			// 		// 			if (!FileHelper::DoesFileExist(animData.path))
+			// 		// 			{
+			// 		// 				Logger::log.Err("Animation file not found for Prefab: {} - on Animation: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, animData.name, animData.path);
+			// 		// 			}
+			// 		// 		}
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Audio")
+			// 		// 	{
+			// 		// 		std::shared_ptr<AudioPrefabData> audioData = std::static_pointer_cast<AudioPrefabData>(prefab.components.at(componentID));
+			// 		// 		Audio* audio = self->AddAudio(-1, audioData->b_isActive, audioData->b_isCollapsed);
+			// 		// 		audio->SetSounds(audioData->sounds);
+			// 		// 		for (SoundData sound : audioData->sounds)
+			// 		// 		{
+			// 		// 			if (!FileHelper::DoesFileExist(sound.path))
+			// 		// 			{
+			// 		// 				Logger::log.Err("Audio file not found for Prefab: {} - on Audio: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, sound.name, sound.path);
+			// 		// 			}
+			// 		// 		}
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Text")
+			// 		// 	{
+			// 		// 		std::shared_ptr<TextPrefabData> textData = std::static_pointer_cast<TextPrefabData>(prefab.components.at(componentID));
+			// 		// 		Text* text = self->AddText(-1, textData->b_isActive, textData->b_isCollapsed);
+			// 		// 		if (!FileHelper::DoesFileExist(textData->fontPath))
+			// 		// 		{
+			// 		// 			Logger::log.Err("Font file not found for Prefab: {}. This may lead to unexpected behavior.  \npath: {}", prefab.name, textData->fontPath);
+			// 		// 		}
+			// 		// 		text->SetFontPath(textData->fontPath);
+			// 		// 		text->SetFontSize(textData->fontSize);
+			// 		// 		text->SetColor(textData->color);
+			// 		// 		text->SetText(textData->text);
+			// 		// 		text->SetOffset(textData->offset);
+			// 		// 		text->SetRenderOrder(textData->renderOrder);
+			// 		// 		text->LoadText();
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Body")
+			// 		// 	{
+			// 		// 		std::shared_ptr<BodyPrefabData> bodyData = std::static_pointer_cast<BodyPrefabData>(prefab.components.at(componentID));					
+			// 		// 		PhysicsManager::BodyProps bodyProps;
+			// 		// 		bodyProps.type = bodyData->bodyType;						;
+			// 		// 		bodyProps.b_lockedRotation = bodyData->b_lockedRotation;
+			// 		// 		bodyProps.b_lockedXAxis = bodyData->b_lockedXAxis;
+			// 		// 		bodyProps.b_lockedYAxis = bodyData->b_lockedYAxis;
+			// 		// 		bodyProps.linearDamping = bodyData->linearDamping;
+			// 		// 		bodyProps.angularDamping = bodyData->angularDamping;
+			// 		// 		bodyProps.gravityScale = bodyData->gravityScale;
 
-					// 		Body* body = self->AddBody(bodyProps, -1, bodyData->b_isActive, bodyData->b_isCollapsed);
+			// 		// 		Body* body = self->AddBody(bodyProps, -1, bodyData->b_isActive, bodyData->b_isCollapsed);
 
-					// 		for (std::shared_ptr<ShapePrefabData> shapeData : bodyData->shapes)
-					// 		{
-					// 			Shape::ShapeProps shapeProps;
-					// 			shapeProps.shape = shapeData->shape;
-					// 			shapeProps.b_enableContactEvents = shapeData->b_enableContactEvents;
-					// 			shapeProps.b_enableSensorEvents = shapeData->b_enableSensorEvents;
-					// 			shapeProps.b_isSensor = shapeData->b_isSensor;
-					// 			shapeProps.positionOffset = shapeData->positionOffset;
-					// 			shapeProps.rotationOffset = shapeData->rotationOffset;
-					// 			shapeProps.restitution = shapeData->restitution;
-					// 			shapeProps.density = shapeData->density;
-					// 			shapeProps.friction = shapeData->friction;
-					// 			shapeProps.dimensions = shapeData->dimensions;
-					// 			shapeProps.radius = shapeData->radius;
-					// 			shapeProps.capsuleLength = shapeData->capsuleLength;
-					// 			shapeProps.b_horizontal = shapeData->b_horizontal;
-					// 			shapeProps.cornerRadius = shapeData->cornerRadius;
-					// 			shapeProps.points = shapeData->points;
-					// 			shapeProps.b_isLoop = shapeData->b_isLoop;
-					// 			shapeProps.tangentSpeed = shapeData->tangentSpeed;
-					// 			shapeProps.rollingResistance = shapeData->rollingResistance;
+			// 		// 		for (std::shared_ptr<ShapePrefabData> shapeData : bodyData->shapes)
+			// 		// 		{
+			// 		// 			Shape::ShapeProps shapeProps;
+			// 		// 			shapeProps.shape = shapeData->shape;
+			// 		// 			shapeProps.b_enableContactEvents = shapeData->b_enableContactEvents;
+			// 		// 			shapeProps.b_enableSensorEvents = shapeData->b_enableSensorEvents;
+			// 		// 			shapeProps.b_isSensor = shapeData->b_isSensor;
+			// 		// 			shapeProps.positionOffset = shapeData->positionOffset;
+			// 		// 			shapeProps.rotationOffset = shapeData->rotationOffset;
+			// 		// 			shapeProps.restitution = shapeData->restitution;
+			// 		// 			shapeProps.density = shapeData->density;
+			// 		// 			shapeProps.friction = shapeData->friction;
+			// 		// 			shapeProps.dimensions = shapeData->dimensions;
+			// 		// 			shapeProps.radius = shapeData->radius;
+			// 		// 			shapeProps.capsuleLength = shapeData->capsuleLength;
+			// 		// 			shapeProps.b_horizontal = shapeData->b_horizontal;
+			// 		// 			shapeProps.cornerRadius = shapeData->cornerRadius;
+			// 		// 			shapeProps.points = shapeData->points;
+			// 		// 			shapeProps.b_isLoop = shapeData->b_isLoop;
+			// 		// 			shapeProps.tangentSpeed = shapeData->tangentSpeed;
+			// 		// 			shapeProps.rollingResistance = shapeData->rollingResistance;
 
-					// 			switch (shapeProps.shape)
-					// 			{
-					// 			case Shape::BS_Box:
-					// 				body->AddBox(shapeProps);
-					// 				break;
-					// 			case Shape::BS_Circle:
-					// 				body->AddCircle(shapeProps);
-					// 				break;
-					// 			case Shape::BS_Capsule:
-					// 				body->AddCapsule(shapeProps);
-					// 				break;
-					// 			case Shape::BS_Polygon:
-					// 				body->AddPolygon(shapeProps);
-					// 				break;
-					// 			case Shape::BS_Chain:
-					// 				body->AddChain(shapeProps);
-					// 				break;
-					// 			default:
-					// 				break;
-					// 			}
-					// 		}
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "CharacterController")
-					// 	{
-					// 		std::shared_ptr<CharacterControllerPrefabData> characterControllerData = std::static_pointer_cast<CharacterControllerPrefabData>(prefab.components.at(componentID));
-					// 		CharacterController* characterController = self->AddCharacterController(-1, characterControllerData->b_isActive, characterControllerData->b_isCollapsed);
-					// 		characterController->SetMaxAcceleration(characterControllerData->maxAcceleration);
-					// 		characterController->SetMaxSpeed(characterControllerData->maxSpeed);
-					// 		characterController->SetAirControl(characterControllerData->airControl);
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "TileMap")
-					// 	{
-					// 		std::shared_ptr<TileMapPrefabData> tileMapData = std::static_pointer_cast<TileMapPrefabData>(prefab.components.at(componentID));
-					// 		TileMap* tileMap = self->AddTileMap(-1, tileMapData->b_isActive, tileMapData->b_isCollapsed);
-					// 		tileMap->SetWidth(tileMapData->width);
-					// 		tileMap->SetHeight(tileMapData->height);
-					// 		tileMap->SetTileWidth(tileMapData->tileWidth);
-					// 		tileMap->SetTileHeight(tileMapData->tileHeight);
-					// 		tileMap->SetTileSets(tileMapData->tileSetNames);
-					// 		tileMap->SetTiles(tileMapData->tiles);
+			// 		// 			switch (shapeProps.shape)
+			// 		// 			{
+			// 		// 			case Shape::BS_Box:
+			// 		// 				body->AddBox(shapeProps);
+			// 		// 				break;
+			// 		// 			case Shape::BS_Circle:
+			// 		// 				body->AddCircle(shapeProps);
+			// 		// 				break;
+			// 		// 			case Shape::BS_Capsule:
+			// 		// 				body->AddCapsule(shapeProps);
+			// 		// 				break;
+			// 		// 			case Shape::BS_Polygon:
+			// 		// 				body->AddPolygon(shapeProps);
+			// 		// 				break;
+			// 		// 			case Shape::BS_Chain:
+			// 		// 				body->AddChain(shapeProps);
+			// 		// 				break;
+			// 		// 			default:
+			// 		// 				break;
+			// 		// 			}
+			// 		// 		}
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "CharacterController")
+			// 		// 	{
+			// 		// 		std::shared_ptr<CharacterControllerPrefabData> characterControllerData = std::static_pointer_cast<CharacterControllerPrefabData>(prefab.components.at(componentID));
+			// 		// 		CharacterController* characterController = self->AddCharacterController(-1, characterControllerData->b_isActive, characterControllerData->b_isCollapsed);
+			// 		// 		characterController->SetMaxAcceleration(characterControllerData->maxAcceleration);
+			// 		// 		characterController->SetMaxSpeed(characterControllerData->maxSpeed);
+			// 		// 		characterController->SetAirControl(characterControllerData->airControl);
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "TileMap")
+			// 		// 	{
+			// 		// 		std::shared_ptr<TileMapPrefabData> tileMapData = std::static_pointer_cast<TileMapPrefabData>(prefab.components.at(componentID));
+			// 		// 		TileMap* tileMap = self->AddTileMap(-1, tileMapData->b_isActive, tileMapData->b_isCollapsed);
+			// 		// 		tileMap->SetWidth(tileMapData->width);
+			// 		// 		tileMap->SetHeight(tileMapData->height);
+			// 		// 		tileMap->SetTileWidth(tileMapData->tileWidth);
+			// 		// 		tileMap->SetTileHeight(tileMapData->tileHeight);
+			// 		// 		tileMap->SetTileSets(tileMapData->tileSetNames);
+			// 		// 		tileMap->SetTiles(tileMapData->tiles);
 
-					// 		for (std::pair<std::string, std::vector<std::pair<Vector2, Vector2>>> collisionAreaPair : tileMapData->collisionAreas)
-					// 		{
-					// 			std::string areaName = collisionAreaPair.first;
-					// 			tileMap->SetCollisionAreaValues(areaName, collisionAreaPair.second);
-					// 		}
-					// 	}
-					// 	else if (prefab.components.at(componentID)->type == "Mesh")
-					// 	{
-					// 		std::shared_ptr<MeshPrefabData> meshData = std::static_pointer_cast<MeshPrefabData>(prefab.components.at(componentID));
-					// 		Mesh* mesh = self->AddMesh(-1, meshData->b_isActive, meshData->b_isCollapsed);
-					// 		mesh->SetMaterial(meshData->materialName);
-					// 		mesh->SetModel(meshData->modelPath);
+			// 		// 		for (std::pair<std::string, std::vector<std::pair<Vector2, Vector2>>> collisionAreaPair : tileMapData->collisionAreas)
+			// 		// 		{
+			// 		// 			std::string areaName = collisionAreaPair.first;
+			// 		// 			tileMap->SetCollisionAreaValues(areaName, collisionAreaPair.second);
+			// 		// 		}
+			// 		// 	}
+			// 		// 	else if (prefab.components.at(componentID)->type == "Mesh")
+			// 		// 	{
+			// 		// 		std::shared_ptr<MeshPrefabData> meshData = std::static_pointer_cast<MeshPrefabData>(prefab.components.at(componentID));
+			// 		// 		Mesh* mesh = self->AddMesh(-1, meshData->b_isActive, meshData->b_isCollapsed);
+			// 		// 		mesh->SetMaterial(meshData->materialName);
+			// 		// 		mesh->SetModel(meshData->modelPath);
 
-					// 		for (std::map<uint32_t, Texture>::iterator texture = meshData->texturesByIndex.begin(); texture != meshData->texturesByIndex.end(); texture++)
-					// 		{
-					// 			mesh->AddTexture(texture->second, texture->first);
-					// 		}
-					// 		for (std::map<std::string, Vector4>::iterator uboVec4 = meshData->uboVec4s.begin(); uboVec4 != meshData->uboVec4s.end(); uboVec4++)
-					// 		{
-					// 			mesh->SetUBOVec4(uboVec4->first, uboVec4->second);
-					// 		}			
+			// 		// 		for (std::map<uint32_t, Texture>::iterator texture = meshData->texturesByIndex.begin(); texture != meshData->texturesByIndex.end(); texture++)
+			// 		// 		{
+			// 		// 			mesh->AddTexture(texture->second, texture->first);
+			// 		// 		}
+			// 		// 		for (std::map<std::string, Vector4>::iterator uboVec4 = meshData->uboVec4s.begin(); uboVec4 != meshData->uboVec4s.end(); uboVec4++)
+			// 		// 		{
+			// 		// 			mesh->SetUBOVec4(uboVec4->first, uboVec4->second);
+			// 		// 		}			
 
-					// 		mesh->CreateResources();
-					// 	}
-					// }
-				}
+			// 		// 		mesh->CreateResources();
+			// 		// 	}
+			// 		// }
+			// 	}
 
-				for (long prefabChildID : myData.childrenIDs)
-				{
-					GameObject* child = InstantiateSelfAndChildren(self->GetID(), prefabChildID, prefab, scene);
-					child->SetIsPrefabChild(true);
-				}
+			// 	for (long prefabChildID : myData.childrenIDs)
+			// 	{
+			// 		GameObject* child = InstantiateSelfAndChildren(self->GetID(), prefabChildID, prefab, scene);
+			// 		child->SetIsPrefabChild(true);
+			// 	}
 
-				// After all components are initialized, activate the script components if there are any
-				if (GameLoopStarted())
-				{
-					for (ScriptData scriptData : self->Get<Script>()->GetScripts())
-					{
-						if (LuaManager::InitLuaScript(scriptData, self, LuaManager::loadedSceneScriptFiles))
-						{
-							LuaManager::RunLuaFuncOnSingleScript(scriptData, self, "Awake");
-						}
-					}
-					for (ScriptData scriptData : self->Get<Script>()->GetScripts())
-					{
-						if (LuaManager::InitLuaScript(scriptData, self, LuaManager::loadedSceneScriptFiles))
-						{
-							LuaManager::RunLuaFuncOnSingleScript(scriptData, self, "Start");
-						}
-					}
-				}
-			}
+			// 	// After all components are initialized, activate the script components if there are any
+			// 	if (GameLoopStarted())
+			// 	{
+			// 		for (ScriptData scriptData : self->Get<Script>()->GetScripts())
+			// 		{
+			// 			if (LuaManager::InitLuaScript(scriptData, self, LuaManager::loadedSceneScriptFiles))
+			// 			{
+			// 				LuaManager::RunLuaFuncOnSingleScript(scriptData, self, "Awake");
+			// 			}
+			// 		}
+			// 		for (ScriptData scriptData : self->Get<Script>()->GetScripts())
+			// 		{
+			// 			if (LuaManager::InitLuaScript(scriptData, self, LuaManager::loadedSceneScriptFiles))
+			// 			{
+			// 				LuaManager::RunLuaFuncOnSingleScript(scriptData, self, "Start");
+			// 			}
+			// 		}
+			// 	}
+			// }
 
-			return self;
+			// return self;
 		}
 
 		GameObject *Instantiate(std::string prefabName, Vector3 spawnLocation, Scene* scene, long parentID, long ID)

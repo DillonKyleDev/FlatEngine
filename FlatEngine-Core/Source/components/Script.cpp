@@ -18,13 +18,13 @@ namespace FlatEngine
 		// TODO: Remove Lua script from F_Lua state	
 	}
 
-	std::string Script::GetData()
+	json Script::GetData()
 	{
 		json jsonData = {
-			{ "type", "Script" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() }			
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() }			
 		};
 
 		json scripts = json::array();
@@ -48,20 +48,14 @@ namespace FlatEngine
 
 		jsonData.push_back({ "scripts", scripts });
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	void Script::PutData(json componentJson)
-	{
-		std::string objectName = "Script GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+	void Script::PutData(json componentJson, std::string objectName)
+	{		
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 		
 		if (!componentJson.contains("scripts"))
 			return;

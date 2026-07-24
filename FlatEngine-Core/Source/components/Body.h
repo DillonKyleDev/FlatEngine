@@ -7,7 +7,6 @@
 #include "shapes/Chain.h"
 #include "shapes/Polygon.h"
 #include "shapes/Shape.h"
-#include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
 #include <list>
@@ -23,8 +22,8 @@ namespace FlatEngine
 	{
 	public:
 		Body(long myID = -1, long parentObjectID = -1);
-		std::string GetData();
-		void PutData(json componentJson);
+		json GetData();
+		void PutData(json componentJson, std::string objectName);
 		void SetActive(bool b_isActive);
 
 		Vector2 ConvertWorldToLocalPoint(Vector2 worldPoint);

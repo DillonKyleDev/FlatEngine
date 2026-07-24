@@ -25,7 +25,7 @@ namespace FlatEngine
         extern std::vector<std::string> luaScriptNames;
         extern std::map<std::string, std::string> luaScriptsMap;
         extern std::map<std::string, sol::protected_function> loadedSceneScriptFiles;
-        extern std::map<std::string, sol::protected_function> loadedPersistantScriptFiles;	
+        extern std::map<std::string, sol::protected_function> loadedPersistentScriptFiles;	
 
         enum ParameterType {
             ParameterType_None,
@@ -126,7 +126,7 @@ namespace FlatEngine
         extern void RunLuaFuncOnAllScripts(std::string functionName);
         extern void RunLuaFuncOnSingleScript(FL::ScriptData scriptData, GameObject* caller, std::string functionName);
         extern void RunSceneAwakeAndStart();	
-        extern void RunPersistantAwakeAndStart();
+        extern void RunPersistentAwakeAndStart();
         extern void RetrieveLuaScriptPaths();
         extern bool CheckLuaScriptFile(std::string filePath);
         extern void LoadLuaGameObject(FL::GameObject* object, std::string scriptName);

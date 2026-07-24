@@ -7,7 +7,6 @@
 #include "managers/LuaManager.h"
 #include "managers/PhysicsManager.h"
 #include "managers/PrefabManager.h"
-#include "managers/ProjectManager.h"
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
 #include "render/RenderWindow.h"
@@ -165,15 +164,11 @@ namespace FlatEngine
 			{				
 				switch (event.key.keysym.sym)
 				{
-				case SDLK_DELETE:
-					// SceneManager::loadedScene.DeleteGameObject(ProjectManager::loadedProject.focusedGameObjectID);							
+				case SDLK_DELETE:											
 					break;
-				case SDLK_r:					
-					VulkanManager::vulkan.ReloadShaders();					
+				case SDLK_r:										
 					break;
-				case SDLK_HOME:
-					SceneManager::LoadScene(SceneManager::GetLoadedScenePath());
-					Logger::log.Info("Scene Reloaded");
+				case SDLK_HOME:					
 					break;				
 				case SDLK_SPACE:
 					PauseGameLoop();
@@ -253,7 +248,8 @@ namespace FlatEngine
 
 		if (extension == ".png" || extension == ".jpg" || extension == ".tif" || extension == ".webp" || extension == ".jxl")
 		{
-			GameObject* newObject = SceneManager::loadedScene.CreateGameObject();			 
+			GameObject* newObject = SceneManager::loadedScene.CreateGameObject();
+						 
 			newObject->SetName(FileHelper::GetFilenameFromPath(filePath) + "(" + std::to_string(newObject->GetID()) + ")");
 			newObject->Get<Transform>()->SetPosition(Vector3(position.x, position.y, 0));
 			newObject->Add<Sprite>()->SetTexture(filePath);

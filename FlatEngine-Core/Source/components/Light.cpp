@@ -14,13 +14,13 @@ namespace FlatEngine
 		m_color = Vector4(1);
 	}
 	
-	std::string Light::GetData()
+	json Light::GetData()
 	{
 		json jsonData = {
-			{ "type", "Light" },
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "directionX", m_direction.x },
 			{ "directionY", m_direction.y },
 			{ "directionZ", m_direction.z },
@@ -31,20 +31,14 @@ namespace FlatEngine
 			{ "lightType", (int)m_lightType }
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
-	    void Light::PutData(json componentJson)
+	void Light::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "Light GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
 		Vector3 lightDirection = Vector3(JsonHelper::CheckJsonFloat(componentJson, "directionX", objectName), JsonHelper::CheckJsonFloat(componentJson, "directionY", objectName), JsonHelper::CheckJsonFloat(componentJson, "directionZ", objectName));
 		Vector4 lightColor = Vector4(JsonHelper::CheckJsonFloat(componentJson, "colorX", objectName), JsonHelper::CheckJsonFloat(componentJson, "colorY", objectName), JsonHelper::CheckJsonFloat(componentJson, "colorZ", objectName), JsonHelper::CheckJsonFloat(componentJson, "colorW", objectName));

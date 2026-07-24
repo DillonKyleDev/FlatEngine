@@ -21,7 +21,7 @@ namespace FlatEngine
 		m_nextJointID = 0;
 	}
 
-	std::string JointMaker::GetData()
+	json JointMaker::GetData()
 	{
 		json distanceJoints = json::array();
 		json prismaticJoints = json::array();
@@ -61,10 +61,10 @@ namespace FlatEngine
 		}
 
 		json jsonData = {
-			{ "type", "JointMaker"},
+			{ "type", (int)GetType() },
 			{ "id", GetID() },
-			{ "_isCollapsed", IsCollapsed() },
-			{ "_isActive", IsActive() },
+			{ "b_isCollapsed", IsCollapsed() },
+			{ "b_isActive", IsActive() },
 			{ "distanceJoints", distanceJoints },
 			{ "prismaticJoints", prismaticJoints },
 			{ "revoluteJoints", revoluteJoints },
@@ -74,15 +74,13 @@ namespace FlatEngine
 			{ "wheelJoints", wheelJoints }
 		};
 
-		std::string data = jsonData.dump();
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
 	void RetrieveBaseJointProps(Joint::BaseProps& jointProps, json jointJson, std::string objectName)
 	{
 		jointProps.jointType = (Joint::JointType)JsonHelper::CheckJsonInt(jointJson, "jointType", objectName);
-		jointProps.b_collideConnected = JsonHelper::CheckJsonBool(jointJson, "_collideConnected", objectName);
+		jointProps.b_collideConnected = JsonHelper::CheckJsonBool(jointJson, "b_collideConnected", objectName);
 		jointProps.bodyAID = JsonHelper::CheckJsonLong(jointJson, "bodyAID", objectName);
 		jointProps.bodyBID = JsonHelper::CheckJsonLong(jointJson, "bodyBID", objectName);
 		jointProps.anchorA.x = JsonHelper::CheckJsonFloat(jointJson, "anchorAX", objectName);
@@ -93,9 +91,9 @@ namespace FlatEngine
 
 	void RetrieveDistanceJointProps(DistanceJoint::DistanceJointProps& jointProps, json jointJson, std::string objectName)
 	{
-		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "_enableLimit", objectName);
-		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "_enableMotor", objectName);
-		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "b_enableLimit", objectName);
+		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "b_enableMotor", objectName);
+		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "b_enableSpring", objectName);
 		jointProps.dampingRatio = JsonHelper::CheckJsonFloat(jointJson, "dampingRatio", objectName);
 		jointProps.hertz = JsonHelper::CheckJsonFloat(jointJson, "hertz", objectName);
 		jointProps.minLength = JsonHelper::CheckJsonFloat(jointJson, "minLength", objectName);
@@ -107,9 +105,9 @@ namespace FlatEngine
 
 	void RetrievePrismaticJointProps(PrismaticJoint::PrismaticJointProps& jointProps, json jointJson, std::string objectName)
 	{
-		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "_enableLimit", objectName);
-		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "_enableMotor", objectName);
-		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "b_enableLimit", objectName);
+		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "b_enableMotor", objectName);
+		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "b_enableSpring", objectName);
 		jointProps.dampingRatio = JsonHelper::CheckJsonFloat(jointJson, "dampingRatio", objectName);
 		jointProps.hertz = JsonHelper::CheckJsonFloat(jointJson, "hertz", objectName);
 		jointProps.localAxisA = Vector2(JsonHelper::CheckJsonFloat(jointJson, "localAxisAX", objectName), JsonHelper::CheckJsonFloat(jointJson, "localAxisAY", objectName));
@@ -122,9 +120,9 @@ namespace FlatEngine
 
 	void RetrieveRevoluteJointProps(RevoluteJoint::RevoluteJointProps& jointProps, json jointJson, std::string objectName)
 	{
-		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "_enableLimit", objectName);
-		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "_enableMotor", objectName);
-		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "b_enableLimit", objectName);
+		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "b_enableMotor", objectName);
+		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "b_enableSpring", objectName);
 		jointProps.dampingRatio = JsonHelper::CheckJsonFloat(jointJson, "dampingRatio", objectName);
 		jointProps.hertz = JsonHelper::CheckJsonFloat(jointJson, "hertz", objectName);
 		jointProps.drawSize = JsonHelper::CheckJsonFloat(jointJson, "drawSize", objectName);
@@ -169,9 +167,9 @@ namespace FlatEngine
 
 	void RetrieveWheelJointProps(WheelJoint::WheelJointProps& jointProps, json jointJson, std::string objectName)
 	{
-		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "_enableLimit", objectName);
-		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "_enableMotor", objectName);
-		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "_enableSpring", objectName);
+		jointProps.b_enableLimit = JsonHelper::CheckJsonBool(jointJson, "b_enableLimit", objectName);
+		jointProps.b_enableMotor = JsonHelper::CheckJsonBool(jointJson, "b_enableMotor", objectName);
+		jointProps.b_enableSpring = JsonHelper::CheckJsonBool(jointJson, "b_enableSpring", objectName);
 		jointProps.dampingRatio = JsonHelper::CheckJsonFloat(jointJson, "dampingRatio", objectName);
 		jointProps.hertz = JsonHelper::CheckJsonFloat(jointJson, "hertz", objectName);
 		jointProps.localAxisA = Vector2(JsonHelper::CheckJsonFloat(jointJson, "localAxisAX", objectName), JsonHelper::CheckJsonFloat(jointJson, "localAxisAY", objectName));
@@ -181,15 +179,11 @@ namespace FlatEngine
 		jointProps.motorSpeed = JsonHelper::CheckJsonFloat(jointJson, "motorSpeed", objectName);
 	}
 
-	void JointMaker::PutData(json componentJson)
+	void JointMaker::PutData(json componentJson, std::string objectName)
 	{
-		std::string objectName = "JointMaker GameObject";
-		std::string type = JsonHelper::CheckJsonString(componentJson, "type", objectName);
-		long componentID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
-		bool b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "_isCollapsed", objectName);
-		bool b_isActive = JsonHelper::CheckJsonBool(componentJson, "_isActive", objectName);
-		SetActive(b_isActive);
-		SetCollapsed(b_isCollapsed);
+		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
+		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
+		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
 
 		if (JsonHelper::JsonContains(componentJson, "distanceJoints", objectName))
 		{

@@ -222,7 +222,8 @@ F_Colors = {
 	animationTimelineOuter = Vector4:new(0.14, 0.14, 0.16, 1.0), -- (0.35, 0.35, 0.8, 0.5),
 	animationTimelineHeader = Vector4:new(0.35, 0.35, 0.8, 0.5), --(0.14, 0.14, 0.16, 1.0), -- (0.35, 0.35, 0.8, 0.5),
 	keyframeEditorBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
-	sectionHeaderKeyframeEditor = Vector4:new(0.35, 0.35, 0.5, 0.4),
+	sectionHeaderKeyframeEditor = Vector4:new(0.35, 0.35, 0.6, 0.4),
+	sectionHeaderBorderKeyframeEditor = Vector4:new(0.35, 0.35, 0.6, 0.4),
 	-- Docking
 	dockingPreview = Vector4:new(0.3, 0.3, 0.65, 1.0),
 	dockingPreviewEmpty = Vector4:new(0.3, 0.3, 0.65, 1.0),

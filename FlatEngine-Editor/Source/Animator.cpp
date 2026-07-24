@@ -1041,26 +1041,23 @@ namespace FlatGui
 						FL::TransformProp* transformProp = static_cast<FL::TransformProp*>(Animator::selectedKeyframe);					
 						static ImGuiSliderFlags flags = ImGuiSliderFlags_::ImGuiSliderFlags_None;
 						
-						FL::GuiCore::RenderSectionHeader("Transform Property Settings", 0.0f, 3.0f, "sectionHeaderKeyframeEditor");
+						FL::GuiCore::RenderSectionHeader("Transform Property Settings", 0.0f, 5.0f, "sectionHeaderKeyframeEditor", "sectionHeaderBorderKeyframeEditor");
 						FL::GuiCore::RenderCheckbox("Start At Origin##startAtOrigin", Animator::loadedAnimation.b_startAtOrigin);							
-						FL::GuiCore::RenderSectionHeader("Keyframe Property Settings", 3.0f, 3.0f, "sectionHeaderKeyframeEditor");											
+						FL::GuiCore::RenderSectionHeader("Keyframe Property Settings", 5.0f, 5.0f, "sectionHeaderKeyframeEditor", "sectionHeaderBorderKeyframeEditor");											
 						FL::GuiCore::RenderCheckbox("POSITION##b_posAnimated", transformProp->b_posAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("ROTATION##b_rotationAnimated", transformProp->b_rotationAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("SCALE##b_scaleAnimated", transformProp->b_scaleAnimated);
-						FL::GuiCore::RenderTransformTable("TransformPropKeyframeEdit", transformProp->position, transformProp->rotation, transformProp->scale);
-						FL::GuiCore::RenderSeparator(3, 3);
-
-
+						FL::GuiCore::RenderSeparator(5, 5);
+						FL::GuiCore::RenderTransformTable("TransformPropKeyframeEdit", transformProp->position, transformProp->rotation, transformProp->scale);			
+						FL::GuiCore::RenderSeparator(5, 5);
 						static int current_transform_interp = 0;
 						current_transform_interp = (int)transformProp->positionInterpType;
 						static int current_scale_interp = 0;	
 						current_scale_interp = (int)transformProp->scaleInterpType;									
 						static int current_rotation_interp = 0;		
 						current_rotation_interp = (int)transformProp->rotationInterpType;	
-
-
-						ImGui::Text("INTERPOLATION");
-						FL::GuiCore::MoveScreenCursor(0, 3);
+						
+						ImGui::Text("INTERPOLATION");												
 						std::vector<std::string> interpTypes = 
 						{ 
 							"Linear", "Ease-In-Sine", "Ease-Out-Sine", 

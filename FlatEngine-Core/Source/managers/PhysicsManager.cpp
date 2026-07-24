@@ -20,7 +20,8 @@ namespace FlatEngine
 	namespace PhysicsManager
 	{
 		Physics physics = Physics();
-		
+		// std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
+
 
 		Physics::Physics()
 		{
@@ -533,6 +534,22 @@ namespace FlatEngine
 			{
 				joint->SetB2JointID(jointID);
 			}
+		}
+
+		// For Mouse button collisions - Vector4 objectA(top, right, bottom, left), Vector4 objectB(top, right, bottom, left)
+		bool Physics::AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB)
+		{
+			float A_TopEdge = ObjectA.z;
+			float A_RightEdge = ObjectA.y;
+			float A_BottomEdge = ObjectA.x;
+			float A_LeftEdge = ObjectA.w;
+
+			float B_TopEdge = ObjectB.x;
+			float B_RightEdge = ObjectB.y;
+			float B_BottomEdge = ObjectB.z;
+			float B_LeftEdge = ObjectB.w;
+
+			return (A_LeftEdge < B_RightEdge && A_RightEdge > B_LeftEdge && A_TopEdge > B_BottomEdge && A_BottomEdge < B_TopEdge);
 		}
 	}
 }

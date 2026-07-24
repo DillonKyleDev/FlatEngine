@@ -1,20 +1,15 @@
 #include "FlatEngine.h"
-#include "GameObject.h"
 #include "GuiCore.h"
 #include "managers/Assets.h"
 #include "managers/AudioManager.h"
 #include "managers/Controls.h"
 #include "managers/LuaManager.h"
 #include "managers/PhysicsManager.h"
-#include "managers/PrefabManager.h"
-#include "managers/SceneManager.h"
 #include "managers/Settings.h"
 #include "render/RenderWindow.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
-#include "tools/Vector3.h"
-#include "tools/Vector4.h"
 
 #include <imgui_impl_sdl2.h>
 #include <memory>
@@ -42,9 +37,6 @@ namespace FlatEngine
 	bool F_b_ProjectManagerelected = false;	
 	bool F_b_loadNewScene = false;
 	std::string F_sceneToBeLoaded = "";
-
-	// Collision Detection
-	// std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
 
 	bool Init(int windowWidth, int windowHeight)
 	{
@@ -242,48 +234,6 @@ namespace FlatEngine
 		}
 	}
 
-	GameObject* CreateAssetUsingFilePath(std::string filePath, Vector3 position)
-	{
-		std::string extension = std::filesystem::path(filePath).extension().string();
-
-		if (extension == ".png" || extension == ".jpg" || extension == ".tif" || extension == ".webp" || extension == ".jxl")
-		{
-			GameObject* newObject = SceneManager::loadedScene.CreateGameObject();
-						 
-			newObject->SetName(FileHelper::GetFilenameFromPath(filePath) + "(" + std::to_string(newObject->GetID()) + ")");
-			newObject->Get<Transform>()->SetPosition(Vector3(position.x, position.y, 0));
-			newObject->Add<Sprite>()->SetTexture(filePath);
-			return newObject;
-		}
-		else if (extension == ".prf")
-		{
-			return PrefabManager::Instantiate(FileHelper::GetFilenameFromPath(filePath), position, &SceneManager::loadedScene);
-		}
-		else
-		{
-			return nullptr;
-		}
-		//else if (extension == ".scn")
-		//{
-
-		//}
-		//// Mapping Context file
-		//else if (extension == ".mpc")
-		//{
-
-		//}
-		//// Animation file
-		//else if (extension == ".anm")
-		//{
-
-		//}
-		//// Lua file
-		//else if (extension == ".scp")
-		//{
-
-		//}
-	}
-
 	// Game Loop
 	void StartGameLoop()
 	{
@@ -339,22 +289,6 @@ namespace FlatEngine
 	{
 		return F_Application->GetGameLoop()->GetDeltaTime();
 	}
-
-	// For Mouse button collisions - Vector4 objectA(top, right, bottom, left), Vector4 objectB(top, right, bottom, left)
-	bool AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB)
-	{
-		float A_TopEdge = ObjectA.z;
-		float A_RightEdge = ObjectA.y;
-		float A_BottomEdge = ObjectA.x;
-		float A_LeftEdge = ObjectA.w;
-
-		float B_TopEdge = ObjectB.x;
-		float B_RightEdge = ObjectB.y;
-		float B_BottomEdge = ObjectB.z;
-		float B_LeftEdge = ObjectB.w;
-
-		return (A_LeftEdge < B_RightEdge && A_RightEdge > B_LeftEdge && A_TopEdge > B_BottomEdge && A_BottomEdge < B_TopEdge);
-	}
 }
 
 // ImGui cheat sheet
@@ -362,4 +296,3 @@ namespace FlatEngine
 //auto wPos = ImGui::GetWindowPos();
 //auto wSize = ImGui::GetWindowSize();  // This is the size of the current box, perfect for getting the exact dimensions for a border
 //ImGui::GetWindowDrawList()->AddRect({ wPos.x + 2, wPos.y + 2 }, { wPos.x + wSize.x - 2, wPos.y + wSize.y - 2 }, GetColor32("componentBorder"), 2);
-

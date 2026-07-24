@@ -1,5 +1,9 @@
+#include "components/Sprite.h"
+#include "components/Transform.h"
 #include "managers/Assets.h"
 #include "managers/LuaManager.h"
+#include "managers/PrefabManager.h"
+#include "managers/SceneManager.h"
 #include "render/Texture.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
@@ -322,6 +326,48 @@ namespace FlatEngine
         TTF_Font* AssetManager::GetMainFont()
         {
             return m_mainFont;
+        }
+
+        GameObject* AssetManager::CreateAssetUsingFilePath(std::string filePath, Vector3 position)
+        {
+            std::string extension = std::filesystem::path(filePath).extension().string();
+
+            if (extension == ".png" || extension == ".jpg" || extension == ".tif" || extension == ".webp" || extension == ".jxl")
+            {
+                GameObject* newObject = SceneManager::loadedScene.CreateGameObject();
+                            
+                newObject->SetName(FileHelper::GetFilenameFromPath(filePath) + "(" + std::to_string(newObject->GetID()) + ")");
+                newObject->Get<Transform>()->SetPosition(Vector3(position.x, position.y, 0));
+                newObject->Add<Sprite>()->SetTexture(filePath);
+                return newObject;
+            }
+            else if (extension == ".prf")
+            {
+                return PrefabManager::Instantiate(FileHelper::GetFilenameFromPath(filePath), position, &SceneManager::loadedScene);
+            }
+            else
+            {
+                return nullptr;
+            }
+            //else if (extension == ".scn")
+            //{
+
+            //}
+            //// Mapping Context file
+            //else if (extension == ".mpc")
+            //{
+
+            //}
+            //// Animation file
+            //else if (extension == ".anm")
+            //{
+
+            //}
+            //// Lua file
+            //else if (extension == ".scp")
+            //{
+
+            //}
         }
     }
 }

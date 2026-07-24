@@ -433,6 +433,9 @@ namespace FlatEngine
 			if (!b_show)
 				return;
 						
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2());
+			
 			if (GuiCore::BeginWindow("Scene View", b_show, ImGuiWindowFlags_NoScrollWithMouse, "black"))
 			{
 				Vector2 canvas_p0 = ImGui::GetCursorScreenPos();
@@ -578,6 +581,7 @@ namespace FlatEngine
 				// RenderSceneLines();				
 			}			
 			
+			ImGui::PopStyleVar(2);
 			GuiCore::EndWindow(); // Scene View
 		}
 

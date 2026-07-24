@@ -1,7 +1,6 @@
 #include "components/Animation.h"
 #include "components/CharacterController.h"
 #include "components/Transform.h"
-#include "FlatEngine.h"
 #include "GameLoop.h"
 #include "GameObject.h"
 #include "managers/PhysicsManager.h"
@@ -243,7 +242,7 @@ namespace FlatEngine
 				Vector4 activeEdges = buttonPair.second.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
-				if (AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
+				if (PhysicsManager::physics.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
 				{
 					if (buttonPair.second.GetActiveLayer() >= GetFirstUnblockedLayer())
 					{
@@ -346,7 +345,7 @@ namespace FlatEngine
 			bool b_blocksLayers = canvas.GetBlocksLayers();
 			int layerNumber = canvas.GetLayerNumber();
 
-			if (AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
+			if (PhysicsManager::physics.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
 			{
 				lowestUnblockedCanvas = canvas;
 				lowestUnblockedLayer = canvas.GetLayerNumber();

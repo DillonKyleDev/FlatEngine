@@ -1,8 +1,9 @@
 #pragma once
 #include "TagList.h"
+#include "tools/Vector4.h"
 #include "tools/Vector2.h"
 
-#include "box2d.h"
+#include <types.h>
 
 namespace FL = FlatEngine;
 
@@ -33,6 +34,8 @@ namespace FlatEngine
 			Physics();			
 
 			static bool CanCollide(TagList tagList1, TagList tagList2);
+			static bool AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB);
+			static b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible = false);
 
 			void Init();
 			void Shutdown();

@@ -44,11 +44,4 @@ namespace FlatEngine
 	extern bool GameLoopPaused();
 	extern long GetFramesCounted();
 	extern float GetDeltaTime();
-
-	extern GameObject* CreateAssetUsingFilePath(std::string filePath, Vector3 position);
-
-	extern bool AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB);
-
-	// Collision Detection
-	// extern b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible = false);
 };

@@ -2,7 +2,6 @@
 #include "components/Audio.h"
 #include "GameObject.h"
 #include "GuiCore.h"
-#include "GuiEditor.h"
 #include "managers/AnimationManager.h"
 #include "managers/Assets.h"
 #include "managers/ProjectManager.h"
@@ -931,7 +930,7 @@ namespace FlatGui
 					FL::GuiCore::PushMenuStyles();
 					if (ImGui::BeginPopupContextItem("##KeyframeEditorHamburgerMenu", ImGuiPopupFlags_MouseButtonLeft))
 					{
-						if (ImGui::MenuItem("Delete keyframe"))
+						if (ImGui::MenuItem(" Delete keyframe"))
 						{
 							Animator::loadedAnimation.RemoveKeyFrame(Animator::selectedKeyframe);
 							Animator::selectedKeyframe = nullptr;
@@ -1024,40 +1023,17 @@ namespace FlatGui
 						float floatValue = event->parameters.p_float;							
 						bool b_boolean = event->parameters.p_bool;
 						FL::Vector2 vec2 = event->parameters.p_vec2;
+						std::string name = event->parameters.name;
 
-						if (FL::GuiCore::PushTable("##EventParameters", 2))
-						{							
-							if (FL::GuiCore::RenderInputTableRow("##EventParamString", "string", stringValue, false))
-							{
-								event->parameters.p_string = stringValue;
-							}
-							if (FL::GuiCore::RenderIntDragTableRow("##EventParamInt", "int32", int32Value, 1, -INT_MAX, INT_MAX))
-							{
-								event->parameters.p_int32 = int32Value;
-							}
-							// if (FL::GuiCore::RenderIntDragTableRow("##EventParamLong", "int64", int64Value, 1, -INT_MAX, INT_MAX))
-							// {
-							// 	event->parameters.p_int64 = int64Value;
-							// }
-							if (FL::GuiCore::RenderFloatDragTableRow("##EventParamFloat", "float", floatValue, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								event->parameters.p_float = floatValue;
-							}
-							if (FL::GuiCore::RenderFloatDragTableRow("##EventParamFL::Vector2X", "vec2 x", vec2.x, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								event->parameters.p_vec2 = vec2;
-							}
-							if (FL::GuiCore::RenderFloatDragTableRow("##EventParamvec2Y", "vec2 y", vec2.y, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								event->parameters.p_vec2 = vec2;
-							}
-							if (FL::GuiCore::RenderCheckboxTableRow("##EventParamBoolean", "Boolean", b_boolean))
-							{
-								event->parameters.p_bool = b_boolean;
-							}
-							FL::GuiCore::PopTable();
-						}
-	
+						FL::GuiCore::RenderStringTable("##EventParamString", "string", event->parameters.p_string);
+						FL::GuiCore::RenderInt32Table("##EventParamInt32", name, event->parameters.p_int32); 
+						FL::GuiCore::RenderInt64Table("##EventParamInt64", name, event->parameters.p_int64); 
+						FL::GuiCore::RenderFloatTable("##EventParamFloat", name, event->parameters.p_float); 
+						FL::GuiCore::RenderDoubleTable("##EventParamDouble", name, event->parameters.p_double); 
+						FL::GuiCore::RenderBoolTable("##EventParamBool", name, event->parameters.p_bool); 
+						FL::GuiCore::RenderVector2Table("##EventParamVector2", name, event->parameters.p_vec2); 															
+						FL::GuiCore::RenderVector3Table("##EventParamVector3", name, event->parameters.p_vec3); 													
+						FL::GuiCore::RenderVector4Table("##EventParamVector4", name, event->parameters.p_vec4); 
 						FL::GuiCore::MoveScreenCursor(0, 3);
 					}
 					else if (Animator::selectedKeyframe->type == FL::PropType_Transform)
@@ -1071,7 +1047,7 @@ namespace FlatGui
 						FL::GuiCore::RenderCheckbox("POSITION##b_posAnimated", transformProp->b_posAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("ROTATION##b_rotationAnimated", transformProp->b_rotationAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("SCALE##b_scaleAnimated", transformProp->b_scaleAnimated);
-						GuiEditor::RenderTransformTable("TransformPropKeyframeEdit", transformProp->position, transformProp->rotation, transformProp->scale);
+						FL::GuiCore::RenderTransformTable("TransformPropKeyframeEdit", transformProp->position, transformProp->rotation, transformProp->scale);
 						FL::GuiCore::RenderSeparator(3, 3);
 
 

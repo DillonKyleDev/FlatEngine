@@ -89,7 +89,6 @@ GENERATED += $(OBJDIR)/Animator.o
 GENERATED += $(OBJDIR)/FileManager.o
 GENERATED += $(OBJDIR)/FlatEngine-Editor.o
 GENERATED += $(OBJDIR)/FlatGui.o
-GENERATED += $(OBJDIR)/GuiEditor.o
 GENERATED += $(OBJDIR)/Hierarchy.o
 GENERATED += $(OBJDIR)/Inspector.o
 GENERATED += $(OBJDIR)/Log.o
@@ -107,7 +106,6 @@ OBJECTS += $(OBJDIR)/Animator.o
 OBJECTS += $(OBJDIR)/FileManager.o
 OBJECTS += $(OBJDIR)/FlatEngine-Editor.o
 OBJECTS += $(OBJDIR)/FlatGui.o
-OBJECTS += $(OBJDIR)/GuiEditor.o
 OBJECTS += $(OBJDIR)/Hierarchy.o
 OBJECTS += $(OBJDIR)/Inspector.o
 OBJECTS += $(OBJDIR)/Log.o
@@ -194,9 +192,6 @@ $(OBJDIR)/FlatEngine-Editor.o: Source/FlatEngine-Editor.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/FlatGui.o: Source/FlatGui.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/GuiEditor.o: Source/GuiEditor.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Hierarchy.o: Source/Hierarchy.cpp

@@ -14,7 +14,6 @@
 #include "joints/Joint.h"
 #include "GameObject.h"
 #include "GuiCore.h"
-#include "GuiEditor.h"
 #include "Inspector.h"
 #include "managers/AnimationManager.h"
 #include "managers/Assets.h"
@@ -167,7 +166,7 @@ namespace FlatGui
 			FL::Vector3& rotation = transform->GetRotations();
 			FL::Vector3& scale = transform->GetScale();
 
-			FlatGui::GuiEditor::RenderTransformTable("TransformComponent" + std::to_string(transform->GetID()), position, rotation, scale);
+			FL::GuiCore::RenderTransformTable("TransformComponent" + std::to_string(transform->GetID()), position, rotation, scale);
 		}
 
 		bool RenderPivotSelectionButtons(std::string componentType, FL::Pivot& pivot)
@@ -542,23 +541,20 @@ namespace FlatGui
 						}
 
 						ImGui::SameLine(0,3);
-						int trashButtonWidth = 23;
-						float labelWidth = 0;
-						float inputWidth = ImGui::GetContentRegionAvail().x - trashButtonWidth;	
-						std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
+						int trashButtonWidth = 23;								
+						FL::Vector2 tableSize = ImGui::GetContentRegionAvail().x - trashButtonWidth;						
 						std::string inputElementID = "LuaScript_" + std::to_string(scriptCounter) + std::to_string(paramCounter);		
-						FL::Vector2 inputSize = FL::Vector2(ImGui::GetContentRegionAvail().x - trashButtonWidth, 0);	
 						switch(param.type)
 						{
-							case FL::LuaManager::ParameterType_String: GuiEditor::RenderStringTable("##String" + inputElementID, param.name, param.p_string, inputWidth, labelWidth, "noEditTableRowFieldBg"); break;
-							case FL::LuaManager::ParameterType_Int32:  GuiEditor::RenderInt32Table("##Int32" + inputElementID, param.name, param.p_int32, inputWidth, labelWidth, "noEditTableRowFieldBg"); break;
-							case FL::LuaManager::ParameterType_Int64:  GuiEditor::RenderInt64Table("##Int64" + inputElementID, param.name, param.p_int64, inputWidth, labelWidth, "noEditTableRowFieldBg"); break;
-							case FL::LuaManager::ParameterType_Float:  GuiEditor::RenderFloatTable("##Float" + inputElementID, param.name, param.p_float, inputSize, labelWidth, "noEditTableRowFieldBg"); break;
-							case FL::LuaManager::ParameterType_Double: GuiEditor::RenderDoubleTable("##Double" + inputElementID, param.name, param.p_double, inputSize, labelWidth, "noEditTableRowFieldBg"); break;
-							case FL::LuaManager::ParameterType_Bool:   GuiEditor::RenderBoolTable("##Bool" + inputElementID, param.name, param.p_bool, inputSize, labelWidth, "noEditTableRowFieldBg"); break;
-							case FL::LuaManager::ParameterType_Vec2:   GuiEditor::RenderVector2Table("##Vector2" + inputElementID, param.name, param.p_vec2, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;															
-							case FL::LuaManager::ParameterType_Vec3:   GuiEditor::RenderVector3Table("##Vector3" + inputElementID, param.name, param.p_vec3, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;													
-							case FL::LuaManager::ParameterType_Vec4:   GuiEditor::RenderVector4Table("##Vector4" + inputElementID, param.name, param.p_vec4, inputSize, labelWidth, "noEditTableRowFieldBg", valueColors); break;										
+							case FL::LuaManager::ParameterType_String: FL::GuiCore::RenderStringTable("##String" + inputElementID, param.name, param.p_string, tableSize); break;
+							case FL::LuaManager::ParameterType_Int32:  FL::GuiCore::RenderInt32Table("##Int32" + inputElementID, param.name, param.p_int32, tableSize); break;
+							case FL::LuaManager::ParameterType_Int64:  FL::GuiCore::RenderInt64Table("##Int64" + inputElementID, param.name, param.p_int64, tableSize); break;
+							case FL::LuaManager::ParameterType_Float:  FL::GuiCore::RenderFloatTable("##Float" + inputElementID, param.name, param.p_float, tableSize); break;
+							case FL::LuaManager::ParameterType_Double: FL::GuiCore::RenderDoubleTable("##Double" + inputElementID, param.name, param.p_double, tableSize); break;
+							case FL::LuaManager::ParameterType_Bool:   FL::GuiCore::RenderBoolTable("##Bool" + inputElementID, param.name, param.p_bool, tableSize); break;
+							case FL::LuaManager::ParameterType_Vec2:   FL::GuiCore::RenderVector2Table("##Vector2" + inputElementID, param.name, param.p_vec2, tableSize); break;															
+							case FL::LuaManager::ParameterType_Vec3:   FL::GuiCore::RenderVector3Table("##Vector3" + inputElementID, param.name, param.p_vec3, tableSize); break;													
+							case FL::LuaManager::ParameterType_Vec4:   FL::GuiCore::RenderVector4Table("##Vector4" + inputElementID, param.name, param.p_vec4, tableSize); break;										
 							default: break;
 						}
 
@@ -941,7 +937,7 @@ namespace FlatGui
 			static std::string name = "";
 			static bool b_isNewAudioMusic = false;
 
-			FL::GuiCore::RenderSubTitle("Add Audio");
+			FL::GuiCore::RenderSectionHeader("Add Audio");
 
 			FL::GuiCore::RenderInput("##NameNewAudioDataObject", "Name", name, false);
 
@@ -996,7 +992,7 @@ namespace FlatGui
 			if (sounds.size() > 0)
 			{
 				FL::GuiCore::RenderSeparator(4, 4);
-				FL::GuiCore::RenderSubTitle("Attached Audio Files");
+				FL::GuiCore::RenderSectionHeader("Attached Audio Files");
 			}
 
 			// Show existing Sounds in this Audio component
@@ -2133,7 +2129,7 @@ namespace FlatGui
 
 			FL::GuiCore::RenderSeparator(4, 4);
 
-			FL::GuiCore::RenderSubTitle("Add TileSets");
+			FL::GuiCore::RenderSectionHeader("Add TileSets");
 
 			static int currentSelectableTileSet = 0;
 			static int currentSelectableCollisionArea = 0;
@@ -2174,7 +2170,7 @@ namespace FlatGui
 
 			FL::GuiCore::RenderSeparator(4, 4);
 
-			FL::GuiCore::RenderSubTitle("Tile Palettes");
+			FL::GuiCore::RenderSectionHeader("Tile Palettes");
 
 			if (tileSets.size() > 0)
 			{
@@ -2302,7 +2298,7 @@ namespace FlatGui
 
 
 
-			//FL::GuiCore::RenderSubTitle("Collision Areas");
+			//FL::GuiCore::RenderSectionHeader("Collision Areas");
 
 			//std::map<std::string, std::vector<FL::CollisionAreaData>> &collisionAreas = tileMap->GetCollisionAreas();
 			//static std::string selectedCollisionArea = "";

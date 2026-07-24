@@ -1,5 +1,7 @@
 #pragma once
 #include "tools/Vector2.h"
+#include "tools/Vector3.h"
+#include "tools/Vector4.h"
 
 #include "imgui.h"
 #include <string>
@@ -49,22 +51,19 @@ namespace FlatEngine
         extern void SetImGuiVars();
 
         extern void BeginImGuiRender();
-        extern void EndImGuiRender();
-        extern void SetNextViewportToFillWindow();
-        extern void MoveScreenCursor(float x, float y);
-        extern void RenderSeparator(float topPadding, float bottomPadding, std::string separatorColor = "separator");
-        extern void RenderSubTitle(std::string title);
-        extern void PushScrollbarStyles();
-        extern void PopScrollbarStyles();
+        extern void EndImGuiRender();       
         extern bool BeginWindow(std::string name, bool& b_isOpen, ImGuiWindowFlags windowFlags = 0, std::string bgColor = "outerWindow");
         extern void EndWindow();
         extern void BeginWindowChild(std::string title, std::string bgColor = "outerWindow", ImGuiWindowFlags flags = 0, Vector2 padding = Vector2(0));
         extern void BeginResizeWindowChild(std::string title, std::string bgColor = "outerWindow", ImGuiWindowFlags flags = 0, Vector2 padding = Vector2(0));
         extern void EndWindowChild();                
-        extern void PushComboStyles();
-        extern void PopComboStyles();
-        extern void PushMenuStyles();
-        extern void PopMenuStyles();
+        
+        extern void SetNextViewportToFillWindow();
+        extern void MoveScreenCursor(float x, float y);
+        extern void RenderSectionHeader(std::string headerText, float topPadding = 0.0f, float bottomPadding = 0.0f, std::string color = "sectionHeaderBg", std::string separatorColor = "sectionHeaderSeparator");
+        extern void RenderSeparator(float topPadding, float bottomPadding, std::string separatorColor = "separator"); 
+        
+        // investigate later if we can remove these from EXTERN functions and just use PushStringTable() externally, etc..
         extern void PushTableStyles();
         extern void PopTableStyles();
         extern bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = tableFlags, Vector2 outerSize = Vector2(0), std::vector<float> widths = std::vector<float>());
@@ -77,27 +76,51 @@ namespace FlatEngine
         extern bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles = false);
         extern void RenderTextTableRow(std::string ID, std::string fieldName, std::string value, std::string value2 = "");
         extern void PopTable();
+
+        extern void RenderTransformTable(std::string ID, Vector3& position, Vector3& rotation, Vector3& scale);
+        extern void RenderLabelTable(std::string ID, std::string label, float width, bool b_light = true, std::string bgColor = "noEditTableRowValueBg");
+        extern bool RenderStringTable(std::string ID, std::string label, std::string& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderInt32Table(std::string ID, std::string label, int& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderInt64Table(std::string ID, std::string label, long& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderDoubleTable(std::string ID, std::string label, double& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
+        extern bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
+        extern bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
+        extern bool RenderBoolTable(std::string ID, std::string label, bool& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+
         extern bool RenderInput(std::string ID, std::string label, std::string& value, bool b_canOpenFiles = false, float inputWidth = -1, ImGuiInputTextFlags flags = 0);
         extern bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string tooltip = "", float inputWidth = -1);
         extern bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string tooltip = "", float inputWidth = -1);
+
         extern bool RenderButton(std::string text, Vector2 size = Vector2(0), float rounding = 0, std::string color = "button", std::string hoverColor = "buttonHovered", std::string activeColor = "buttonActive", Vector2 framePadding = Vector2(5, 3));
         extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(1), std::string borderColor = "buttonBorder", std::string bgColor = "imageButton", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));
+        extern bool RenderInvisibleButton(std::string ID, Vector2 startingPoint, Vector2 size, bool b_allowOverlap = true, bool b_showRect = false, ImGuiButtonFlags flags = ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+        extern bool RenderCheckbox(std::string text, bool& b_toCheck);
+
         extern bool RenderDragFloat(std::string ID, float width, float& value, float increment, float min, float max, ImGuiSliderFlags flags = 0, std::string bgColor = "drag");
         extern bool RenderDragDouble(std::string ID, float width, double& value, double increment, std::string bgColor = "drag");
         extern bool RenderDragInt(std::string ID, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags = 0, std::string bgColor = "drag");
         extern bool RenderDragLong(std::string ID, float width, long& value, std::string bgColor = "drag");
+       
         extern bool RenderSliderFloat(std::string label, float& value, float increment = 0.1f, float min = 0.0f, float max = 1000, float width = -1, int digitsAfterDecimal = 3);
         extern bool RenderSliderInt(std::string label, int& value, int increment = 1, int min = 0, int max = 1000, float width = -1);
         extern void PushSliderStyles();
         extern void PopSliderStyles();
-        extern bool RenderCheckbox(std::string text, bool& b_toCheck);
-        extern void RenderSectionHeader(std::string headerText, float topPadding = 0.0f, float bottomPadding = 0.0f, std::string color = "sectionHeaderBg", std::string separatorColor = "sectionHeaderSeparator");
-        extern bool RenderInvisibleButton(std::string ID, Vector2 startingPoint, Vector2 size, bool b_allowOverlap = true, bool b_showRect = false, ImGuiButtonFlags flags = ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
+
+        extern void PushMenuStyles();
+        extern void PopMenuStyles();
+
+        extern void PushComboStyles();
+        extern void PopComboStyles();
         extern bool RenderCombo(std::string ID, std::string displayedValue, std::vector<std::string> options, int& currentOption, float width = -1);
+
         extern bool RenderSelectable(std::string ID, std::vector<std::string> options, int& currentOption, std::string bgColor = "drag", float width = -1);
+
         extern bool PushTreeList(std::string ID);
         extern void RenderTreeLeaf(std::string name, std::string& nodeClicked);
-        extern void PopTreeList();
+        extern void PopTreeList();       
+
         extern void RenderTextToolTip(std::string text);
         extern void BeginToolTip(std::string title);
         extern void EndToolTip();

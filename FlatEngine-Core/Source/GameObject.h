@@ -43,7 +43,6 @@ namespace FlatEngine
 		template<class T>
 		void Remove(long ownerID);
 
-		// Body* AddBody(PhysicsManager::BodyProps bodyProps, long componentID);
 		Component* AddComponent(ComponentType type, long componentID = -1, json componentJson = json::object());
 		void RemoveComponent(Component* component);		
 		Component* GetComponent(ComponentType type);

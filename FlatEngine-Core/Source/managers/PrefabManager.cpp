@@ -4,10 +4,8 @@
 #include "managers/Assets.h"
 #include "managers/PrefabManager.h"
 #include "managers/SceneManager.h"
-#include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
-#include "tools/Logger.h"
 
 #include <fstream>
 
@@ -18,8 +16,8 @@ namespace FlatEngine
 	{
 		std::map<std::string, Prefab> prefabs = std::map<std::string, Prefab>();
 
-		// void CreatePrefabFromJson(json objectJson, Prefab& prefab)
-		// {
+		void CreatePrefabFromJson(json objectJson, Prefab& prefab)
+		{
 		// 	GameObjectPrefabData object;
 		// 	object.name = JsonHelper::CheckJsonString(objectJson, "name", "Name");
 		// 	std::string objectName = object.name;
@@ -532,7 +530,7 @@ namespace FlatEngine
 		// 	{
 		// 		prefab.rootObject = object;
 		// 	}
-		// }
+		}
 
 		void CreatePrefab(std::string path, GameObject gameObject)
 		{
@@ -570,8 +568,8 @@ namespace FlatEngine
 			AddPrefab(path);
 		}
 
-		// void AddPrefab(std::string path)
-		// {
+		void AddPrefab(std::string path)
+		{
 		// 	std::filesystem::path prefabPath(path);
 
 		// 	Prefab prefab;
@@ -599,7 +597,7 @@ namespace FlatEngine
 		// 			prefabs.emplace(prefabJson["Name"], prefab);
 		// 		}
 		// 	}
-		// }
+		}
 
 		void InitializePrefabs()
 		{
@@ -614,21 +612,21 @@ namespace FlatEngine
 			printf("Prefabs initialized.\n");
 		}
 
-		// GameObject *Instantiate(std::string prefabName, Vector3 spawnLocation, Scene* scene, long parentID, long ID)
-		// {
-		// 	GameObject* rootObject = nullptr;
+		GameObject *Instantiate(std::string prefabName, Vector3 spawnLocation, Scene* scene, long parentID, long ID)
+		{
+			GameObject* rootObject = nullptr;
 
-		// 	if (prefabs.count(prefabName) > 0)
-		// 	{
-		// 		Prefab prefab = prefabs.at(prefabName);
-		// 		GameObjectPrefabData root = prefab.rootObject;
+			if (prefabs.count(prefabName) > 0)
+			{
+				Prefab prefab = prefabs.at(prefabName);
+				// GameObjectPrefabData root = prefab.rootObject;
 
-		// 		rootObject = InstantiateSelfAndChildren(-1, root.ID, prefab, scene, spawnLocation);
-		// 		rootObject->SetParentID(parentID);
-		// 	}
+				// rootObject = InstantiateSelfAndChildren(-1, root.ID, prefab, scene, spawnLocation);
+				// rootObject->SetParentID(parentID);
+			}
 
-		// 	return rootObject;
-		// }
+			return rootObject;
+		}
 
 		std::map<std::string, Prefab> GetPrefabs()
 		{

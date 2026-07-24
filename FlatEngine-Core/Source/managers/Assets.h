@@ -1,4 +1,6 @@
 #pragma once
+#include "GameObject.h"
+#include "tools/Vector3.h"
 #include "tools/Vector4.h"
 
 #include <map>
@@ -12,6 +14,7 @@
 namespace FlatEngine
 { 
     class Texture;
+    class GameObject;
 
     namespace Assets
     {
@@ -38,6 +41,7 @@ namespace FlatEngine
             VkDescriptorSet GetTexture(std::string textureName);
             std::vector<std::string> GetTags();
             TTF_Font* GetMainFont();
+            GameObject* CreateAssetUsingFilePath(std::string filePath, Vector3 position);
 
         private:
             std::string m_rootPath;

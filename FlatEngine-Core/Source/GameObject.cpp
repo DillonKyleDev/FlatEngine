@@ -20,6 +20,7 @@
 namespace FlatEngine
 {
 	namespace SceneManager { class Scene; }
+	
 	GameObject::GameObject(long newParentID, long myID)
 	{
 		if (myID == -1)
@@ -106,39 +107,19 @@ namespace FlatEngine
 			{
 				m_childrenIDs.push_back(objectJson["children"][c]);
 			}
-		}
-
-		// if (b_isPrefab)
-		// {
-		// 	loadedObject = PrefabManager::Instantiate(prefabName, spawnLocation, scene, loadedParentID, loadedID);
-		// 	if (loadedObject != nullptr)
-		// 	{
-		// 		SetName(m_name);
-		// 	}
-		// }
-		// else
-		// {			                
-		// loadedObject = FL::SceneManager::loadedScene.CreateEmptyGameObject(loadedParentID, loadedID);                
+		}              
 
 		if (JsonHelper::JsonContains(objectJson, "tags", m_name))
-			m_tagList.PutData(objectJson.at("tags"));		
+			m_tagList.PutData(objectJson.at("tags"), m_name);		
 
 		if (objectJson.contains("components"))
 		{
 			for (int j = 0; j < objectJson.at("components").size(); j++)
 			{
 				json componentJson = objectJson.at("components").at(j);
-				// std::string typeString = JsonHelper::CheckJsonString(componentJson, "type", m_name);
 				long id = JsonHelper::CheckJsonLong(componentJson, "id", m_name);
 				ComponentType type = (ComponentType)JsonHelper::CheckJsonInt(componentJson, "type", m_name);
-				AddComponent(type, id, componentJson); 
-				// for (int i = 1; i < ComponentType_Size; i++)
-				// {
-				// 	if (typeString == ComponentTypeStrings[i])
-				// 	{
-				// 		Component* component = AddComponent((ComponentType)i, id, componentJson);                                          
-				// 	}
-				// }                                                   
+				AddComponent(type, id, componentJson);                                                
 			}
 		}
 

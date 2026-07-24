@@ -102,7 +102,7 @@ F_Colors = {
 	singleItemDark = Vector4:new(0.09, 0.09, 0.13, 1.0),
 	windowTitleBg = Vector4:new(0.25, 0.25, 0.25, 1.0),
 
-	sectionHeaderBg = Vector4:new(0.35, 0.35, 0.5, 0.8),
+	sectionHeaderBg = Vector4:new(0.35, 0.35, 0.8, 0.7),
 	sectionHeaderSecondaryBg = Vector4:new(0.4, 0.4, 0.8, 0.25),
 	sectionHeaderEmptyBg= Vector4:new(0.35, 0.35, 0.8, 0.05),
 	sectionHeaderBorder = Vector4:new(0.25, 0.25, 0.25, 1.0),

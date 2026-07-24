@@ -203,7 +203,7 @@ namespace FlatGui
 
 		if (FL::GuiCore::BeginWindow("Animator", b_show))
 		{
-			FL::GuiCore::BeginResizeWindowChild("Animated Properties", "outerWindow", 0, FL::Vector2());			
+			FL::GuiCore::BeginResizeWindowChild("Animated Properties", "outerWindow");			
 			// {
 
 				std::string animationName = "None";
@@ -216,7 +216,7 @@ namespace FlatGui
 					animationName = Animator::loadedAnimation.name + ".anm";
 				}
 
-				FL::GuiCore::BeginWindowChild("Manage Animation", "animationDetailsOuter", 0, FL::Vector2(4));
+				FL::GuiCore::BeginWindowChild("Manage Animation", "animationDetailsOuter");
 				// {
 
 					std::string animationHeaderString = "Loaded: " + animationName;
@@ -250,7 +250,7 @@ namespace FlatGui
 
 
 					auto animationSettingsScreenPos = ImGui::GetCursorScreenPos();
-					FL::GuiCore::BeginWindowChild("Manage Animation Settings", "animationDetailsInner", 0, FL::Vector2(4));
+					FL::GuiCore::BeginWindowChild("Manage Animation Settings", "animationDetailsInner");
 					// {
 
 						auto animationSettingsWindowSize = ImGui::GetWindowSize();
@@ -358,14 +358,13 @@ namespace FlatGui
 
 						if (Animator::loadedAnimation.name != "")
 						{						
+							FL::GuiCore::MoveScreenCursor(3,3);
 							FL::GuiCore::RenderCheckbox("Loop Animation", Animator::loadedAnimation.b_loop);
+							FL::GuiCore::RenderSeparator(3,3);
 
-							static std::string selected_property = "";			
-							ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 5);
-							ImGui::Text("ANIMATION PROPERTIES");
-
-							FL::GuiCore::RenderSeparator(3, 3);							
-
+							static std::string selected_property = "";										
+							FL::GuiCore::RenderSectionHeader("Animation Properties", 5, 5);									
+							
 							std::vector<std::string> props = std::vector<std::string>();
 							FL::GuiCore::PushComboStyles();
 							ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 23);

@@ -1,5 +1,6 @@
 #include "managers/Assets.h"
 #include "managers/SceneManager.h"
+#include "tools/JsonHelper.h"
 #include "TagList.h"
 
 
@@ -54,32 +55,16 @@ namespace FlatEngine
 
 	json TagList::GetData()
 	{
-		json tagsObjectArray = json::array();
+		json tagsObjectArray = json::object();
 		for (std::map<std::string, bool>::iterator tagIter = m_tags.begin(); tagIter != m_tags.end(); tagIter++)
 		{
-			// For making sure we don't save any stale tags that aren't available in the Tags.lua file
-			for (std::string availableTag : Assets::assetManager.GetTags())
-			{
-				if (tagIter->first == availableTag)
-				{
-					json tag = json::object({ { tagIter->first, tagIter->second } });
-					tagsObjectArray.push_back(tag);
-				}
-			}
+			tagsObjectArray.emplace(tagIter->first, tagIter->second);
 		}
 
-		json collidesTagsObjectArray = json::array();
+		json collidesTagsObjectArray = json::object();
 		for (std::map<std::string, bool>::iterator tagIter = m_collidesTags.begin(); tagIter != m_collidesTags.end(); tagIter++)
-		{
-			// For making sure we don't save any stale collides tags that aren't available in the Tags.lua file
-			for (std::string availableTag : Assets::assetManager.GetTags())
-			{
-				if (tagIter->first == availableTag)
-				{
-					json collides = json::object({ { tagIter->first, tagIter->second } });
-					collidesTagsObjectArray.push_back(collides);
-				}
-			}
+		{				
+			collidesTagsObjectArray.emplace(tagIter->first, tagIter->second);
 		}
 
 		json tagListJson = json::object({
@@ -90,28 +75,30 @@ namespace FlatEngine
 		return tagListJson;
 	}
 	
-	void TagList::PutData(json taglistJson)
-	{
-		std::string name = "TagList for GameObject";
-		if (JsonHelper::JsonContains(taglistJson, "tags", name))
+	void TagList::PutData(json taglistJson, std::string objectName)
+	{		
+		if (JsonHelper::JsonContains(taglistJson, "tags", objectName))
 		{
 			json tagsJson = taglistJson["tags"];
-			for (json jsonTag : tagsJson)
+			for (std::string tag : Assets::assetManager.GetTags())
 			{
-				std::string tag = jsonTag.items().begin().key();
-				bool b_hasTag = jsonTag.items().begin().value();
-				SetTag(tag, b_hasTag);
+				if (tagsJson.contains(tag))
+				{
+					SetTag(tag, tagsJson.at(tag));
+				}
 			}
 		}
 		
-		if (JsonHelper::JsonContains(taglistJson, "collidesTags", name))
+		if (JsonHelper::JsonContains(taglistJson, "collidesTags", objectName))
 		{
 			json collidesTagsJson = taglistJson["collidesTags"];
-			for (json jsonCollidesTag : collidesTagsJson)
+
+			for (std::string tag : Assets::assetManager.GetTags())
 			{
-				std::string collidesTag = jsonCollidesTag.items().begin().key();
-				bool b_collidesTag = jsonCollidesTag.items().begin().value();
-				SetCollides(collidesTag, b_collidesTag);
+				if (collidesTagsJson.contains(tag))
+				{
+					SetCollides(tag, collidesTagsJson.at(tag));
+				}
 			}
 		}			
 	}

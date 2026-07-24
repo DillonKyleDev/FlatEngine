@@ -1,5 +1,4 @@
 #include "components/Script.h"
-#include "GameObject.h"
 #include "managers/Assets.h"
 #include "managers/Controls.h"
 #include "managers/PrefabManager.h"
@@ -179,8 +178,7 @@ namespace FlatEngine
 						newProject.b_autoSave = JsonHelper::CheckJsonBool(projectData, "b_autoSave", name);
 						newProject.SetMusicVolume(JsonHelper::CheckJsonInt(projectData, "musicVolume", name));
 						newProject.SetEffectsVolume(JsonHelper::CheckJsonInt(projectData, "effectsVolume", name));
-						newProject.currentFileDirectory = JsonHelper::CheckJsonString(projectData, "currentFileDirectory", name);
-						newProject.focusedGameObjectID = JsonHelper::CheckJsonLong(projectData, "focusedGameObjectID", name);
+						newProject.currentFileDirectory = JsonHelper::CheckJsonString(projectData, "currentFileDirectory", name);						
 						newProject.persistentScript.PutData(JsonHelper::JsonContains(projectData, "persistentScript", name) ? projectData["persistentScript"] : json::object(), "Persistent Script");						
 						newProject.persistentScript.SetID(PERSISTENT_SCRIPT_ID);
 						newProject.persistentScript.SetActive(JsonHelper::CheckJsonBool(projectData, "b_persistentScriptActive", name));

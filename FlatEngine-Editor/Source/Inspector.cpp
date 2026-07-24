@@ -45,9 +45,8 @@ namespace FlatGui
 		bool RenderIsActiveCheckbox(bool& b_isActive)
 		{
 			FL::GuiCore::MoveScreenCursor(0, 3);
-			bool b_checked = FL::GuiCore::RenderCheckbox("Active", b_isActive);
-			FL::GuiCore::MoveScreenCursor(0, -1);
-			ImGui::Separator();			
+			bool b_checked = FL::GuiCore::RenderCheckbox("Active", b_isActive);			
+			FL::GuiCore::RenderSeparator(3, 3);	
 
 			return b_checked;
 		}
@@ -469,7 +468,7 @@ namespace FlatGui
 				Modals::b_openCPPModal = true;
 			}
 
-			FL::GuiCore::RenderSectionHeader("", 3.0f, 10.0f, "sectionHeaderEmptyBg", "separator");			
+			FL::GuiCore::RenderSectionHeader("", 3.0f, 3.0f, "sectionHeaderEmptyBg", "separator");			
 
 			int scriptCounter = 0;
 			FL::ScriptData* scriptQueuedForDelete = nullptr;

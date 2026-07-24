@@ -433,7 +433,6 @@ namespace FlatGui
 				ImGui::BeginDisabled(FL::SceneManager::loadedScene.path == "");
 				if (ImGui::MenuItem(" Reload Scene"))
 				{
-					FL::ProjectManager::loadedProject.focusedGameObjectID = -1;
 					FL::SceneManager::LoadScene(FL::SceneManager::loadedScene.path);
 					ImGui::CloseCurrentPopup();
 				}

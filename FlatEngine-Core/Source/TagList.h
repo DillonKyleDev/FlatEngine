@@ -16,7 +16,7 @@ namespace FlatEngine
 		TagList(long owner);
 		TagList(TagList* toCopy);		
 		json GetData();
-		void PutData(json taglistJson);
+		void PutData(json taglistJson, std::string objectName);
 
 		void SetOwnerID(long ownerID);
 		void UpdateAvailableTags();

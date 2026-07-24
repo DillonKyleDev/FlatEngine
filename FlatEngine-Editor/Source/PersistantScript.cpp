@@ -19,7 +19,7 @@ namespace FlatGui
 			bool b_isActive = FL::ProjectManager::loadedProject.persistentScript.IsActive();
 			if (Inspector::RenderIsActiveCheckbox(b_isActive))
 				FL::ProjectManager::loadedProject.persistentScript.SetActive(b_isActive);
-            FL::GuiCore::MoveScreenCursor(0,3);
+            // FL::GuiCore::MoveScreenCursor(0,3);
             Inspector::RenderScriptComponent(&FL::ProjectManager::loadedProject.persistentScript);        			
 		}		
 

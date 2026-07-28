@@ -6,12 +6,12 @@
 
 namespace FlatEngine
 {
-    class Body;
+    class Body2D;
 
     class Chain : public Shape
     {
     public:
-        Chain(Body* parentBody);            
+        Chain(Body2D* parentBody);            
 
         void SetPoints(std::vector<Vector2> points);
         void UpdatePoints();

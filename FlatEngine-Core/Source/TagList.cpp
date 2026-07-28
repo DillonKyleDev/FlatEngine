@@ -1,3 +1,5 @@
+#include "components/Body2D.h"
+#include "GameObject.h"
 #include "managers/Assets.h"
 #include "managers/SceneManager.h"
 #include "tools/JsonHelper.h"
@@ -131,9 +133,9 @@ namespace FlatEngine
 		}
 
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->Get<Body>() != nullptr)
+		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body>()->RecreateLiveBody();
+			owner->Get<Body2D>()->RecreateLiveBody();
 		}
 	}
 
@@ -145,9 +147,9 @@ namespace FlatEngine
 		}
 
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->Get<Body>() != nullptr)
+		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body>()->RecreateLiveBody();
+			owner->Get<Body2D>()->RecreateLiveBody();
 		}
 	}
 
@@ -171,9 +173,9 @@ namespace FlatEngine
 		}
 
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->Get<Body>() != nullptr)
+		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body>()->RecreateLiveBody();
+			owner->Get<Body2D>()->RecreateLiveBody();
 		}
 	}
 
@@ -185,9 +187,9 @@ namespace FlatEngine
 		}
 
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
-		if (owner != nullptr && owner->Get<Body>() != nullptr)
+		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body>()->RecreateLiveBody();
+			owner->Get<Body2D>()->RecreateLiveBody();
 		}
 	}
 

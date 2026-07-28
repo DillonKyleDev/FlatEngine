@@ -1,4 +1,5 @@
 #include "Animator.h"
+#include "components/Body2D.h"
 #include "components/Button.h"
 #include "components/Camera.h"
 #include "components/Canvas.h"
@@ -32,6 +33,7 @@
 
 #include "imgui.h"
 #include "tools/Vector2.h"
+#include <X11/Xlib.h>
 #include <string>
 
 namespace FL = FlatEngine;
@@ -162,11 +164,28 @@ namespace FlatGui
 
 		void RenderTransformComponent(FL::Transform* transform)
 		{	
-			FL::Vector3& position = transform->GetPosition();
-			FL::Vector3& rotation = transform->GetRotations();
-			FL::Vector3& scale = transform->GetScale();
+			FL::Vector3 position = transform->GetPosition();
+			FL::Vector3 rotation = transform->GetRotations();
+			FL::Vector3 scale = transform->GetScale();
 
-			FL::GuiCore::RenderTransformTable("TransformComponent" + std::to_string(transform->GetID()), position, rotation, scale);
+			float labelWidth = 68;
+			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
+			FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
+
+			if (FL::GuiCore::RenderVector3Table("##TransformComponentTable", "POSITION", position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors))
+			{
+				transform->SetPosition(position);
+			}
+			FL::GuiCore::MoveScreenCursor(0,-4);
+			if (FL::GuiCore::RenderVector3Table("##TransformComponentTable", "ROTATION", rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false))
+			{
+				transform->SetRotation(rotation);
+			}
+			FL::GuiCore::MoveScreenCursor(0,-4);
+			if (FL::GuiCore::RenderVector3Table("##TransformComponentTable", "SCALE",    scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors))
+			{
+				transform->SetScale(scale);
+			}
 		}
 
 		bool RenderPivotSelectionButtons(std::string componentType, FL::Pivot& pivot)
@@ -1455,9 +1474,9 @@ namespace FlatGui
 			ImGui::GetWindowDrawList()->AddRect({ shapeWindowPos.x , shapeWindowPos.y }, { shapeWindowPos.x + shapeWindowSize.x, shapeWindowPos.y + shapeWindowSize.y }, FL::Assets::assetManager.GetColor32("componentBorder"), 0);
 		}
 
-		void RenderBodyComponent(FL::Body* body)
+		void RenderBody2DComponent(FL::Body2D* body)
 		{		
-			FL::PhysicsManager::BodyProps bodyProps = body->GetBodyProps();
+			FL::PhysicsManager::BodyProps bodyProps = body->bodyProps;
 			long ID = body->GetID();
 			FL::Vector2 linearVelocity = body->GetLinearVelocity();
 			float angularVelocity = body->GetAngularVelocity();
@@ -1547,7 +1566,7 @@ namespace FlatGui
 				ImGui::EndMenu();
 			}
 
-			if (body->GetShapes().size() > 0)
+			if (body->GetShapes().size())
 			{
 				FL::GuiCore::MoveScreenCursor(0, 3);
 				ImGui::Text("%s", "Body Shapes");
@@ -1595,6 +1614,9 @@ namespace FlatGui
 
 				// Border around Shapes Section
 				ImGui::GetWindowDrawList()->AddRect({wPos.x, wPos.y - 1}, {wPos.x + wSize.x, wPos.y + wSize.y + 1}, FL::Assets::assetManager.GetColor32("componentSectionBorder"), 0);
+			}
+			else {
+				ImGui::TextWrapped("* WARNING *\n\nA Body without a shape attached has 0.0 mass and will not move.");
 			}
 		}
 
@@ -1782,8 +1804,8 @@ namespace FlatGui
 			FL::Joint::JointType jointType = joint->GetJointType();
 			std::string jointTypeString = joint->GetJointString();
 			std::string ID = jointTypeString + " ID: " + std::to_string(jointID);
-			FL::Body* bodyA = joint->GetBodyA();
-			FL::Body* bodyB = joint->GetBodyB();	
+			FL::Body2D* bodyA = joint->GetBodyA();
+			FL::Body2D* bodyB = joint->GetBodyB();	
 			bool b_collideConnected = joint->CollideConnected();
 			FL::Vector2 anchorA = joint->GetAnchorA();
 			FL::Vector2 anchorB = joint->GetAnchorB();
@@ -2732,7 +2754,8 @@ namespace FlatGui
 									{											
 										case FL::ComponentType_Animation:           Inspector::RenderAnimationComponent(static_cast<FL::Animation*>(component)); break;
 										case FL::ComponentType_Audio:			    Inspector::RenderAudioComponent(static_cast<FL::Audio*>(component)); break;
-										case FL::ComponentType_Body: 			    Inspector::RenderBodyComponent(static_cast<FL::Body*>(component)); break;
+										// case FL::ComponentType_Body: 			    Inspector::RenderBodyComponent(static_cast<FL::Body2D*>(component)); break;
+										case FL::ComponentType_Body2D: 			    Inspector::RenderBody2DComponent(static_cast<FL::Body2D*>(component)); break;
 										case FL::ComponentType_Button: 			    Inspector::RenderButtonComponent(static_cast<FL::Button*>(component)); break;
 										case FL::ComponentType_Camera:			    Inspector::RenderCameraComponent(static_cast<FL::Camera*>(component)); break;
 										case FL::ComponentType_Canvas:			    Inspector::RenderCanvasComponent(static_cast<FL::Canvas*>(component)); break;

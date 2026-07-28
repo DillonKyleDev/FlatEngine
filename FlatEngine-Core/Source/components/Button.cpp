@@ -1,6 +1,7 @@
 #include "components/Button.h"
 #include "components/Transform.h"
 #include "GameObject.h"
+#include "tools/JsonHelper.h"
 #include "tools/Logger.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
@@ -70,7 +71,8 @@ namespace FlatEngine
         Component::PutData(componentJson, objectName);	
 
 		LuaManager::LuaParameter parameter;
-		parameter.PutData(componentJson.at("functionParameters"), objectName);
+		if (JsonHelper::JsonContains(componentJson, "functionParameters", objectName))
+			parameter.PutData(componentJson.at("functionParameters"), objectName);
 		SetFunctionParams(parameter);
 
 		SetActiveDimensions(JsonHelper::CheckJsonFloat(componentJson, "activeWidth", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeHeight", objectName));

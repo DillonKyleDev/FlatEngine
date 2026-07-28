@@ -1,6 +1,7 @@
 #include "GameObject.h"
 #include "components/Animation.h"
 #include "components/Audio.h"
+#include "components/Body2D.h"
 #include "components/Button.h"
 #include "components/Camera.h"
 #include "components/Canvas.h"
@@ -43,6 +44,7 @@ namespace FlatEngine
 		m_hierarchyPosition = 0;
 	}
 
+	template<> Body2D*      		GameObject::Get<Body2D>()      		   { return SceneManager::loadedScene.Get<Body2D>(m_ID); }	
 	template<> Button*     			GameObject::Get<Button>() 	 		   { return SceneManager::loadedScene.Get<Button>(m_ID); }
 	template<> Transform*    		GameObject::Get<Transform>() 	 	   { return SceneManager::loadedScene.Get<Transform>(m_ID); }
 
@@ -114,6 +116,16 @@ namespace FlatEngine
 				long id = JsonHelper::CheckJsonLong(componentJson, "id", m_name);
 				ComponentType type = (ComponentType)JsonHelper::CheckJsonInt(componentJson, "type", m_name);
 				Component* component = AddComponent(type, id, componentJson);   				
+			}
+
+			Body2D* body2D = Get<Body2D>();
+			if (body2D)
+			{
+				Transform* transform = Get<Transform>();
+				Vector3 pos = transform->GetCleanPosition(); 
+				Vector3 rot = transform->GetCleanRotations();
+				body2D->SetPosition(Vector2(pos.x, pos.y));		
+				body2D->SetRotation(rot.z);
 			}
 		}
 
@@ -220,7 +232,7 @@ namespace FlatEngine
 	
 	template<> Animation*           GameObject::Get<Animation>()  		   { return SceneManager::loadedScene.Get<Animation>(m_ID); }
 	template<> Audio*      			GameObject::Get<Audio>()      		   { return SceneManager::loadedScene.Get<Audio>(m_ID); }
-	template<> Body*      			GameObject::Get<Body>()      		   { return SceneManager::loadedScene.Get<Body>(m_ID); }
+	template<> Body*      			GameObject::Get<Body>()      		   { return SceneManager::loadedScene.Get<Body>(m_ID); }	
 	template<> Camera*     			GameObject::Get<Camera>() 			   { return SceneManager::loadedScene.Get<Camera>(m_ID); }
 	template<> Canvas*     			GameObject::Get<Canvas>() 	 		   { return SceneManager::loadedScene.Get<Canvas>(m_ID); }
 	template<> CharacterController* GameObject::Get<CharacterController>() { return SceneManager::loadedScene.Get<CharacterController>(m_ID); }
@@ -231,11 +243,12 @@ namespace FlatEngine
 	template<> Sprite*     			GameObject::Get<Sprite>()    		   { return SceneManager::loadedScene.Get<Sprite>(m_ID); }
 	template<> Text*       			GameObject::Get<Text>() 			   { return SceneManager::loadedScene.Get<Text>(m_ID); }
 	template<> TileMap*    			GameObject::Get<TileMap>() 	 		   { return SceneManager::loadedScene.Get<TileMap>(m_ID); }
-
+	// Body2D, Button and Transform above
 	
 	template<> Animation*           GameObject::Add<Animation>(long componentID, json componentJson)  		   { Animation* component = SceneManager::loadedScene.Add<Animation>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
 	template<> Audio*      			GameObject::Add<Audio>(long componentID, json componentJson)      		   { Audio* component = SceneManager::loadedScene.Add<Audio>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
 	template<> Body*      			GameObject::Add<Body>(long componentID, json componentJson)      		   { Body* component = SceneManager::loadedScene.Add<Body>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Body2D*      		GameObject::Add<Body2D>(long componentID, json componentJson)      		   { Body2D* component = SceneManager::loadedScene.Add<Body2D>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
 	template<> Button*     			GameObject::Add<Button>(long componentID, json componentJson) 	 		   { Button* component = SceneManager::loadedScene.Add<Button>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
 	template<> Camera*     			GameObject::Add<Camera>(long componentID, json componentJson) 			   { Camera* component = SceneManager::loadedScene.Add<Camera>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
 	template<> Canvas*     			GameObject::Add<Canvas>(long componentID, json componentJson) 	 		   { Canvas* component = SceneManager::loadedScene.Add<Canvas>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
@@ -256,6 +269,7 @@ namespace FlatEngine
 			case ComponentType_Animation:  			return Add<Animation>(componentID, componentJson);
 			case ComponentType_Audio:      			return Add<Audio>(componentID, componentJson);
 			case ComponentType_Body:       			return Add<Body>(componentID, componentJson);
+			case ComponentType_Body2D:       		return Add<Body2D>(componentID, componentJson);
 			case ComponentType_Button:     			return Add<Button>(componentID, componentJson);
 			case ComponentType_Camera:     			return Add<Camera>(componentID, componentJson);
 			case ComponentType_Canvas:     			return Add<Canvas>(componentID, componentJson);
@@ -275,6 +289,7 @@ namespace FlatEngine
 	template<> void GameObject::Remove<Animation>(long ownerID)  		   { return SceneManager::loadedScene.Remove<Animation>(ownerID); }
 	template<> void GameObject::Remove<Audio>(long ownerID)      		   { return SceneManager::loadedScene.Remove<Audio>(ownerID); }
 	template<> void GameObject::Remove<Body>(long ownerID)      		   { return SceneManager::loadedScene.Remove<Body>(ownerID); }
+	template<> void GameObject::Remove<Body2D>(long ownerID)      		   { return SceneManager::loadedScene.Remove<Body2D>(ownerID); }
 	template<> void GameObject::Remove<Button>(long ownerID) 	 		   { return SceneManager::loadedScene.Remove<Button>(ownerID); }
 	template<> void GameObject::Remove<Camera>(long ownerID) 			   { return SceneManager::loadedScene.Remove<Camera>(ownerID); }
 	template<> void GameObject::Remove<Canvas>(long ownerID) 	 		   { return SceneManager::loadedScene.Remove<Canvas>(ownerID); }
@@ -300,6 +315,7 @@ namespace FlatEngine
 			case ComponentType_Animation:  			return Get<Animation>();
 			case ComponentType_Audio:      			return Get<Audio>();
 			case ComponentType_Body:       			return Get<Body>();
+			case ComponentType_Body2D:       		return Get<Body2D>();
 			case ComponentType_Button:     			return Get<Button>();
 			case ComponentType_Camera:     			return Get<Camera>();
 			case ComponentType_Canvas:     			return Get<Canvas>();

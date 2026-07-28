@@ -227,18 +227,18 @@ namespace FlatEngine
 			{			
 				Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
 				glm::vec4 lookDir = sceneViewCamera.GetLookDirectionNoRoll();
-				Vector2 xyPlane = Vector2(lookDir.x, lookDir.y);
-				Vector2 leftDir = Vector2::Rotate(xyPlane, 90);
-				Vector2 rightDir = Vector2::Rotate(xyPlane, -90);
+				Vector2 xzPlane = Vector2(lookDir.x, lookDir.z);
+				Vector2 leftDir = Vector2::Rotate(xzPlane, -90);
+				Vector2 rightDir = Vector2::Rotate(xzPlane, 90);
 				float moveDamping = Settings::settings.sceneViewCameraSpeed * 0.00001f;
 
 				if (engineContext->ActionPressed("MoveCameraLeft"))
 				{
-					sceneViewCamera.AddVelocity(Vector3(leftDir.x * moveDamping, leftDir.y * moveDamping, 0));
+					sceneViewCamera.AddVelocity(Vector3(leftDir.x * moveDamping, 0, leftDir.y * moveDamping));
 				}
 				if (engineContext->ActionPressed("MoveCameraRight"))
 				{
-					sceneViewCamera.AddVelocity(Vector3(rightDir.x * moveDamping, rightDir.y * moveDamping, 0));
+					sceneViewCamera.AddVelocity(Vector3(rightDir.x * moveDamping, 0, rightDir.y * moveDamping));
 				}
 				if (engineContext->ActionPressed("MoveCameraForward"))
 				{
@@ -250,11 +250,11 @@ namespace FlatEngine
 				}
 				if (engineContext->ActionPressed("MoveCameraUp"))
 				{
-					sceneViewCamera.AddVelocity(Vector3(0, 0, moveDamping));
+					sceneViewCamera.AddVelocity(Vector3(0, moveDamping, 0));
 				}
 				if (engineContext->ActionPressed("MoveCameraDown"))
 				{
-					sceneViewCamera.AddVelocity(Vector3(0, 0, -moveDamping));
+					sceneViewCamera.AddVelocity(Vector3(0, -moveDamping, 0));
 				}
 			}		
 
@@ -342,7 +342,7 @@ namespace FlatEngine
 
 					sceneViewCamera.AddToHorizontalViewAngle(-mouseDelta.x * 0.25f);
 					sceneViewCamera.AddToVerticalViewAngle(mouseDelta.y * 0.25f);
-
+					
 					UpdateSceneViewCamera();					
 				}
 				if (ImGui::IsItemDeactivated())

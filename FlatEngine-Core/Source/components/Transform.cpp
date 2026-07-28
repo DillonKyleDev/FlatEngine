@@ -1,4 +1,4 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "components/Transform.h"
 #include "GameObject.h"
 
@@ -66,13 +66,13 @@ namespace FlatEngine
 		if (GetParentObject() != nullptr)
 		{
 			GameObject* parent = GetParentObject();
-			Body* body = parent->Get<Body>();
+			Body2D* body2D = parent->Get<Body2D>();
 
-			if (body != nullptr)
+			if (body2D != nullptr)
 			{
-				Vector2 bodyPos = body->GetPosition();
-				m_position.x = bodyPos.x;
-				m_position.y = bodyPos.y;
+				Vector2 body2DPos = body2D->GetPosition();
+				m_position.x = body2DPos.x;
+				m_position.y = body2DPos.y;
 			}
 
 			Vector3 positionOrigin = Vector3();
@@ -113,31 +113,36 @@ namespace FlatEngine
 		if (GetParentObject() != nullptr)
 		{
 			GameObject* parent = GetParentObject();
-			Body* body = parent->Get<Body>();
+			Body2D* body2D = parent->Get<Body2D>();
 
-			if (body != nullptr)
+			if (body2D != nullptr)
 			{
-				Vector2 newPos = Vector2(newPosition.x, newPosition.z);
-				body->SetPosition(newPos);
+				Vector2 newPos = Vector2(newPosition.x, newPosition.y);
+				body2D->SetPosition(newPos);
 			}
 		}
 	}
 
-	Vector3& Transform::GetPosition()
+	Vector3 Transform::GetPosition()
 	{
-		Body* body = nullptr;
+		Body2D* body2D = nullptr;
 		if (GetParentObject() != nullptr)
 		{
-			body = GetParentObject()->Get<Body>();
+			body2D = GetParentObject()->Get<Body2D>();
 		}
 
-		if (body != nullptr)
+		if (body2D != nullptr)
 		{
-			Vector2 bodyPos = body->GetPosition();
-			m_position.x = bodyPos.x;
-			m_position.z = bodyPos.y;
+			Vector2 body2DPos = body2D->GetPosition();
+			m_position.x = body2DPos.x;
+			m_position.y = body2DPos.y;
 		}
 
+		return m_position;
+	}
+
+	Vector3 Transform::GetCleanPosition()
+	{
 		return m_position;
 	}
 
@@ -173,52 +178,62 @@ namespace FlatEngine
 	void Transform::SetYRotation(float newRotation)
 	{
 		m_rotation.y = ClampRotation(newRotation);
-
-		if (GetParentObject() != nullptr && GetParentObject()->Get<Body>() != nullptr)
-		{
-			GetParentObject()->Get<Body>()->SetRotation(m_rotation.y);
-		}
 	}
 
 	void Transform::SetZRotation(float newRotation)
 	{
 		m_rotation.z = ClampRotation(newRotation);
+
+		if (GetParentObject() != nullptr && GetParentObject()->Get<Body2D>() != nullptr)
+		{
+			GetParentObject()->Get<Body2D>()->SetRotation(m_rotation.z);
+		}
 	}
 
 	void Transform::SetRotation(Vector3 rotation)
 	{
 		m_rotation = rotation;
+
+		if (GetParentObject() != nullptr && GetParentObject()->Get<Body2D>() != nullptr)
+		{
+			GetParentObject()->Get<Body2D>()->SetRotation(m_rotation.z);
+		}
 	}
 
-	Vector3& Transform::GetScale()
+	Vector3 Transform::GetScale()
 	{
 		return m_scale;
 	}
 
 	float Transform::GetRotation()
 	{
-		Body* body = GetParentObject()->Get<Body>();
+		Body2D* body2D = GetParentObject()->Get<Body2D>();
 
-		if (body != nullptr)
+		if (body2D != nullptr)
 		{
-			m_rotation.y = body->GetRotation();
+			m_rotation.z = body2D->GetRotation();
 		}
 
-		return m_rotation.y;
+		return m_rotation.z;
 	}
 
-	Vector3& Transform::GetRotations()
+	Vector3 Transform::GetRotations()
 	{
 		if (GetParentObject() != nullptr)
 		{
-			Body* body = GetParentObject()->Get<Body>();
+			Body2D* body2D = GetParentObject()->Get<Body2D>();
 
-			if (body != nullptr)
+			if (body2D != nullptr)
 			{
-				m_rotation.y = body->GetRotation();
+				m_rotation.z = body2D->GetRotation();
 			}
 		}
 
+		return m_rotation;
+	}
+
+	Vector3 Transform::GetCleanRotations()
+	{
 		return m_rotation;
 	}
 
@@ -226,11 +241,11 @@ namespace FlatEngine
 	{
 		if (GetParentObject() != nullptr)
 		{
-			Body* body = GetParentObject()->Get<Body>();
+			Body2D* body2D = GetParentObject()->Get<Body2D>();
 
-			if (body != nullptr)
+			if (body2D != nullptr)
 			{
-				m_rotation.y = body->GetRotation();
+				m_rotation.z = body2D->GetRotation();
 			}
 		}
 		

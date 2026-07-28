@@ -1,10 +1,10 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "shapes/Circle.h"
 
 
 namespace FlatEngine
 {
-	Circle::Circle(Body* parentBody) : Shape::Shape(parentBody)
+	Circle::Circle(Body2D* parentBody) : Shape::Shape(parentBody)
 	{
 		m_shapeProps.shape = Shape::ShapeType::BS_Circle;
 		m_shapeProps.radius = 1.0f;

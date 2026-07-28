@@ -1,4 +1,4 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "components/Transform.h"
 #include "managers/Assets.h"
 #include "managers/PhysicsManager.h"
@@ -11,17 +11,17 @@
 namespace FlatEngine
 {
 	// RayCast will only be visible for the frame of the cast if b_visible = true
-	b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible)
+	b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body2D& hit, bool b_visible)
 	{
 		if (b_visible)
 		{
 			SceneView::DrawLineInScene(initialPos, (initialPos + direction) * 10, "rayCast", 2);
 		}
 
-		for (std::pair<long, Body> bodyPair : SceneManager::loadedScene.GetAll<Body>())
+		for (std::pair<long, Body2D> bodyPair : SceneManager::loadedScene.GetAll<Body2D>())
 		{
 			bodyPair.second.GetParentObject()->GetTagList().UpdateBits();
-			if (PhysicsManager::physics.CanCollide(tagList, bodyPair.second.GetParentObject()->GetTagList()))
+			if (PhysicsManager::physics2D.CanCollide(tagList, bodyPair.second.GetParentObject()->GetTagList()))
 			{
 				for (Shape* shape : bodyPair.second.GetShapes())
 				{
@@ -44,7 +44,7 @@ namespace FlatEngine
 		return b2CastOutput();
 	}
 
-	Shape::Shape(Body* parentBody)
+	Shape::Shape(Body2D* parentBody)
 	{		
 		m_shapeID = b2_nullShapeId;
 		m_chainID = b2_nullChainId;
@@ -155,7 +155,7 @@ namespace FlatEngine
 		return m_chainID;
 	}
 
-	Body* Shape::GetParentBody()
+	Body2D* Shape::GetParentBody()
 	{
 		return m_parentBody;
 	}
@@ -178,13 +178,13 @@ namespace FlatEngine
 	// Creates a stand-alone shape, not attached to a particular body
 	void Shape::CreateShape()
 	{
-		PhysicsManager::physics.CreateShape(this);
+		PhysicsManager::physics2D.CreateShape(this);
 	}
 
 	// Creates a shape and links it to a Body, affecting it's properties
 	void Shape::CreateBodyShape()
 	{
-		PhysicsManager::physics.CreateBodyShape(m_parentBody, this);
+		PhysicsManager::physics2D.CreateBodyShape(m_parentBody, this);
 	}
 
 	void Shape::RecreateShape()
@@ -205,7 +205,7 @@ namespace FlatEngine
 	{
 		if (b2Shape_IsValid(m_shapeID))
 		{
-			PhysicsManager::physics.DestroyShape(m_shapeID);
+			PhysicsManager::physics2D.DestroyShape(m_shapeID);
 		}
 		if (b2Chain_IsValid(m_chainID))
 		{

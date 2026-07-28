@@ -3,13 +3,13 @@
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
 
-#include "box2d.h"
+#include <math_functions.h>
 #include <string>
 
 
 namespace FlatEngine
 {
-	class Body;
+	class Body2D;
 
 	class Shape
 	{
@@ -35,7 +35,7 @@ namespace FlatEngine
 			bool b_enableSensorEvents = true;
 			bool b_isSensor = false;
 			ShapeType shape = BS_None;
-			Vector2 positionOffset = Vector2(0, 0);
+			Vector2 positionOffset = Vector2();
 			b2Rot rotationOffset = b2MakeRot(0);
 			float restitution = 0.3f;
 			float density = 1.0f;
@@ -51,7 +51,7 @@ namespace FlatEngine
 			float rollingResistance = 0.0f;
 		};
 
-		Shape(Body* parentBody);	
+		Shape(Body2D* parentBody);	
 		json GetShapeData();
 		ShapeType GetShapeType();
 		std::string GetShapeString();
@@ -60,7 +60,7 @@ namespace FlatEngine
 		b2ShapeId GetShapeID();
 		void SetChainID(b2ChainId chainID);
 		b2ChainId GetChainID();
-		Body* GetParentBody();
+		Body2D* GetParentBody();
 		b2BodyId GetParentBodyID();
 		void SetShapeProps(ShapeProps shapeProps);
 		ShapeProps& GetShapeProps();
@@ -106,7 +106,7 @@ namespace FlatEngine
 	private:
 		b2ShapeId m_shapeID;
 		b2ChainId m_chainID;
-		Body* m_parentBody;
+		Body2D* m_parentBody;
 		ShapeProps m_shapeProps;
 		bool m_b_showPoints;
 		bool m_b_editingPoints;

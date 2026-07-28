@@ -93,6 +93,7 @@ GENERATED += $(OBJDIR)/Assets.o
 GENERATED += $(OBJDIR)/Audio.o
 GENERATED += $(OBJDIR)/AudioManager.o
 GENERATED += $(OBJDIR)/Body.o
+GENERATED += $(OBJDIR)/Body2D.o
 GENERATED += $(OBJDIR)/Box.o
 GENERATED += $(OBJDIR)/Button.o
 GENERATED += $(OBJDIR)/CPPScript.o
@@ -184,6 +185,7 @@ OBJECTS += $(OBJDIR)/Assets.o
 OBJECTS += $(OBJDIR)/Audio.o
 OBJECTS += $(OBJDIR)/AudioManager.o
 OBJECTS += $(OBJDIR)/Body.o
+OBJECTS += $(OBJDIR)/Body2D.o
 OBJECTS += $(OBJDIR)/Box.o
 OBJECTS += $(OBJDIR)/Button.o
 OBJECTS += $(OBJDIR)/CPPScript.o
@@ -388,6 +390,9 @@ $(OBJDIR)/Audio.o: Source/components/Audio.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Body.o: Source/components/Body.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Body2D.o: Source/components/Body2D.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Button.o: Source/components/Button.cpp

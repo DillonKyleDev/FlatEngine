@@ -33,6 +33,7 @@ namespace FlatEngine
 		m_Audios = std::map<long, Audio>();
 		m_Texts = std::map<long, Text>();		
 		m_Bodies = std::map<long, Body>();
+		m_Bodies2D = std::map<long, Body2D>();
 		m_CharacterControllers = std::map<long, CharacterController>();		
 		m_TileMaps = std::map<long, TileMap>();
 		m_Meshes = std::map<long, Mesh>();
@@ -61,11 +62,11 @@ namespace FlatEngine
 		m_CharacterControllers.clear();		
 		m_TileMaps.clear();
 
-		for (std::map<long, Body>::iterator iterator = m_Bodies.begin(); iterator != m_Bodies.end(); iterator++)
+		for (std::map<long, Body2D>::iterator iterator = m_Bodies2D.begin(); iterator != m_Bodies2D.end(); iterator++)
 		{
 			iterator->second.Cleanup();
 		}
-		m_Bodies.clear();
+		m_Bodies2D.clear();
 
 		for (std::map<long, JointMaker>::iterator iterator = m_JointMakers.begin(); iterator != m_JointMakers.end(); iterator++)
 		{
@@ -383,6 +384,7 @@ namespace FlatEngine
 	template<> std::map<long, Animation>&           Scene::GetContainer<Animation>()  		   { return m_Animations; }
 	template<> std::map<long, Audio>&      			Scene::GetContainer<Audio>()      		   { return m_Audios; }
 	template<> std::map<long, Body>&       			Scene::GetContainer<Body>()       		   { return m_Bodies; }
+	template<> std::map<long, Body2D>&       		Scene::GetContainer<Body2D>()       	   { return m_Bodies2D; }
 	template<> std::map<long, Button>&     			Scene::GetContainer<Button>() 	 		   { return m_Buttons; }
 	template<> std::map<long, Camera>&     			Scene::GetContainer<Camera>() 			   { return m_Cameras; }
 	template<> std::map<long, Canvas>&     			Scene::GetContainer<Canvas>() 	 		   { return m_Canvases; }
@@ -412,6 +414,7 @@ namespace FlatEngine
 			case ComponentType_Animation:  			return Add<Animation>(ownerID, componentID);
 			case ComponentType_Audio:      			return Add<Audio>(ownerID, componentID);
 			case ComponentType_Body:       			return Add<Body>(ownerID, componentID);
+			case ComponentType_Body2D:       		return Add<Body2D>(ownerID, componentID);
 			case ComponentType_Button:     			return Add<Button>(ownerID, componentID);
 			case ComponentType_Camera:     			return Add<Camera>(ownerID, componentID);
 			case ComponentType_Canvas:     			return Add<Canvas>(ownerID, componentID);
@@ -439,12 +442,12 @@ namespace FlatEngine
 			m_Cameras.erase(ownerID);			
 		}
 	}
-	template<> void Scene::Remove<Body>(long ownerID)
+	template<> void Scene::Remove<Body2D>(long ownerID)
 	{
-		if (m_Bodies.count(ownerID))
+		if (m_Bodies2D.count(ownerID))
 		{
-			m_Bodies.at(ownerID).Cleanup();
-			m_Bodies.erase(ownerID);			
+			m_Bodies2D.at(ownerID).Cleanup();
+			m_Bodies2D.erase(ownerID);			
 		}
 	}
 	template<> void Scene::Remove<Mesh>(long ownerID)
@@ -470,6 +473,7 @@ namespace FlatEngine
 			case ComponentType_Animation:  			Remove<Animation>(ownerID); break;
 			case ComponentType_Audio:      			Remove<Audio>(ownerID); break;
 			case ComponentType_Body:       			Remove<Body>(ownerID); break;
+			case ComponentType_Body2D:       		Remove<Body2D>(ownerID); break;
 			case ComponentType_Button:     			Remove<Button>(ownerID); break;
 			case ComponentType_Camera:     			Remove<Camera>(ownerID); break;
 			case ComponentType_Canvas:     			Remove<Canvas>(ownerID); break;

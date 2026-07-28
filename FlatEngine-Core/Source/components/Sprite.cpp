@@ -10,11 +10,11 @@ namespace FlatEngine
 	{
 		SetType(ComponentType_Sprite);
 		SetID(myID);
-		SetParentObjectID(parentObjectID);
-		m_texture = Texture();
+		SetParentObjectID(parentObjectID);		
+		m_mesh = Mesh(-1, parentObjectID);
 		m_textureWidth = 0;
 		m_textureHeight = 0;
-		m_scale = Vector2(1, 1);
+		m_scale = Vector2(1);
 		m_pivotPoint = Pivot::PivotCenter;
 		m_pivotOffset = Vector2();
 		m_offset = Vector2();
@@ -45,7 +45,7 @@ namespace FlatEngine
 			{ "tintColorY", m_tintColor.y },
 			{ "tintColorZ", m_tintColor.z },
 			{ "tintColorW", m_tintColor.w },
-			{ "renderOrder", m_renderOrder }	
+			{ "renderOrder", m_renderOrder }			
 		};
 		
 		return jsonData;
@@ -78,25 +78,33 @@ namespace FlatEngine
     }
 
 	void Sprite::SetTexture(std::string newPath)
-	{
-		RemoveTexture();
+	{		
+		// m_mesh.CleanupTextures();
 
 		if (newPath != "")
-		{						
+		{				
+			m_mesh.CreateUniformBuffers();
+			m_mesh.SetMaterial("fl_unlit");
+			m_mesh.SetModel("../engine/models/plane.obj");					
+			m_mesh.CreateResources();	
+
 			m_path = newPath;
-			if (m_texture.LoadFromFile(m_path))
+			std::map<uint32_t, Texture>& meshTextures = m_mesh.GetTextures();
+			if (meshTextures.count(0) && meshTextures.at(0).LoadFromFile(m_path))
 			{
-				m_textureWidth = m_texture.GetWidth();
-				m_textureHeight = m_texture.GetHeight();
+				m_mesh.CreateResources();	
+				m_textureWidth = meshTextures.at(0).GetWidth();
+				m_textureHeight = meshTextures.at(0).GetHeight();
 
 				// Set pivot point to the center of the texture by default
 				m_offset = { (float)m_textureWidth / 2, (float)m_textureHeight / 2 };
-				m_pivotOffset = m_offset;
+				m_pivotOffset = m_offset;				
 			}
 			else
 			{
 				// Set broken texture Texture
-				m_texture.LoadFromFile(Assets::assetManager.GetFailedToLoadImagePath());
+				meshTextures.at(0).LoadFromFile(Assets::assetManager.GetFailedToLoadImagePath());				
+
 				if (m_textureWidth == 0 || m_textureHeight == 0)
 				{
 					m_textureWidth = 50;
@@ -105,7 +113,7 @@ namespace FlatEngine
 				}
 
 				Logger::log.Err("Sprite::SetTexture() - Texture could not be loaded.");
-			}
+			}							
 		}
 	}
 
@@ -122,7 +130,7 @@ namespace FlatEngine
 
 	VkDescriptorSet Sprite::GetTexture()
 	{
-		return m_texture.GetTexture();
+		return m_mesh.GetTextures().at(0).GetTexture();
 	}
 
 	void Sprite::SetScale(Vector2 newScale)
@@ -137,7 +145,7 @@ namespace FlatEngine
 
 		if (m_scale.x == 0 || m_scale.y == 0)
 		{
-			m_texture.FreeTexture();
+			m_mesh.CleanupTextures();
 		}
 	}
 
@@ -174,7 +182,7 @@ namespace FlatEngine
 	void Sprite::RemoveTexture()
 	{
 		m_path = "";
-		m_texture.FreeTexture();
+		m_mesh.CleanupTextures();
 	}
 
 	void Sprite::SetPivotPoint(Pivot newPivot)

@@ -19,7 +19,7 @@ namespace FlatEngine
 {
 	Mesh::Mesh(long myID, long parentObjectID)
 	{
-		SetID(myID);
+		SetID(myID != -1 ? myID : SceneManager::loadedScene.GetNextComponentID());
 		SetParentObjectID(parentObjectID);
 		SetType(ComponentType_Mesh);
 
@@ -452,7 +452,7 @@ namespace FlatEngine
 		glm::mat4 meshRotation = transform->GetRotationMatrix();
 		bool b_forceZUp = primaryCamera->ForceZUp();
 		glm::vec4 lookDir = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? primaryCamera->GetLookDirectionNoRoll() : primaryCamera->GetLookDirection();
-		glm::vec4 up = b_forceZUp ? glm::vec4(0.0f, 0.0f, 1.0f, 0.0f) : glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+		glm::vec4 up = b_forceZUp ? glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
 		glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
 		glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);

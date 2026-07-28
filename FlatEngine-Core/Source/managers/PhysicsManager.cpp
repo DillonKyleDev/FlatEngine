@@ -1,5 +1,6 @@
 
 #include "components/Body.h"
+#include "components/Body2D.h"
 #include "GameObject.h"
 #include "joints/DistanceJoint.h"
 #include "joints/Joint.h"
@@ -19,16 +20,16 @@ namespace FlatEngine
 {
 	namespace PhysicsManager
 	{
-		Physics physics = Physics();
+		// Physics physics = Physics();
+		Physics2D physics2D = Physics2D();
 		// std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
 
-
-		Physics::Physics()
+		Physics2D::Physics2D()
 		{
 			m_worldID = b2_nullWorldId;
 		}
 
-		bool Physics::CanCollide(TagList tagList1, TagList tagList2)
+		bool Physics2D::CanCollide(TagList tagList1, TagList tagList2)
 		{
 			uint64_t catA = tagList1.GetCategoryBits();
 			uint64_t maskA = tagList1.GetMaskBits();
@@ -38,19 +39,19 @@ namespace FlatEngine
 			return ((catA & maskB) != 0 && (catB & maskA) != 0);
 		}
 
-		void Physics::Init()
+		void Physics2D::Init()
 		{
 			b2WorldDef worldDef = b2DefaultWorldDef();
 			worldDef.gravity = b2Vec2{ 0.0f, -10.0f };
 			m_worldID = b2CreateWorld(&worldDef);	
 		}
 
-		void Physics::Shutdown()
+		void Physics2D::Shutdown()
 		{
 			b2DestroyWorld(m_worldID);
 		}
 
-		void Physics::Update(float deltaTime)
+		void Physics2D::Update(float deltaTime)
 		{
 			float timeStep = 1.0f / 60.0f;
 			int substepCount = 4;
@@ -59,7 +60,7 @@ namespace FlatEngine
 			HandleCollisions();
 		}
 
-		void Physics::HandleCollisions()
+		void Physics2D::HandleCollisions()
 		{
 			b2ContactEvents contactEvents = b2World_GetContactEvents(m_worldID);
 			b2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldID);
@@ -69,16 +70,16 @@ namespace FlatEngine
 			{
 				b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
 				b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;	
-				Body::GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
-				Body::GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
+				Body2D::GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
+				Body2D::GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
 			}
 			for (int i = 0; i < contactEvents.endCount; ++i)
 			{
 				b2ContactEndTouchEvent* endEvent = contactEvents.endEvents + i;
 				if (b2Shape_IsValid(endEvent->shapeIdA) && b2Shape_IsValid(endEvent->shapeIdB))
 				{
-					Body::GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
-					Body::GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
+					Body2D::GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
+					Body2D::GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
 				}
 			}
 
@@ -86,16 +87,16 @@ namespace FlatEngine
 			for (int i = 0; i < sensorEvents.beginCount; ++i)
 			{
 				b2SensorBeginTouchEvent* beginTouch = sensorEvents.beginEvents + i;
-				Body::GetBodyFromShapeID(beginTouch->sensorShapeId)->OnSensorBeginTouch(beginTouch->sensorShapeId, beginTouch->visitorShapeId);
-				Body::GetBodyFromShapeID(beginTouch->visitorShapeId)->OnSensorBeginTouch(beginTouch->visitorShapeId, beginTouch->sensorShapeId);
+				Body2D::GetBodyFromShapeID(beginTouch->sensorShapeId)->OnSensorBeginTouch(beginTouch->sensorShapeId, beginTouch->visitorShapeId);
+				Body2D::GetBodyFromShapeID(beginTouch->visitorShapeId)->OnSensorBeginTouch(beginTouch->visitorShapeId, beginTouch->sensorShapeId);
 			}
 			for (int i = 0; i < sensorEvents.endCount; ++i)
 			{
 				b2SensorEndTouchEvent* endTouch = sensorEvents.endEvents + i;
 				if (b2Shape_IsValid(endTouch->visitorShapeId))
 				{
-					Body::GetBodyFromShapeID(endTouch->sensorShapeId)->OnSensorEndTouch(endTouch->sensorShapeId, endTouch->visitorShapeId);
-					Body::GetBodyFromShapeID(endTouch->visitorShapeId)->OnSensorEndTouch(endTouch->visitorShapeId, endTouch->sensorShapeId);
+					Body2D::GetBodyFromShapeID(endTouch->sensorShapeId)->OnSensorEndTouch(endTouch->sensorShapeId, endTouch->visitorShapeId);
+					Body2D::GetBodyFromShapeID(endTouch->visitorShapeId)->OnSensorEndTouch(endTouch->visitorShapeId, endTouch->sensorShapeId);
 				}
 			}
 
@@ -112,9 +113,9 @@ namespace FlatEngine
 			}
 		}
 
-		void Physics::CreateBody(Body* parentBody)
+		void Physics2D::CreateBody(Body2D* parentBody)
 		{
-			BodyProps bodyProps = parentBody->GetBodyProps();
+			BodyProps bodyProps = parentBody->bodyProps;
 			b2BodyDef bodyDef = b2DefaultBodyDef();
 			b2Vec2 position = b2Vec2(bodyProps.position.x, bodyProps.position.y);
 			bodyDef.isEnabled = parentBody->IsActive();
@@ -136,7 +137,7 @@ namespace FlatEngine
 			parentBody->SetBodyID(bodyID);
 		}
 
-		void Physics::CreateShape(Shape* shape)
+		void Physics2D::CreateShape(Shape* shape)
 		{
 			Shape::ShapeProps shapeProps = shape->GetShapeProps();
 			b2Vec2 center = b2Vec2(shapeProps.positionOffset.x, shapeProps.positionOffset.y);
@@ -221,7 +222,7 @@ namespace FlatEngine
 			}
 		}
 
-		void Physics::CreateBodyShape(Body* parentBody, Shape* shape)
+		void Physics2D::CreateBodyShape(Body2D* parentBody, Shape* shape)
 		{
 			b2BodyId bodyID = parentBody->GetBodyID();			
 			Shape::ShapeProps shapeProps = shape->GetShapeProps();
@@ -366,31 +367,30 @@ namespace FlatEngine
 			}
 		}
 
-		void Physics::DestroyBody(b2BodyId bodyID)
+		void Physics2D::DestroyBody(b2BodyId bodyID)
 		{
 			b2DestroyBody(bodyID);
 		}
 
-		void Physics::RecreateBody(Body* parentBody)
+		void Physics2D::RecreateBody(Body2D* parentBody)
 		{
 			DestroyBody(parentBody->GetBodyID());
 			CreateBody(parentBody);
-			parentBody->RecreateShapes();
-			
+			parentBody->RecreateShapes();			
 		}
 
-		void Physics::DestroyShape(b2ShapeId shapeID)
+		void Physics2D::DestroyShape(b2ShapeId shapeID)
 		{
 			b2DestroyShape(shapeID, true);
 		}
 
-		void Physics::RecreateShape(Shape* shape)
+		void Physics2D::RecreateShape(Shape* shape)
 		{
 			//DestroyShape(shape->GetShapeID());
 			//CreateShape(shape->GetParentBody(), shape);
 		}
 
-		void Physics::CreateJoint(Body* bodyA, Body* bodyB, Joint* joint)
+		void Physics2D::CreateJoint(Body2D* bodyA, Body2D* bodyB, Joint* joint)
 		{
 			Joint::BaseProps baseProps = joint->GetBaseProps();
 			b2JointId jointID = b2_nullJointId;
@@ -537,7 +537,7 @@ namespace FlatEngine
 		}
 
 		// For Mouse button collisions - Vector4 objectA(top, right, bottom, left), Vector4 objectB(top, right, bottom, left)
-		bool Physics::AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB)
+		bool Physics2D::AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB)
 		{
 			float A_TopEdge = ObjectA.z;
 			float A_RightEdge = ObjectA.y;

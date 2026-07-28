@@ -1,10 +1,10 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "shapes/Polygon.h"
 
 
 namespace FlatEngine
 {
-	Polygon::Polygon(Body* parentBody) : Shape::Shape(parentBody)
+	Polygon::Polygon(Body2D* parentBody) : Shape::Shape(parentBody)
 	{		
 		m_shapeProps.shape = Shape::ShapeType::BS_Polygon;
 		m_shapeProps.points = { {3.0f, -2.0f}, {0.0f, 2.0f}, {-3.0f, -2.0f} };

@@ -1,4 +1,4 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "joints/Joint.h"
 #include "managers/PhysicsManager.h"
 #include "managers/SceneManager.h"
@@ -89,11 +89,11 @@ namespace FlatEngine
 		return m_jointString;
 	}
 
-	Body* Joint::GetBodyA()
+	Body2D* Joint::GetBodyA()
 	{
 		if (SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyAID) != nullptr)
 		{
-			return SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyAID)->Get<Body>();
+			return SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyAID)->Get<Body2D>();
 		}
 		else
 		{
@@ -101,11 +101,11 @@ namespace FlatEngine
 		}
 	}
 
-	Body* Joint::GetBodyB()
+	Body2D* Joint::GetBodyB()
 	{
 		if (SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyBID) != nullptr)
 		{
-			return SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyBID)->Get<Body>();
+			return SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyBID)->Get<Body2D>();
 		}
 		else
 		{
@@ -153,17 +153,17 @@ namespace FlatEngine
 		GameObject* objectA = SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyAID);
 		GameObject* objectB = SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyBID);
 
-		if (objectA != nullptr && objectB != nullptr && objectA->Get<Body>() && objectB->Get<Body>())
+		if (objectA != nullptr && objectB != nullptr && objectA->Get<Body2D>() && objectB->Get<Body2D>())
 		{
-			PhysicsManager::physics.CreateJoint(SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyAID)->Get<Body>(), SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyBID)->Get<Body>(), this);
+			PhysicsManager::physics2D.CreateJoint(SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyAID)->Get<Body2D>(), SceneManager::loadedScene.GetObjectByID(m_baseProps.bodyBID)->Get<Body2D>(), this);
 		}
 	}
 
-	void Joint::CreateJoint(Body* bodyA, Body* bodyB)
+	void Joint::CreateJoint(Body2D* bodyA, Body2D* bodyB)
 	{
 		if (bodyA != nullptr && bodyB != nullptr)
 		{
-			PhysicsManager::physics.CreateJoint(bodyA, bodyB, this);
+			PhysicsManager::physics2D.CreateJoint(bodyA, bodyB, this);
 		}
 	}
 

@@ -18,6 +18,7 @@ namespace FlatEngine
     class GameObject;
     struct ScriptData;
     class Body;
+    class Body2D;
 
     namespace LuaManager
     {
@@ -168,6 +169,8 @@ namespace FlatEngine
         extern void CallVoidLuaFunction(std::string functionName);
         extern void CallLuaCollisionFunction(LuaEventFunction eventFunc, FL::Body* caller, FL::Body* collidedWith, b2Manifold manifold = {});
         extern void CallLuaSensorFunction(LuaEventFunction eventFunc, FL::Body* caller, FL::Body* touched);
+        extern void CallLuaCollisionFunction2D(LuaEventFunction eventFunc, FL::Body2D* caller, FL::Body2D* collidedWith, b2Manifold manifold = {});
+        extern void CallLuaSensorFunction2D(LuaEventFunction eventFunc, FL::Body2D* caller, FL::Body2D* touched);
         extern void CallLuaButtonEventFunction(FL::GameObject* caller, LuaEventFunction eventFunc);        
         extern void CallLuaAnimationEventFunction(FL::GameObject* caller, std::string functionName, LuaParameterContainer paramsContainer = LuaParameterContainer());
         extern void CallLuaButtonOnClickFunction(FL::GameObject* caller, std::string eventFunc);

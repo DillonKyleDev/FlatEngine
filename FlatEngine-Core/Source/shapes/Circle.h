@@ -4,12 +4,12 @@
 
 namespace FlatEngine
 {
-	class Body;
+	class Body2D;
 	
 	class Circle : public Shape
 	{
 	public:
-		Circle(Body* parentBody = nullptr);
+		Circle(Body2D* parentBody = nullptr);
 
 		void SetRadius(float radius);
 

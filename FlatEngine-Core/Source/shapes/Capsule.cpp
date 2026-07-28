@@ -1,10 +1,10 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "shapes/Capsule.h"
 
 
 namespace FlatEngine
 {
-	Capsule::Capsule(Body* parentBody) : Shape::Shape(parentBody)
+	Capsule::Capsule(Body2D* parentBody) : Shape::Shape(parentBody)
 	{		
 		m_shapeProps.shape = Shape::ShapeType::BS_Capsule;
 		m_shapeProps.radius = 1.0f;

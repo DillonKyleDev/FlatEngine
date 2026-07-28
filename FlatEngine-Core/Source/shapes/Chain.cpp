@@ -1,10 +1,10 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "shapes/Chain.h"
 
 
 namespace FlatEngine
 {
-	Chain::Chain(Body* parentBody) : Shape::Shape(parentBody)
+	Chain::Chain(Body2D* parentBody) : Shape::Shape(parentBody)
 	{				
 		m_shapeProps.shape = Shape::ShapeType::BS_Chain;
 		m_shapeProps.points = { {4.0f, -2.0f}, {4.0f, 0.0f}, {-4.0f, 0.0f}, {-4.0f, -2.0f} };		

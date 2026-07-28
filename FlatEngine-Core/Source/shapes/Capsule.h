@@ -4,12 +4,12 @@
 
 namespace FlatEngine
 {
-	class Body;
+	class Body2D;
 
 	class Capsule : public Shape
 	{		
 	public:
-		Capsule(Body* parentBody = nullptr);		
+		Capsule(Body2D* parentBody = nullptr);		
 
 		void SetCapsuleLength(float length);
 		void SetRadius(float radius);

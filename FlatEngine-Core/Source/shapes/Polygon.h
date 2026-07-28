@@ -6,12 +6,12 @@
 
 namespace FlatEngine
 {
-    class Body;
+    class Body2D;
 
     class Polygon : public Shape
     {
     public:
-        Polygon(Body* parentBody = nullptr);         
+        Polygon(Body2D* parentBody = nullptr);         
 
         void SetPoints(std::vector<Vector2> points);
         void UpdatePoints();

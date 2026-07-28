@@ -101,7 +101,8 @@ namespace FlatEngine
 							Logger::log.Trace("SDL_mixer initialized...\n");
 						}
 
-						PhysicsManager::physics.Init();
+						// PhysicsManager::physics.Init();
+						PhysicsManager::physics2D.Init();
 						Logger::log.Trace("Physics initialized...\n");
 
 						Assets::assetManager.CollectTags();
@@ -125,7 +126,8 @@ namespace FlatEngine
 
 	void Cleanup()
 	{
-		PhysicsManager::physics.Shutdown();
+		// PhysicsManager::physics.Shutdown();
+		PhysicsManager::physics2D.Shutdown();
 		GuiCore::QuitImGui();
 
 		// Clean up old gamepads

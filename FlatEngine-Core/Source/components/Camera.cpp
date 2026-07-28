@@ -183,17 +183,17 @@ namespace FlatEngine
 			rotationMatrix *= rollCameraMatrix;
 		}
 
-		return rotationMatrix * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f); // default looking in the x direction;
+		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f); // default looking in the z direction;
 	}
 
 	// Meant for the Scene View Camera because it does not exist in the Scene objects pool and would crash with above function
 	glm::vec4 Camera::GetLookDirectionNoRoll()
 	{
-		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_horizontalViewAngle), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_verticalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_horizontalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_verticalViewAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotationMatrix = horCameraRotationMatrix * vertCameraRotationMatrix;
 
-		return rotationMatrix * glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	}
 
 	float Camera::GetNearClippingDistance()

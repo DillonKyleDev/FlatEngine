@@ -403,6 +403,7 @@ namespace FlatGui
 						FL::SceneManager::SaveCurrentScene();
 					}
 					FL::ProjectManager::SaveCurrentProject();
+					FL::Settings::settings.SaveSettings();
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");

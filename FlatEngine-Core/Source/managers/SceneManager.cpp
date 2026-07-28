@@ -45,10 +45,6 @@ namespace FlatEngine
 						}
 					}
 				}
-				else
-				{
-					sceneObjectsJsonArray.push_back("NULL");
-				}
 
 				json sceneJson = json::object({ {"Scene GameObjects", sceneObjectsJsonArray } });
 				JsonHelper::WriteJsonToFile(sceneJson, filePath);
@@ -117,18 +113,18 @@ namespace FlatEngine
 					}
 					else
 					{
-						GameObject loadedObject = GameObject();
-						loadedObject.PutData(objectJson);
-						loadedScene.AddSceneObject(loadedObject);							
+						GameObject loadedObject = GameObject(JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"));						
+						GameObject* objectPtr = loadedScene.AddSceneObject(loadedObject);							
+						objectPtr->PutData(objectJson);
 					}
 				}
 
 				// Create prefabs after regular objects so that prefab children don't steal "unused" GameObject IDs from regular objects and then get overwritten by those objects
 				for (json objectJson : prefabsJson)
 				{
-					GameObject loadedObject = GameObject();
-					loadedObject.PutData(objectJson);
-					loadedScene.AddSceneObject(loadedObject);															
+					GameObject loadedObject = GameObject(JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"));						
+					GameObject* objectPtr = loadedScene.AddSceneObject(loadedObject);							
+					objectPtr->PutData(objectJson);														
 				}
 
 				loadedScene.SortSceneObjects();

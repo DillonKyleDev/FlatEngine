@@ -2,6 +2,7 @@
 #include "components/Animation.h"
 #include "components/Audio.h"
 #include "components/Body.h"
+#include "components/Body2D.h"
 #include "components/Button.h"
 #include "components/Camera.h"
 #include "components/Canvas.h"
@@ -110,21 +111,22 @@ namespace FlatEngine
 		Camera* m_primaryCamera;
 
 		std::map<long, Transform> m_Transforms;
-		std::map<long, Sprite> m_Sprites;
-		std::map<long, Camera> m_Cameras;
-		std::map<long, Script> m_Scripts;		
-		std::map<long, std::vector<std::string>> m_LuaScriptsByOwner;
-		std::map<long, Button> m_Buttons;
-		std::map<long, Canvas> m_Canvases;
 		std::map<long, Animation> m_Animations;
 		std::map<long, Audio> m_Audios;
-		std::map<long, Text> m_Texts;				
 		std::map<long, Body> m_Bodies;
-		std::map<long, JointMaker> m_JointMakers;
+		std::map<long, Body2D> m_Bodies2D;
+		std::map<long, Button> m_Buttons;
+		std::map<long, Camera> m_Cameras;
+		std::map<long, Canvas> m_Canvases;
 		std::map<long, CharacterController> m_CharacterControllers;
-		std::map<long, TileMap> m_TileMaps;		
+		std::map<long, JointMaker> m_JointMakers;
+		std::map<long, Light> m_Lights;
+		std::map<long, std::vector<std::string>> m_LuaScriptsByOwner;
 		std::map<long, Mesh> m_Meshes;
 		std::map<std::string, std::vector<Mesh>> m_MeshesByMaterial;
-		std::map<long, Light> m_Lights;
+		std::map<long, Script> m_Scripts;		
+		std::map<long, Sprite> m_Sprites;
+		std::map<long, Text> m_Texts;			
+		std::map<long, TileMap> m_TileMaps;		
 	};
 }

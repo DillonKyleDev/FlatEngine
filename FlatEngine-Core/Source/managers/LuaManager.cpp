@@ -1,5 +1,6 @@
 
-#include "components/Body.h"
+// #include "components/Body.h"
+#include "components/Body2D.h"
 #include "components/Button.h"
 #include "components/CharacterController.h"
 #include "components/Script.h"
@@ -623,24 +624,44 @@ namespace FlatEngine
 				"persisted", sol::readonly(&b2ManifoldPoint::persisted)
 			);
 
-			lua.new_usertype<Body>("Body",
-				"SetActive", &Body::SetActive,
-				"IsActive", &Body::IsActive,
-				"GetParent", &Body::GetParentObject,
-				"GetParentID", &Body::GetParentObjectID,
-				"GetID", &Body::GetID,
-				"GetBodyProps", &Body::GetBodyProps,
-				"SetGravity", &Body::SetGravityScale,			
-				"SetLinearDamping", &Body::SetLinearDamping,
-				"SetAngularDamping", &Body::SetAngularDamping,
-				"ApplyForce", &Body::ApplyForce,
-				"ApplyLinearInpulse", &Body::ApplyLinearInpulse,
-				"ApplyForceToCenter", &Body::ApplyForceToCenter,
-				"ApplyLinearImpulseToCenter", &Body::ApplyLinearImpulseToCenter,
-				"ApplyTorque", &Body::ApplyTorque,
-				"ApplyAngularImpulse", &Body::ApplyAngularImpulse,
-				"GetLinearVelocity", &Body::GetLinearVelocity,
-				"GetAngularVelocity", &Body::GetAngularVelocity
+			// lua.new_usertype<Body>("Body",
+			// 	"SetActive", &Body::SetActive,
+			// 	"IsActive", &Body::IsActive,
+			// 	"GetParent", &Body::GetParentObject,
+			// 	"GetParentID", &Body::GetParentObjectID,
+			// 	"GetID", &Body::GetID,
+			// 	"GetBodyProps", &Body::GetBodyProps,
+			// 	"SetGravity", &Body::SetGravityScale,			
+			// 	"SetLinearDamping", &Body::SetLinearDamping,
+			// 	"SetAngularDamping", &Body::SetAngularDamping,
+			// 	"ApplyForce", &Body::ApplyForce,
+			// 	"ApplyLinearInpulse", &Body::ApplyLinearInpulse,
+			// 	"ApplyForceToCenter", &Body::ApplyForceToCenter,
+			// 	"ApplyLinearImpulseToCenter", &Body::ApplyLinearImpulseToCenter,
+			// 	"ApplyTorque", &Body::ApplyTorque,
+			// 	"ApplyAngularImpulse", &Body::ApplyAngularImpulse,
+			// 	"GetLinearVelocity", &Body::GetLinearVelocity,
+			// 	"GetAngularVelocity", &Body::GetAngularVelocity
+			// );
+
+			lua.new_usertype<Body2D>("Body2D",
+				"SetActive", &Body2D::SetActive,
+				"IsActive", &Body2D::IsActive,
+				"GetParent", &Body2D::GetParentObject,
+				"GetParentID", &Body2D::GetParentObjectID,
+				"GetID", &Body2D::GetID,
+				"bodyProps", &Body2D::bodyProps,
+				"SetGravity", &Body2D::SetGravityScale,			
+				"SetLinearDamping", &Body2D::SetLinearDamping,
+				"SetAngularDamping", &Body2D::SetAngularDamping,
+				"ApplyForce", &Body2D::ApplyForce,
+				"ApplyLinearInpulse", &Body2D::ApplyLinearInpulse,
+				"ApplyForceToCenter", &Body2D::ApplyForceToCenter,
+				"ApplyLinearImpulseToCenter", &Body2D::ApplyLinearImpulseToCenter,
+				"ApplyTorque", &Body2D::ApplyTorque,
+				"ApplyAngularImpulse", &Body2D::ApplyAngularImpulse,
+				"GetLinearVelocity", &Body2D::GetLinearVelocity,
+				"GetAngularVelocity", &Body2D::GetAngularVelocity
 			);
 
 			lua.new_usertype<Mesh>("Mesh",
@@ -1125,6 +1146,89 @@ namespace FlatEngine
 						}
 					}
 				}
+			}
+		}
+
+		void CallLuaCollisionFunction2D(LuaEventFunction eventFunc, Body2D* caller, Body2D* collidedWith, b2Manifold manifold)
+		{
+			GameObject* callingObject = caller->GetParentObject();
+			Script* script = callingObject->Get<Script>();
+
+			if (script && script->IsActive() && script->GetScripts().size())
+			{
+				for (ScriptData scriptData : callingObject->Get<Script>()->GetScripts())
+				{
+					std::string attachedScript = scriptData.name;
+
+					if (luaScriptsMap.count(attachedScript) > 0)
+					{						
+						std::string functionName = luaEventNames[eventFunc];
+						std::string message = "";
+						if (!ReadyScriptFile(attachedScript, message))
+						{
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+						}
+						LoadLuaGameObject(callingObject, attachedScript);
+
+						sol::protected_function protectedFunc = lua[functionName];
+						if (protectedFunc)
+						{
+							auto result = protectedFunc(collidedWith, manifold);
+							if (!result.valid())
+							{
+								sol::error err = result;
+								Logger::log.Err("Something went wrong in Lua function: {}()", functionName);
+								Logger::log.Err("{}", err.what());
+							}
+						}
+					}
+				}
+			}
+			else 
+			{
+				Logger::log.Trace("No Script component found on object {}. Lua function {} not called.", callingObject->GetName(), luaEventNames[eventFunc]);
+			}
+		}
+
+		// Sensor Events Passed to Lua
+		void CallLuaSensorFunction2D(LuaEventFunction eventFunc, Body2D* caller, Body2D* touched)
+		{
+			GameObject* callingObject = caller->GetParentObject();
+			Script* script = callingObject->Get<Script>();
+
+			if (script && script->IsActive() && script->GetScripts().size())
+			{
+				for (ScriptData scriptData : callingObject->Get<Script>()->GetScripts())
+				{
+					std::string attachedScript = scriptData.name;
+
+					if (luaScriptsMap.count(attachedScript) > 0)
+					{
+						std::string functionName = luaEventNames[eventFunc];
+						std::string message = "";
+						if (!ReadyScriptFile(attachedScript, message))
+						{
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+						}
+						LoadLuaGameObject(callingObject, attachedScript);
+
+						sol::protected_function protectedFunc = lua[functionName];
+						if (protectedFunc)
+						{
+							auto result = protectedFunc(touched);
+							if (!result.valid())
+							{
+								sol::error err = result;
+								Logger::log.Err("Something went wrong in Lua function: {}()", functionName);
+								Logger::log.Err("{}", err.what());
+							}
+						}
+					}
+				}
+			}
+			else 
+			{
+				Logger::log.Trace("No Script component found on object {}. Lua function {} not called.", callingObject->GetName(), luaEventNames[eventFunc]);
 			}
 		}
 

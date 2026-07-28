@@ -20,11 +20,12 @@ namespace FlatEngine
 		static float ClampRotation(float rotation, float min = -180.0f, float max = 180.0f);				
 
 		void SetPosition(Vector3 position);
-		Vector3& GetPosition();
+		Vector3 GetPosition();
+		Vector3 GetCleanPosition();
 		Vector3 GetAbsolutePosition();
 		Vector3 GetPositionOrigin();
 		void SetScale(Vector3 scale);
-		Vector3& GetScale();
+		Vector3 GetScale();
 		Vector3 GetAbsoluteScale();
 		void AddRotation(float x, float y, float z);
 		void SetXRotation(float rotation);
@@ -32,7 +33,8 @@ namespace FlatEngine
 		void SetZRotation(float rotation);
 		void SetRotation(Vector3 rotation);
 		float GetRotation();
-		Vector3& GetRotations();
+		Vector3 GetRotations();
+		Vector3 GetCleanRotations();
 		glm::mat4 GetRotationMatrix();
 		float GetAbsoluteRotation();
 		glm::mat4 GetScaleMatrix();
@@ -43,6 +45,5 @@ namespace FlatEngine
 		Vector3 m_position;
 		Vector3 m_scale;		
 		Vector3 m_rotation;
-		//float m_rotation;
 	};
 }

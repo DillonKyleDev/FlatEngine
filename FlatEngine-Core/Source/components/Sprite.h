@@ -1,5 +1,6 @@
 #pragma once
 #include "components/Component.h"
+#include "components/Mesh.h"
 #include "render/Texture.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
@@ -39,8 +40,8 @@ namespace FlatEngine
 		void SetAlpha(float);
 		float GetAlpha();
 
-	private:
-		Texture m_texture;
+	private:		
+		Mesh m_mesh;
 		int m_renderOrder;
 		int m_textureWidth;
 		int m_textureHeight;

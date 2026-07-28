@@ -5,12 +5,12 @@
 
 namespace FlatEngine
 {
-    class Body;
+    class Body2D;
 
     class Box : public Shape
     {
     public:
-        Box(Body* parentBody = nullptr);
+        Box(Body2D* parentBody = nullptr);
         
         void SetDimensions(Vector2 dimensions);
         void UpdateCorners();

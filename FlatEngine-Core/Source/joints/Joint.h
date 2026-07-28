@@ -2,13 +2,13 @@
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
-#include "box2d.h"
+#include <id.h>
 #include <string>
 
 
 namespace FlatEngine
 {
-	class Body;
+	class Body2D;
 
 	class Joint
 	{
@@ -60,8 +60,8 @@ namespace FlatEngine
 
 		void SetB2JointID(b2JointId jointID);
 		b2JointId GetB2JointID();
-		Body* GetBodyA();
-		Body* GetBodyB();		
+		Body2D* GetBodyA();
+		Body2D* GetBodyB();		
 		bool HasValidBodies();
 		bool CollideConnected();
 		Vector2 GetAnchorA();
@@ -69,7 +69,7 @@ namespace FlatEngine
 		void SetAnchorA(Vector2 anchorA);
 		void SetAnchorB(Vector2 anchorB);
 		void CreateJoint();
-		void CreateJoint(Body* bodyA, Body* bodyB);
+		void CreateJoint(Body2D* bodyA, Body2D* bodyB);
 		void RecreateJoint();
 		void DestroyJoint();		
 

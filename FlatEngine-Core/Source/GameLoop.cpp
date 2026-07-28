@@ -57,11 +57,13 @@ namespace FlatEngine
 		HandleButtons();
 		RunUpdateOnScripts();
 		HandleAnimations();
-		PhysicsManager::physics.Update(GetDeltaTime());
+		// PhysicsManager::physics.Update(GetDeltaTime());
+		PhysicsManager::physics2D.Update(GetDeltaTime());
 
-		std::map<long, Body> bodies = SceneManager::loadedScene.GetAll<Body>();
-		for (std::map<long, Body>::iterator iterator = bodies.begin(); iterator != bodies.end(); iterator++)
+		std::map<long, Body2D> bodies = SceneManager::loadedScene.GetAll<Body2D>();
+		for (std::map<long, Body2D>::iterator iterator = bodies.begin(); iterator != bodies.end(); iterator++)
 		{
+			// Logger::log.Debug("Position: {}", iterator->second.GetPosition().y);
 			//LogInt(iterator->second.GetBoxes().size());
 			//LogVector2(iterator->second.GetPosition(), "Pos: ");
 			for (Box& box : iterator->second.GetBoxes())
@@ -242,7 +244,7 @@ namespace FlatEngine
 				Vector4 activeEdges = buttonPair.second.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
-				if (PhysicsManager::physics.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
+				if (PhysicsManager::physics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
 				{
 					if (buttonPair.second.GetActiveLayer() >= GetFirstUnblockedLayer())
 					{
@@ -345,7 +347,7 @@ namespace FlatEngine
 			bool b_blocksLayers = canvas.GetBlocksLayers();
 			int layerNumber = canvas.GetLayerNumber();
 
-			if (PhysicsManager::physics.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
+			if (PhysicsManager::physics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
 			{
 				lowestUnblockedCanvas = canvas;
 				lowestUnblockedLayer = canvas.GetLayerNumber();

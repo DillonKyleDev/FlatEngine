@@ -1,4 +1,4 @@
-#include "components/Body.h"
+#include "components/Body2D.h"
 #include "render/SceneView.h"
 #include "shapes/Box.h"
 #include "tools/Numbers.h"
@@ -6,7 +6,7 @@
 
 namespace FlatEngine
 {
-	Box::Box(Body* parentBody) : Shape(parentBody)
+	Box::Box(Body2D* parentBody) : Shape(parentBody)
 	{
 		m_shapeProps.shape = Shape::ShapeType::BS_Box;
 		m_shapeProps.dimensions = Vector2(2.0f, 2.0f);		

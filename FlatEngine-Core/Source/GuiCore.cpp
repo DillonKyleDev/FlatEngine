@@ -13,14 +13,12 @@
 #include <imgui.h>
 #include <string>
 
-namespace FL = FlatEngine;
-
 
 namespace FlatEngine 
 {
 	namespace GuiCore
 	{
-		// Flags
+		// Flags		
 		ImGuiChildFlags autoResizeChildFlags = ImGuiChildFlags_AutoResizeY;
 		ImGuiChildFlags resizeChildFlags = ImGuiChildFlags_ResizeX | ImGuiChildFlags_AlwaysUseWindowPadding;
 		ImGuiChildFlags childFlags = ImGuiChildFlags_AlwaysUseWindowPadding;
@@ -98,7 +96,7 @@ namespace FlatEngine
 			style.Colors[ImGuiCol_TabActive]            = Assets::assetManager.GetColor("tabActive");	
 			style.Colors[ImGuiCol_TabHovered]       	= Assets::assetManager.GetColor("tabHovered");
 			style.Colors[ImGuiCol_TabUnfocused] 	    = Assets::assetManager.GetColor("tabUnfocused");	
-			style.Colors[ImGuiCol_TabDimmedSelected]    = Assets::assetManager.GetColor("viewportTitleBgActive");		
+			style.Colors[ImGuiCol_TabDimmedSelected]    = Assets::assetManager.GetColor("tabDimmedSelected");		
 			// Scrollbar		
 			style.Colors[ImGuiCol_ScrollbarBg]          = Assets::assetManager.GetColor("scrollbarBg");
 			style.Colors[ImGuiCol_ScrollbarGrab]        = Assets::assetManager.GetColor("scrollbarGrab");
@@ -125,12 +123,14 @@ namespace FlatEngine
 			// Style Vars
 			style.WindowMenuButtonPosition = ImGuiDir_Right;			
 			style.DisplaySafeAreaPadding = Vector2(0);
+			style.TabCloseButtonMinWidthSelected = 0.0f;
+			style.TabCloseButtonMinWidthUnselected = 0.0f;
 			style.WindowPadding = Vector2(1);
 			style.WindowBorderSize = 1.0f;				
 			style.WindowRounding = 0.0f;
 			style.FramePadding = Vector2(2);
-			style.TabRounding = 2.0f;
-			style.TabBorderSize = 1.0f;	
+			style.TabRounding = 0.0f;
+			style.TabBorderSize = 0.0f;	
 			style.TabBarBorderSize = 0.0f;	
 			style.TabBarOverlineSize = 1.0f;
 			style.ScrollbarSize = 12.0f;			
@@ -581,7 +581,9 @@ namespace FlatEngine
 
 		bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{						
-			bool b_changed = false;	
+			bool b_xChanged = false;	
+			bool b_yChanged = false;	
+
 			if (valueLabelColors.size() == 0)
 				valueLabelColors = { "transformXBGLight", "transformYBGLight" };
 			
@@ -607,17 +609,20 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + ID + "Table", 4, GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();			
-				b_changed = RenderFloatTableColumns(column1Label, "X", vec2.x, valueLabelColors[0], valueColor, 16, 0, 1) ||
-							RenderFloatTableColumns(column2Label, "Y", vec2.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				b_xChanged = RenderFloatTableColumns(column1Label, "X", vec2.x, valueLabelColors[0], valueColor, 16, 0, 1);
+				b_yChanged = RenderFloatTableColumns(column2Label, "Y", vec2.y, valueLabelColors[1], valueColor, 16, 2, 3);
 				GuiCore::PopTable();
 			}
 			
-			return b_changed;
+			return b_xChanged || b_yChanged;
 		}
 
 		bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{				
-			bool b_changed = false;			
+			bool b_xChanged = false;	
+			bool b_yChanged = false;	
+			bool b_zChanged = false;	
+
 			if (valueLabelColors.size() == 0)
 				valueLabelColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight" };
 
@@ -644,18 +649,22 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + ID + "Table", 6, GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();					
-				b_changed = RenderFloatTableColumns(column1Label, "X", vec3.x, valueLabelColors[0], valueColor, 16, 0, 1) ||
-							RenderFloatTableColumns(column2Label, "Y", vec3.y, valueLabelColors[1], valueColor, 16, 2, 3) ||
-							RenderFloatTableColumns(column3Label, "Z", vec3.z, valueLabelColors[2], valueColor, 16, 4, 5);
+				b_xChanged = RenderFloatTableColumns(column1Label, "X", vec3.x, valueLabelColors[0], valueColor, 16, 0, 1);
+				b_yChanged = RenderFloatTableColumns(column2Label, "Y", vec3.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				b_zChanged = RenderFloatTableColumns(column3Label, "Z", vec3.z, valueLabelColors[2], valueColor, 16, 4, 5);
 				GuiCore::PopTable();
 			}
 
-			return b_changed;
+			return b_xChanged || b_yChanged || b_zChanged;
 		}
 
 		bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{			
-			bool b_changed = false;			
+			bool b_xChanged = false;	
+			bool b_yChanged = false;	
+			bool b_zChanged = false;	
+			bool b_wChanged = false;	
+
 			if (valueLabelColors.size() == 0)
 				valueLabelColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };
 
@@ -683,14 +692,14 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + ID + "Table", 8, GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();			
-				b_changed = RenderFloatTableColumns(column1Label, "X", vec4.x, valueLabelColors[0], valueColor, 16, 0, 1) ||
-							RenderFloatTableColumns(column2Label, "Y", vec4.y, valueLabelColors[1], valueColor, 16, 2, 3) ||
-							RenderFloatTableColumns(column3Label, "Z", vec4.z, valueLabelColors[2], valueColor, 16, 4, 5) ||
-							RenderFloatTableColumns(column4Label, "W", vec4.w, valueLabelColors[3], valueColor, 16, 6, 7);
+				b_xChanged = RenderFloatTableColumns(column1Label, "X", vec4.x, valueLabelColors[0], valueColor, 16, 0, 1);
+				b_yChanged = RenderFloatTableColumns(column2Label, "Y", vec4.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				b_zChanged = RenderFloatTableColumns(column3Label, "Z", vec4.z, valueLabelColors[2], valueColor, 16, 4, 5);
+				b_wChanged = RenderFloatTableColumns(column4Label, "W", vec4.w, valueLabelColors[3], valueColor, 16, 6, 7);
 				GuiCore::PopTable();
 			}
 
-			return b_changed;
+			return b_xChanged || b_yChanged || b_zChanged || b_wChanged;
 		}
 
 		bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)

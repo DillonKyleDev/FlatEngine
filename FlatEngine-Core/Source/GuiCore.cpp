@@ -1,5 +1,6 @@
 #include "GuiCore.h"
 #include "managers/Assets.h"
+#include "managers/LuaManager.h"
 #include "render/VulkanManager.h"
 #include "TagList.h"
 #include "tools/FileHelper.h"
@@ -192,7 +193,7 @@ namespace FlatEngine
 		void RenderSeparator(float topPadding, float bottomPadding, std::string separatorColor)
 		{
 			MoveScreenCursor(0, topPadding - 4);
-			ImGui::PushStyleColor(ImGuiCol_Separator, FL::Assets::assetManager.GetColor(separatorColor));
+			ImGui::PushStyleColor(ImGuiCol_Separator, Assets::assetManager.GetColor(separatorColor));
 			ImGui::Separator();
 			ImGui::PopStyleColor();
 			MoveScreenCursor(0, bottomPadding - 3);
@@ -323,12 +324,12 @@ namespace FlatEngine
 			ImGui::TableNextRow();			
 			ImGui::TableSetColumnIndex(0);		
 			if (labelColor != "")				
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(labelColor));	
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(labelColor));	
 			MoveScreenCursor(4, 4);
 			ImGui::Text("%s", fieldName.c_str());		
 			ImGui::TableSetColumnIndex(1);	
 			if (valueColor != "")						
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
 			bool b_isChanged = RenderDragFloat(ID.c_str(), 0, value, increment, min, max);
 			ImGui::PushID(ID.c_str());
 			ImGui::PopID();
@@ -354,7 +355,7 @@ namespace FlatEngine
 			return b_isChanged;
 		}
 
-		bool RenderTagListTableRow(std::string ID, std::string fieldName, FL::TagList* tagList)
+		bool RenderTagListTableRow(std::string ID, std::string fieldName, TagList* tagList)
 		{
 			bool b_changed = false;
 			bool b_hasTag = tagList->HasTag(fieldName);
@@ -492,25 +493,25 @@ namespace FlatEngine
 // Newer table functions
 		void RenderLabelTable(std::string ID, std::string label, float width, bool b_light, std::string bgColor)
 		{
-			FL::Vector4 color = FL::Assets::assetManager.GetColor(bgColor);
+			Vector4 color = Assets::assetManager.GetColor(bgColor);
 			if (!b_light)
 				color *= 0.75f;
 
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2(4,4));
-			if (FL::GuiCore::PushTable(ID, 1, ImGuiTableFlags_RowBg, FL::Vector2(width, 0)))			
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(4,4));
+			if (GuiCore::PushTable(ID, 1, ImGuiTableFlags_RowBg, Vector2(width, 0)))			
 			{						 	
-				ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("noEditTableText"));
+				ImGui::PushStyleColor(ImGuiCol_Text, Assets::assetManager.GetColor("noEditTableText"));
 				
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);						
-				FL::GuiCore::MoveScreenCursor(4, 0);		
+				GuiCore::MoveScreenCursor(4, 0);		
 				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(color));
 				ImGui::Text("%s", label.c_str());			
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
 
 				ImGui::PopStyleColor();				
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 			ImGui::PopStyleVar();
 		}
@@ -519,13 +520,13 @@ namespace FlatEngine
 		{
 			if (b_show)
 			{
-				FL::Vector2 p0 = FL::Vector2(ImGui::GetCursorScreenPos().x - 1, ImGui::GetCursorScreenPos().y);			
-				FL::Vector2 p1 = FL::Vector2(p0.x, p0.y + 21);
-				ImGui::GetWindowDrawList()->AddLine(p0, p1, FL::Assets::assetManager.GetColor32("tableLabelVerticalSeparator"), 1.0f);
+				Vector2 p0 = Vector2(ImGui::GetCursorScreenPos().x - 1, ImGui::GetCursorScreenPos().y);			
+				Vector2 p1 = Vector2(p0.x, p0.y + 21);
+				ImGui::GetWindowDrawList()->AddLine(p0, p1, Assets::assetManager.GetColor32("tableLabelVerticalSeparator"), 1.0f);
 			}
 		}
 
-		bool RenderStringTable(std::string ID, std::string label, std::string& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		bool RenderStringTable(std::string ID, std::string label, std::string& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
 		{
 			bool b_changed = false;	
 			std::string column0Label = ID + std::to_string(0);
@@ -543,18 +544,18 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(b_vertSeperator);
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			if (GuiCore::PushTable("##" + ID + "Table", 1, GuiCore::tableFlags, innerTableSize))
 			{
 				ImGui::TableNextRow();	
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				b_changed = FL::GuiCore::RenderInput(column1Label.c_str(), "", value);
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+				b_changed = GuiCore::RenderInput(column1Label.c_str(), "", value);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
@@ -567,18 +568,18 @@ namespace FlatEngine
 
 			ImGui::TableSetColumnIndex(labelIndex);		
 			if (labelColor != "")				
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(labelColor));	
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(labelColor));	
 			ImGui::AlignTextToFramePadding();	
 			if (offsetX > 0.0f)		
-				FL::GuiCore::MoveScreenCursor(offsetX, 0);
+				GuiCore::MoveScreenCursor(offsetX, 0);
 			ImGui::Text("%s", label.c_str());					
 			ImGui::TableSetColumnIndex(valueIndex);	
 			if (valueColor != "")						
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-			return FL::GuiCore::RenderDragFloat(ID.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+			return GuiCore::RenderDragFloat(ID.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
 		}
 
-		bool RenderVector2Table(std::string ID, std::string label, FL::Vector2& vec2, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{						
 			bool b_changed = false;	
 			if (valueLabelColors.size() == 0)
@@ -599,22 +600,22 @@ namespace FlatEngine
 			if (tableSize.x == 0)
 				tableSize = ImGui::GetContentRegionAvail();
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::vector<float> widths { 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 						
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 4, FL::GuiCore::tableFlags, innerTableSize, widths))
+			if (GuiCore::PushTable("##" + ID + "Table", 4, GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();			
 				b_changed = RenderFloatTableColumns(column1Label, "X", vec2.x, valueLabelColors[0], valueColor, 16, 0, 1) ||
 							RenderFloatTableColumns(column2Label, "Y", vec2.y, valueLabelColors[1], valueColor, 16, 2, 3);
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 			
 			return b_changed;
 		}
 
-		bool RenderVector3Table(std::string ID, std::string label, FL::Vector3& vec3, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{				
 			bool b_changed = false;			
 			if (valueLabelColors.size() == 0)
@@ -636,23 +637,23 @@ namespace FlatEngine
 			if (tableSize.x == 0)
 				tableSize = ImGui::GetContentRegionAvail();
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 6, FL::GuiCore::tableFlags, innerTableSize, widths))
+			if (GuiCore::PushTable("##" + ID + "Table", 6, GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();					
 				b_changed = RenderFloatTableColumns(column1Label, "X", vec3.x, valueLabelColors[0], valueColor, 16, 0, 1) ||
 							RenderFloatTableColumns(column2Label, "Y", vec3.y, valueLabelColors[1], valueColor, 16, 2, 3) ||
 							RenderFloatTableColumns(column3Label, "Z", vec3.z, valueLabelColors[2], valueColor, 16, 4, 5);
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
-		bool RenderVector4Table(std::string ID, std::string label, FL::Vector4& vec4, FL::Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize, float labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
 		{			
 			bool b_changed = false;			
 			if (valueLabelColors.size() == 0)
@@ -675,35 +676,24 @@ namespace FlatEngine
 			if (tableSize.x == 0)
 				tableSize = ImGui::GetContentRegionAvail();
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";
 			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 8, FL::GuiCore::tableFlags, innerTableSize, widths))
+			if (GuiCore::PushTable("##" + ID + "Table", 8, GuiCore::tableFlags, innerTableSize, widths))
 			{
 				ImGui::TableNextRow();			
 				b_changed = RenderFloatTableColumns(column1Label, "X", vec4.x, valueLabelColors[0], valueColor, 16, 0, 1) ||
 							RenderFloatTableColumns(column2Label, "Y", vec4.y, valueLabelColors[1], valueColor, 16, 2, 3) ||
 							RenderFloatTableColumns(column3Label, "Z", vec4.z, valueLabelColors[2], valueColor, 16, 4, 5) ||
 							RenderFloatTableColumns(column4Label, "W", vec4.w, valueLabelColors[3], valueColor, 16, 6, 7);
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
-		void RenderTransformTable(std::string ID, FL::Vector3& position, FL::Vector3& rotation, FL::Vector3& scale)
-		{
-			float labelWidth = 68;
-			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
-			FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
-
-			RenderVector3Table("##TransformComponentTable", "POSITION", position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors); FL::GuiCore::MoveScreenCursor(0,-4);
-			RenderVector3Table("##TransformComponentTable", "ROTATION", rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false); FL::GuiCore::MoveScreenCursor(0,-4);
-			RenderVector3Table("##TransformComponentTable", "SCALE",    scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
-		}
-
-		bool RenderFloatTable(std::string ID, std::string label, float& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
 		{
 			bool b_changed = false;
 			std::string column0Label = ID + std::to_string(0);
@@ -720,24 +710,24 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(b_vertSeperator);
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			if (GuiCore::PushTable("##" + ID + "Table", 1, GuiCore::tableFlags, innerTableSize))
 			{
 				ImGui::TableNextRow();	
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				b_changed = FL::GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
-		bool RenderDoubleTable(std::string ID, std::string label, double& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		bool RenderDoubleTable(std::string ID, std::string label, double& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
 		{
 			bool b_changed = false;
 			std::string column0Label = ID + std::to_string(0);
@@ -754,24 +744,24 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(b_vertSeperator);
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			if (GuiCore::PushTable("##" + ID + "Table", 1, GuiCore::tableFlags, innerTableSize))
 			{
 				ImGui::TableNextRow();	
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				b_changed = FL::GuiCore::RenderDragDouble(column1Label.c_str(), 0, value, 0.1f);
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+				b_changed = GuiCore::RenderDragDouble(column1Label.c_str(), 0, value, 0.1f);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
-		bool RenderInt32Table(std::string ID, std::string label, int& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		bool RenderInt32Table(std::string ID, std::string label, int& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
 		{
 			bool b_changed = false;
 			std::string column0Label = ID + std::to_string(0);
@@ -788,24 +778,24 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(b_vertSeperator);
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			if (GuiCore::PushTable("##" + ID + "Table", 1, GuiCore::tableFlags, innerTableSize))
 			{
 				ImGui::TableNextRow();	
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				b_changed = FL::GuiCore::RenderDragInt(column1Label.c_str(), 0, value, 1, -INT_MAX, INT_MAX);
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+				b_changed = GuiCore::RenderDragInt(column1Label.c_str(), 0, value, 1, -INT_MAX, INT_MAX);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
-		bool RenderInt64Table(std::string ID, std::string label, long& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		bool RenderInt64Table(std::string ID, std::string label, long& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
 		{
 			bool b_changed = false;
 			std::string column0Label = ID + std::to_string(0);
@@ -822,24 +812,24 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(b_vertSeperator);
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			if (GuiCore::PushTable("##" + ID + "Table", 1, GuiCore::tableFlags, innerTableSize))
 			{
 				ImGui::TableNextRow();	
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
-				b_changed = FL::GuiCore::RenderDragLong(column1Label.c_str(), 0, value);
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+				b_changed = GuiCore::RenderDragLong(column1Label.c_str(), 0, value);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
-		bool RenderBoolTable(std::string ID, std::string label, bool& value, FL::Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
+		bool RenderBoolTable(std::string ID, std::string label, bool& value, Vector2 tableSize, float labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
 		{
 			bool b_changed = false;
 			std::string column0Label = ID + std::to_string(0);
@@ -856,30 +846,122 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(b_vertSeperator);
 
-			FL::Vector2 innerTableSize = FL::Vector2((tableSize.x - labelWidth), 0.0f);
+			Vector2 innerTableSize = Vector2((tableSize.x - labelWidth), 0.0f);
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			std::vector<std::string> trueFalse = { "false", "true" };
 			int currentBool = value ? 1 : 0;
-			if (FL::GuiCore::PushTable("##" + ID + "Table", 1, FL::GuiCore::tableFlags, innerTableSize))
+			if (GuiCore::PushTable("##" + ID + "Table", 1, GuiCore::tableFlags, innerTableSize))
 			{
 				ImGui::TableNextRow();	
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32(valueColor));	
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
 				
-				b_changed = FL::GuiCore::RenderCombo(column1Label.c_str(), value ? "true" : "false", trueFalse, currentBool, innerTableSize.x);
+				b_changed = GuiCore::RenderCombo(column1Label.c_str(), value ? "true" : "false", trueFalse, currentBool, innerTableSize.x);
 				
 				if (b_changed)
 					value = (bool)currentBool;	
 
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
-				FL::GuiCore::PopTable();
+				GuiCore::PopTable();
 			}
 
 			return b_changed;
 		}
 
+
+		void RenderTransformTable(std::string ID, Vector3& position, Vector3& rotation, Vector3& scale)
+		{
+			float labelWidth = 68;
+			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
+			Vector2 tableSize = Vector2(ImGui::GetContentRegionAvail().x, 0);
+
+			RenderVector3Table("##TransformComponentTable", "POSITION", position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors); GuiCore::MoveScreenCursor(0,-4);
+			RenderVector3Table("##TransformComponentTable", "ROTATION", rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false); GuiCore::MoveScreenCursor(0,-4);
+			RenderVector3Table("##TransformComponentTable", "SCALE",    scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
+		}
+
+		void RenderLuaParamtersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer)
+		{
+			// Set the values for a new parameter							
+			std::vector<std::string> types = { "-none-", "string", "int32", "int64", "float", "double", "bool", "vec2", "vec3", "vec4" };
+			LuaManager::LuaParameter newParam = LuaManager::LuaParameter();					
+			
+			std::string newParamComboID = "##ParameterType-createNewLuaScript_" + ID;
+			if (GuiCore::RenderCombo(newParamComboID, types[paramContainer.tempParameterType], types, paramContainer.tempParameterType, 80))
+			{
+				newParam.type = (LuaManager::ParameterType)paramContainer.tempParameterType;
+			}
+
+			ImGui::SameLine(0,3);
+			GuiCore::RenderInput("##newScriptParamInputLuaScript_" + ID, "", paramContainer.tempParameterName, false, ImGui::GetContentRegionAvail().x - 38);
+			
+			ImGui::SameLine(0,3);
+			ImGui::BeginDisabled(paramContainer.tempParameterName == "" || paramContainer.tempParameterType == LuaManager::ParameterType_None);
+			if (GuiCore::RenderButton("ADD##LuaScript_" + ID, Vector2(35, 21)))
+			{
+				newParam.type = (LuaManager::ParameterType)paramContainer.tempParameterType;
+				newParam.name = paramContainer.tempParameterName;
+				paramContainer.Add(newParam);
+				paramContainer.tempParameterName = "";
+				paramContainer.tempParameterType = 0;
+			}
+			ImGui::EndDisabled();		
+
+			if (paramContainer.parameters.size())
+				GuiCore::RenderSectionHeader(headerString, 3.0f, 4.0f, "sectionHeaderSecondaryBg");				
+
+			int paramCounter = 0;
+			std::string paramQueuedForDelete = "";
+			for (auto paramIter = paramContainer.parameters.begin(); paramIter != paramContainer.parameters.end(); paramIter++)
+			{
+				LuaManager::LuaParameter& param = paramIter->second;
+				int currentParamType = param.type;
+				
+				std::string currentParamComboID = "##ParameterTypeLuaScript_" + ID + std::to_string(paramCounter);
+				if (GuiCore::RenderCombo(currentParamComboID, types[currentParamType], types, currentParamType, 80))
+				{
+					param.type = (LuaManager::ParameterType)currentParamType;
+				}
+
+				ImGui::SameLine(0,3);
+				int trashButtonWidth = 23;								
+				Vector2 tableSize = ImGui::GetContentRegionAvail().x - trashButtonWidth;						
+				std::string inputElementID = "LuaScript_" + ID + std::to_string(paramCounter);		
+				switch(param.type)
+				{
+					case LuaManager::ParameterType_String: GuiCore::RenderStringTable("##String" + inputElementID, param.name, param.p_string, tableSize); break;
+					case LuaManager::ParameterType_Int32:  GuiCore::RenderInt32Table("##Int32" + inputElementID, param.name, param.p_int32, tableSize); break;
+					case LuaManager::ParameterType_Int64:  GuiCore::RenderInt64Table("##Int64" + inputElementID, param.name, param.p_int64, tableSize); break;
+					case LuaManager::ParameterType_Float:  GuiCore::RenderFloatTable("##Float" + inputElementID, param.name, param.p_float, tableSize); break;
+					case LuaManager::ParameterType_Double: GuiCore::RenderDoubleTable("##Double" + inputElementID, param.name, param.p_double, tableSize); break;
+					case LuaManager::ParameterType_Bool:   GuiCore::RenderBoolTable("##Bool" + inputElementID, param.name, param.p_bool, tableSize); break;
+					case LuaManager::ParameterType_Vec2:   GuiCore::RenderVector2Table("##Vector2" + inputElementID, param.name, param.p_vec2, tableSize); break;															
+					case LuaManager::ParameterType_Vec3:   GuiCore::RenderVector3Table("##Vector3" + inputElementID, param.name, param.p_vec3, tableSize); break;													
+					case LuaManager::ParameterType_Vec4:   GuiCore::RenderVector4Table("##Vector4" + inputElementID, param.name, param.p_vec4, tableSize); break;										
+					default: break;
+				}
+
+				ImGui::SameLine(0, 2);
+
+				std::string trashcanID = "##trashIcon-LuaScript_" + ID + std::to_string(paramCounter);
+				if (GuiCore::RenderImageButton(trashcanID.c_str(), Assets::assetManager.GetTexture("trash"), Vector2(15), 0.0f, Vector2(3)))
+				{
+					paramQueuedForDelete = paramIter->first;
+				}
+
+				paramCounter++;
+			}
+
+			GuiCore::RenderSeparator(9, 9);
+
+			if (paramQueuedForDelete != "")
+			{
+				paramContainer.Remove(paramQueuedForDelete);
+				paramQueuedForDelete = "";
+			}
+		}
 
 
 
@@ -942,7 +1024,7 @@ namespace FlatEngine
 				std::string buttonId = ID + "openFileButton";
 				if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(15), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
 				{
-					std::string assetPath = FL::FileHelper::OpenLoadFileExplorer();				
+					std::string assetPath = FileHelper::OpenLoadFileExplorer();				
 
 					#ifdef _WINDOWS
 						strcpy_s(newPath, assetPath.c_str());
@@ -1106,7 +1188,7 @@ namespace FlatEngine
 			std::string buttonId = ID + "openFileButton";		
 			if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(15), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
 			{
-				std::string assetPath = FL::FileHelper::OpenLoadFileExplorer();		
+				std::string assetPath = FileHelper::OpenLoadFileExplorer();		
 
 				#ifdef _WINDOWS
 					strcpy_s(newPath, assetPath.c_str());
@@ -1326,10 +1408,10 @@ namespace FlatEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, rounding);
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, padding);
 			
-			FL::Vector2 startPos = ImGui::GetCursorScreenPos();
-			FL::Vector2 fullSize = FL::Vector2((size.x + (padding.x * 2)), (size.y + (padding.y * 2)));
+			Vector2 startPos = ImGui::GetCursorScreenPos();
+			Vector2 fullSize = Vector2((size.x + (padding.x * 2)), (size.y + (padding.y * 2)));
 			bool b_isClicked = ImGui::ImageButton(ID.c_str(), texture, size, uvStart, uvEnd, Assets::assetManager.GetColor("transparent"), Assets::assetManager.GetColor(tint));
-			ImGui::GetWindowDrawList()->AddRect(startPos, startPos + fullSize, FL::Assets::assetManager.GetColor32(borderColor), 0, 0, 1.0f);
+			ImGui::GetWindowDrawList()->AddRect(startPos, startPos + fullSize, Assets::assetManager.GetColor32(borderColor), 0, 0, 1.0f);
 
 			if (ImGui::IsItemHovered())
 			{
@@ -1551,7 +1633,7 @@ namespace FlatEngine
 			headerP0.y += topPadding;
 			GuiCore::RenderSeparator(topPadding, 3, separatorColor);
 			auto winSize = ImGui::GetWindowSize();			
-			ImGui::GetWindowDrawList()->AddRectFilled({ headerP0.x, headerP0.y - 3 }, { headerP0.x + winSize.x, headerP0.y + 17 }, FL::Assets::assetManager.GetColor32(color), 0);
+			ImGui::GetWindowDrawList()->AddRectFilled({ headerP0.x, headerP0.y - 3 }, { headerP0.x + winSize.x, headerP0.y + 17 }, Assets::assetManager.GetColor32(color), 0);
 			ImGui::Text(" %s", headerText.c_str());
 			GuiCore::RenderSeparator(4, bottomPadding, separatorColor);
 		}
@@ -1563,7 +1645,7 @@ namespace FlatEngine
 			{
 				if (b_showRect)
 				{
-					FL::Logger::log.DrawRectangle(startingPoint, Vector2(startingPoint.x + size.x, startingPoint.y + size.y), "white", 1.0f, ImGui::GetWindowDrawList());
+					Logger::log.DrawRectangle(startingPoint, Vector2(startingPoint.x + size.x, startingPoint.y + size.y), "white", 1.0f, ImGui::GetWindowDrawList());
 				}
 
 				if (b_allowOverlap)
@@ -1583,7 +1665,7 @@ namespace FlatEngine
 		{		
 			ImGui::BeginTooltip();
 			ImGui::Text("%s", title.c_str());
-			FL::GuiCore::RenderSeparator(5, 5);
+			GuiCore::RenderSeparator(5, 5);
 		}
 
 		void EndToolTip()
@@ -1597,7 +1679,7 @@ namespace FlatEngine
 			ImGui::Text("%s", newLabel.c_str());
 			ImGui::SameLine();
 			ImGui::Text("%s", text.c_str());
-			FL::GuiCore::RenderSeparator(5, 5);
+			GuiCore::RenderSeparator(5, 5);
 		}
 
 		void RenderToolTipFloat(std::string label, float data)
@@ -1606,7 +1688,7 @@ namespace FlatEngine
 			ImGui::Text("%s", newLabel.c_str());
 			ImGui::SameLine();
 			ImGui::Text("%s", std::to_string(data).c_str());
-			FL::GuiCore::RenderSeparator(5, 5);
+			GuiCore::RenderSeparator(5, 5);
 		}
 
 		void RenderToolTipLong(std::string label, long data)
@@ -1615,7 +1697,7 @@ namespace FlatEngine
 			ImGui::Text("%s", newLabel.c_str());
 			ImGui::SameLine();
 			ImGui::Text("%s", std::to_string(data).c_str());
-			FL::GuiCore::RenderSeparator(5, 5);
+			GuiCore::RenderSeparator(5, 5);
 		}
 
 		void RenderToolTipLongVector(std::string label, std::vector<long> data)
@@ -1630,7 +1712,7 @@ namespace FlatEngine
 				ImGui::SameLine();
 				ImGui::Text("%s", dataString.c_str());
 			}
-			FL::GuiCore::MoveScreenCursor(0, 5);
+			GuiCore::MoveScreenCursor(0, 5);
 		}
 		
 		void RenderTextToolTip(std::string text)

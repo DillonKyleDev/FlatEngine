@@ -40,6 +40,7 @@ namespace FlatEngine
 		GameObject* GetObjectByName(std::string name);
 		GameObject* GetObjectByTag(std::string tag);
 		GameObject* CreateGameObject(long parentID = -1, long myID = -1);
+		GameObject* CreateEmptyGameObject(long parentID = -1, long myID = -1);
 		void DeleteGameObject(long sceneObjectID);
 		void DeleteGameObject(GameObject* objectToDelete);
 
@@ -94,7 +95,6 @@ namespace FlatEngine
 		std::string path;
 
 	private:
-		GameObject* CreateEmptyGameObject(long parentID = -1, long myID = -1);
 		template<class T> std::map<long, T>& GetContainer();
 		void DeleteChildrenAndSelf(GameObject *objectToDelete);
 		void RemoveSceneObject(long ID);

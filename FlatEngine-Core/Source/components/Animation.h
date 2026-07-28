@@ -15,17 +15,22 @@ namespace FL = FlatEngine;
 namespace FlatEngine
 {
     enum PropertyType {
-        PropType_None,
-        PropType_Event,
-        PropType_Transform,
-        PropType_Sprite,
-        PropType_Camera,
-        PropType_Script,
-        PropType_Button,
-        PropType_Canvas,
-        PropType_Audio,
-        PropType_Text,
-        PropType_CharacterController
+        PropertyType_None,
+        PropertyType_Event,
+        PropertyType_Transform,
+        PropertyType_Sprite,
+        PropertyType_Text,
+        PropertyType_Size
+    };
+
+    const std::vector<std::string> PropertyTypeStrings =
+    {
+        "None",
+        "Event",
+        "Transform",
+        "Sprite",
+        "Text",
+        "Size"
     };
 
     enum InterpType {
@@ -45,23 +50,80 @@ namespace FlatEngine
 
     struct AnimationData;
     struct AnimationProperty {
-        PropertyType type = PropType_None;
+        PropertyType type = PropertyType_None;
         float time = 0;
         std::string name;
-        bool b_fired;
+        bool b_fired = false;
+        bool b_applyInstantly = false;
         virtual ~AnimationProperty() = default;
         virtual void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData) = 0;
+        virtual json GetData() = 0;
+        virtual void PutData(json jsonData, std::string name) = 0;
     };	
-    struct EventProp : public AnimationProperty {			
+    struct EventProp : public AnimationProperty {		
         bool b_cppEvent = false;
         bool b_luaEvent = false;
         std::string functionName = "";
-        LuaManager::LuaParameter parameters = LuaManager::LuaParameter();
-        //void SetParameters(std::vector<LuaParameter> newParameters) { parameters = newParameters; };
-        //void AddParameter(LuaParameter eventParam) { parameters.push_back(eventParam); };
+        LuaManager::LuaParameterContainer eventParamContainer;        
+
+        EventProp()
+        {
+            type = PropertyType_Event;
+            b_applyInstantly = true;	           
+        }
+
         void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
         {
+            if (b_luaEvent)
+            {
+                CallLuaAnimationEventFunction(gameObject, functionName, eventParamContainer);
+            }
+            // else if (b_cppEvent)
+            // {
+            //     if (cppAnimationEventFunctions.count(functionName))
+            //     {
+            //         cppAnimationEventFunctions.at(functionName)(gameObject, eventParamContainer.parameters);
+            //     }
+            // }
 
+            b_fired = true;							            
+        }
+        json GetData()
+        { 
+            json jsonData = {
+                { "type", (int)PropertyType_Event },
+                { "functionName", functionName },
+                { "time", time },
+                { "b_cppEvent", b_cppEvent },
+                { "b_luaEvent", b_luaEvent }
+            }; 
+
+            json parametersJson = json::array();
+
+            for (auto& param : eventParamContainer.parameters)
+            {
+                parametersJson.push_back(param.second.GetData());
+            }
+
+            jsonData.emplace("parameters", parametersJson);
+
+            return jsonData;
+        }
+        void PutData(json jsonData, std::string name)
+        {
+            functionName = JsonHelper::CheckJsonString(jsonData, "functionName", name);
+            time = JsonHelper::CheckJsonFloat(jsonData, "time", name) != -1 ? JsonHelper::CheckJsonFloat(jsonData, "time", name) : 0.0;
+            b_cppEvent = JsonHelper::CheckJsonBool(jsonData, "b_cppEvent", name);
+            b_luaEvent = JsonHelper::CheckJsonBool(jsonData, "b_luaEvent", name);
+
+            json parametersJson = jsonData["parameters"];
+
+            for (json paramJson : parametersJson)
+            {
+                LuaManager::LuaParameter parameter;
+                parameter.PutData(paramJson, name);
+                eventParamContainer.Add(parameter);
+            }
         }
     };
     struct TransformProp : public AnimationProperty {
@@ -78,11 +140,47 @@ namespace FlatEngine
 
         TransformProp()
         {
-            type = PropType_Transform;
-            name = "Transform";
+            type = PropertyType_Transform;            
         }
 
         void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData);
+        json GetData()
+        {
+            json jsonData = {
+                { "type", (int)PropertyType_Transform },
+                { "positionInterpType", (int)positionInterpType },
+                { "scaleInterpType", (int)scaleInterpType },
+                { "rotationInterpType", (int)rotationInterpType },											
+                { "time", time },		
+                { "xPosition", position.x },
+                { "yPosition", position.y },
+                { "zPosition", position.z },
+                { "xRotation", rotation.x },
+                { "yRotation", rotation.y },
+                { "zRotation", rotation.z },
+                { "xScale", scale.x },
+                { "yScale", scale.y },
+                { "zScale", scale.z },
+                { "b_posAnimated", b_posAnimated },
+                { "b_scaleAnimated", b_scaleAnimated },
+                { "b_rotationAnimated", b_rotationAnimated }
+            };
+
+            return jsonData;
+        }
+        void PutData(json jsonData, std::string name)
+        {        				
+            positionInterpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "positionInterpType", name);
+            scaleInterpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "scaleInterpType", name);
+            rotationInterpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "rotationInterpType", name);						
+            time = JsonHelper::CheckJsonFloat(jsonData, "time", name) != -1 ? JsonHelper::CheckJsonFloat(jsonData, "time", name) : 0.0;
+            position = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xPosition", name),JsonHelper::CheckJsonFloat(jsonData, "yPosition", name), JsonHelper::CheckJsonFloat(jsonData, "zPosition", name));
+            rotation = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xRotation", name), JsonHelper::CheckJsonFloat(jsonData, "yRotation", name), JsonHelper::CheckJsonFloat(jsonData, "zRotation", name));
+            scale = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xScale", name), JsonHelper::CheckJsonFloat(jsonData, "yScale", name), JsonHelper::CheckJsonFloat(jsonData, "zScale", name));
+            b_posAnimated = JsonHelper::CheckJsonBool(jsonData, "b_posAnimated", name);
+            b_scaleAnimated = JsonHelper::CheckJsonBool(jsonData, "b_scaleAnimated", name);
+            b_rotationAnimated = JsonHelper::CheckJsonBool(jsonData, "b_rotationAnimated", name);                
+        }
     };
     struct SpriteProp : public AnimationProperty {
         InterpType interpType = InterpType_Linear;
@@ -99,45 +197,157 @@ namespace FlatEngine
         bool b_offsetAnimated = false;
         bool b_tintColorAnimated = false;
 
-        void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
+        SpriteProp()
         {
-
+            type = PropertyType_Sprite;	           
         }
-    };
-    struct CameraProp : public AnimationProperty {
-        bool b_isPrimaryCamera = false;
+
         void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
         {
+            // Sprite Animation Frames
+            // if (GetParent()->GetSprite() != nullptr)
+            // {
+            // 	Sprite* sprite = GetParent()->GetSprite();
+            // 	static Vector4 lastFrameSpriteTint = Vector4(1, 1, 1, 1);
+            // 	static Vector2 lastFrameOffset = Vector2(0, 0);
+            // 	static Vector2 lastFrameScale = Vector2(1, 1);
 
+            // 	int spriteFrameCounter = 0;
+            // 	for (std::vector<std::shared_ptr<S_Sprite>>::iterator frame = props->spriteProps.begin(); frame != props->spriteProps.end(); frame++)
+            // 	{
+            // 		float keyframeTime = (*frame)->time;
+            // 		std::shared_ptr<S_Sprite> thisFrameProps = (*frame);
+            // 		std::vector<std::shared_ptr<S_Sprite>>::iterator lastFrame = frame;
+            // 		bool b_pathAnimated = thisFrameProps->b_pathAnimated;
+            // 		bool b_scaleAnimated = thisFrameProps->b_scaleAnimated;
+            // 		bool b_offsetAnimated = thisFrameProps->b_offsetAnimated;
+            // 		bool b_tintColorAnimated = thisFrameProps->b_tintColorAnimated;							
+
+            // 		float lastFrameTime = 0;
+            // 		if (spriteFrameCounter > 0 && props->spriteProps.size() > 1)
+            // 		{
+            // 			lastFrame--;
+            // 			lastFrameTime = (*lastFrame)->time;
+            // 		}
+
+            // 		if (keyframeTime == 0 && !(*frame)->b_fired)
+            // 		{			
+            // 			if (b_pathAnimated && !thisFrameProps->b_fired)
+            // 			{
+            // 				sprite->SetTexture(thisFrameProps->path);
+            // 			}
+            // 			if (b_offsetAnimated)
+            // 			{
+            // 				sprite->SetOffset(Vector2(thisFrameProps->xOffset, thisFrameProps->yOffset));
+            // 			}
+            // 			if (b_scaleAnimated)
+            // 			{
+            // 				sprite->SetScale(Vector2(thisFrameProps->xScale, thisFrameProps->yScale));
+            // 			}
+            // 			if (b_tintColorAnimated)
+            // 			{
+            // 				sprite->SetTintColor(thisFrameProps->tintColor);
+            // 			}
+            // 			sprite->UpdatePivotOffset();
+            // 			thisFrameProps->b_fired = true;
+            // 		}
+            // 		else if ((elapsedTime > lastFrameTime + animData.startTime) && (elapsedTime < animData.startTime + keyframeTime))
+            // 		{								
+            // 			std::shared_ptr<S_Sprite> lastFrameProps = (*lastFrame);
+            // 			float timeLeft = (animData.startTime + keyframeTime) - elapsedTime;
+            // 			float percentDone = (float)(elapsedTime - animData.startTime - lastFrameTime) / (keyframeTime - lastFrameTime);
+
+            // 			if (b_pathAnimated && !thisFrameProps->b_fired && thisFrameProps->path != "")
+            // 			{
+            // 				//LogString("Different frame: " + thisFrameProps->path);
+            // 				sprite->SetTexture(thisFrameProps->path);
+            // 				thisFrameProps->b_fired = true;
+            // 			}
+
+            // 			switch (thisFrameProps->interpType)
+            // 			{
+            // 			case InterpType_Linear:
+            // 			{
+            // 				if (b_tintColorAnimated)
+            // 				{
+            // 					Vector4 correctedTintColor = thisFrameProps->tintColor;
+            // 					lastFrameSpriteTint = (*lastFrame)->tintColor;
+            // 					if (!thisFrameProps->b_instantTintChange)
+            // 					{
+            // 						correctedTintColor = Vector4(lastFrameSpriteTint.x + (thisFrameProps->tintColor.x - lastFrameSpriteTint.x) * percentDone,
+            // 							lastFrameSpriteTint.y + (thisFrameProps->tintColor.y - lastFrameSpriteTint.y) * percentDone,
+            // 							lastFrameSpriteTint.z + (thisFrameProps->tintColor.z - lastFrameSpriteTint.z) * percentDone,
+            // 							lastFrameSpriteTint.w + (thisFrameProps->tintColor.w - lastFrameSpriteTint.w) * percentDone);
+            // 					}
+            // 					sprite->SetTintColor(correctedTintColor);
+            // 				}
+            // 				if (b_scaleAnimated)
+            // 				{
+            // 					lastFrameScale = Vector2(lastFrameProps->xScale, lastFrameProps->yScale);
+            // 					float correctedXScale = (lastFrameScale.x + (thisFrameProps->xScale - lastFrameScale.x) * percentDone);
+            // 					float correctedYScale = (lastFrameScale.y + (thisFrameProps->yScale - lastFrameScale.y) * percentDone);
+            // 					if (correctedXScale != 0 && correctedYScale != 0)
+            // 					{
+            // 						sprite->SetScale(Vector2(correctedXScale, correctedYScale));
+            // 					}
+            // 				}
+            // 				if (b_offsetAnimated)
+            // 				{
+            // 					lastFrameOffset = Vector2(lastFrameProps->xOffset, lastFrameProps->yOffset);
+            // 					sprite->SetOffset(Vector2(thisFrameProps->xOffset, thisFrameProps->yOffset));
+            // 				}
+            // 				break;
+            // 			}
+            // 			default:
+            // 				break;
+            // 			}
+            // 		}
+            // 		spriteFrameCounter++;
+            // 	}
+            // }
         }
-    };
-    struct ScriptProp : public AnimationProperty {
-        void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
+        json GetData()
         {
+            json jsonData = {
+                { "type", (int)PropertyType_Sprite },
+                { "interpType", interpType },
+                { "speed", speed },
+                { "time", time },
+                { "path", path },
+                { "xOffset", xOffset },
+                { "yOffset", yOffset },
+                { "tintColorX", tintColor.x },
+                { "tintColorY", tintColor.y },
+                { "tintColorZ", tintColor.z },
+                { "tintColorW", tintColor.w },
+                { "b_instantTintChange", b_instantTintChange },
+                { "b_pathAnimated", b_pathAnimated },
+                { "b_offsetAnimated", b_offsetAnimated },
+                { "b_scaleAnimated", b_scaleAnimated },
+                { "b_tintColorAnimated", b_tintColorAnimated }
+            };
 
+            return jsonData;
         }
-        std::string path = "";
-    };
-    struct ButtonProp : public AnimationProperty {
-        bool b_isActive = true;
-        void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
+        void PutData(json jsonData, std::string name)
         {
-
-        }
-    };
-    struct CanvasProp : public AnimationProperty {
-        bool b_isActive = true;
-        void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
-        {
-
-        }
-    };
-    struct AudioProp : public AnimationProperty {
-        std::string soundName = "";	
-        bool b_stopAllOtherSounds = false;
-        void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
-        {
-
+    		interpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "interpType", name);
+    		speed = JsonHelper::CheckJsonFloat(jsonData, "speed", name);
+    		time = JsonHelper::CheckJsonFloat(jsonData, "time", name) != -1 ? JsonHelper::CheckJsonFloat(jsonData, "time", name) : 0.0;
+    		xOffset = JsonHelper::CheckJsonFloat(jsonData, "xOffset", name);
+    		yOffset = JsonHelper::CheckJsonFloat(jsonData, "yOffset", name);
+    		path = JsonHelper::CheckJsonString(jsonData, "path", name);
+    		b_instantTintChange = JsonHelper::CheckJsonBool(jsonData, "b_instantTintChange", name);
+    		tintColor = Vector4(
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorX", name),
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorY", name),
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorZ", name),
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorW", name)
+    		);
+    		b_pathAnimated = JsonHelper::CheckJsonBool(jsonData, "b_pathAnimated", name);
+    		b_scaleAnimated = JsonHelper::CheckJsonBool(jsonData, "b_scaleAnimated", name);
+    		b_offsetAnimated = JsonHelper::CheckJsonBool(jsonData, "b_offsetAnimated", name);
+    		b_tintColorAnimated = JsonHelper::CheckJsonBool(jsonData, "b_tintColorAnimated", name);
         }
     };
     struct TextProp : public AnimationProperty {
@@ -151,16 +361,135 @@ namespace FlatEngine
         bool b_textAnimated = false;
         bool b_tintColorAnimated = false;
         bool b_offsetAnimated = false;
-        void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
-        {
 
+        TextProp()
+        {
+            type = PropertyType_Text;	           
         }
-    };
-    struct CharacterControllerProp : public AnimationProperty {
-        bool b_isActive = true;
+        
         void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData)
         {
+            // Text Animation Frames
+            // if (GetParent()->GetText() != nullptr)
+            // {
+            // 	Text* text = GetParent()->GetText();
+            // 	static Vector4 lastFrameTextTint = Vector4(1, 1, 1, 1);
+            // 	static Vector2 lastFrameOffset = Vector2(0, 0);
+            // 	int textFrameCounter = 0;
 
+            // 	for (std::vector<std::shared_ptr<S_Text>>::iterator frame = props->textProps.begin(); frame != props->textProps.end(); frame++)
+            // 	{
+            // 		float keyframeTime = (*frame)->time;
+            // 		std::shared_ptr<S_Text> thisFrameProps = (*frame);
+            // 		std::vector<std::shared_ptr<S_Text>>::iterator lastFrame = frame;
+            // 		bool b_fontPathAnimated = thisFrameProps->b_fontPathAnimated;
+            // 		bool b_textAnimated = thisFrameProps->b_textAnimated;
+            // 		bool b_tintColorAnimated = thisFrameProps->b_tintColorAnimated;
+            // 		bool b_offsetAnimated = thisFrameProps->b_offsetAnimated;
+
+            // 		float lastFrameTime = 0;
+            // 		if (textFrameCounter > 0 && props->textProps.size() > 1)
+            // 		{
+            // 			lastFrame--;
+            // 			lastFrameTime = (*lastFrame)->time;
+            // 		}
+
+            // 		if (keyframeTime == 0 && !(*frame)->b_fired)
+            // 		{
+            // 			if (thisFrameProps->b_textAnimated)
+            // 			{
+            // 				text->SetText(thisFrameProps->text);
+            // 			}
+            // 			if (b_offsetAnimated)
+            // 			{
+            // 				text->SetOffset(Vector2(thisFrameProps->xOffset, thisFrameProps->yOffset));
+            // 			}
+            // 			if (b_fontPathAnimated && thisFrameProps->fontPath != "")
+            // 			{
+            // 				text->SetFontPath(thisFrameProps->fontPath);
+            // 			}
+
+            // 			if (b_tintColorAnimated)
+            // 			{
+            // 				text->SetColor(thisFrameProps->tintColor);
+            // 			}
+            // 			thisFrameProps->b_fired = true;
+            // 		}
+            // 		else if ((elapsedTime > lastFrameTime + animData.startTime) && (elapsedTime < animData.startTime + keyframeTime))
+            // 		{
+            // 			std::shared_ptr<S_Text> lastFrameProps = (*lastFrame);
+            // 			float timeLeft = (animData.startTime + keyframeTime) - elapsedTime;
+            // 			float percentDone = (float)(elapsedTime - animData.startTime - lastFrameTime) / (keyframeTime - lastFrameTime);
+
+            // 			if (!thisFrameProps->b_fired && b_textAnimated)
+            // 			{
+            // 				text->SetText(thisFrameProps->text);
+            // 				text->LoadText();
+            // 				thisFrameProps->b_fired = true;
+            // 			}
+            // 			if (b_tintColorAnimated)
+            // 			{
+            // 				Vector4 correctedTintColor = thisFrameProps->tintColor;
+            // 				lastFrameTextTint = (*lastFrame)->tintColor;
+            // 				if (!thisFrameProps->b_instantTintChange)
+            // 				{
+            // 					correctedTintColor = Vector4(lastFrameTextTint.x + (thisFrameProps->tintColor.x - lastFrameTextTint.x) * percentDone,
+            // 						lastFrameTextTint.y + (thisFrameProps->tintColor.y - lastFrameTextTint.y) * percentDone,
+            // 						lastFrameTextTint.z + (thisFrameProps->tintColor.z - lastFrameTextTint.z) * percentDone,
+            // 						lastFrameTextTint.w + (thisFrameProps->tintColor.w - lastFrameTextTint.w) * percentDone);
+            // 				}
+            // 				text->SetColor(correctedTintColor);
+            // 			}
+            // 			if (b_fontPathAnimated && thisFrameProps->fontPath != "")
+            // 			{
+            // 				text->SetFontPath(thisFrameProps->fontPath);
+            // 			}
+            // 			if (b_offsetAnimated)
+            // 			{
+            // 				lastFrameOffset = Vector2(lastFrameProps->xOffset, lastFrameProps->yOffset);
+            // 				text->SetOffset(Vector2(thisFrameProps->xOffset, thisFrameProps->yOffset));
+            // 			}
+            // 		}
+            // 		textFrameCounter++;
+            // 	}
+            // }
+        }
+        json GetData()
+        {
+            json jsonData = {
+                { "type", (int)PropertyType_Text },
+                { "time", time },
+                { "fontPath", fontPath },
+                { "text", text },
+                { "xOffset", xOffset },
+                { "yOffset", yOffset },
+                { "tintColorX", tintColor.x },
+                { "tintColorY", tintColor.y },
+                { "tintColorZ", tintColor.z },
+                { "tintColorW", tintColor.w },
+                { "b_instantTintChange", b_instantTintChange },
+                { "b_fontPathAnimated", b_fontPathAnimated },
+                { "b_textAnimated", b_textAnimated },
+                { "b_tintColorAnimated", b_tintColorAnimated },
+                { "b_offsetAnimated", b_offsetAnimated }
+            };
+
+            return jsonData;
+        }
+        void PutData(json jsonData, std::string name)
+        {            
+    		time = JsonHelper::CheckJsonFloat(jsonData, "time", name) != -1 ? JsonHelper::CheckJsonFloat(jsonData, "time", name) : 0.0;
+    		fontPath = JsonHelper::CheckJsonString(jsonData, "fontPath", name);
+    		text = JsonHelper::CheckJsonString(jsonData, "text", name);
+    		tintColor = Vector4(
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorX", name),
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorY", name),
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorZ", name),
+    			JsonHelper::CheckJsonFloat(jsonData, "tintColorW", name)
+    		);
+    		b_fontPathAnimated = JsonHelper::CheckJsonBool(jsonData, "b_fontPathAnimated", name);
+    		b_textAnimated = JsonHelper::CheckJsonBool(jsonData, "b_textAnimated", name);
+    		b_tintColorAnimated = JsonHelper::CheckJsonBool(jsonData, "b_tintColorAnimated", name);
         }
     };
 
@@ -172,6 +501,7 @@ namespace FlatEngine
         float length = 0.0f;
         bool b_isSorted = false;
         bool b_loop = false;
+        bool b_lastFrameFired = false;
         bool b_startAtOrigin = false;
         FL::Vector3 startingPos = FL::Vector3();	
 
@@ -195,6 +525,27 @@ namespace FlatEngine
 
             length = endTime;
         }
+        void Reset()
+        {
+            // Unfire Animation Frames
+            for (auto& frame : props)
+            {
+                frame->b_fired = false;
+            }	
+
+            b_lastFrameFired = false;  
+        }
+        void AddKeyFrame(PropertyType type)
+        {
+            switch (type)
+            {                                    
+                case PropertyType_Event:     { std::shared_ptr<EventProp> prop = std::make_shared<EventProp>(); props.push_back(prop); break; }
+                case PropertyType_Transform: { std::shared_ptr<TransformProp> prop = std::make_shared<TransformProp>(); props.push_back(prop); break; }
+                case PropertyType_Sprite:    { std::shared_ptr<SpriteProp> prop = std::make_shared<SpriteProp>(); props.push_back(prop); break; }
+                case PropertyType_Text:      { std::shared_ptr<TextProp> prop = std::make_shared<TextProp>(); props.push_back(prop); break; }
+                default: break;                               
+            }
+        }
         void RemoveKeyFrame(AnimationProperty* property)
         {
             for (auto iter = props.begin(); iter != props.end(); iter++)
@@ -205,14 +556,28 @@ namespace FlatEngine
                     return;
                 }
             }
-        }
+        }     
+        void RemoveAll(PropertyType type)
+        {
+            std::vector<std::shared_ptr<AnimationProperty>> trimmed;
+
+            for (int i = 0; i < props.size(); i++)
+            {
+                if (props[i]->type != type)
+                {
+                    trimmed.push_back(props[i]);
+                }
+            }
+
+            props = trimmed;
+        }   
     };
 
     class Animation : public Component
     {
     public:
         Animation(long myID = -1, long parentObjectID = -1);
-        json GetData();
+        json GetData(bool b_IDOverride = false);
         void PutData(json componentJson, std::string objectName);
 
         void AddAnimation(std::string name, std::string filePath);

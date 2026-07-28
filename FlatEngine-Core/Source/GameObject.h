@@ -14,7 +14,7 @@ namespace FlatEngine
 	public:
 		
 		GameObject(long parentID = -1, long myID = -1);		
-		json GetData();
+		json GetData(bool b_IDOverride = false);
 		void PutData(json objectJson);
 
 		void SetIsPrefab(bool b_isPrefab);
@@ -71,8 +71,7 @@ namespace FlatEngine
 		TagList m_tagList;
 		long m_ID;
 		long m_parentID;
-		bool m_b_isActive;
-		std::vector<Component*> m_components;
+		bool m_b_isActive;		
 		std::vector<long> m_childrenIDs;			
 		long m_hierarchyPosition;
 	};

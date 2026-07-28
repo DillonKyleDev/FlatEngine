@@ -30,7 +30,7 @@ F_Colors = {
 	componentSectionBorder = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	componentBorder = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	componentBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
-	componentSectionHeaderBg = Vector4:new(0.35, 0.35, 0.7, 0.6),
+	componentSectionHeaderBg = Vector4:new(0.35, 0.35, 0.65, 1.0),
 	componentSectionHeaderSeparator = Vector4:new(0.45, 0.45, 0.7, 1.0),
 	pivotSelectionBg = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
@@ -102,11 +102,10 @@ F_Colors = {
 	singleItemDark = Vector4:new(0.09, 0.09, 0.13, 1.0),
 	windowTitleBg = Vector4:new(0.25, 0.25, 0.25, 1.0),
 
-	sectionHeaderBg = Vector4:new(0.35, 0.35, 0.8, 0.7),
+	sectionHeaderBg = Vector4:new(0.35, 0.35, 0.7, 0.6), 
 	sectionHeaderSecondaryBg = Vector4:new(0.4, 0.4, 0.8, 0.25),
 	sectionHeaderEmptyBg= Vector4:new(0.35, 0.35, 0.8, 0.05),
-	sectionHeaderBorder = Vector4:new(0.25, 0.25, 0.25, 1.0),
-	sectionHeaderSeparator = Vector4:new(0.45, 0.45, 0.6, 1.0),
+	sectionHeaderSeparator = Vector4:new(0.35, 0.35, 0.7, 0.6), 
 	-- Main Menu
 	menuBarBg = Vector4:new(0.1, 0.1, 0.11, 1.0),
 	menuDropdownBg = Vector4:new(0.25, 0.25, 0.3, 0.95),
@@ -223,7 +222,11 @@ F_Colors = {
 	animationTimelineHeader = Vector4:new(0.35, 0.35, 0.8, 0.5), --(0.14, 0.14, 0.16, 1.0), -- (0.35, 0.35, 0.8, 0.5),
 	keyframeEditorBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
 	sectionHeaderKeyframeEditor = Vector4:new(0.35, 0.35, 0.6, 0.4),
-	sectionHeaderBorderKeyframeEditor = Vector4:new(0.35, 0.35, 0.6, 0.4),
+	sectionHeaderSeparatorKeyframeEditor = Vector4:new(0.35, 0.35, 0.7, 0.6), 
+	rectColor1 = Vector4:new(1.0, 1.0, 1.0, 0.4),    -- Event
+	rectColor2 = Vector4:new(0.84, 0.03, 0.46, 0.4), -- Transform
+	rectColor3 = Vector4:new(0.33, 0.84, 0.03, 0.4), -- Sprite
+	rectColor4 = Vector4:new(0.06, 0.68, 0.89, 0.4), -- Text
 	-- Docking
 	dockingPreview = Vector4:new(0.3, 0.3, 0.65, 1.0),
 	dockingPreviewEmpty = Vector4:new(0.3, 0.3, 0.65, 1.0),

@@ -14,11 +14,11 @@ namespace FlatEngine
 		m_color = Vector4(1);
 	}
 	
-	json Light::GetData()
+	json Light::GetData(bool b_IDOverride)
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "directionX", m_direction.x },
@@ -36,9 +36,7 @@ namespace FlatEngine
 
 	void Light::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		Vector3 lightDirection = Vector3(JsonHelper::CheckJsonFloat(componentJson, "directionX", objectName), JsonHelper::CheckJsonFloat(componentJson, "directionY", objectName), JsonHelper::CheckJsonFloat(componentJson, "directionZ", objectName));
 		Vector4 lightColor = Vector4(JsonHelper::CheckJsonFloat(componentJson, "colorX", objectName), JsonHelper::CheckJsonFloat(componentJson, "colorY", objectName), JsonHelper::CheckJsonFloat(componentJson, "colorZ", objectName), JsonHelper::CheckJsonFloat(componentJson, "colorW", objectName));

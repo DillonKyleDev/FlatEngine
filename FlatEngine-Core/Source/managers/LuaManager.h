@@ -1,5 +1,6 @@
 #pragma once
 #include "tools/JsonHelper.h"
+#include "tools/Logger.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
@@ -92,6 +93,35 @@ namespace FlatEngine
                 p_vec4   = Vector4(JsonHelper::CheckJsonFloat(parameterJson, "vec4_x", objectName), JsonHelper::CheckJsonFloat(parameterJson, "vec4_y", objectName), JsonHelper::CheckJsonFloat(parameterJson, "vec4_z", objectName), JsonHelper::CheckJsonFloat(parameterJson, "vec4_w", objectName));		
             }
         };
+        struct LuaParameterContainer {
+            std::map<std::string, LuaParameter> parameters;
+            std::string tempParameterName = "";
+            int tempParameterType = 0;     
+            
+            void Add(LuaManager::LuaParameter parameter)
+            {
+                if (parameters.count(parameter.name) == 0)
+                    parameters.emplace(parameter.name, parameter);            
+                else                
+                    Logger::log.Err("Script parameter already exists with that name.");            
+            }
+
+            LuaParameter Get(std::string paramName)
+            {
+                if (parameters.count(paramName))
+                    return parameters.at(paramName);
+ 
+                return LuaManager::LuaParameter();
+            }
+
+            void Remove(std::string paramName)
+            {
+                if (parameters.count(paramName))             
+                    parameters.erase(paramName);                
+                else                
+                    Logger::log.Err("No Script parameter with that name was found.");                
+            }
+        };
 
         enum LuaEventFunction {
             OnBeginCollision,
@@ -138,9 +168,8 @@ namespace FlatEngine
         extern void CallVoidLuaFunction(std::string functionName);
         extern void CallLuaCollisionFunction(LuaEventFunction eventFunc, FL::Body* caller, FL::Body* collidedWith, b2Manifold manifold = {});
         extern void CallLuaSensorFunction(LuaEventFunction eventFunc, FL::Body* caller, FL::Body* touched);
-        extern void CallLuaButtonEventFunction(FL::GameObject* caller, LuaEventFunction eventFunc);
-        extern void CallLuaAnimationEventFunction(FL::GameObject* caller, std::string eventFunc);
-        extern void CallLuaAnimationEventFunction(FL::GameObject* caller, std::string eventFunc, LuaParameter params);
+        extern void CallLuaButtonEventFunction(FL::GameObject* caller, LuaEventFunction eventFunc);        
+        extern void CallLuaAnimationEventFunction(FL::GameObject* caller, std::string functionName, LuaParameterContainer paramsContainer = LuaParameterContainer());
         extern void CallLuaButtonOnClickFunction(FL::GameObject* caller, std::string eventFunc);
         extern void CallLuaButtonOnClickFunction(FL::GameObject* caller, std::string eventFunc, LuaParameter params);
     }

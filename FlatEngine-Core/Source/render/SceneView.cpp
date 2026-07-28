@@ -264,7 +264,7 @@ namespace FlatEngine
 				Vector3 position = sceneViewCameraTransform.GetPosition();
 				sceneViewCameraTransform.SetPosition(position + cameraVelocity);
 				cameraVelocity = cameraVelocity * 0.95f;
-				Settings::settings.SaveSettings();
+				// Settings::settings.SaveSettings();
 			}
 		}
 

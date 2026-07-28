@@ -151,11 +151,10 @@ public:
 				}
 
 				if (!GameLoopPaused() || A_GameLoop->IsFrameSkipped())
-				{
-					FL::HandleEvents(b_hasQuit);
-
+				{				
 					while (A_GameLoop->m_accumulator >= A_GameLoop->m_deltaTime)
 					{
+						FL::HandleEvents(b_hasQuit);						
 						A_GameLoop->Update();
 
 						A_GameLoop->m_time += A_GameLoop->m_deltaTime;

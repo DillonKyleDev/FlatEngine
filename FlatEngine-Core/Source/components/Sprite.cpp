@@ -28,11 +28,11 @@ namespace FlatEngine
 		RemoveTexture();
 	}
 
-	json Sprite::GetData()
+	json Sprite::GetData(bool b_IDOverride)
 	{
 		json jsonData = { 
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "path", m_path },
@@ -53,9 +53,7 @@ namespace FlatEngine
 
 	void Sprite::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		std::string pivotPoint = "Center";
 		SetPivotPoint(JsonHelper::CheckJsonString(componentJson, "pivotPoint", objectName));

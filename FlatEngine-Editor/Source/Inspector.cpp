@@ -474,8 +474,6 @@ namespace FlatGui
 			for (FL::ScriptData& scriptData : script->GetScripts())
 			{
 				int currentScript = 0;
-				std::map<std::string, FL::LuaManager::LuaParameter> &scriptParams = scriptData.GetScriptParameters();
-
 				for (int i = 0; i < allScriptNames.size(); i++)
 				{
 					if (scriptData.name == allScriptNames[i])
@@ -485,7 +483,7 @@ namespace FlatGui
 					}
 				}
 
-				if (FL::GuiCore::RenderSelectable("##SelectPersistantLuaScript_" + std::to_string(scriptCounter), allScriptNames, currentScript, "selectableSecondaryBg", ImGui::GetContentRegionAvail().x - 23))
+				if (FL::GuiCore::RenderSelectable("##SelectLuaScript_" + std::to_string(scriptCounter), allScriptNames, currentScript, "selectableSecondaryBg", ImGui::GetContentRegionAvail().x - 23))
 				{
 					scriptData.SetAttachedScript(allScriptNames[currentScript]);
 				}
@@ -499,85 +497,7 @@ namespace FlatGui
 
 				if (currentScript < allScriptNames.size() && currentScript != 0)
 				{					
-					// Set the values for a new parameter							
-					std::vector<std::string> types = { "-none-", "string", "int32", "int64", "float", "double", "bool", "vec2", "vec3", "vec4" };
-					FL::LuaManager::LuaParameter newParam = FL::LuaManager::LuaParameter();					
-					
-					std::string newParamComboID = "##ParameterType-createNewPersistantLuaScript_" + std::to_string(scriptCounter);
-					if (FL::GuiCore::RenderCombo(newParamComboID, types[scriptData.tempParamType], types, scriptData.tempParamType, 80))
-					{
-						newParam.type = (FL::LuaManager::ParameterType)scriptData.tempParamType;
-					}
-
-					ImGui::SameLine(0,3);
-					FL::GuiCore::RenderInput("##newScriptParamInputPersistantLuaScript_" + std::to_string(scriptCounter), "", scriptData.tempParameterName, false, ImGui::GetContentRegionAvail().x - 38);
-					
-					ImGui::SameLine(0,3);
-					ImGui::BeginDisabled(scriptData.tempParameterName == "" || scriptData.tempParamType == FL::LuaManager::ParameterType_None);
-					if (FL::GuiCore::RenderButton("ADD##LuaScript_" + std::to_string(scriptCounter), FL::Vector2(35, 21)))
-					{
-						newParam.type = (FL::LuaManager::ParameterType)scriptData.tempParamType;
-						newParam.name = scriptData.tempParameterName;
-						scriptData.AddScriptParam(newParam);
-						scriptData.tempParameterName = "";
-						scriptData.tempParamType = 0;
-					}
-					ImGui::EndDisabled();												
-
-					if (scriptParams.size())
-						FL::GuiCore::RenderSectionHeader(scriptData.name + " Parameters", 3.0f, 4.0f, "sectionHeaderSecondaryBg");
-
-					int paramCounter = 0;
-					std::string paramQueuedForDelete = "";
-					for (auto paramIter = scriptParams.begin(); paramIter != scriptParams.end(); paramIter++)
-					{
-						FL::LuaManager::LuaParameter& param = paramIter->second;
-						int currentParamType = param.type;
-						
-						std::string currentParamComboID = "##EventFunctionParameterTypePersistantLuaScript_" + std::to_string(scriptCounter) + std::to_string(paramCounter);
-						if (FL::GuiCore::RenderCombo(currentParamComboID, types[currentParamType], types, currentParamType, 70))
-						{
-							param.type = (FL::LuaManager::ParameterType)currentParamType;
-						}
-
-						ImGui::SameLine(0,3);
-						int trashButtonWidth = 23;								
-						FL::Vector2 tableSize = ImGui::GetContentRegionAvail().x - trashButtonWidth;						
-						std::string inputElementID = "LuaScript_" + std::to_string(scriptCounter) + std::to_string(paramCounter);		
-						switch(param.type)
-						{
-							case FL::LuaManager::ParameterType_String: FL::GuiCore::RenderStringTable("##String" + inputElementID, param.name, param.p_string, tableSize); break;
-							case FL::LuaManager::ParameterType_Int32:  FL::GuiCore::RenderInt32Table("##Int32" + inputElementID, param.name, param.p_int32, tableSize); break;
-							case FL::LuaManager::ParameterType_Int64:  FL::GuiCore::RenderInt64Table("##Int64" + inputElementID, param.name, param.p_int64, tableSize); break;
-							case FL::LuaManager::ParameterType_Float:  FL::GuiCore::RenderFloatTable("##Float" + inputElementID, param.name, param.p_float, tableSize); break;
-							case FL::LuaManager::ParameterType_Double: FL::GuiCore::RenderDoubleTable("##Double" + inputElementID, param.name, param.p_double, tableSize); break;
-							case FL::LuaManager::ParameterType_Bool:   FL::GuiCore::RenderBoolTable("##Bool" + inputElementID, param.name, param.p_bool, tableSize); break;
-							case FL::LuaManager::ParameterType_Vec2:   FL::GuiCore::RenderVector2Table("##Vector2" + inputElementID, param.name, param.p_vec2, tableSize); break;															
-							case FL::LuaManager::ParameterType_Vec3:   FL::GuiCore::RenderVector3Table("##Vector3" + inputElementID, param.name, param.p_vec3, tableSize); break;													
-							case FL::LuaManager::ParameterType_Vec4:   FL::GuiCore::RenderVector4Table("##Vector4" + inputElementID, param.name, param.p_vec4, tableSize); break;										
-							default: break;
-						}
-
-						ImGui::SameLine(0, 2);
-
-						std::string trashcanID = "##trashIcon-PersistantLuaScript_" + std::to_string(scriptCounter) + std::to_string(paramCounter);
-						if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(15), 0.0f, FL::Vector2(3)))
-						{
-							paramQueuedForDelete = paramIter->first;
-						}
-
-						// FL::GuiCore::MoveScreenCursor(0, -4);
-
-						paramCounter++;
-					}
-
-					FL::GuiCore::RenderSeparator(9, 9);
-
-					if (paramQueuedForDelete != "")
-					{
-						scriptParams.erase(paramQueuedForDelete);
-						paramQueuedForDelete = "";
-					}
+					FL::GuiCore::RenderLuaParamtersTable(std::to_string(scriptCounter), scriptData.name + " Parameters", scriptData.scriptParamContainer);
 				}
 
 				scriptCounter++;

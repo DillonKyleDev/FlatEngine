@@ -1,10 +1,8 @@
 #pragma once
 #include "components/Component.h"
 #include "managers/LuaManager.h"
-#include "tools/Logger.h"
 
 #include <memory>
-#include <map>
 #include <string>
 
 
@@ -15,11 +13,8 @@ namespace FlatEngine
 	struct ScriptData {			
         std::string name = "";  
 		long parentID = -1;      
-		std::map<std::string, LuaManager::LuaParameter> scriptParams;
+		LuaManager::LuaParameterContainer scriptParamContainer;
 		std::shared_ptr<CPPScript> cppScript;
-		// For inspector gui rendering
-		std::string tempParameterName = "";
-		int tempParamType = 0;
 
 		void SetAttachedScript(std::string script)
 		{
@@ -39,50 +34,6 @@ namespace FlatEngine
 		std::string GetAttachedScript()
 		{
 			return name;
-		}
-
-		LuaManager::LuaParameter GetScriptParameter(std::string paramName)
-		{
-			if (scriptParams.count(paramName))
-			{
-				return scriptParams.at(paramName);
-			}
-			return LuaManager::LuaParameter();
-		}
-
-		std::map<std::string, LuaManager::LuaParameter> &GetScriptParameters()
-		{
-			return scriptParams;
-		}
-
-		void SetScriptParams(std::map<std::string, LuaManager::LuaParameter> scriptParams)
-		{
-			scriptParams = scriptParams;
-		}
-
-
-		void AddScriptParam(LuaManager::LuaParameter parameter)
-		{
-			if (scriptParams.count(parameter.name) == 0)
-			{
-				scriptParams.emplace(parameter.name, parameter);
-			}
-			else
-			{
-				Logger::log.Err("Script parameter already exists with that name.");
-			}
-		}
-
-		void DeleteScriptParam(std::string paramName)
-		{
-			if (scriptParams.count(paramName) == 0)
-			{
-				scriptParams.erase(paramName);
-			}
-			else
-			{
-				Logger::log.Err("No Script parameter with that name was found.");
-			}
 		}
 
 		std::shared_ptr<CPPScript> GetCPPScript()
@@ -110,7 +61,7 @@ namespace FlatEngine
 	public:		
 		Script(long myID = -1, long parentObjectID = -1);	
 		~Script();	
-		json GetData();
+		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 		std::vector<ScriptData>& GetScripts();
 		ScriptData* FindScript(std::string name);

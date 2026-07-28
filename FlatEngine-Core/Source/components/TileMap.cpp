@@ -24,7 +24,7 @@ namespace FlatEngine
 		m_collisionAreas = std::map<std::string, std::vector<CollisionAreaData>>();	
 	}
 
-	json TileMap::GetData()
+	json TileMap::GetData(bool b_IDOverride)
 	{
 		json tileSetNames = json::array();
 		json tileData = json::array();
@@ -82,7 +82,7 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "width", m_width },
@@ -99,9 +99,7 @@ namespace FlatEngine
 
 	void TileMap::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		SetWidth(JsonHelper::CheckJsonInt(componentJson, "width", objectName));
 		SetHeight(JsonHelper::CheckJsonInt(componentJson, "height", objectName));

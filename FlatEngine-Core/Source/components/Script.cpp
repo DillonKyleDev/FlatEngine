@@ -18,11 +18,11 @@ namespace FlatEngine
 		// TODO: Remove Lua script from F_Lua state	
 	}
 
-	json Script::GetData()
+	json Script::GetData(bool b_IDOverride)
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() }			
 		};
@@ -33,7 +33,7 @@ namespace FlatEngine
 		{			
 			json parameters = json::array();
 
-			for (std::pair<std::string, LuaManager::LuaParameter> paramPair : scriptData.GetScriptParameters())
+			for (std::pair<std::string, LuaManager::LuaParameter> paramPair : scriptData.scriptParamContainer.parameters)
 			{				
 				parameters.push_back(paramPair.second.GetData());
 			}
@@ -53,9 +53,7 @@ namespace FlatEngine
 
 	void Script::PutData(json componentJson, std::string objectName)
 	{		
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 		
 		if (!componentJson.contains("scripts"))
 			return;
@@ -73,7 +71,7 @@ namespace FlatEngine
 					json param = scriptParamsJson.at(i);
 					LuaManager::LuaParameter parameter;
 					parameter.PutData(param, objectName);
-					script.AddScriptParam(parameter);
+					script.scriptParamContainer.Add(parameter);
 				}
 				catch (const json::out_of_range& e)
 				{

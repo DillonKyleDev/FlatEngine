@@ -25,6 +25,7 @@
 #include "tools/Vector4.h"
 
 #include <fstream>
+#include <lua.h>
 
 
 namespace FlatEngine
@@ -57,7 +58,7 @@ namespace FlatEngine
 			}
 		}
 
-		sol::object ScriptParamToLuaObject(const LuaParameter& param)
+		sol::object LuaParamToLuaObject(const LuaParameter& param)
 		{
 			switch(param.type)
 			{				
@@ -203,7 +204,7 @@ namespace FlatEngine
 				{					
 					if (scriptData != nullptr)
 					{
-						parameter = scriptData->GetScriptParameter(paramName);
+						parameter = scriptData->scriptParamContainer.Get(paramName);
 
 						if (parameter.type == ParameterType_None)
 						{
@@ -222,7 +223,7 @@ namespace FlatEngine
 					Logger::log.Err("GameObject with that id not found.");
 				}
 
-				return ScriptParamToLuaObject(parameter);
+				return LuaParamToLuaObject(parameter);
 			};
 			lua["LoadScene"] = [](std::string sceneName)
 			{
@@ -279,7 +280,7 @@ namespace FlatEngine
 				// track what GameObject called Instantiate() so we can set the Lua state back to that GameObject after Instantiate() initializes any scripts it creates by calling Awake()/Start() on them
 				GameObject* currentLuaObject = lua["this_object"];
 				std::string callingScript = lua["calling_script_name"];
-				GameObject *newObject = PrefabManager::Instantiate(prefabName, position, &SceneManager::loadedScene);
+				GameObject *newObject = PrefabManager::Instantiate(prefabName, position);
 				LoadLuaGameObject(currentLuaObject, callingScript);
 
 				// Maybe try Instantiations on a new thread so we don't keep going deeper into the RunLuaFuncOnSingleScript() nesting
@@ -836,7 +837,7 @@ namespace FlatEngine
 
 			if (path == "")
 			{
-				fileNameWExtention = "../ProjectManager/" + FileHelper::GetFilenameFromPath(ProjectManager::loadedProject.path) + "/scripts/lua/" + fileName + ".scp.lua";
+				fileNameWExtention = "../projects/" + FileHelper::GetFilenameFromPath(ProjectManager::loadedProject.path) + "/scripts/lua/" + fileName + ".scp.lua";
 			}
 			else
 			{
@@ -1178,42 +1179,18 @@ namespace FlatEngine
 			}
 		}
 
-
-		void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc)
+		void CallLuaAnimationEventFunction(GameObject* caller, std::string functionName, LuaParameterContainer paramsContainer)
 		{
 			Script* script = caller->Get<Script>();
+			bool b_functionFound = false;
 
-			if (script->IsActive() && script->GetScripts().size())
+			if (script != nullptr && script->IsActive() && script->GetScripts().size())
 			{
 				for (ScriptData scriptData : caller->Get<Script>()->GetScripts())
 				{
 					std::string attachedScript = scriptData.name;
 
-					if (luaScriptsMap.count(attachedScript) > 0)
-					{					
-						std::string filePath = luaScriptsMap.at(attachedScript);
-						std::string message = "";
-						if (!ReadyScriptFile(attachedScript, message))
-						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
-						}
-						LoadLuaGameObject(caller, attachedScript);
-						CallVoidLuaFunction<GameObject*>(eventFunc);				
-					}
-				}
-			}
-		}
-		void CallLuaAnimationEventFunction(GameObject* caller, std::string eventFunc, LuaParameter params)
-		{
-			Script* script = caller->Get<Script>();
-
-			if (script->IsActive() && script->GetScripts().size())
-			{
-				for (ScriptData scriptData : caller->Get<Script>()->GetScripts())
-				{
-					std::string attachedScript = scriptData.name;
-
-					if (luaScriptsMap.count(attachedScript) > 0)
+					if (luaScriptsMap.count(attachedScript))
 					{							
 						std::string filePath = luaScriptsMap.at(attachedScript);
 						std::string message = "";
@@ -1221,22 +1198,43 @@ namespace FlatEngine
 						{
 							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
 						}
+
 						LoadLuaGameObject(caller, attachedScript);
-						sol::protected_function protectedFunc = lua[eventFunc];
+
+						sol::protected_function protectedFunc = lua[functionName];												
 						if (protectedFunc)
 						{
-							auto result = sol::function_result();
-							result = protectedFunc(params);
+							b_functionFound = true;
+							lua_State* L = lua.lua_state();
 
-							if (!result.valid())
+							protectedFunc.push(L);
+							
+							for (auto paramIter : paramsContainer.parameters)
 							{
-								sol::error err = result;
-								Logger::log.Err("Something went wrong in Lua function: {}()", eventFunc);
-								Logger::log.Err("{}", err.what());
+								sol::object arg = LuaParamToLuaObject(paramIter.second);
+								arg.push(L);								
 							}
-						}				
+							
+							int status = lua_pcall(L, paramsContainer.parameters.size(), LUA_MULTRET, 0);
+
+							if (status != LUA_OK)
+							{
+								std::string error = lua_tostring(L, -1);
+								lua_pop(L, 1);
+								Logger::log.Err("Lua call to {} failed: {}", functionName, error);								
+							}							
+						}							
 					}
 				}
+
+				if (!b_functionFound)
+				{
+					Logger::log.Err("Lua call to {} failed, no function with that name found.", functionName);						
+				}		
+			}
+			else if (script == nullptr) 
+			{
+				Logger::log.Err("CallLuaAnimationEventFunction() : Script component not found on GameObject: {}", caller->GetName());
 			}
 		}
 	}

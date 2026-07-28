@@ -310,7 +310,7 @@ namespace FlatGui
 							std::string prefabLabel = " " + iter->first;
 							if (ImGui::MenuItem(prefabLabel.c_str()))
 							{
-								FL::GameObject *instantiatedObject = FL::PrefabManager::Instantiate(iter->first, FL::Vector3(), &FL::SceneManager::loadedScene, -1);
+								FL::GameObject *instantiatedObject = FL::PrefabManager::Instantiate(iter->first);
 								FL::ProjectManager::loadedProject.focusedGameObjectID = instantiatedObject->GetID();
 							}
 							iter++;

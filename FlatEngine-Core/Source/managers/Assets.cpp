@@ -343,7 +343,7 @@ namespace FlatEngine
             }
             else if (extension == ".prf")
             {
-                return PrefabManager::Instantiate(FileHelper::GetFilenameFromPath(filePath), position, &SceneManager::loadedScene);
+                return PrefabManager::Instantiate(FileHelper::GetFilenameFromPath(filePath), position);
             }
             else
             {

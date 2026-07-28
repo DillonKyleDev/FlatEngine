@@ -21,7 +21,7 @@ namespace FlatEngine
 		m_nextJointID = 0;
 	}
 
-	json JointMaker::GetData()
+	json JointMaker::GetData(bool b_IDOverride)
 	{
 		json distanceJoints = json::array();
 		json prismaticJoints = json::array();
@@ -62,7 +62,7 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "distanceJoints", distanceJoints },
@@ -181,9 +181,7 @@ namespace FlatEngine
 
 	void JointMaker::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		if (JsonHelper::JsonContains(componentJson, "distanceJoints", objectName))
 		{

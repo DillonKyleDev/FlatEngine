@@ -38,7 +38,7 @@ namespace FlatEngine
 		m_uboVec4s = std::map<std::string, glm::vec4>();
 	}
 
-	json Mesh::GetData()
+	json Mesh::GetData(bool b_IDOverride)
 	{
 		json texturesData = json::object();
 		for (std::map<uint32_t, Texture>::iterator textureData = m_texturesByIndex.begin(); textureData != m_texturesByIndex.end(); textureData++)
@@ -78,7 +78,7 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "textures", texturesData },
@@ -92,9 +92,7 @@ namespace FlatEngine
 
 	void Mesh::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		std::string materialName = JsonHelper::CheckJsonString(componentJson, "materialName", objectName);
 		std::string modelPath = JsonHelper::CheckJsonString(componentJson, "modelPath", objectName);

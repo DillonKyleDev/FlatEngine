@@ -11,7 +11,7 @@ namespace FlatEngine
     namespace JsonHelper
     {
         extern json LoadFileData(std::string filePath);
-        extern void WriteJsonToFile(std::string filePath, json jsonData);
+        extern void WriteJsonToFile(json jsonData, std::string filePath);
         extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName);
         extern std::string CheckJsonString(json obj, std::string checkFor, std::string loadedName, std::string& errorMessage);
         extern float CheckJsonFloat(json obj, std::string checkFor, std::string loadedName);

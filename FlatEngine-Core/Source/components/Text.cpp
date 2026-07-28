@@ -33,11 +33,11 @@ namespace FlatEngine
 		TTF_CloseFont(m_font);
 	}
 
-	json Text::GetData()
+	json Text::GetData(bool b_IDOverride)
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "fontPath", m_fontPath },
@@ -58,9 +58,7 @@ namespace FlatEngine
 
 	void Text::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		std::string fontPath = JsonHelper::CheckJsonString(componentJson, "fontPath", objectName);
 		if (!FileHelper::DoesFileExist(fontPath))
@@ -93,7 +91,7 @@ namespace FlatEngine
 			if (m_font == nullptr)
 			{
 				TTF_CloseFont(m_font);
-				Logger::log.Err("Font not valid in {} Text component.", GetParentObject()->GetName());
+				Logger::log.Err("Font not valid in {} Text component.", GetParentObject() != nullptr ? GetParentObject()->GetName() : "nullptr");
 			}
 			m_texture->FreeTexture();
 			m_pivotOffset = Vector2(0,0);
@@ -134,7 +132,7 @@ namespace FlatEngine
 			{
 				m_texture->FreeTexture();
 			}
-			Logger::log.Err("Font not valid in {} Text component.", GetParentObject()->GetName());
+			Logger::log.Err("Font not valid in {} Text component.", GetParentObject() != nullptr ? GetParentObject()->GetName() : "nullptr");
 		}
 	}
 

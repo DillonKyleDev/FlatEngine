@@ -51,7 +51,7 @@ namespace FlatEngine
 				}
 
 				json sceneJson = json::object({ {"Scene GameObjects", sceneObjectsJsonArray } });
-				JsonHelper::WriteJsonToFile(filePath, sceneJson);
+				JsonHelper::WriteJsonToFile(sceneJson, filePath);
 			}
 		}
 

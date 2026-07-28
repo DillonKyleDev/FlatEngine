@@ -14,7 +14,7 @@ namespace FlatEngine
 	{
 	public:
 		Transform(long myID = -1, long parentID = -1);
-		json GetData();
+		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
 		static float ClampRotation(float rotation, float min = -180.0f, float max = 180.0f);				

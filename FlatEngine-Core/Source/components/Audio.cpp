@@ -13,7 +13,7 @@ namespace FlatEngine
         m_sounds = std::vector<SoundData>();
     }
 
-    json Audio::GetData()
+    json Audio::GetData(bool b_IDOverride)
     {
         json soundData = json::array();
 
@@ -29,7 +29,7 @@ namespace FlatEngine
 
         json jsonData = {
             { "type", (int)GetType() },
-            { "id", GetID() },
+            { "id", b_IDOverride ? -1 : GetID() },
             { "b_isCollapsed", IsCollapsed() },
             { "b_isActive", IsActive() },
             { "soundData", soundData }
@@ -40,9 +40,7 @@ namespace FlatEngine
 
     void Audio::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
         if (JsonHelper::JsonContains(componentJson, "soundData", objectName))
         {

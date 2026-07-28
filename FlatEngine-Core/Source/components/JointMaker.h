@@ -19,7 +19,7 @@ namespace FlatEngine
     {
     public:
         JointMaker(long myID = -1, long parentObjectID = -1);        
-        json GetData();
+        json GetData(bool b_IDOverride = false);
         void PutData(json componentJson, std::string objectName);
         
         void AddDistanceJoint(Joint::BaseProps baseProps = Joint::BaseProps(), DistanceJoint::DistanceJointProps jointProps = DistanceJoint::DistanceJointProps());

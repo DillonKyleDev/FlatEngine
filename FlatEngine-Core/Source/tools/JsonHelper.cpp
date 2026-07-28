@@ -38,7 +38,7 @@ namespace FlatEngine
             }
         }
 
-        void WriteJsonToFile(std::string filePath, json jsonData)
+        void WriteJsonToFile(json jsonData, std::string filePath)
         {
             std::ofstream fileObject;
             std::ifstream ifstream(filePath);

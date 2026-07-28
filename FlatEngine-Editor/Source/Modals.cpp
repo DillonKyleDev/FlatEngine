@@ -210,12 +210,12 @@ namespace FlatGui
             // FL::CreateNewTileSetFile(newFileName);
             Modals::newFileName = "";
         }
-        if (Modals::b_openPrefabModal && Modals::gameObjectToPrefab != -1)
+        if (Modals::gameObjectToPrefab != -1)
 		{
 			if (Modals::RenderInputModal("Create Prefab", "Enter a name for the Prefab:", Modals::newFileName, Modals::b_openPrefabModal))
 			{
                 FL::GameObject* gameObject = FL::SceneManager::loadedScene.GetObjectByID(Modals::gameObjectToPrefab);				
-				FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/" + Modals::newFileName + ".prf", *gameObject);
+				FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/" + Modals::newFileName + ".prf", gameObject);
 				gameObject->SetIsPrefab(true);
 				gameObject->SetPrefabName(Modals::newFileName);
 				//currentObject.SetPrefabSpawnLocation(currentObject.GetTransform()->GetPosition());

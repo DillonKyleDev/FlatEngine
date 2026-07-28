@@ -39,11 +39,11 @@ namespace FlatEngine
 		m_b_onRightClickCallbackSet = false;
 	}
 
-	json Button::GetData()
+	json Button::GetData(bool b_IDOverride)
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "activeWidth", m_activeWidth },
@@ -67,9 +67,7 @@ namespace FlatEngine
 
 	void Button::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));	
+        Component::PutData(componentJson, objectName);	
 
 		LuaManager::LuaParameter parameter;
 		parameter.PutData(componentJson.at("functionParameters"), objectName);

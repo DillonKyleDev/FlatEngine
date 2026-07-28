@@ -13,7 +13,7 @@ namespace FlatEngine
 	{
 	public:
 		CharacterController(long myID, long parentObjectID);
-		json GetData();
+		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
 		Capsule& GetCapsule();

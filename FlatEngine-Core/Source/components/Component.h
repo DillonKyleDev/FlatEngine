@@ -53,8 +53,14 @@ namespace FlatEngine
 	{
 	public:
 		Component();		
-		virtual json GetData() { return "{}"; };
-		virtual void PutData(json componentJson, std::string objectName) {};
+		virtual json GetData(bool b_IDOverride = false) { return "{}"; };
+		virtual void PutData(json componentJson, std::string objectName) 
+		{
+			if (JsonHelper::CheckJsonLong(componentJson, "id", objectName) != -1) 
+				m_ID = JsonHelper::CheckJsonLong(componentJson, "id", objectName);
+			m_b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
+			m_b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName);
+		};
 
 		void SetType(ComponentType type);
 		ComponentType GetType();

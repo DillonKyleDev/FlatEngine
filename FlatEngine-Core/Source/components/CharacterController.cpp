@@ -17,11 +17,11 @@ namespace FlatEngine
 		m_b_isMoving = false;
 	}
 
-	json CharacterController::GetData()
+	json CharacterController::GetData(bool b_IDOverride)
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },			
 			{ "maxAcceleration", m_maxAcceleration },
@@ -34,9 +34,7 @@ namespace FlatEngine
 
 	void CharacterController::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		SetMaxAcceleration(JsonHelper::CheckJsonFloat(componentJson, "maxAcceleration", objectName));
 		SetMaxSpeed(JsonHelper::CheckJsonFloat(componentJson, "maxSpeed", objectName));

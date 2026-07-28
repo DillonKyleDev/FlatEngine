@@ -35,7 +35,7 @@ namespace FlatEngine
 		m_distanceJoints = std::list<DistanceJoint*>();
 	}
 
-	json Body::GetData()
+	json Body::GetData(bool b_IDOverride)
 	{
 		json shapesArray = json::array();		
 
@@ -46,7 +46,7 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", GetID() },
+			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "bodyType", (int)m_bodyProps.type },
@@ -115,9 +115,7 @@ namespace FlatEngine
 
 	void Body::PutData(json componentJson, std::string objectName)
 	{
-		SetID(JsonHelper::CheckJsonLong(componentJson, "id", objectName));
-		SetActive(JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName));
-		SetCollapsed(JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName));
+        Component::PutData(componentJson, objectName);
 
 		PhysicsManager::BodyProps bodyProps;
 		RetrieveBodyProps(bodyProps, componentJson, objectName);

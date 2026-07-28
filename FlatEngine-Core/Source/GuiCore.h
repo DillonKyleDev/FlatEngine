@@ -1,4 +1,5 @@
 #pragma once
+#include "managers/LuaManager.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
@@ -77,7 +78,6 @@ namespace FlatEngine
         extern void RenderTextTableRow(std::string ID, std::string fieldName, std::string value, std::string value2 = "");
         extern void PopTable();
 
-        extern void RenderTransformTable(std::string ID, Vector3& position, Vector3& rotation, Vector3& scale);
         extern void RenderLabelTable(std::string ID, std::string label, float width, bool b_light = true, std::string bgColor = "noEditTableRowValueBg");
         extern bool RenderStringTable(std::string ID, std::string label, std::string& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
         extern bool RenderInt32Table(std::string ID, std::string label, int& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
@@ -88,6 +88,9 @@ namespace FlatEngine
         extern bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
         extern bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
         extern bool RenderBoolTable(std::string ID, std::string label, bool& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+
+        extern void RenderTransformTable(std::string ID, Vector3& position, Vector3& rotation, Vector3& scale);
+        extern void RenderLuaParamtersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);
 
         extern bool RenderInput(std::string ID, std::string label, std::string& value, bool b_canOpenFiles = false, float inputWidth = -1, ImGuiInputTextFlags flags = 0);
         extern bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string tooltip = "", float inputWidth = -1);

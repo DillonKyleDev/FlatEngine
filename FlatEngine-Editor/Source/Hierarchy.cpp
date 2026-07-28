@@ -228,17 +228,18 @@ namespace FlatGui
 				FL::ProjectManager::loadedProject.focusedGameObjectID = FL::SceneManager::loadedScene.CreateGameObject(currentObject.GetID())->GetID();								 
 				ImGui::CloseCurrentPopup();
 			}			
-			FL::GuiCore::RenderSeparator(0,0);
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
 			if (currentObject.IsPrefab())
 			{
-				std::string prefabName = "Prefab: " + currentObject.GetPrefabName();
-				ImGui::Text("%s", prefabName.c_str());				
+				std::string prefabName = " PREFAB: " + currentObject.GetPrefabName();
+				ImGui::Text("%s", prefabName.c_str());	
+				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");			
 				if (ImGui::MenuItem(" Save Prefab"))
 				{
-					FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/" + currentObject.GetPrefabName() + ".prf", currentObject);
+					FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/" + currentObject.GetPrefabName() + ".prf", &currentObject);
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0);
+				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 				if (ImGui::MenuItem(" Unpack prefab"))
 				{
 					currentObject.SetIsPrefab(false);
@@ -246,7 +247,7 @@ namespace FlatGui
 					currentObject.SetPrefabSpawnLocation(FL::Vector3());
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0);
+				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 				if (ImGui::MenuItem(" Create New Prefab"))
 				{
 					Modals::b_openPrefabModal = true;
@@ -263,13 +264,13 @@ namespace FlatGui
 					ImGui::CloseCurrentPopup();
 				}
 			}			
-			FL::GuiCore::RenderSeparator(0,0);
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 			if (ImGui::MenuItem(" Delete GameObject"))
 			{
 				queuedForDelete = currentObject.GetID();
 				ImGui::CloseCurrentPopup();
 			}			
-			FL::GuiCore::RenderSeparator(0,0);
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
 			if (ImGui::MenuItem(" Lock in view"))
 			{
 				// if (FG_b_sceneViewLockedOnObject && FG_sceneViewLockedObjectID == currentObject.GetID())
@@ -334,11 +335,11 @@ namespace FlatGui
 			std::string prefabIDContextMenu = "PrefabIDContext" + std::to_string(currentObject.GetID());
 			ImGui::TableSetColumnIndex(2);
 			ImGui::SetCursorPos(FL::Vector2(ImGui::GetCursorPosX() - 1, ImGui::GetCursorPosY()));
-			FL::GuiCore::RenderImageButton(prefabIDImageButton.c_str(), FL::Assets::assetManager.GetTexture("prefabCube"), FL::Vector2(16), 0, FL::Vector2(4), "transparent", "white", "buttonHovered", "buttonActive");
+			FL::GuiCore::RenderImageButton(prefabIDImageButton.c_str(), FL::Assets::assetManager.GetTexture("prefabCube"), FL::Vector2(16), 0, FL::Vector2(4), "buttonBorder", "transparent", "white", "buttonHovered", "buttonActive");
 			FL::GuiCore::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem(prefabIDContextMenu.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 			{
-				if (ImGui::MenuItem("Unpack prefab"))
+				if (ImGui::MenuItem(" Unpack prefab"))
 				{
 					currentObject.SetIsPrefab(false);
 					currentObject.SetPrefabName("");

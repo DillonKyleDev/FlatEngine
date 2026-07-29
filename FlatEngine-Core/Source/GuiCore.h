@@ -78,16 +78,18 @@ namespace FlatEngine
         extern void RenderTextTableRow(std::string ID, std::string fieldName, std::string value, std::string value2 = "");
         extern void PopTable();
 
-        extern void RenderLabelTable(std::string ID, std::string label, float width, bool b_light = true, std::string bgColor = "noEditTableRowValueBg");
-        extern bool RenderStringTable(std::string ID, std::string label, std::string& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderInt32Table(std::string ID, std::string label, int& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderInt64Table(std::string ID, std::string label, long& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderDoubleTable(std::string ID, std::string label, double& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
-        extern bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
-        extern bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
-        extern bool RenderBoolTable(std::string ID, std::string label, bool& value, Vector2 tableSize = Vector2(), float labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern void RenderLabelTable(std::string ID, std::string label, int width, bool b_light = true, std::string bgColor = "noEditTableRowValueBg", ImGuiTableFlags flags = ImGuiTableFlags_RowBg);
+        extern bool RenderStringTable(std::string ID, std::string label, std::string& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderInt32Table(std::string ID, std::string label, int& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderInt64Table(std::string ID, std::string label, long& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, float increment = 0.01f, float min = -FLT_MAX, float max = FLT_MAX, bool b_vertSeperator = true);
+        extern bool RenderDoubleTable(std::string ID, std::string label, double& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
+        extern bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
+        extern bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, bool b_vertSeperator = false);
+        extern bool RenderBoolTable(std::string ID, std::string label, bool& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
+        extern void RenderTextTable(std::string ID, std::string fieldName, std::string value, int labelWidth = 0, bool b_light = true);
+        extern bool RenderComboTable(std::string ID, std::string label, std::string displayedValue, std::vector<std::string> options, int& currentOption, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
 
         extern void RenderTransformTable(std::string ID, Vector3& position, Vector3& rotation, Vector3& scale);
         extern void RenderLuaParamtersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);
@@ -116,7 +118,7 @@ namespace FlatEngine
 
         extern void PushComboStyles();
         extern void PopComboStyles();
-        extern bool RenderCombo(std::string ID, std::string displayedValue, std::vector<std::string> options, int& currentOption, float width = -1);
+        extern bool RenderCombo(std::string ID, std::string displayedValue, std::vector<std::string> options, int& currentOption, float width = 0);
 
         extern bool RenderSelectable(std::string ID, std::vector<std::string> options, int& currentOption, std::string bgColor = "drag", float width = -1);
 

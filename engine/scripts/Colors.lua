@@ -270,7 +270,7 @@ F_Colors = {
 	-- Tables
 	noEditTableText = Vector4:new(0.75, 0.75, 0.81, 1.0),
 	noEditTableRowFieldBg = Vector4:new(0.24, 0.24, 0.37, 1.0),
-	noEditTableRowValueBg = Vector4:new(0.1, 0.1, 0.2, 1.0),
+	noEditTableRowValueBg = Vector4:new(0.25, 0.25, 0.28, 1.0),
 	tableCellLight = Vector4:new(0.24, 0.24, 0.27, 1.0),
 	tableCellDark = Vector4:new(0.19, 0.19, 0.21, 1.0),
 	tableBorderStrong = Vector4:new(0.35, 0.35, 0.38, 1.0),
@@ -285,7 +285,7 @@ F_Colors = {
 	treeSelectableSelected = Vector4:new(0.5, 0.5, 0.8, 0.7),
 	hierarchyChildObject = Vector4:new(0.3, 0.3, 0.7, 0.2),
 	-- Combos
-	comboBg = Vector4:new(0.29, 0.29, 0.31, 1.0),
+	comboBg = Vector4:new(0.29, 0.29, 0.31, 0.0),
 	comboHovered = Vector4:new(0.25, 0.25, 0.26, 1.0),
 	comboSelectable = Vector4:new(0.34, .34, .4, 1.0),
 	comboSelected = Vector4:new(0.45, 0.45, 0.50, 1.0),

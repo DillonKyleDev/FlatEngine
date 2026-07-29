@@ -8,7 +8,7 @@ namespace FlatEngine
 {
 	Box::Box(Body2D* parentBody) : Shape(parentBody)
 	{
-		m_shapeProps.shape = Shape::ShapeType::BS_Box;
+		m_shapeProps.shape = Shape::ShapeType::ShapeType_Box;
 		m_shapeProps.dimensions = Vector2(2.0f, 2.0f);		
 	}
 

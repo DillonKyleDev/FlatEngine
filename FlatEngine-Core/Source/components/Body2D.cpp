@@ -131,21 +131,21 @@ namespace FlatEngine
 
 				switch (shapeProps.shape)
 				{
-				case Shape::BS_None:												
+				case Shape::ShapeType_None:												
 					break;
-				case Shape::BS_Box:
+				case Shape::ShapeType_Box:
 					AddBox(shapeProps);
 					break;
-				case Shape::BS_Circle:
+				case Shape::ShapeType_Circle:
 					AddCircle(shapeProps);
 					break;
-				case Shape::BS_Capsule:
+				case Shape::ShapeType_Capsule:
 					AddCapsule(shapeProps);
 					break;
-				case Shape::BS_Polygon:
+				case Shape::ShapeType_Polygon:
 					AddPolygon(shapeProps);
 					break;
-				case Shape::BS_Chain:
+				case Shape::ShapeType_Chain:
 					AddChain(shapeProps);
 					break;
 				}
@@ -631,7 +631,7 @@ namespace FlatEngine
 	void Body2D::AddBox(Shape::ShapeProps shapeProps)
 	{
 		Box box = Box(this);
-		if (shapeProps.shape != Shape::BS_None)
+		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			box.SetShapeProps(shapeProps);
 		}
@@ -642,7 +642,7 @@ namespace FlatEngine
 	void Body2D::AddCircle(Shape::ShapeProps shapeProps)
 	{
 		Circle circle = Circle(this);
-		if (shapeProps.shape != Shape::BS_None)
+		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			circle.SetShapeProps(shapeProps);
 		}		
@@ -653,7 +653,7 @@ namespace FlatEngine
 	void Body2D::AddCapsule(Shape::ShapeProps shapeProps)
 	{
 		Capsule capsule = Capsule(this);
-		if (shapeProps.shape != Shape::BS_None)
+		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			capsule.SetShapeProps(shapeProps);
 		}
@@ -664,7 +664,7 @@ namespace FlatEngine
 	void Body2D::AddPolygon(Shape::ShapeProps shapeProps)
 	{
 		Polygon polygon = Polygon(this);
-		if (shapeProps.shape != Shape::BS_None)
+		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			polygon.SetShapeProps(shapeProps);
 		}
@@ -675,7 +675,7 @@ namespace FlatEngine
 	void Body2D::AddChain(Shape::ShapeProps shapeProps)
 	{
 		Chain chain = Chain(this);
-		if (shapeProps.shape != Shape::BS_None)
+		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			chain.SetShapeProps(shapeProps);
 		}

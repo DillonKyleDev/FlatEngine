@@ -105,23 +105,23 @@ namespace FlatEngine
 	{
 		switch (m_shapeProps.shape)
 		{
-		case Shape::ShapeType::BS_Box:
+		case Shape::ShapeType::ShapeType_Box:
 		{
 			return "Box";			
 		}
-		case Shape::ShapeType::BS_Circle:
+		case Shape::ShapeType::ShapeType_Circle:
 		{
 			return "Circle";
 		}
-		case Shape::ShapeType::BS_Capsule:
+		case Shape::ShapeType::ShapeType_Capsule:
 		{
 			return "Capsule";
 		}
-		case Shape::ShapeType::BS_Polygon:
+		case Shape::ShapeType::ShapeType_Polygon:
 		{
 			return "Polygon";
 		}
-		case Shape::ShapeType::BS_Chain:
+		case Shape::ShapeType::ShapeType_Chain:
 		{
 			return "Chain";
 		}
@@ -219,22 +219,22 @@ namespace FlatEngine
 	{
 		switch (m_shapeProps.shape)
 		{
-		case Shape::ShapeType::BS_Box:
+		case Shape::ShapeType::ShapeType_Box:
 		{
 			b2Polygon box = b2Shape_GetPolygon(m_shapeID);
 			return b2PointInPolygon(&box, Vector2::GetB2Vev2(point));
 		}
-		case Shape::ShapeType::BS_Circle:
+		case Shape::ShapeType::ShapeType_Circle:
 		{
 			b2Circle circle = b2Shape_GetCircle(m_shapeID);
 			return b2PointInCircle(&circle, Vector2::GetB2Vev2(point));
 		}
-		case Shape::ShapeType::BS_Capsule:
+		case Shape::ShapeType::ShapeType_Capsule:
 		{
 			b2Capsule capsule = b2Shape_GetCapsule(m_shapeID);
 			return b2PointInCapsule(&capsule, Vector2::GetB2Vev2(point));
 		}
-		case Shape::ShapeType::BS_Polygon:
+		case Shape::ShapeType::ShapeType_Polygon:
 		{
 			b2Polygon polygon = b2Shape_GetPolygon(m_shapeID);
 			return b2PointInPolygon(&polygon, Vector2::GetB2Vev2(point));
@@ -248,27 +248,27 @@ namespace FlatEngine
 	{
 		switch (m_shapeProps.shape)
 		{
-		case Shape::ShapeType::BS_Box:
+		case Shape::ShapeType::ShapeType_Box:
 		{
 			b2Polygon box = b2Shape_GetPolygon(m_shapeID);
 			return b2RayCastPolygon(&box, rayCastInput);
 		}
-		case Shape::ShapeType::BS_Circle:
+		case Shape::ShapeType::ShapeType_Circle:
 		{					
 			b2Circle circle = b2Shape_GetCircle(m_shapeID);
 			return b2RayCastCircle(&circle, rayCastInput);
 		}
-		case Shape::ShapeType::BS_Capsule:
+		case Shape::ShapeType::ShapeType_Capsule:
 		{
 			b2Capsule capsule = b2Shape_GetCapsule(m_shapeID);
 			return b2RayCastCapsule(&capsule, rayCastInput);
 		}
-		case Shape::ShapeType::BS_Polygon:
+		case Shape::ShapeType::ShapeType_Polygon:
 		{
 			b2Polygon polygon = b2Shape_GetPolygon(m_shapeID);
 			return b2RayCastPolygon(&polygon, rayCastInput);
 		}
-		case Shape::ShapeType::BS_Chain:
+		case Shape::ShapeType::ShapeType_Chain:
 		{
 			//return b2RayCastSegment(&b2Shape_GetPolygon(m_shapeID), rayCastInput);
 		}
@@ -281,27 +281,27 @@ namespace FlatEngine
 	{
 		switch (m_shapeProps.shape)
 		{
-		case Shape::ShapeType::BS_Box:
+		case Shape::ShapeType::ShapeType_Box:
 		{
 			b2Polygon box = b2Shape_GetPolygon(m_shapeID);
 			return b2ShapeCastPolygon(&box, shapeCastInput);
 		}
-		case Shape::ShapeType::BS_Circle:
+		case Shape::ShapeType::ShapeType_Circle:
 		{
 			b2Circle circle = b2Shape_GetCircle(m_shapeID);
 			return b2ShapeCastCircle(&circle, shapeCastInput);
 		}
-		case Shape::ShapeType::BS_Capsule:
+		case Shape::ShapeType::ShapeType_Capsule:
 		{
 			b2Capsule capsule = b2Shape_GetCapsule(m_shapeID);
 			return b2ShapeCastCapsule(&capsule, shapeCastInput);
 		}
-		case Shape::ShapeType::BS_Polygon:
+		case Shape::ShapeType::ShapeType_Polygon:
 		{
 			b2Polygon polygon = b2Shape_GetPolygon(m_shapeID);
 			return b2ShapeCastPolygon(&polygon, shapeCastInput);
 		}
-		case Shape::ShapeType::BS_Chain:
+		case Shape::ShapeType::ShapeType_Chain:
 		{
 			//return b2ShapeCastSegment(&b2Shape_GetPolygon(m_shapeID), rayCastInput);
 		}

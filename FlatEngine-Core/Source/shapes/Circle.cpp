@@ -6,7 +6,7 @@ namespace FlatEngine
 {
 	Circle::Circle(Body2D* parentBody) : Shape::Shape(parentBody)
 	{
-		m_shapeProps.shape = Shape::ShapeType::BS_Circle;
+		m_shapeProps.shape = Shape::ShapeType::ShapeType_Circle;
 		m_shapeProps.radius = 1.0f;
 	}
 

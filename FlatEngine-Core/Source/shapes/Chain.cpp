@@ -6,7 +6,7 @@ namespace FlatEngine
 {
 	Chain::Chain(Body2D* parentBody) : Shape::Shape(parentBody)
 	{				
-		m_shapeProps.shape = Shape::ShapeType::BS_Chain;
+		m_shapeProps.shape = Shape::ShapeType::ShapeType_Chain;
 		m_shapeProps.points = { {4.0f, -2.0f}, {4.0f, 0.0f}, {-4.0f, 0.0f}, {-4.0f, -2.0f} };		
 		m_shapeProps.b_isLoop = false;
 		m_shapeProps.tangentSpeed = 0.0f;

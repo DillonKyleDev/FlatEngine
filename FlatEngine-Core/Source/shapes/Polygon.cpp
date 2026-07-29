@@ -6,7 +6,7 @@ namespace FlatEngine
 {
 	Polygon::Polygon(Body2D* parentBody) : Shape::Shape(parentBody)
 	{		
-		m_shapeProps.shape = Shape::ShapeType::BS_Polygon;
+		m_shapeProps.shape = Shape::ShapeType::ShapeType_Polygon;
 		m_shapeProps.points = { {3.0f, -2.0f}, {0.0f, 2.0f}, {-3.0f, -2.0f} };
 	}
 

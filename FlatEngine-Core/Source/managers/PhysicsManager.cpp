@@ -146,7 +146,7 @@ namespace FlatEngine
 
 			switch (shapeProps.shape)
 			{
-			case Shape::ShapeType::BS_Box:
+			case Shape::ShapeType::ShapeType_Box:
 			{
 				b2Polygon box;
 				box = b2MakeOffsetRoundedBox(shapeProps.dimensions.x / 2, shapeProps.dimensions.y / 2, center, rotationOffset, cornerRadius);
@@ -154,7 +154,7 @@ namespace FlatEngine
 
 				break;
 			}
-			case Shape::ShapeType::BS_Circle:
+			case Shape::ShapeType::ShapeType_Circle:
 			{
 				b2Circle circle;
 				circle.center = center;
@@ -163,7 +163,7 @@ namespace FlatEngine
 
 				break;
 			}
-			case Shape::ShapeType::BS_Capsule:
+			case Shape::ShapeType::ShapeType_Capsule:
 			{
 				b2Capsule capsule;
 				float center1Value = ((shapeProps.capsuleLength / 2) - shapeProps.radius) * -1;
@@ -190,7 +190,7 @@ namespace FlatEngine
 
 				break;
 			}
-			case Shape::ShapeType::BS_Polygon:
+			case Shape::ShapeType::ShapeType_Polygon:
 			{
 				std::vector<b2Vec2> points;
 				float cornerRadius = shapeProps.cornerRadius;
@@ -253,7 +253,7 @@ namespace FlatEngine
 
 			switch (shapeProps.shape)
 			{
-			case Shape::ShapeType::BS_Box:
+			case Shape::ShapeType::ShapeType_Box:
 			{			
 				b2Polygon box;
 
@@ -262,7 +262,7 @@ namespace FlatEngine
 
 				break;
 			}
-			case Shape::ShapeType::BS_Circle:
+			case Shape::ShapeType::ShapeType_Circle:
 			{
 				b2Circle circle;
 				circle.center = center;
@@ -271,7 +271,7 @@ namespace FlatEngine
 
 				break;
 			}
-			case Shape::ShapeType::BS_Capsule:
+			case Shape::ShapeType::ShapeType_Capsule:
 			{
 				b2Capsule capsule;
 				float center1Value = ((shapeProps.capsuleLength / 2) - shapeProps.radius) * -1;
@@ -296,7 +296,7 @@ namespace FlatEngine
 				shapeID = b2CreateCapsuleShape(bodyID, &shapeDef, &capsule);
 				break;
 			}
-			case Shape::ShapeType::BS_Polygon:
+			case Shape::ShapeType::ShapeType_Polygon:
 			{
 				std::vector<b2Vec2> points;
 				float cornerRadius = shapeProps.cornerRadius;
@@ -323,7 +323,7 @@ namespace FlatEngine
 
 				break;
 			}
-			case Shape::ShapeType::BS_Chain:
+			case Shape::ShapeType::ShapeType_Chain:
 			{
 				b2SurfaceMaterial material = b2DefaultSurfaceMaterial();
 				material.friction = shapeProps.friction;

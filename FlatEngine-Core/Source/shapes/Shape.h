@@ -22,19 +22,19 @@ namespace FlatEngine
 
 	public:
 		enum ShapeType {
-			BS_None,
-			BS_Box,
-			BS_Circle,
-			BS_Capsule,
-			BS_Polygon,
-			BS_Chain
+			ShapeType_None,
+			ShapeType_Box,
+			ShapeType_Circle,
+			ShapeType_Capsule,
+			ShapeType_Polygon,
+			ShapeType_Chain
 		};
 
 		struct ShapeProps {
 			bool b_enableContactEvents = true;
 			bool b_enableSensorEvents = true;
 			bool b_isSensor = false;
-			ShapeType shape = BS_None;
+			ShapeType shape = ShapeType_None;
 			Vector2 positionOffset = Vector2();
 			b2Rot rotationOffset = b2MakeRot(0);
 			float restitution = 0.3f;

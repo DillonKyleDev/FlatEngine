@@ -27,6 +27,11 @@
 #include "render/VulkanManager.h"
 #include "scripting/CPPScriptMethods.h"
 #include "TagList.h"
+#include "shapes/Capsule.h"
+#include "shapes/Chain.h"
+#include "shapes/Circle.h"
+#include "shapes/Polygon.h"
+#include "shapes/Shape.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
 #include "tools/Numbers.h"
@@ -1124,7 +1129,7 @@ namespace FlatGui
 			float airControl = characterController->GetAirControl();
 			bool b_isMoving = characterController->IsMoving();
 			FL::Capsule& capsule = characterController->GetCapsule();
-			FL::Shape::ShapeProps shapeProps = capsule.GetShapeProps();
+			FL::Shape::ShapeProps& shapeProps = capsule.GetShapeProps();
 			float radius = shapeProps.radius;
 			float capsuleLength = shapeProps.capsuleLength;
 			bool b_horizontal = shapeProps.b_horizontal;
@@ -1170,308 +1175,298 @@ namespace FlatGui
 				capsule.SetHorizontal(b_horizontal);
 			}
 		}
-
-		void RenderShapeComponentProps(FL::Shape* shape, b2ShapeId& shapeToDelete, b2ChainId& chainToDelete)
+		
+		void RenderBoxProps(FL::Box* shape)
 		{
-			FL::Shape::ShapeProps shapeProps = shape->GetShapeProps();
+			FL::Shape::ShapeProps& shapeProps = shape->GetShapeProps();
 			b2ShapeId shapeID = shape->GetShapeID();
-			b2ChainId chainID = shape->GetChainID();
-			FL::Shape::ShapeType shapeType = shape->GetShapeType();
-			std::string ID = "";
-			if (shapeType != FL::Shape::ShapeType::BS_Chain)
+			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);
+			bool b_changed = false;
+						
+			FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderBoolTable("##Box_" + ID, "Is Sensor", shapeProps.b_isSensor, FL::Vector2(), 0, "noEditTableRowFieldBg", false); FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderFloatTable("##ShapeCornerRadius" + ID, "Corner Radius", shapeProps.cornerRadius); FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderVector2Table("##BoxDimensions" + ID, "Dimensions", shapeProps.dimensions, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), false); FL::GuiCore::MoveScreenCursor(0, -4);			
+			b_changed |= FL::GuiCore::RenderVector2Table("##PositionOffset" + ID, "Pos. Offset", shapeProps.positionOffset); FL::GuiCore::MoveScreenCursor(0, -4);
+			
+			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));	
+			if (FL::GuiCore::RenderFloatTable("##RotationOffset" + ID, "Rotation Offset", rotationOffset, FL::Vector2(), 0, "noEditTableRowFieldBg", false))
 			{
-				ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);
+				shape->SetRotationOffset(rotationOffset);
 			}
-			else
+			FL::GuiCore::MoveScreenCursor(0, -4);
+
+			if (b_changed)
 			{
-				ID = "chain_" + std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);
+				shape->RecreateShape();
 			}
-			std::string shapeString = shape->GetShapeString() + " ID: " + ID;
-			bool b_isSensor = shapeProps.b_isSensor;
-			float restitution = shapeProps.restitution;
-			float friction = shapeProps.friction;
-			float density = shapeProps.density;
-			FL::Vector2 dimensions = shapeProps.dimensions;
+		}
+
+		void RenderPolygonProps(FL::Polygon* shape)
+		{
+			FL::Shape::ShapeProps& shapeProps = shape->GetShapeProps();
+			b2ShapeId shapeID = shape->GetShapeID();
+			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);			
 			float cornerRadius = shapeProps.cornerRadius;
-			float radius = shapeProps.radius;
-			float capsuleLength = shapeProps.capsuleLength;
-			bool b_horizontal = shapeProps.b_horizontal;
 			std::vector<FL::Vector2> points = shapeProps.points;
 			int pointCount = (int)points.size();
 			bool b_showPoints = shape->ShowPoints();
 			bool b_editingPoints = shape->IsEditingPoints();
-			bool b_isLoop = shapeProps.b_isLoop;
+			bool b_isSensor = shapeProps.b_isSensor;
+
+			if (FL::GuiCore::RenderFloatDragTableRow("##ShapeCornerRadius" + ID, "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
+			{
+				if (cornerRadius >= 0)
+				{
+					shape->SetCornerRadius(cornerRadius);
+				}
+				else
+				{
+					cornerRadius = 0;
+				}
+			}
+
+			FL::GuiCore::MoveScreenCursor(0, 3);
+			ImGui::Separator();
+			FL::GuiCore::MoveScreenCursor(0, 3);
+
+			if (!b_editingPoints)
+			{
+				if (FL::GuiCore::RenderButton("Edit Points##Polygon_" + ID))
+				{
+					shape->SetEditingPoints(true);
+				}
+			}
+			else
+			{
+				if (FL::GuiCore::RenderButton("Stop editing##Polygon_" + ID))
+				{
+					shape->SetEditingPoints(false);
+				}
+			}
+
+			ImGui::SameLine();	
+			FL::GuiCore::MoveScreenCursor(0, 3);
+			if (FL::GuiCore::RenderCheckbox(" Show points##Polygon_" + ID, b_showPoints))
+			{
+				shape->SetShowPoints(b_showPoints);
+			}
+
+			if (b_showPoints)
+			{
+				FL::GuiCore::MoveScreenCursor(0, 3);				
+				if (FL::GuiCore::PushTable("##ShapePointPositions" + ID, 2))
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointXPos" + ID + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							shape->SetPoints(points);
+						}
+						if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointYPos" + ID + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							shape->SetPoints(points);
+						}
+					}
+					FL::GuiCore::PopTable();
+				}
+			}
+
+			if (FL::GuiCore::RenderCheckbox(" Is Sensor##Chain_" + ID, b_isSensor))
+			{
+				shape->SetIsSensor(b_isSensor);
+			}
+		}
+
+		void RenderCapsuleProps(FL::Capsule* shape)
+		{
+			FL::Shape::ShapeProps& shapeProps = shape->GetShapeProps();
+			b2ShapeId shapeID = shape->GetShapeID();
+			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);			
+			float radius = shapeProps.radius;
+			float capsuleLength = shapeProps.capsuleLength;
+			bool b_horizontal = shapeProps.b_horizontal;	
+			bool b_isSensor = shapeProps.b_isSensor;
+
+			if (FL::GuiCore::RenderFloatDragTableRow("##ShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+			{
+				shape->SetRadius(radius);
+			}
+			if (FL::GuiCore::RenderFloatDragTableRow("##CapsuleLength" + ID, "Length", capsuleLength, 0.01f, 0.01f, FLT_MAX))
+			{
+				shape->SetCapsuleLength(capsuleLength);
+			}
+			if (FL::GuiCore::RenderFloatDragTableRow("##CapsuleHeight" + ID, "Radii", radius, 0.01f, 0.01f, FLT_MAX))
+			{
+				shape->SetRadius(radius);
+			}
+
+			if (FL::GuiCore::RenderCheckbox(" Horizontal##Capsule_" + ID, b_horizontal))
+			{
+				shape->SetHorizontal(b_horizontal);
+			}
+
+			FL::GuiCore::RenderVector2Table("##PositionOffset" + ID, "Pos. Offset", shapeProps.positionOffset);
+			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));	
+			if (FL::GuiCore::RenderFloatTable("##RotationOffset" + ID, "Rotation Offset", rotationOffset))
+			{
+				shape->SetRotationOffset(rotationOffset);
+			}
+
+			if (FL::GuiCore::RenderCheckbox(" Is Sensor##Chain_" + ID, b_isSensor))
+			{
+				shape->SetIsSensor(b_isSensor);
+			}
+		}
+
+		void RenderChainProps(FL::Chain* shape)
+		{
+			FL::Shape::ShapeProps& shapeProps = shape->GetShapeProps();
+			b2ChainId chainID = shape->GetChainID();
+			std::string ID = "chain_" + std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);	
 			float tangentSpeed = shapeProps.tangentSpeed;
 			float rollingResistance = shapeProps.rollingResistance;
-			bool b_enableSensorEvents = shapeProps.b_enableSensorEvents;
-			bool b_enableContactEvents = shapeProps.b_enableContactEvents;
+			bool b_isLoop = shapeProps.b_isLoop;
+			std::vector<FL::Vector2> points = shapeProps.points;
+			int pointCount = (int)points.size();
+			bool b_showPoints = shape->ShowPoints();
+			bool b_editingPoints = shape->IsEditingPoints();			
 
-			std::string childID = "Shape_" + ID;
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("shapeBg"));
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 3));
-			ImGui::BeginChild(childID.c_str(),FL::Vector2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize);
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
+			if (FL::GuiCore::RenderFloatDragTableRow("##ChainTangentSpeed" + ID, "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
+			{
+				shape->SetTangentSpeed(tangentSpeed);
+			}
+			if (FL::GuiCore::RenderFloatDragTableRow("##ChainRollingResistance" + ID, "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
+			{
+				shape->SetRollingResistance(rollingResistance);
+			}
 
-			// Border around each shape
-			auto shapeWindowPos = ImGui::GetWindowPos();
-			auto shapeWindowSize = ImGui::GetWindowSize();	
+			if (FL::GuiCore::RenderCheckbox(" Loop endpoints##Chain_" + ID, b_isLoop))
+			{
+				shape->SetIsLoop(b_isLoop);
+			}
+			
+			FL::GuiCore::MoveScreenCursor(0, 3);
+			ImGui::Separator();
+			FL::GuiCore::MoveScreenCursor(0, 3);
+
+			if (!b_editingPoints)
+			{
+				if (FL::GuiCore::RenderButton("Edit Points##Chain_" + ID))
+				{
+					shape->SetEditingPoints(true);
+				}
+			}
+			else
+			{
+				if (FL::GuiCore::RenderButton("Stop editing##Chain_" + ID))
+				{
+					shape->SetEditingPoints(false);
+				}
+			}
+
+			ImGui::SameLine();
+			FL::GuiCore::MoveScreenCursor(0, 3);
+			if (FL::GuiCore::RenderCheckbox(" Show points##Chain_" + ID, b_showPoints))
+			{
+				shape->SetShowPoints(b_showPoints);
+			}
+
+			if (b_showPoints)
+			{
+				FL::GuiCore::MoveScreenCursor(0, 3);
+				if (FL::GuiCore::PushTable("##ShapePointPositions" + ID, 2))
+				{
+					for (int i = 0; i < pointCount; i++)
+					{
+						if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointXPos" + ID + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							shape->SetPoints(points);
+						}
+						if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointYPos" + ID + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
+						{
+							shape->SetPoints(points);
+						}
+					}
+					FL::GuiCore::PopTable();
+				}
+			}
+		}
+
+		void RenderCircleProps(FL::Circle* shape)
+		{
+			FL::Shape::ShapeProps& shapeProps = shape->GetShapeProps();
+			b2ShapeId shapeID = shape->GetShapeID();
+			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);
+			float radius = shapeProps.radius;
+			bool b_isSensor = shapeProps.b_isSensor;
+
+			if (FL::GuiCore::RenderFloatDragTableRow("##ShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
+			{
+				shape->SetRadius(radius);
+			}
+
+			FL::GuiCore::RenderVector2Table("##PositionOffset" + ID, "Pos. Offset", shapeProps.positionOffset);
+			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));	
+			if (FL::GuiCore::RenderFloatTable("##RotationOffset" + ID, "Rotation Offset", rotationOffset))
+			{
+				shape->SetRotationOffset(rotationOffset);
+			}
+
+			if (FL::GuiCore::RenderCheckbox(" Is Sensor##Chain_" + ID, b_isSensor))
+			{
+				shape->SetIsSensor(b_isSensor);
+			}
+		}
+
+		void RenderShapeComponentProps(FL::Shape* shape, b2ShapeId& shapeToDelete, b2ChainId& chainToDelete)
+		{
+			FL::Shape::ShapeProps& shapeProps = shape->GetShapeProps();
+			b2ShapeId shapeID = shape->GetShapeID();
+			b2ChainId chainID = shape->GetChainID();
+			FL::Shape::ShapeType shapeType = shape->GetShapeType();		
+			std::string ID = "";
+			if (shapeType != FL::Shape::ShapeType::ShapeType_Chain)			
+				ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);			
+			else			
+				ID = "chain_" + std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);	
+			std::string shapeString = shape->GetShapeString() + " ID: " + ID;		
 
 			FL::GuiCore::RenderSectionHeader(shapeString);
 			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);
-			FL::GuiCore::MoveScreenCursor(0, -3);
 
 			std::string trashcanID = "##trashIcon-" + ID;
-
+			FL::GuiCore::MoveScreenCursor(0,-19);
 			if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash")))
 			{
-				if (shapeType != FL::Shape::ShapeType::BS_Chain)
-				{
-					shapeToDelete = shapeID;
-				}
-				else
-				{
-					chainToDelete = chainID;
-				}
+				shapeToDelete = shapeID;
+				chainToDelete = chainID;
 			}			
 
-			if (FL::GuiCore::PushTable("##" + shapeString + "ShapeProps" + ID, 2))
-			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##" + shapeString + "Density" + ID, "Density", density, 0.001f, 0.001f, FLT_MAX))
-				{
-					shape->SetDensity(density);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##" + shapeString + "Friction" + ID, "Friction", friction, 0.001f, 0.0f, FLT_MAX))
-				{
-					shape->SetFriction(friction);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##" + shapeString + "Restitution" + ID, "Restitution", restitution, 0.001f, 0.0f, FLT_MAX))
-				{
-					shape->SetRestitution(restitution);
-				}
-				if (shapeType != FL::Shape::ShapeType::BS_Polygon && shapeType != FL::Shape::ShapeType::BS_Chain && shapeType)
-				{
-					FL::Vector2 positionOffset = shapeProps.positionOffset;
-					float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(shapeProps.rotationOffset));				
+			bool b_changed = false;
+			
+			b_changed |= FL::GuiCore::RenderFloatTable("##" + shapeString + "Density" + ID, "Density", shapeProps.density, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.001f, 0.001f, FLT_MAX); FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderFloatTable("##" + shapeString + "Friction" + ID, "Friction", shapeProps.friction, FL::Vector2(), 0, "noEditTableRowFieldBg", false, 0.001f, 0.0f, FLT_MAX); FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderFloatTable("##" + shapeString + "Restitution" + ID, "Restitution", shapeProps.restitution, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.001f, 0.0f, FLT_MAX); FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderBoolTable("##EnableSensorEvents" + ID, "Enable Sensor Events", shapeProps.b_enableSensorEvents, FL::Vector2(), 0, "noEditTableRowFieldBg", false); FL::GuiCore::MoveScreenCursor(0, -4);
+			b_changed |= FL::GuiCore::RenderBoolTable("##EnableContactEvents" + ID, "Enable Contact Events", shapeProps.b_enableContactEvents);
 
-					if (FL::GuiCore::RenderFloatDragTableRow("##PositionXOffset" + ID, "X Offset", positionOffset.x, 0.01f, -FLT_MAX, FLT_MAX))
-					{
-						shape->SetPositionOffset(positionOffset);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##PositionYOffset" + ID, "Y Offset", positionOffset.y, 0.01f, -FLT_MAX, FLT_MAX))
-					{
-						shape->SetPositionOffset(positionOffset);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##RotationOffset" + ID, "Rotation Offset", rotationOffset, 0.5f, -FLT_MAX, FLT_MAX))
-					{
-						shape->SetRotationOffset(rotationOffset);
-					}
-				}
-				if (shapeType == FL::Shape::ShapeType::BS_Box)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##BoxWidth" + ID, "Width", dimensions.x, 0.01f, 0.01f, FLT_MAX))
-					{
-						static_cast<FL::Box*>(shape)->SetDimensions(dimensions);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##BoxHeight" + ID, "Height", dimensions.y, 0.01f, 0.01f, FLT_MAX))
-					{
-						static_cast<FL::Box*>(shape)->SetDimensions(dimensions);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##ShapeCornerRadius" + ID, "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
-					{
-						if (cornerRadius >= 0)
-						{
-							static_cast<FL::Box*>(shape)->SetCornerRadius(cornerRadius);
-						}
-						else
-						{
-							cornerRadius = 0;
-						}
-					}
-				}
-				else if (shapeType == FL::Shape::ShapeType::BS_Polygon)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##ShapeCornerRadius" + ID, "Corner Radius", cornerRadius, 0.001f, 0.0f, FLT_MAX))
-					{
-						if (cornerRadius >= 0)
-						{
-							static_cast<FL::Polygon*>(shape)->SetCornerRadius(cornerRadius);
-						}
-						else
-						{
-							cornerRadius = 0;
-						}
-					}
-				}
-				if (shapeType == FL::Shape::ShapeType::BS_Circle)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##ShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
-					{
-						static_cast<FL::Circle*>(shape)->SetRadius(radius);
-					}
-				}
-				if (shapeType == FL::Shape::ShapeType::BS_Capsule)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##ShapeRadius" + ID, "Radius", radius, 0.01f, 0.01f, FLT_MAX))
-					{
-						static_cast<FL::Capsule*>(shape)->SetRadius(radius);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##CapsuleLength" + ID, "Length", capsuleLength, 0.01f, 0.01f, FLT_MAX))
-					{
-						static_cast<FL::Capsule*>(shape)->SetCapsuleLength(capsuleLength);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##CapsuleHeight" + ID, "Radii", radius, 0.01f, 0.01f, FLT_MAX))
-					{
-						static_cast<FL::Capsule*>(shape)->SetRadius(radius);
-					}
-				}
-				if (shapeType == FL::Shape::ShapeType::BS_Chain)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##ChainTangentSpeed" + ID, "Tangent Speed", tangentSpeed, 0.001f, -FLT_MAX, FLT_MAX))
-					{
-						static_cast<FL::Chain*>(shape)->SetTangentSpeed(tangentSpeed);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##ChainRollingResistance" + ID, "Rolling Resistance", rollingResistance, 0.001f, -FLT_MAX, FLT_MAX))
-					{
-						static_cast<FL::Chain*>(shape)->SetRollingResistance(rollingResistance);
-					}
-				}
-				FL::GuiCore::PopTable();
+			switch (shapeType)
+			{
+				case FL::Shape::ShapeType_Box: RenderBoxProps(static_cast<FL::Box*>(shape)); break;
+				case FL::Shape::ShapeType_Capsule: RenderCapsuleProps(static_cast<FL::Capsule*>(shape)); break;
+				case FL::Shape::ShapeType_Chain: RenderChainProps(static_cast<FL::Chain*>(shape));
+				case FL::Shape::ShapeType_Polygon: RenderPolygonProps(static_cast<FL::Polygon*>(shape));
+				case FL::Shape::ShapeType_Circle: RenderCircleProps(static_cast<FL::Circle*>(shape));
+				default: break;
+			}
+
+			if (b_changed)
+			{
+				shape->RecreateShape();
 			}
 
 			FL::GuiCore::MoveScreenCursor(0, 3);
-			if (shapeType != FL::Shape::ShapeType::BS_Chain)
-			{
-				if (FL::GuiCore::RenderCheckbox(" Is Sensor##Chain_" + ID, b_isSensor))
-				{
-					shape->SetIsSensor(b_isSensor);
-				}
-			}
-			if (FL::GuiCore::RenderCheckbox(" Enable Sensor Events##Chain_" + ID, b_enableSensorEvents))
-			{
-				shape->SetEnableSensorEvents(b_enableSensorEvents);
-			}
-			if (FL::GuiCore::RenderCheckbox(" Enable Contact Events##_Chain" + ID, b_enableContactEvents))
-			{
-				shape->SetEnableContactEvents(b_enableContactEvents);
-			}
-
-			if (shapeType == FL::Shape::ShapeType::BS_Capsule)
-			{
-				if (FL::GuiCore::RenderCheckbox(" Horizontal##Capsule_" + ID, b_horizontal))
-				{
-					static_cast<FL::Capsule*>(shape)->SetHorizontal(b_horizontal);
-				}
-			}
-
-			if (shapeType == FL::Shape::ShapeType::BS_Chain)
-			{			
-				if (FL::GuiCore::RenderCheckbox(" Loop endpoints##Chain_" + ID, b_isLoop))
-				{
-					static_cast<FL::Chain*>(shape)->SetIsLoop(b_isLoop);
-				}
-				
-				FL::GuiCore::MoveScreenCursor(0, 3);
-				ImGui::Separator();
-				FL::GuiCore::MoveScreenCursor(0, 3);
-
-				if (!b_editingPoints)
-				{
-					if (FL::GuiCore::RenderButton("Edit Points##Chain_" + ID))
-					{
-						shape->SetEditingPoints(true);
-					}
-				}
-				else
-				{
-					if (FL::GuiCore::RenderButton("Stop editing##Chain_" + ID))
-					{
-						shape->SetEditingPoints(false);
-					}
-				}
-
-				ImGui::SameLine();
-				FL::GuiCore::MoveScreenCursor(0, 3);
-				if (FL::GuiCore::RenderCheckbox(" Show points##Chain_" + ID, b_showPoints))
-				{
-					shape->SetShowPoints(b_showPoints);
-				}
-
-				if (b_showPoints)
-				{
-					FL::GuiCore::MoveScreenCursor(0, 3);
-					if (FL::GuiCore::PushTable("##ShapePointPositions" + ID, 2))
-					{
-						for (int i = 0; i < pointCount; i++)
-						{
-							if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointXPos" + ID + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								static_cast<FL::Chain*>(shape)->SetPoints(points);
-							}
-							if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointYPos" + ID + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								static_cast<FL::Chain*>(shape)->SetPoints(points);
-							}
-						}
-						FL::GuiCore::PopTable();
-					}
-				}
-			}
-			else if (shapeType == FL::Shape::ShapeType::BS_Polygon)
-			{			
-				FL::GuiCore::MoveScreenCursor(0, 3);
-				ImGui::Separator();
-				FL::GuiCore::MoveScreenCursor(0, 3);
-
-				if (!b_editingPoints)
-				{
-					if (FL::GuiCore::RenderButton("Edit Points##Polygon_" + ID))
-					{
-						shape->SetEditingPoints(true);
-					}
-				}
-				else
-				{
-					if (FL::GuiCore::RenderButton("Stop editing##Polygon_" + ID))
-					{
-						shape->SetEditingPoints(false);
-					}
-				}
-
-				ImGui::SameLine();	
-				FL::GuiCore::MoveScreenCursor(0, 3);
-				if (FL::GuiCore::RenderCheckbox(" Show points##Polygon_" + ID, b_showPoints))
-				{
-					shape->SetShowPoints(b_showPoints);
-				}
-
-				if (b_showPoints)
-				{
-					FL::GuiCore::MoveScreenCursor(0, 3);				
-					if (FL::GuiCore::PushTable("##ShapePointPositions" + ID, 2))
-					{
-						for (int i = 0; i < pointCount; i++)
-						{
-							if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointXPos" + ID + std::to_string(i), std::to_string(i) + ": X Position", points[i].x, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								static_cast<FL::Polygon*>(shape)->SetPoints(points);
-							}
-							if (FL::GuiCore::RenderFloatDragTableRow("##ShapePointYPos" + ID + std::to_string(i), std::to_string(i) + ": Y Position", points[i].y, 0.001f, -FLT_MAX, FLT_MAX))
-							{
-								static_cast<FL::Polygon*>(shape)->SetPoints(points);
-							}
-						}
-						FL::GuiCore::PopTable();
-					}
-				}
-			}
-
-
-			FL::GuiCore::MoveScreenCursor(0, 3);
-
-			ImGui::EndChild();
-
-			ImGui::GetWindowDrawList()->AddRect({ shapeWindowPos.x , shapeWindowPos.y }, { shapeWindowPos.x + shapeWindowSize.x, shapeWindowPos.y + shapeWindowSize.y }, FL::Assets::assetManager.GetColor32("componentBorder"), 0);
 		}
 
 		void RenderBody2DComponent(FL::Body2D* body)
@@ -1482,50 +1477,48 @@ namespace FlatGui
 			float angularVelocity = body->GetAngularVelocity();
 
 			int currentType = bodyProps.type;
-			std::vector<std::string> types = { "static", "kinematic", "dynamic" };
+			std::vector<std::string> types = { "Static", "Kinematic", "Dynamic" };
 			std::string comboID = "##BoxBodyTypeCombo";
-			if (FL::GuiCore::RenderCombo(comboID, types[bodyProps.type], types, currentType, 100))
+			if (FL::GuiCore::RenderComboTable(comboID, "Body Type", types[bodyProps.type], types, currentType))
 			{
 				body->SetBodyType((b2BodyType)currentType);
 			}
-
-			if (FL::GuiCore::PushTable("##BodyProps" + std::to_string(ID), 2))
+			FL::GuiCore::MoveScreenCursor(0, -4);
+			if (FL::GuiCore::RenderFloatTable("##BodyGravityScale" + std::to_string(ID), "Gravity Scale", bodyProps.gravityScale, FL::Vector2(), 0, "noEditTableRowFieldBg", false))
 			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##BodyGravityScale" + std::to_string(ID), "Gravity Scale", bodyProps.gravityScale, 0.01f, -FLT_MAX, FLT_MAX))
-				{
-					body->SetGravityScale(bodyProps.gravityScale);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##BodyLinearDamping" + std::to_string(ID), "Linear Damping", bodyProps.linearDamping, 0.001f, 0.0f, -FLT_MAX))
-				{
-					body->SetLinearDamping(bodyProps.linearDamping);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##BodyAngularDamping" + std::to_string(ID), "Angular Damping", bodyProps.angularDamping, 0.001f, 0.0f, -FLT_MAX))
-				{
-					body->SetAngularDamping(bodyProps.angularDamping);
-				}
-
-				FL::GuiCore::RenderTextTableRow("##VelocityX" + std::to_string(ID), "X Velocity", std::to_string(linearVelocity.x));
-				FL::GuiCore::RenderTextTableRow("##VelocityY" + std::to_string(ID), "Y Velocity", std::to_string(linearVelocity.y));
-				FL::GuiCore::RenderTextTableRow("##AngularVelocity" + std::to_string(ID), "Angular Velocity (deg)", std::to_string(angularVelocity));
-				FL::GuiCore::PopTable();
+				body->SetGravityScale(bodyProps.gravityScale);
 			}
+			FL::GuiCore::MoveScreenCursor(0, -4);
+			if (FL::GuiCore::RenderFloatTable("##BodyLinearDamping" + std::to_string(ID), "Linear Damp", bodyProps.linearDamping))
+			{
+				body->SetLinearDamping(bodyProps.linearDamping);
+			}
+			FL::GuiCore::MoveScreenCursor(0, -4);
+			if (FL::GuiCore::RenderFloatTable("##BodyAngularDamping" + std::to_string(ID), "Angular Damp", bodyProps.angularDamping, FL::Vector2(), 0, "noEditTableRowFieldBg", false))
+			{
+				body->SetAngularDamping(bodyProps.angularDamping);
+			}
+			FL::GuiCore::MoveScreenCursor(0, -4);
+			FL::GuiCore::RenderTextTable("##VelocityX" + std::to_string(ID), "X Vel.", std::to_string(linearVelocity.x)); FL::GuiCore::MoveScreenCursor(0, -4);								
+			FL::GuiCore::RenderTextTable("##VelocityY" + std::to_string(ID), "Y Vel.", std::to_string(linearVelocity.y), 0, false); FL::GuiCore::MoveScreenCursor(0, -4);			
+			FL::GuiCore::RenderTextTable("##AngularVelocity" + std::to_string(ID), "Angular Vel.", std::to_string(angularVelocity));
 
-			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::RenderSeparator(5,5);
 
 			if (FL::GuiCore::RenderCheckbox(" Lock Rotation", bodyProps.b_lockedRotation))
 			{
 				body->SetLockedRotation(bodyProps.b_lockedRotation);
 			}
-			if (FL::GuiCore::RenderCheckbox(" Lock x-axis", bodyProps.b_lockedXAxis))
+			if (FL::GuiCore::RenderCheckbox(" Lock X-Axis", bodyProps.b_lockedXAxis))
 			{
 				body->SetLockedXAxis(bodyProps.b_lockedXAxis);
 			}
-			if (FL::GuiCore::RenderCheckbox(" Lock y-axis", bodyProps.b_lockedYAxis))
+			if (FL::GuiCore::RenderCheckbox(" Lock Y-Axis", bodyProps.b_lockedYAxis))
 			{
 				body->SetLockedYAxis(bodyProps.b_lockedYAxis);
 			}
 
-			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::MoveScreenCursor(0, 3);		
 
 			FL::GuiCore::RenderButton("Add Shape",FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
 			if (ImGui::BeginPopupContextItem("##AddShape", ImGuiPopupFlags_MouseButtonLeft))
@@ -1567,24 +1560,7 @@ namespace FlatGui
 			}
 
 			if (body->GetShapes().size())
-			{
-				FL::GuiCore::MoveScreenCursor(0, 3);
-				ImGui::Text("%s", "Body Shapes");
-				FL::GuiCore::MoveScreenCursor(0, 2);
-				ImGui::Separator();
-				FL::GuiCore::MoveScreenCursor(0, -3);
-
-				// For scrolling shapes section with background
-				std::string childID = "Shapes_" + std::to_string(ID);
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("shapesScrollingBg"));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 5));
-				ImGui::BeginChild(childID.c_str(),FL::Vector2(0, 300), FL::GuiCore::childFlags);
-				ImGui::PopStyleVar();
-				ImGui::PopStyleColor();
-
-				// Border around components section
-				auto wPos = ImGui::GetWindowPos();
-				auto wSize = ImGui::GetWindowSize();
+			{									
 				b2ShapeId shapeToDelete = b2_nullShapeId;
 				b2ChainId chainToDelete = b2_nullChainId;
 
@@ -1592,6 +1568,7 @@ namespace FlatGui
 
 				for (int i = 0; i < shapes.size(); i++)
 				{
+					FL::GuiCore::MoveScreenCursor(0,5);
 					RenderShapeComponentProps(shapes[i], shapeToDelete, chainToDelete);
 					
 					if (i != shapes.size() - 1)
@@ -1608,12 +1585,6 @@ namespace FlatGui
 				{
 					body->RemoveChain(chainToDelete);
 				}
-
-
-				ImGui::EndChild();
-
-				// Border around Shapes Section
-				ImGui::GetWindowDrawList()->AddRect({wPos.x, wPos.y - 1}, {wPos.x + wSize.x, wPos.y + wSize.y + 1}, FL::Assets::assetManager.GetColor32("componentSectionBorder"), 0);
 			}
 			else {
 				ImGui::TextWrapped("* WARNING *\n\nA Body without a shape attached has 0.0 mass and will not move.");
@@ -2017,9 +1988,6 @@ namespace FlatGui
 
 
 				ImGui::EndChild();
-
-				// Border around Shapes Section
-				ImGui::GetWindowDrawList()->AddRect({ wPos.x, wPos.y - 1 }, { wPos.x + wSize.x, wPos.y + wSize.y + 1 }, FL::Assets::assetManager.GetColor32("componentSectionBorder"), 0);
 			}
 
 			//if (FL::GuiCore::PushTable("##JointMakerProps" + std::to_string(ID), 2))
@@ -2231,8 +2199,7 @@ namespace FlatGui
 						}
 					}
 				}
-				FL::GuiCore::MoveScreenCursor(0, iconSize + verticalSpacing + 10);
-				ImGui::GetWindowDrawList()->AddRect(tileSetTilesStart,FL::Vector2(tileSetTilesStart.x + regionAvailable.x - 5, ImGui::GetCursorScreenPos().y), FL::Assets::assetManager.GetColor32("componentSectionBorder"), 0, 0, 1);
+				FL::GuiCore::MoveScreenCursor(0, iconSize + verticalSpacing + 10);				
 			}
 			
 			ImGui::SetCursorScreenPos(FL::Vector2(tileSetTilesStart.x, ImGui::GetCursorScreenPos().y + 2));

@@ -195,7 +195,7 @@ namespace FlatEngine
 
                     LoadEngineMaterials();                    
 
-                    SceneView::CreateSceneViewGridObjects();
+                    SceneView::LoadPersistentSceneViewObjects();
                 }
             }
 
@@ -643,8 +643,10 @@ namespace FlatEngine
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_unlit.mat", &m_renderToTextureGameViewRenderPass));
             AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_verticesOnly.mat", &m_renderToTextureSceneViewRenderPass));
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_verticesOnly.mat", &m_renderToTextureGameViewRenderPass));
-            AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_grid.mat", &m_renderToTextureSceneViewRenderPass));
-            AddGameViewMaterial(LoadMaterial("../engine/materials/fl_grid.mat", &m_renderToTextureGameViewRenderPass));
+            AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_gridH.mat", &m_renderToTextureSceneViewRenderPass));
+            AddGameViewMaterial(LoadMaterial("../engine/materials/fl_gridH.mat", &m_renderToTextureGameViewRenderPass));
+            AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_gridV.mat", &m_renderToTextureSceneViewRenderPass));
+            AddGameViewMaterial(LoadMaterial("../engine/materials/fl_gridV.mat", &m_renderToTextureGameViewRenderPass));            
             AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_xAxis.mat", &m_renderToTextureSceneViewRenderPass));
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_xAxis.mat", &m_renderToTextureGameViewRenderPass));
             AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_yAxis.mat", &m_renderToTextureSceneViewRenderPass));
@@ -653,6 +655,8 @@ namespace FlatEngine
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_zAxis.mat", &m_renderToTextureGameViewRenderPass));
             AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_transformGizmo.mat", &m_renderToTextureSceneViewRenderPass));
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_transformGizmo.mat", &m_renderToTextureGameViewRenderPass));
+            AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_debugDraw.mat", &m_renderToTextureSceneViewRenderPass));
+            AddGameViewMaterial(LoadMaterial("../engine/materials/fl_debugDraw.mat", &m_renderToTextureGameViewRenderPass));
         }
 
         void Vulkan::InitializeMaterials()
@@ -1243,24 +1247,39 @@ namespace FlatEngine
 
                     if (SceneView::ShouldShowSceneViewGridObjects())
                     {
-                        for (int i = 0; i < 7; i++)                        
-                        {
-                            Mesh& mesh = SceneView::sceneViewMeshes[i];
-                            Transform& transform = SceneView::sceneViewTransforms[i];
-                            std::shared_ptr<Material> material = mesh.GetSceneViewMaterial();
-                            if (mesh.Initialized() && material != nullptr)
+                        for (SceneView::SceneRenderObject& renderObject : SceneView::persistentSceneRenderObjects)                        
+                        {                                                        
+                            std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
+                            if (renderObject.mesh.Initialized() && material != nullptr)
                             {                                                  
-                                if (mesh.IsActive())
-                                {
+                                if (renderObject.mesh.IsActive())
+                                {                                    
                                     m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                    mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &transform);
-                                    m_renderToTextureSceneViewRenderPass.BindIndexed(mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
-                                    m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
-                                    m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                                    renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
+                                    m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                    m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                    m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                                 }
                             }
                         }
-                    }          
+                    }     
+                    
+                    for (SceneView::SceneRenderObject& renderObject : SceneView::debugDrawSceneRenderObjects)                        
+                    {                                                        
+                        std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
+                        if (renderObject.mesh.Initialized() && material != nullptr)
+                        {                                                  
+                            if (renderObject.mesh.IsActive())
+                            {                                    
+                                m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                                renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
+                                m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                            }
+                        }
+                    }
+
 
                     std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
 

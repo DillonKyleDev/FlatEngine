@@ -30,8 +30,8 @@ F_Colors = {
 	componentSectionBorder = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	componentBorder = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	componentBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
-	componentSectionHeaderBg = Vector4:new(0.35, 0.35, 0.65, 1.0),
-	componentSectionHeaderSeparator = Vector4:new(0.45, 0.45, 0.7, 1.0),
+	componentSectionHeaderBg = Vector4:new(0.45, 0.45, 0.8, 1.0),
+	componentSectionHeaderSeparator = Vector4:new(0.7, 0.7, 0.9, 1.0),
 	pivotSelectionBg = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	openFileButtonBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
@@ -39,6 +39,7 @@ F_Colors = {
 
 	shapesScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
 	shapeBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
+	shapeSectionHeaderSeparator = Vector4:new(0.45, 0.45, 0.5, 1.0),
 	jointsScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
 	jointBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
 	-- Colliders --
@@ -161,7 +162,7 @@ F_Colors = {
 	projectHubTableOutline = Vector4:new(0.36, 0.36, 0.37, 1.0),
 	-- Log
 	logText = Vector4:new(0.75, 0.75, 0.75, 1.0),
-	logBg =Vector4:new(0.15, 0.15, 0.16, 1.0),
+	logBg = Vector4:new(0.15, 0.15, 0.16, 1.0),
 	logOutline = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	trace = Vector4:new(0.5, 0.5, 0.5, 1.0),
 	debug = Vector4:new(0.2, 0.75, 0.2, 1.0),
@@ -170,6 +171,8 @@ F_Colors = {
 	warn = Vector4:new(0.91, 0.71, 0.0, 1.0),
 	err = Vector4:new(0.9, 0.3, 0.3, 1.0),
 	critical = Vector4:new(0.8, 0.1, 0.1, 1.0),
+	-- DebugDraw
+	debugDraw = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	-- File Explorer
 	explorerFilesPanelBg =  Vector4:new(0.3, 0.3, 0.33, 1.0),
 	panelTitleBg =  Vector4:new(0.14, 0.14, 0.14, 1.0),

@@ -49,7 +49,7 @@ namespace FlatEngine
             b_fullscreen = false;
             b_vsyncEnabled = false;        
             sceneViewCameraSpeed = 80.0f;         
-            fileExplorerThumbnailSize = 100.0f;
+            fileExplorerThumbnailSize = 100.0f;            
         }
 
         void SettingsProfile::LoadSettings(std::string path)
@@ -90,6 +90,7 @@ namespace FlatEngine
                 b_fullscreen = JsonHelper::CheckJsonBool(settings, "b_fullscreen", name);
                 b_vsyncEnabled = JsonHelper::CheckJsonBool(settings, "b_vsyncEnabled", name);
                 fileExplorerThumbnailSize = JsonHelper::CheckJsonFloat(settings, "fileExplorerThumbnailSize", name);
+                SceneView::SetGridHorizontal(JsonHelper::CheckJsonBool(settings, "b_gridHorizontal", name));
                 // Scene View Camera
                 SceneView::sceneViewCameraTransform.SetPosition(FL::Vector3(JsonHelper::CheckJsonFloat(settings, "sceneCameraPosX", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosY", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosZ", name)));
                 SceneView::sceneViewCamera.SetHorizontalViewAngle(JsonHelper::CheckJsonFloat(settings, "sceneCameraHorizontalViewAngle", name));
@@ -120,7 +121,7 @@ namespace FlatEngine
             Vector3 sceneViewPos = SceneView::sceneViewCameraTransform.GetPosition();
 
             json settings = json::object({
-                { "path",                           m_path },
+                { "path",                            m_path },
                 // Viewports
                 { "b_showDemoWindow",                b_showDemoWindow },     
                 { "b_showFileExplorer",              b_showFileExplorer },
@@ -148,19 +149,20 @@ namespace FlatEngine
                 // Settings
                 { "b_fullscreen",                    b_fullscreen },
                 { "b_vsyncEnabled",                  b_vsyncEnabled },
-                { "fileExplorerThumbnailSize",      fileExplorerThumbnailSize },       
+                { "fileExplorerThumbnailSize",       fileExplorerThumbnailSize },     
+                { "b_gridHorizontal",                SceneView::IsGridHorizontal() },       
                 // Scene View Camera
-                { "sceneCameraPosX",                sceneViewPos.x },
-                { "sceneCameraPosY",                sceneViewPos.y },
-                { "sceneCameraPosZ",                sceneViewPos.z },
-                { "sceneCameraHorizontalViewAngle", SceneView::sceneViewCamera.GetHorizontalViewAngle() },
-                { "sceneCameraVerticalViewAngle",   SceneView::sceneViewCamera.GetVerticalViewAngle() },
-                { "sceneViewNearClippingDistance",  SceneView::sceneViewCamera.GetNearClippingDistance() },
-                { "sceneViewFarClippingDistance",   SceneView::sceneViewCamera.GetFarClippingDistance() },
-                { "sceneViewPerspectiveAngle",      SceneView::sceneViewCamera.GetPerspectiveAngle() },
+                { "sceneCameraPosX",                 sceneViewPos.x },
+                { "sceneCameraPosY",                 sceneViewPos.y },
+                { "sceneCameraPosZ",                 sceneViewPos.z },
+                { "sceneCameraHorizontalViewAngle",  SceneView::sceneViewCamera.GetHorizontalViewAngle() },
+                { "sceneCameraVerticalViewAngle",    SceneView::sceneViewCamera.GetVerticalViewAngle() },
+                { "sceneViewNearClippingDistance",   SceneView::sceneViewCamera.GetNearClippingDistance() },
+                { "sceneViewFarClippingDistance",    SceneView::sceneViewCamera.GetFarClippingDistance() },
+                { "sceneViewPerspectiveAngle",       SceneView::sceneViewCamera.GetPerspectiveAngle() },
                 { "b_showGridObjects",               SceneView::ShouldShowSceneViewGridObjects() },
                 { "b_orthographic",                  SceneView::IsOrthoGraphic() },
-                { "sceneViewCameraSpeed",           sceneViewCameraSpeed }                
+                { "sceneViewCameraSpeed",            sceneViewCameraSpeed }                
             });
 
             json settingsObject = json::object({ {"Settings", settings } });

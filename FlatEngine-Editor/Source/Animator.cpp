@@ -700,8 +700,15 @@ namespace FlatGui
 						FL::GuiCore::RenderCheckbox("POSITION##b_posAnimated", transformProp->b_posAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("ROTATION##b_rotationAnimated", transformProp->b_rotationAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("SCALE##b_scaleAnimated", transformProp->b_scaleAnimated);
-						FL::GuiCore::RenderSeparator(5, 5);
-						FL::GuiCore::RenderTransformTable("TransformPropKeyframeEdit", transformProp->position, transformProp->rotation, transformProp->scale);			
+						FL::GuiCore::RenderSeparator(5, 5);						
+
+						float labelWidth = 68;
+						std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
+						FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
+						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "POSITION", transformProp->position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
+						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "ROTATION", transformProp->rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false);
+						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "SCALE",    transformProp->scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
+
 						FL::GuiCore::RenderSeparator(5, 5);
 						static int current_transform_interp = 0;
 						current_transform_interp = (int)transformProp->positionInterpType;

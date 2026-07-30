@@ -69,9 +69,13 @@ namespace FlatEngine
 
 		return corners;
 	}
+
 	void Box::SetCornerRadius(float cornerRadius)
 	{		
-		m_shapeProps.cornerRadius = cornerRadius;
-		RecreateShape();
+		if (cornerRadius >= 0)
+		{
+			m_shapeProps.cornerRadius = cornerRadius;
+			RecreateShape();
+		}
 	}
 }

@@ -377,16 +377,22 @@ namespace FlatEngine
 
 	void Body2D::SetLinearDamping(float linearDamping)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.linearDamping = linearDamping;
-		RecreateBody();
+		if (linearDamping >= 0)
+		{
+			bodyProps = GetLiveProps();
+			bodyProps.linearDamping = linearDamping;
+			RecreateBody();
+		}
 	}
 
 	void Body2D::SetAngularDamping(float angularDamping)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.angularDamping = angularDamping;
-		RecreateBody();
+		if (angularDamping >= 0)
+		{
+			bodyProps = GetLiveProps();
+			bodyProps.angularDamping = angularDamping;
+			RecreateBody();
+		}
 	}
 
 	void Body2D::SetBodyType(b2BodyType type)
@@ -687,15 +693,8 @@ namespace FlatEngine
 	{
 		switch (joint->GetJointType())
 		{
-		case Joint::JT_Distance:
-		{
-			m_distanceJoints.push_back(static_cast<DistanceJoint*>(joint));
-		}
+			case Joint::JT_Distance: m_distanceJoints.push_back(static_cast<DistanceJoint*>(joint));
+			default: break;
 		}
 	}
-
-
-
-
-
 }

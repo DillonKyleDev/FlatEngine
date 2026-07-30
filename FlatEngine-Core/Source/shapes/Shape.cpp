@@ -46,14 +46,15 @@ namespace FlatEngine
 
 	Shape::Shape(Body2D* parentBody)
 	{		
+		b_editingPoints = false;
+		b_showPoints = false;
+		b_drawInGame = false;
+		inGameDrawColor = Assets::assetManager.GetColor("boxColliderActive");
+		m_inGameDrawThickness = 2.0f;
+
 		m_shapeID = b2_nullShapeId;
 		m_chainID = b2_nullChainId;
 		m_parentBody = parentBody;
-		m_b_editingPoints = false;
-		m_b_showPoints = false;
-		m_b_drawInGame = false;
-		m_inGameDrawColor = Assets::assetManager.GetColor("boxColliderActive");
-		m_inGameDrawThickness = 2.0f;
 	}
 
 	Shape::ShapeType Shape::GetShapeType()
@@ -390,54 +391,12 @@ namespace FlatEngine
 		return m_capsule;
 	}
 
-
-
-	bool Shape::ShowPoints()
-	{
-		return m_b_showPoints;
-	}
-
-	void Shape::SetShowPoints(bool b_showPoints)
-	{
-		m_b_showPoints = b_showPoints;
-	}
-
-	bool Shape::IsEditingPoints()
-	{
-		return m_b_editingPoints;
-	}
-
-	void Shape::SetEditingPoints(bool b_editingPoints)
-	{
-		m_b_editingPoints = b_editingPoints;
-	}
-
-	void Shape::SetDrawInGame(bool b_drawInGame)
-	{
-		m_b_drawInGame = b_drawInGame;
-	}
-
-	bool Shape::DrawInGame()
-	{
-		return m_b_drawInGame;
-	}
-
-	void Shape::SetInGameDrawColor(Vector4 drawColor)
-	{
-		m_inGameDrawColor = drawColor;
-	}
-
-	Vector4 Shape::GetInGameDrawColor()
-	{
-		return m_inGameDrawColor;
-	}
-
-	void Shape::SetInGameDraThickness(float thickness)
+	void Shape::SetInGameDrawThickness(float thickness)
 	{
 		m_inGameDrawThickness = thickness;
 	}
 
-	float Shape::GetInGameDraThickness()
+	const float Shape::GetInGameDrawThickness()
 	{
 		return m_inGameDrawThickness;
 	}

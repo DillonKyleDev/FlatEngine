@@ -45,9 +45,7 @@ namespace FlatEngine
                 bool b_fullscreen;
                 bool b_vsyncEnabled;
                 float sceneViewCameraSpeed;  
-                float fileExplorerThumbnailSize;
-
-            private:        	
+                float fileExplorerThumbnailSize;                  	
         };
 
         extern SettingsProfile settings;

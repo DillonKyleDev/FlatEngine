@@ -12,10 +12,5 @@ namespace FlatEngine
 		Circle(Body2D* parentBody = nullptr);
 
 		void SetRadius(float radius);
-
-	private:
-
 	};
 }
-
-

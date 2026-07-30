@@ -3,9 +3,11 @@
 #include "components/Mesh.h"
 #include "components/Transform.h"
 #include "shapes/Line.h"
+#include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 
@@ -13,6 +15,42 @@ namespace FlatEngine
 {
     namespace SceneView
     {
+        enum PersistentSceneObjectIndex {
+            PersistentSceneObjectIndex_GridH,
+            PersistentSceneObjectIndex_GridV,
+            PersistentSceneObjectIndex_XAxis,
+            PersistentSceneObjectIndex_YAxis,
+            PersistentSceneObjectIndex_ZAxis,
+            PersistentSceneObjectIndex_TransformGizmo,
+            PersistentSceneObjectIndex_OrientationGizmo,
+            PersistentSceneObjectIndex_Size
+        };
+
+        enum DebugSceneObjectType {
+            DebugSceneObjectType_Line,
+            DebugSceneObjectType_Circle,
+            DebugSceneObjectType_Quad,
+            DebugSceneObjectType_Sphere,
+            DebugSceneObjectType_Cube
+        };
+    
+        struct SceneRenderObject {
+            long ID;
+            Transform transform = Transform();
+            Mesh mesh = Mesh();
+
+            void PutData(json jsonData)
+            {
+                ID = (long)JsonHelper::CheckJsonLong(jsonData, "id", "SceneRenderObject");	
+				mesh.PutData(jsonData.at("mesh"), "SceneRenderObject");
+				transform.PutData(jsonData.at("transform"), "SceneRenderObject");
+            }
+        };
+
+        extern std::vector<SceneRenderObject> persistentSceneRenderObjects;
+        extern std::vector<SceneRenderObject> debugDrawSceneRenderObjects;
+        extern std::unordered_map<long, SceneRenderObject> transientSceneRenderObjects;
+
         extern Vector2 sceneViewportCenter;
         extern Vector2 sceneViewDimensions;      
         extern Vector2 sceneViewScrolling;
@@ -25,29 +63,32 @@ namespace FlatEngine
         extern long sceneViewLockedObjectID;
         extern std::vector<Line> sceneLines;
 
-        extern Mesh gridMesh;
-        extern Mesh xAxisMesh;
-        extern Mesh yAxisMesh;
-        extern Mesh zAxisMesh;
-        extern Mesh transformGizmoMesh;
-        extern Mesh orientationGizmoMesh;
-        extern Mesh cameraGizmoMesh;
-        extern Mesh sceneViewMeshes[7]; 
-        extern Transform sceneViewTransforms[7];
+        // extern Mesh gridHMesh;
+        // extern Mesh gridVMesh;
+        // extern Mesh xAxisMesh;
+        // extern Mesh yAxisMesh;
+        // extern Mesh zAxisMesh;
+        // extern Mesh transformGizmoMesh;
+        // extern Mesh orientationGizmoMesh;
+        // extern Mesh cameraGizmoMesh;
+
         extern Camera sceneViewCamera;
         extern Transform sceneViewCameraTransform;
 
         extern void RenderSceneView(bool& b_show);         
                
-        extern void CreateSceneViewGridObjects();
-        extern void UpdateSceneObjectColors();
-        extern void DeactivateTransformGizmo();
+        extern void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color = "debugDraw");
+        extern void LoadPersistentSceneViewObjects();
+        extern void UpdateSceneObjectColors();        
         extern void ToggleShowSceneViewGridObjects();
         extern void SetShowSceneViewGridObjects(bool b_show);
         extern const bool ShouldShowSceneViewGridObjects();
         extern void ToggleOrthographic();
         extern void SetOrthographic(bool b_isOrthographic);
         extern const bool IsOrthoGraphic();
+        extern void ToggleGridHorizontal();
+        extern void SetGridHorizontal(bool b_horizontal);
+        extern const bool IsGridHorizontal();
  
         extern void AddLineToScene(Vector2 startingPoint, Vector2 endingPoint, std::string color, float thickness);
         extern void RenderSceneLines();

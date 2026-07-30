@@ -14,32 +14,21 @@ namespace FlatEngine
 		m_shapeProps.b_enableSensorEvents = false;
 	}
 
-	void Chain::SetPoints(std::vector<Vector2> points)
-	{		
-		m_shapeProps.points = points;		
-		RecreateShape();
-	}
-
-	void Chain::UpdatePoints()
-	{			
-		RecreateShape();
-	}
-
-	void Chain::SetIsLoop(bool b_isLoop)
-	{		
-		m_shapeProps.b_isLoop = b_isLoop;		
-		RecreateShape();
-	}
-
 	void Chain::SetTangentSpeed(float tangentSpeed)
 	{		
-		m_shapeProps.tangentSpeed = tangentSpeed;
-		RecreateShape();
+		if (tangentSpeed >= 0)
+		{
+			m_shapeProps.tangentSpeed = tangentSpeed;
+			RecreateShape();
+		}
 	}
 
 	void Chain::SetRollingResistance(float rollingResistance)
 	{		
-		m_shapeProps.rollingResistance = rollingResistance;
-		RecreateShape();
+		if (rollingResistance >= 0)
+		{
+			m_shapeProps.rollingResistance = rollingResistance;
+			RecreateShape();
+		}
 	}
 }

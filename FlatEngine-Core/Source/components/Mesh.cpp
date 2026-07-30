@@ -196,7 +196,7 @@ namespace FlatEngine
 		return m_b_missingTextures;
 	}
 
-	void Mesh::SetModel(std::string modelPath)
+	void Mesh::SetModel(std::string modelPath, bool b_addMaterialMesh)
 	{
 		std::shared_ptr<Model> loadedModel = VulkanManager::vulkan.GetModel(modelPath);
 
@@ -207,8 +207,11 @@ namespace FlatEngine
 
 		m_model = loadedModel;
 
-		VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetID(), this);
-		VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetID(), this);
+		if (b_addMaterialMesh)
+		{
+			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetID(), this);
+			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetID(), this);
+		}
 	}
 
 	std::shared_ptr<Model> Mesh::GetModel()

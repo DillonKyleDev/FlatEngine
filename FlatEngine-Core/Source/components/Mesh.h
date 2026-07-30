@@ -26,7 +26,7 @@ namespace FlatEngine
 		void Init();		
 		bool Initialized();
 		bool MissingTextures();		
-		void SetModel(std::string modelPath);
+		void SetModel(std::string modelPath, bool b_addMaterialMesh = true);
 		std::shared_ptr<Model> GetModel();
 		void SetMaterial(std::string materialName);
 		std::shared_ptr<Material> GetSceneViewMaterial();

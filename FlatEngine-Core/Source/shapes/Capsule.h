@@ -12,10 +12,6 @@ namespace FlatEngine
 		Capsule(Body2D* parentBody = nullptr);		
 
 		void SetCapsuleLength(float length);
-		void SetRadius(float radius);
-		void SetHorizontal(bool b_horizontal);
-
-	private:
-
+		void SetRadius(float radius);			
 	};
 }

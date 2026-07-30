@@ -22,6 +22,10 @@ namespace FlatEngine
 {		
 	namespace SceneView
 	{
+		std::vector<SceneRenderObject> persistentSceneRenderObjects;
+        std::vector<SceneRenderObject> debugDrawSceneRenderObjects;
+        std::unordered_map<long, SceneRenderObject> transientSceneRenderObjects;
+
 		Vector2 sceneViewDimensions = Vector2(600, 400);	
 		Vector2 sceneViewCenter = Vector2();
 		Vector2 sceneViewScrolling = Vector2();
@@ -36,19 +40,19 @@ namespace FlatEngine
 
 		Camera sceneViewCamera = Camera();
 		Transform sceneViewCameraTransform = Transform();
-		Mesh gridMesh = Mesh();
+		Mesh gridHMesh = Mesh();
+		Mesh gridVMesh = Mesh();
 		Mesh xAxisMesh = Mesh();
 		Mesh yAxisMesh = Mesh();
 		Mesh zAxisMesh = Mesh();
 		Mesh transformGizmoMesh = Mesh();
 		Mesh orientationGizmoMesh = Mesh();
 		Mesh cameraGizmoMesh = Mesh();
-		Mesh sceneViewMeshes[7] = {};
-		Transform sceneViewTransforms[7] = { Transform() };
 
 		// private
 		bool b_showGridObjects = true;
         bool b_orthographic = false;
+		bool b_gridHorizontal = true;
 
 		// Show cursor position in scene view when pressing Alt
 		void RenderSceneViewTooltip()
@@ -422,14 +426,36 @@ namespace FlatEngine
 			}
 		}
 
-		void PositionTransformGizmo(Vector3 position)
+		void PositionTransformGizmo()
         {
-            // F_sceneViewGridObjects.GetObjectByID(m_transformGizmo)->GetMesh()->SetActive(true);
-            // F_sceneViewGridObjects.GetObjectByID(m_transformGizmo)->Get<Transform>()->SetPosition(position);
+			if (ProjectManager::loadedProject.focusedGameObjectID != -1)
+			{
+				Vector3 position = SceneManager::loadedScene.GetObjectByID(ProjectManager::loadedProject.focusedGameObjectID)->Get<Transform>()->GetPosition();
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].mesh.SetActive(true);
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].transform.SetPosition(position);
+			}
+			else 
+			{
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].mesh.SetActive(false);
+			}		
+
+			AddDebugDrawObject(DebugSceneObjectType_Quad, Transform());
         }
+
+		void ClearDebugDrawObjects()
+		{
+			for (SceneRenderObject& debugObject : debugDrawSceneRenderObjects)
+			{
+				debugObject.mesh.Cleanup();
+			}
+
+			debugDrawSceneRenderObjects.clear();
+		}
 
 		void RenderSceneView(bool& b_show)
 		{		
+			ClearDebugDrawObjects();
+
 			if (!b_show)
 				return;
 						
@@ -437,7 +463,9 @@ namespace FlatEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2());
 			
 			if (GuiCore::BeginWindow("Scene View", b_show, ImGuiWindowFlags_NoScrollWithMouse, "black"))
-			{
+			{				
+				PositionTransformGizmo();				
+
 				Vector2 canvas_p0 = ImGui::GetCursorScreenPos();
 				Vector2 canvas_sz = ImGui::GetContentRegionAvail();
 
@@ -527,23 +555,7 @@ namespace FlatEngine
 
 				//RenderViewObjects(sceneObjects, sceneViewCenter, canvas_p0, canvas_sz, sceneViewGridStep);
 				//RenderViewObjects(persistantObjects, sceneViewCenter, canvas_p0, canvas_sz, sceneViewGridStep);
-				//RenderTransformArrowWidget();				
-
-				long focusedID = ProjectManager::loadedProject.focusedGameObjectID;
-				if (focusedID != -1)
-				{
-					GameObject* focusedObject = SceneManager::loadedScene.GetObjectByID(focusedID);
-					if (focusedObject != nullptr)
-					{
-						Vector3 focusedObjectPosition = focusedObject->Get<Transform>()->GetAbsolutePosition();
-						PositionTransformGizmo(focusedObjectPosition);
-					}
-				}
-				else
-				{
-					transformGizmoMesh.SetActive(false);
-				}
-
+				//RenderTransformArrowWidget();								
 
 				//// For centering on focused GameObject
 				//GameObject* lockedObject = GetObjectByID(sceneViewLockedObjectID);
@@ -607,81 +619,75 @@ namespace FlatEngine
 
 		void UpdateSceneObjectColors()
         {
-            gridMesh.SetUBOVec4("color", Assets::assetManager.GetColor("grid"));            
-            xAxisMesh.SetUBOVec4("color", Assets::assetManager.GetColor("xAxis"));            
-            yAxisMesh.SetUBOVec4("color", Assets::assetManager.GetColor("yAxis"));    
-            zAxisMesh.SetUBOVec4("color", Assets::assetManager.GetColor("zAxis"));
+            persistentSceneRenderObjects[PersistentSceneObjectIndex_GridH].mesh.SetUBOVec4("color", Assets::assetManager.GetColor("grid"));            
+			persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].mesh.SetUBOVec4("color", Assets::assetManager.GetColor("grid"));            
+            persistentSceneRenderObjects[PersistentSceneObjectIndex_XAxis].mesh.SetUBOVec4("color", Assets::assetManager.GetColor("xAxis"));            
+            persistentSceneRenderObjects[PersistentSceneObjectIndex_YAxis].mesh.SetUBOVec4("color", Assets::assetManager.GetColor("yAxis"));    
+            persistentSceneRenderObjects[PersistentSceneObjectIndex_ZAxis].mesh.SetUBOVec4("color", Assets::assetManager.GetColor("zAxis"));
         }
 
-        void PositionCameraGizmo(Vector3 position)
-        {
-            // F_sceneViewGridObjects.GetObjectByID(m_cameraGizmo)->Get<Transform>()->SetPosition(position);
-        }
+		long AddSceneViewCameraGizmo(Transform transform)
+		{
+			SceneRenderObject sceneObject;
+			sceneObject.ID = (long)transientSceneRenderObjects.size();
+			transientSceneRenderObjects.emplace(sceneObject.ID, sceneObject);
+			SceneRenderObject& ref = transientSceneRenderObjects.at(sceneObject.ID);
+			ref.mesh.CreateUniformBuffers();
+			ref.mesh.SetMaterial("fl_unlit");
+            ref.mesh.SetModel("../engine/models/camera.obj", false);
+            ref.mesh.AddTexture("../engine/images/textures/camera.png", 0);            
+            ref.mesh.CreateResources();
+			ref.transform.PutData(transform.GetData(), "Scene Camera Gizmo");
+			return ref.ID;
+		}
 
-        void CreateSceneViewGridObjects()
+		void RemoveSceneViewCameraGizmo(long ID)
+		{
+			if (transientSceneRenderObjects.count(ID))
+			{
+				transientSceneRenderObjects.erase(ID);
+			}
+		}
+
+		void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color)
+		{
+			SceneRenderObject debugObject;
+			debugDrawSceneRenderObjects.push_back(debugObject);
+			debugDrawSceneRenderObjects.back().transform.PutData(transform.GetData(), "Debug Draw Object");
+
+			switch (type)
+			{
+				case DebugSceneObjectType_Quad: 
+				{					
+					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
+					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
+					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/quadLines.obj", false);	
+					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
+					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					break;
+				}
+				default: break;
+			}
+		}
+
+        void LoadPersistentSceneViewObjects()
         {            
+			json persistentSceneObjectJson = JsonHelper::LoadFileData("../engine/scene_view_grid_objects.json");
+			persistentSceneRenderObjects.resize(persistentSceneObjectJson.size());
+
+			for (auto jsonData : persistentSceneObjectJson)
+			{
+				SceneRenderObject sceneObject;
+				long ID = JsonHelper::CheckJsonLong(jsonData, "id", "Persistent Scene Render Object");				
+				if (persistentSceneRenderObjects.size() >= ID)
+				{
+					persistentSceneRenderObjects[ID] = sceneObject;
+				}
+				persistentSceneRenderObjects[ID].PutData(jsonData);
+			}
+
             sceneViewCamera = Camera();
 			sceneViewCameraTransform = Transform();
-			
-            gridMesh.SetModel("../engine/models/largeGrid.obj");
-            gridMesh.SetMaterial("fl_grid");        
-            gridMesh.SetUBOVec4("color", Assets::assetManager.GetColor("grid"));        
-            gridMesh.CreateResources();
-			gridMesh.CreateUniformBuffers();
-
-            xAxisMesh.SetModel("../engine/models/xAxis.obj");
-            xAxisMesh.SetMaterial("fl_xAxis");        
-            xAxisMesh.SetUBOVec4("color", Assets::assetManager.GetColor("xAxis"));           
-            xAxisMesh.CreateResources();
-			xAxisMesh.CreateUniformBuffers();
-
-            yAxisMesh.SetModel("../engine/models/yAxis.obj");
-            yAxisMesh.SetMaterial("fl_yAxis");        
-            yAxisMesh.SetUBOVec4("color", Assets::assetManager.GetColor("yAxis"));     
-            yAxisMesh.CreateResources();
-			yAxisMesh.CreateUniformBuffers();
-
-            zAxisMesh.SetModel("../engine/models/zAxis.obj");
-            zAxisMesh.SetMaterial("fl_zAxis");                
-            zAxisMesh.SetUBOVec4("color", Assets::assetManager.GetColor("zAxis"));      
-            zAxisMesh.CreateResources();
-			zAxisMesh.CreateUniformBuffers();
-
-            // transformGizmoMesh.SetModel("../engine/models/transform_gizmo.obj");
-            // transformGizmoMesh.SetMaterial("fl_transformGizmo");     
-            // transformGizmoMesh.AddTexture("../engine/images/textures/transform_gizmo.png", 0);
-            // transformGizmoMesh.CreateTextureResources();
-            // transformGizmoMesh.CreateResources();
-            // transformGizmoMesh.SetActive(false);
-
-            // orientationGizmoMesh.SetMaterial("fl_unlit");
-            // orientationGizmoMesh.SetModel("../engine/models/orientation_gizmo.obj");
-            // orientationGizmoMesh.AddTexture("../engine/images/textures/orientation_gizmo.png", 0);
-            // orientationGizmoMesh.CreateTextureResources();
-            // orientationGizmoMesh.CreateResources();
-
-            // cameraGizmoMesh.SetMaterial("fl_unlit");
-            // cameraGizmoMesh.SetModel("../engine/models/camera.obj");
-            // cameraGizmoMesh.AddTexture("../engine/images/textures/camera.png", 0);
-            // cameraGizmoMesh.CreateTextureResources();
-            // cameraGizmoMesh.CreateResources();
-
-			sceneViewMeshes[0] = gridMesh;
-			sceneViewMeshes[1] = xAxisMesh;
-			sceneViewMeshes[2] = yAxisMesh;
-			sceneViewMeshes[3] = zAxisMesh;
-			sceneViewMeshes[4] = transformGizmoMesh;
-			sceneViewMeshes[5] = orientationGizmoMesh;
-			sceneViewMeshes[6] = cameraGizmoMesh;
-
-			for (int i = 0; i < 7; i++)
-			{
-				sceneViewTransforms[i] = Transform();
-			}
-			
-			sceneViewTransforms[4].SetPosition(Vector3());
-			sceneViewTransforms[5].SetPosition(Vector3());
-			sceneViewTransforms[0].SetPosition(Vector3());
         }
 
 		bool ShowSceneViewGridObjects()
@@ -710,7 +716,18 @@ namespace FlatEngine
         {
             b_orthographic = b_isOrthographic;
 
-			// And other things...
+			// Position and rotate the grid as necessary
+			if (b_orthographic)
+			{					
+				persistentSceneRenderObjects[0].mesh.SetActive(false);
+				persistentSceneRenderObjects[1].mesh.SetActive(true);			
+				persistentSceneRenderObjects[1].transform.SetPosition(Vector3(0,0,-100000));
+			}
+			else
+			{
+				persistentSceneRenderObjects[1].transform.SetPosition(Vector3(0,0,0));
+				SetGridHorizontal(b_gridHorizontal); // Handles the activation/deactivation logic
+			} 
         }
 
         void ToggleOrthographic()
@@ -721,6 +738,32 @@ namespace FlatEngine
 		const bool IsOrthoGraphic()
 		{
 			return b_orthographic;
+		}
+
+		extern void ToggleGridHorizontal()
+		{
+			SetGridHorizontal(!b_gridHorizontal);
+		}
+
+		void SetGridHorizontal(bool b_horizontal)
+		{
+			b_gridHorizontal = b_horizontal;
+
+			if (b_gridHorizontal)
+			{
+				persistentSceneRenderObjects[0].mesh.SetActive(true);
+				persistentSceneRenderObjects[1].mesh.SetActive(false);
+			}
+			else
+			{
+				persistentSceneRenderObjects[0].mesh.SetActive(false);
+				persistentSceneRenderObjects[1].mesh.SetActive(true);
+			}
+		}
+
+		const bool IsGridHorizontal()
+		{
+			return b_gridHorizontal;
 		}
 
 		void AddLineToScene(Vector2 startingPoint, Vector2 endingPoint, std::string color, float thickness)

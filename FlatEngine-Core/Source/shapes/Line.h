@@ -14,7 +14,5 @@ namespace FlatEngine
 		Vector2 m_end;
 		Vector4 m_color;
 		float m_thickness;
-	private:
-
 	};
 }

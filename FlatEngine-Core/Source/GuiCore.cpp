@@ -559,7 +559,7 @@ namespace FlatEngine
 			return b_changed;
 		}
 
-		bool RenderFloatTableColumns(std::string ID, std::string label, float& value, std::string labelColor, std::string valueColor, int labelWidth, int labelIndex, int valueIndex)
+		bool RenderFloatTableColumns(std::string ID, std::string label, float& value, std::string labelColor, std::string valueColor, int labelWidth, int labelIndex, int valueIndex, float increment, float min, float max)
 		{								
 			float textWidth = ImGui::CalcTextSize(label.c_str()).x;
 			float offsetX = (labelWidth - textWidth) * 0.5f;
@@ -574,10 +574,10 @@ namespace FlatEngine
 			ImGui::TableSetColumnIndex(valueIndex);	
 			if (valueColor != "")						
 				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-			return GuiCore::RenderDragFloat(ID.c_str(), 0, value, 0.1f, -FLT_MAX, FLT_MAX);
+			return GuiCore::RenderDragFloat(ID.c_str(), 0, value, increment, min, max);
 		}
 
-		bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize, int labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize, int labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, float increment, float min, float max, bool b_vertSeperator)
 		{						
 			bool b_changed = false;				
 
@@ -607,15 +607,16 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + ID + "Table", 4, GuiCore::tableFlags, tableSize, widths))
 			{
 				ImGui::TableNextRow();			
-				b_changed |= RenderFloatTableColumns(column1Label, "X", vec2.x, valueLabelColors[0], valueColor, 16, 0, 1);
-				b_changed |= RenderFloatTableColumns(column2Label, "Y", vec2.y, valueLabelColors[1], valueColor, 16, 2, 3);
+				b_changed |= RenderFloatTableColumns(column1Label, "X", vec2.x, valueLabelColors[0], valueColor, 16, 0, 1, increment, min, max);
+				b_changed |= RenderFloatTableColumns(column2Label, "Y", vec2.y, valueLabelColors[1], valueColor, 16, 2, 3, increment, min, max);
 				GuiCore::PopTable();
 			}
 			
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
-		bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize, int labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize, int labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, float increment, float min, float max, bool b_vertSeperator)
 		{				
 			bool b_changed = false;	
 
@@ -646,16 +647,17 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + ID + "Table", 6, GuiCore::tableFlags, tableSize, widths))
 			{
 				ImGui::TableNextRow();					
-				b_changed |= RenderFloatTableColumns(column1Label, "X", vec3.x, valueLabelColors[0], valueColor, 16, 0, 1);
-				b_changed |= RenderFloatTableColumns(column2Label, "Y", vec3.y, valueLabelColors[1], valueColor, 16, 2, 3);
-				b_changed |= RenderFloatTableColumns(column3Label, "Z", vec3.z, valueLabelColors[2], valueColor, 16, 4, 5);
+				b_changed |= RenderFloatTableColumns(column1Label, "X", vec3.x, valueLabelColors[0], valueColor, 16, 0, 1, increment, min, max);
+				b_changed |= RenderFloatTableColumns(column2Label, "Y", vec3.y, valueLabelColors[1], valueColor, 16, 2, 3, increment, min, max);
+				b_changed |= RenderFloatTableColumns(column3Label, "Z", vec3.z, valueLabelColors[2], valueColor, 16, 4, 5, increment, min, max);
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
-		bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize, int labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, bool b_vertSeperator)
+		bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize, int labelWidth, std::string labelColor, std::vector<std::string> valueLabelColors, bool b_light, float increment, float min, float max, bool b_vertSeperator)
 		{			
 			bool b_changed = false;	
 
@@ -687,16 +689,17 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + ID + "Table", 8, GuiCore::tableFlags, tableSize, widths))
 			{
 				ImGui::TableNextRow();			
-				b_changed |= RenderFloatTableColumns(column1Label, "X", vec4.x, valueLabelColors[0], valueColor, 16, 0, 1);
-				b_changed |= RenderFloatTableColumns(column2Label, "Y", vec4.y, valueLabelColors[1], valueColor, 16, 2, 3);
-				b_changed |= RenderFloatTableColumns(column3Label, "Z", vec4.z, valueLabelColors[2], valueColor, 16, 4, 5);
-				b_changed |= RenderFloatTableColumns(column4Label, "W", vec4.w, valueLabelColors[3], valueColor, 16, 6, 7);
+				b_changed |= RenderFloatTableColumns(column1Label, "X", vec4.x, valueLabelColors[0], valueColor, 16, 0, 1, increment, min, max);
+				b_changed |= RenderFloatTableColumns(column2Label, "Y", vec4.y, valueLabelColors[1], valueColor, 16, 2, 3, increment, min, max);
+				b_changed |= RenderFloatTableColumns(column3Label, "Z", vec4.z, valueLabelColors[2], valueColor, 16, 4, 5, increment, min, max);
+				b_changed |= RenderFloatTableColumns(column4Label, "W", vec4.w, valueLabelColors[3], valueColor, 16, 6, 7, increment, min, max);
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
-
+		
 		bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize, int labelWidth, std::string labelColor, bool b_light, float increment, float min, float max, bool b_vertSeperator)
 		{
 			bool b_changed = false;
@@ -726,12 +729,13 @@ namespace FlatEngine
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, increment, min, max);
+				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, increment, min, max, ImGuiSliderFlags_AlwaysClamp);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
@@ -770,6 +774,7 @@ namespace FlatEngine
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
@@ -808,6 +813,7 @@ namespace FlatEngine
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
@@ -846,6 +852,7 @@ namespace FlatEngine
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
@@ -892,6 +899,7 @@ namespace FlatEngine
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
 		}
 
@@ -928,6 +936,8 @@ namespace FlatEngine
 
 			ImGui::PopStyleVar();
 			ImGui::PopStyleVar();
+
+			FL::GuiCore::MoveScreenCursor(0, -4);
 		}
 
 		bool RenderComboTable(std::string ID, std::string label, std::string displayedValue, std::vector<std::string> options, int& currentOption, Vector2 tableSize, int labelWidth, std::string labelColor, bool b_light, bool b_vertSeperator)
@@ -964,19 +974,8 @@ namespace FlatEngine
 				GuiCore::PopTable();
 			}
 
+			FL::GuiCore::MoveScreenCursor(0, -4);
 			return b_changed;
-		}
-
-
-		void RenderTransformTable(std::string ID, Vector3& position, Vector3& rotation, Vector3& scale)
-		{
-			int labelWidth = 68;
-			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
-			Vector2 tableSize = Vector2(ImGui::GetContentRegionAvail().x, 0);
-
-			RenderVector3Table("##TransformComponentTable", "POSITION", position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors); GuiCore::MoveScreenCursor(0,-4);
-			RenderVector3Table("##TransformComponentTable", "ROTATION", rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false); GuiCore::MoveScreenCursor(0,-4);
-			RenderVector3Table("##TransformComponentTable", "SCALE",    scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
 		}
 
 		void RenderLuaParamtersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer)

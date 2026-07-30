@@ -30,6 +30,15 @@ namespace FlatEngine
 			ShapeType_Chain
 		};
 
+		std::vector<std::string> ShapeTypeStrings = {
+			"None",
+			"Box",
+			"Circle",
+			"Capsule",
+			"Polygon",
+			"Chain"
+		};
+
 		struct ShapeProps {
 			bool b_enableContactEvents = true;
 			bool b_enableSensorEvents = true;
@@ -88,34 +97,22 @@ namespace FlatEngine
 		b2Circle GetB2Circle();
 		b2Capsule GetB2Capsule();
 
-		// for PolygonBody and ChainBody
-		virtual void SetPoints(std::vector<Vector2> points) {};
-		virtual void UpdatePoints() {};
-		bool ShowPoints();
-		void SetShowPoints(bool b_showPoints);
-		bool IsEditingPoints();
-		void SetEditingPoints(bool b_editingPoints);
+		void SetInGameDrawThickness(float thickness);
+		const float GetInGameDrawThickness();
 
-		void SetDrawInGame(bool b_drawInGame);
-		bool DrawInGame();
-		void SetInGameDrawColor(Vector4 drawColor);
-		Vector4 GetInGameDrawColor();
-		void SetInGameDraThickness(float thickness);
-		float GetInGameDraThickness();
+		bool b_showPoints;
+		bool b_editingPoints;
+		bool b_drawInGame;
+		Vector4 inGameDrawColor;
 
 	private:
 		b2ShapeId m_shapeID;
 		b2ChainId m_chainID;
 		Body2D* m_parentBody;
 		ShapeProps m_shapeProps;
-		bool m_b_showPoints;
-		bool m_b_editingPoints;
-		bool m_b_drawInGame;
-		Vector4 m_inGameDrawColor;
-		float m_inGameDrawThickness;
-
 		b2Polygon m_polygon;
 		b2Circle m_circle;
 		b2Capsule m_capsule;
+		float m_inGameDrawThickness;
 	};
 }

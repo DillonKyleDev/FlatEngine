@@ -393,6 +393,12 @@ namespace FlatGui
 						FL::SceneView::ToggleShowSceneViewGridObjects();
 						FL::Settings::settings.SaveSettings();
 					}			
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");		
+					if (ImGui::MenuItem(" Horizontal Grid", NULL, FL::SceneView::IsGridHorizontal()))
+					{						
+						FL::SceneView::ToggleGridHorizontal();
+						FL::Settings::settings.SaveSettings();
+					}			
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
 					if (ImGui::BeginMenu(" Scene View Camera Perspective Angle"))
 					{					

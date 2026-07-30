@@ -25,6 +25,10 @@ namespace FlatEngine
 		m_followSmoothing = 0.1f;
 		m_horizontalViewAngle = 0.0f;
 		m_verticalViewAngle = 0.0f;
+		b_orthographic = true;
+		m_orthoSize = 5.0f;
+		m_orthoHorizontalViewAngle = 180.0;
+		m_orthoVerticalViewAngle = 0.0;
 	}
 
 	json Camera::GetData(bool b_IDOverride)
@@ -189,8 +193,8 @@ namespace FlatEngine
 	// Meant for the Scene View Camera because it does not exist in the Scene objects pool and would crash with above function
 	glm::vec4 Camera::GetLookDirectionNoRoll()
 	{
-		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_horizontalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(m_verticalViewAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? m_orthoHorizontalViewAngle : m_horizontalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? m_orthoVerticalViewAngle : m_verticalViewAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotationMatrix = horCameraRotationMatrix * vertCameraRotationMatrix;
 
 		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);

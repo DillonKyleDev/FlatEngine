@@ -657,6 +657,8 @@ namespace FlatEngine
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_transformGizmo.mat", &m_renderToTextureGameViewRenderPass));
             AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_debugDraw.mat", &m_renderToTextureSceneViewRenderPass));
             AddGameViewMaterial(LoadMaterial("../engine/materials/fl_debugDraw.mat", &m_renderToTextureGameViewRenderPass));
+            AddSceneViewMaterial(LoadMaterial("../engine/materials/fl_debugDrawCircle.mat", &m_renderToTextureSceneViewRenderPass));
+            AddGameViewMaterial(LoadMaterial("../engine/materials/fl_debugDrawCircle.mat", &m_renderToTextureGameViewRenderPass));
         }
 
         void Vulkan::InitializeMaterials()
@@ -668,7 +670,7 @@ namespace FlatEngine
 
             std::vector<std::string> materialFiles = std::vector<std::string>();
             materialFiles = FL::FileHelper::FindAllFilesWithExtension(Assets::assetManager.GetDir("projectDir"), ".mat");
-
+            
             for (std::string path : materialFiles)
             {
                 AddSceneViewMaterial(LoadMaterial(path, &m_renderToTextureSceneViewRenderPass));

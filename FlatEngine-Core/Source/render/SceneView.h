@@ -63,15 +63,6 @@ namespace FlatEngine
         extern long sceneViewLockedObjectID;
         extern std::vector<Line> sceneLines;
 
-        // extern Mesh gridHMesh;
-        // extern Mesh gridVMesh;
-        // extern Mesh xAxisMesh;
-        // extern Mesh yAxisMesh;
-        // extern Mesh zAxisMesh;
-        // extern Mesh transformGizmoMesh;
-        // extern Mesh orientationGizmoMesh;
-        // extern Mesh cameraGizmoMesh;
-
         extern Camera sceneViewCamera;
         extern Transform sceneViewCameraTransform;
 

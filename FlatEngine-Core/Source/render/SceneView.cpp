@@ -40,18 +40,9 @@ namespace FlatEngine
 
 		Camera sceneViewCamera = Camera();
 		Transform sceneViewCameraTransform = Transform();
-		Mesh gridHMesh = Mesh();
-		Mesh gridVMesh = Mesh();
-		Mesh xAxisMesh = Mesh();
-		Mesh yAxisMesh = Mesh();
-		Mesh zAxisMesh = Mesh();
-		Mesh transformGizmoMesh = Mesh();
-		Mesh orientationGizmoMesh = Mesh();
-		Mesh cameraGizmoMesh = Mesh();
 
 		// private
-		bool b_showGridObjects = true;
-        bool b_orthographic = false;
+		bool b_showGridObjects = true;        
 		bool b_gridHorizontal = true;
 
 		// Show cursor position in scene view when pressing Alt
@@ -440,6 +431,7 @@ namespace FlatEngine
 			}		
 
 			AddDebugDrawObject(DebugSceneObjectType_Quad, Transform());
+			AddDebugDrawObject(DebugSceneObjectType_Circle, Transform());
         }
 
 		void ClearDebugDrawObjects()
@@ -657,11 +649,57 @@ namespace FlatEngine
 
 			switch (type)
 			{
+				case DebugSceneObjectType_Line: 
+				{					
+					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
+					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
+					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/line.obj", false);	
+					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
+					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					break;
+				}
+				case DebugSceneObjectType_Circle: 
+				{					
+					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
+					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
+					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/circle.obj", false);	
+					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
+					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					break;
+				}
 				case DebugSceneObjectType_Quad: 
 				{					
 					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
 					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
 					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/quadLines.obj", false);	
+					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
+					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					break;
+				}
+				case DebugSceneObjectType_Sphere: 
+				{					
+					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
+					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDrawSphere");
+					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/quad.obj", false);	
+					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
+					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+
+					SceneRenderObject debugCircle;
+					debugDrawSceneRenderObjects.push_back(debugCircle);					
+					transform.SetXRotation(90);
+					debugDrawSceneRenderObjects.back().transform.PutData(transform.GetData(), "Debug Draw Object");
+					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
+					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
+					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/circle.obj", false);	
+					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
+					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					break;
+				}
+				case DebugSceneObjectType_Cube: 
+				{					
+					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
+					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
+					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/cubeLines.obj", false);	
 					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
 					debugDrawSceneRenderObjects.back().mesh.CreateResources();
 					break;
@@ -685,9 +723,6 @@ namespace FlatEngine
 				}
 				persistentSceneRenderObjects[ID].PutData(jsonData);
 			}
-
-            sceneViewCamera = Camera();
-			sceneViewCameraTransform = Transform();
         }
 
 		bool ShowSceneViewGridObjects()
@@ -714,14 +749,16 @@ namespace FlatEngine
 
 		void SetOrthographic(bool b_isOrthographic)
         {
-            b_orthographic = b_isOrthographic;
+            sceneViewCamera.b_orthographic = b_isOrthographic;
 
 			// Position and rotate the grid as necessary
-			if (b_orthographic)
+			if (sceneViewCamera.b_orthographic)
 			{					
 				persistentSceneRenderObjects[0].mesh.SetActive(false);
 				persistentSceneRenderObjects[1].mesh.SetActive(true);			
-				persistentSceneRenderObjects[1].transform.SetPosition(Vector3(0,0,-100000));
+				persistentSceneRenderObjects[1].transform.SetPosition(Vector3(0,0,-100000));				
+				sceneViewCamera.m_orthoHorizontalViewAngle = 180;
+				sceneViewCamera.m_orthoVerticalViewAngle = 0;
 			}
 			else
 			{
@@ -732,12 +769,12 @@ namespace FlatEngine
 
         void ToggleOrthographic()
         {
-            b_orthographic = !b_orthographic;
+            SetOrthographic(!sceneViewCamera.b_orthographic);
         }
 
 		const bool IsOrthoGraphic()
 		{
-			return b_orthographic;
+			return sceneViewCamera.b_orthographic;
 		}
 
 		extern void ToggleGridHorizontal()
@@ -753,6 +790,7 @@ namespace FlatEngine
 			{
 				persistentSceneRenderObjects[0].mesh.SetActive(true);
 				persistentSceneRenderObjects[1].mesh.SetActive(false);
+				
 			}
 			else
 			{

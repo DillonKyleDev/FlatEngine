@@ -240,7 +240,7 @@ namespace FlatEngine
 
 			for (std::map<uint32_t, std::string>::iterator iter = uboVec4Names.begin(); iter != uboVec4Names.end(); iter++)
 			{
-				SetUBOVec4(iter->second, Vector4());
+				SetUBOVec4(iter->second, Vector4(1));
 			}
 		}
 		else
@@ -455,7 +455,7 @@ namespace FlatEngine
 		glm::mat4 meshRotation = transform->GetRotationMatrix();
 		bool b_forceZUp = primaryCamera->ForceZUp();
 		glm::vec4 lookDir = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? primaryCamera->GetLookDirectionNoRoll() : primaryCamera->GetLookDirection();
-		glm::vec4 up = b_forceZUp ? glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
 		glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
 		glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
@@ -471,18 +471,10 @@ namespace FlatEngine
 
 		if (b_orthographic)
 		{    
-			aspectRatio = SceneView::sceneViewDimensions.x / ( SceneView::sceneViewDimensions.y != 0 ? SceneView::sceneViewDimensions.y : 1);
-			// float orthoSize = 5.0f;
-			// float halfWidth  = orthoSize * aspectRatio;
-			// float halfHeight = orthoSize;
-			// projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -500.0f, 200.0f);
-			primaryCamera->SetHorizontalViewAngle(0);
-			primaryCamera->SetVerticalViewAngle(0);
-
-			float w = SceneView::sceneViewDimensions.x / 2;
-			float h = SceneView::sceneViewDimensions.y / 2;
-			// projection = glm::ortho(-w, w, -h, h, -500.0f, 200.0f);
-			projection = glm::ortho(-960.0f, 960.0f, -540.0f, 540.0f, -500.0f, 200.0f);
+			aspectRatio = SceneView::sceneViewDimensions.x / ( SceneView::sceneViewDimensions.y != 0 ? SceneView::sceneViewDimensions.y : 1);			
+			float halfWidth  = primaryCamera->m_orthoSize * aspectRatio;
+			float halfHeight = primaryCamera->m_orthoSize;
+			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -500.0f, 500.0f);			
 			projection[1][1] *= -1;
 		}
 		else

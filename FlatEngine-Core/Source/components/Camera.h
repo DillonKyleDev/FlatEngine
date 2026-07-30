@@ -57,6 +57,10 @@ namespace FlatEngine
 		float m_perspectiveAngle;
 		float m_horizontalViewAngle;
 		float m_verticalViewAngle;
+		bool b_orthographic;
+		float m_orthoSize;
+		float m_orthoHorizontalViewAngle;
+		float m_orthoVerticalViewAngle;
 
 	private:
 		bool m_b_forceZup;
@@ -70,5 +74,6 @@ namespace FlatEngine
 		long m_toFollowID;
 		float m_followSmoothing;
 		Vector3 m_velocity;
+
 	};
 }

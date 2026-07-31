@@ -18,12 +18,12 @@ namespace FlatEngine
 			SceneView::DrawLineInScene(initialPos, (initialPos + direction) * 10, "rayCast", 2);
 		}
 
-		for (std::pair<long, Body2D> bodyPair : SceneManager::loadedScene.GetAll<Body2D>())
+		for (Body2D& body : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
 		{
-			bodyPair.second.GetParentObject()->GetTagList().UpdateBits();
-			if (PhysicsManager::physics2D.CanCollide(tagList, bodyPair.second.GetParentObject()->GetTagList()))
+			body.GetParentObject()->GetTagList().UpdateBits();
+			if (PhysicsManager::physics2D.CanCollide(tagList, body.GetParentObject()->GetTagList()))
 			{
-				for (Shape* shape : bodyPair.second.GetShapes())
+				for (Shape* shape : body.GetShapes())
 				{
 					b2RayCastInput input = { 0 };
 					input.origin = Vector2::GetB2Vev2(initialPos);
@@ -34,7 +34,7 @@ namespace FlatEngine
 
 					if (output.hit)
 					{
-						hit = bodyPair.second;
+						hit = body;
 						return output;
 					}
 				}

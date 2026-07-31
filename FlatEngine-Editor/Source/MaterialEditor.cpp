@@ -218,11 +218,11 @@ namespace FlatGui
 					{
 						if (currentMaterial->AddUBOVec4(vec4Name))
 						{
-							for (std::pair<long, FL::Mesh> mesh : FL::SceneManager::loadedScene.GetAll<FL::Mesh>())
+							for (FL::Mesh& mesh : FL::SceneManager::loadedScene.GetAll<FL::Mesh>().GetAll())
 							{
-								if (mesh.second.GetMaterialName() == FL::VulkanManager::selectedMaterialName)
+								if (mesh.GetMaterialName() == FL::VulkanManager::selectedMaterialName)
 								{
-									mesh.second.SetUBOVec4(vec4Name, FL::Vector4());
+									mesh.SetUBOVec4(vec4Name, FL::Vector4());
 								}
 							}
 							vec4Name = "";

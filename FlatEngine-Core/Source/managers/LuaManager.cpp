@@ -696,11 +696,11 @@ namespace FlatEngine
 
 		void RunLuaFuncOnAllScripts(std::string functionName)
 		{
-			for (std::pair<long, Script> script : SceneManager::loadedScene.GetAll<Script>())
+			for (Script& script : SceneManager::loadedScene.GetAll<Script>().GetAll())
 			{
-				if (script.second.IsActive())
+				if (script.IsActive())
 				{
-					for (ScriptData scriptData : script.second.GetScripts())
+					for (ScriptData scriptData : script.GetScripts())
 					{
 						if (scriptData.GetCPPScript() != nullptr)
 						{
@@ -708,7 +708,7 @@ namespace FlatEngine
 						}
 						else
 						{
-							RunLuaFuncOnSingleScript(scriptData, script.second.GetParentObject(), functionName);
+							RunLuaFuncOnSingleScript(scriptData, script.GetParentObject(), functionName);
 						}
 					}
 				}
@@ -761,11 +761,11 @@ namespace FlatEngine
 		{
 			loadedSceneScriptFiles.clear();
 
-			for (std::pair<long, Script> script : SceneManager::loadedScene.GetAll<Script>())
+			for (Script& script : SceneManager::loadedScene.GetAll<Script>().GetAll())
 			{
-				if (script.second.IsActive())
+				if (script.IsActive())
 				{
-					for (ScriptData scriptData : script.second.GetScripts())
+					for (ScriptData scriptData : script.GetScripts())
 					{
 						std::string attachedScript = scriptData.name;
 						if (attachedScript.find("C++") != std::string::npos)
@@ -774,17 +774,17 @@ namespace FlatEngine
 						}
 						else
 						{
-							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.first), loadedSceneScriptFiles);
-							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.first), "Awake");
+							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), loadedSceneScriptFiles);
+							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), "Awake");
 						}
 					}
 				}
 			}
-			for (std::pair<long, Script> script : SceneManager::loadedScene.GetAll<Script>())
+			for (Script& script : SceneManager::loadedScene.GetAll<Script>().GetAll())
 			{
-				if (script.second.IsActive())
+				if (script.IsActive())
 				{
-					for (ScriptData scriptData : script.second.GetScripts())
+					for (ScriptData scriptData : script.GetScripts())
 					{
 						std::string scriptName = scriptData.name;
 						if (scriptName.find("C++") != std::string::npos)
@@ -793,8 +793,8 @@ namespace FlatEngine
 						}
 						else
 						{
-							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.first), loadedSceneScriptFiles);
-							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.first), "Start");
+							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), loadedSceneScriptFiles);
+							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), "Start");
 						}
 					}
 				}		

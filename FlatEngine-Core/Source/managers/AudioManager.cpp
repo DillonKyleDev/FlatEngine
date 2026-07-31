@@ -158,9 +158,9 @@ namespace FlatEngine
 		{
 			ProjectManager::loadedProject.SetMusicVolume(volume);
 
-			for (auto& audio : SceneManager::loadedScene.GetAll<Audio>())
+			for (auto& audio : SceneManager::loadedScene.GetAll<Audio>().GetAll())
 			{
-				for (SoundData sound : audio.second.GetSounds())
+				for (SoundData sound : audio.GetSounds())
 				{
 					sound.sound->SetMusicVolume(volume);
 				}
@@ -170,9 +170,9 @@ namespace FlatEngine
 		void SetEffectsVolume(int volume)
 		{
 			ProjectManager::loadedProject.SetEffectsVolume(volume);
-			for (auto& audio : SceneManager::loadedScene.GetAll<Audio>())
+			for (auto& audio : SceneManager::loadedScene.GetAll<Audio>().GetAll())
 			{
-				for (SoundData sound : audio.second.GetSounds())
+				for (SoundData sound : audio.GetSounds())
 				{
 					sound.sound->SetEffectVolume(volume);
 				}

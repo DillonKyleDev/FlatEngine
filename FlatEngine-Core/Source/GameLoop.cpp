@@ -60,13 +60,12 @@ namespace FlatEngine
 		// PhysicsManager::physics.Update(GetDeltaTime());
 		PhysicsManager::physics2D.Update(GetDeltaTime());
 
-		std::map<long, Body2D> bodies = SceneManager::loadedScene.GetAll<Body2D>();
-		for (std::map<long, Body2D>::iterator iterator = bodies.begin(); iterator != bodies.end(); iterator++)
+		for (Body2D& body : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
 		{
 			// Logger::log.Debug("Position: {}", iterator->second.GetPosition().y);
 			//LogInt(iterator->second.GetBoxes().size());
 			//LogVector2(iterator->second.GetPosition(), "Pos: ");
-			for (Box& box : iterator->second.GetBoxes())
+			for (Box& box : body.GetBoxes())
 			{
 
 			}
@@ -234,27 +233,25 @@ namespace FlatEngine
 		std::vector<Button> lastHovered = m_hoveredButtons;
 		ResetHoveredButtons();
 
-		std::map<long, Button>& sceneButtons = SceneManager::loadedScene.GetAll<Button>();
-
-		for (std::pair<long, Button> buttonPair : sceneButtons)
+		for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())
 		{
-			if (buttonPair.second.IsActive() && buttonPair.second.GetParentObject()->IsActive())
+			if (button.IsActive() && button.GetParentObject()->IsActive())
 			{
-				Transform* transform = buttonPair.second.GetParentObject()->Get<Transform>();
-				Vector4 activeEdges = buttonPair.second.GetActiveEdges();
+				Transform* transform = button.GetParentObject()->Get<Transform>();
+				Vector4 activeEdges = button.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
 				if (PhysicsManager::physics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
 				{
-					if (buttonPair.second.GetActiveLayer() >= GetFirstUnblockedLayer())
+					if (button.GetActiveLayer() >= GetFirstUnblockedLayer())
 					{
-						m_hoveredButtons.push_back(buttonPair.second);
-						buttonPair.second.SetMouseIsOver(true);
-						GameObject* owner = buttonPair.second.GetParentObject();
+						m_hoveredButtons.push_back(button);
+						button.SetMouseIsOver(true);
+						GameObject* owner = button.GetParentObject();
 
-						if (buttonPair.second.MouseOverSet())
+						if (button.MouseOverSet())
 						{
-							buttonPair.second.OnMouseOver();
+							button.OnMouseOver();
 						}
 
 						CallLuaButtonEventFunction(owner, LuaManager::LuaEventFunction::OnButtonMouseOver);
@@ -337,12 +334,10 @@ namespace FlatEngine
 	{
 		Canvas lowestUnblockedCanvas = Canvas(-1);
 		int lowestUnblockedLayer = 0;
-		Vector2 mousePos = ImGui::GetIO().MousePos;
-		std::map<long, Canvas> &canvases = SceneManager::loadedScene.GetAll<Canvas>();
+		Vector2 mousePos = ImGui::GetIO().MousePos;		
 
-		for (std::pair<long, Canvas> canvasPair : canvases)
+		for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())
 		{
-			Canvas canvas = canvasPair.second;
 			Vector4 activeEdges = canvas.GetActiveEdges();
 			bool b_blocksLayers = canvas.GetBlocksLayers();
 			int layerNumber = canvas.GetLayerNumber();
@@ -359,17 +354,17 @@ namespace FlatEngine
 
 	void GameLoop::ResetCharacterControllers()
 	{
-		for (std::pair<const long, CharacterController>& owner : SceneManager::loadedScene.GetAll<CharacterController>())
+		for (CharacterController& controller : SceneManager::loadedScene.GetAll<CharacterController>().GetAll())
 		{
-			owner.second.SetMoving(false);
+			controller.SetMoving(false);
 		}
 	}
 
 	void GameLoop::HandleAnimations()
 	{
-		for (std::pair<const long, Animation>& owner : SceneManager::loadedScene.GetAll<Animation>())
+		for (Animation& animation : SceneManager::loadedScene.GetAll<Animation>().GetAll())
 		{
-			owner.second.PlayAnimations(TimeElapsedInMs());
+			animation.PlayAnimations(TimeElapsedInMs());
 		}
 	}
 

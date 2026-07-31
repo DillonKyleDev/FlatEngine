@@ -1,3 +1,4 @@
+#include "Types.h"
 #include "components/Light.h"
 #include "managers/Assets.h"
 #include "managers/SceneManager.h"
@@ -8,6 +9,7 @@
 #include "render/VulkanManager.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
+#include "Types.h"
 
 #include <glm.hpp>
 
@@ -512,15 +514,14 @@ namespace FlatEngine
     {        
         VkPipeline& pipeline = graphicsPipeline.GetGraphicsPipeline();
         VkPipelineLayout& pipelineLayout = graphicsPipeline.GetPipelineLayout();
-
-        std::map<long, Light>& lights = SceneManager::loadedScene.GetAll<Light>();
+        
         PushConstants pushConstants;
         int lightCounter = 0;
 
-        for (std::map<long, Light>::iterator light = lights.begin(); light != lights.end(); light++)
+        for (Light& light : SceneManager::loadedScene.GetAll<Light>().GetAll())
         {
-            Vector3 dir = light->second.GetDirection();
-            Vector4 color = light->second.GetColor();
+            Vector3 dir = light.GetDirection();
+            Vector4 color = light.GetColor();
 
             if (lightCounter == 0)
             {

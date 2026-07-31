@@ -1,4 +1,5 @@
 #pragma once
+#include "Types.h"
 #include "components/Mesh.h"
 #include "render/Material.h"
 #include "render/RenderPass.h"
@@ -61,10 +62,10 @@ namespace FlatEngine
             std::shared_ptr<Material> GetMaterial(std::string materialName, ViewportType viewportType = ViewportType::ViewportType_SceneView);
             std::map<std::string, std::shared_ptr<Material>>& GetMaterials();
             void ReloadShaders();
-            void AddSceneViewMaterialMesh(std::string materialName, long ID, Mesh* mesh);
-            void AddGameViewMaterialMesh(std::string materialName, long ID, Mesh* mesh);
-            void RemoveSceneViewMaterialMesh(std::string materialName, long ID, Mesh* mesh);
-            void RemoveGameViewMaterialMesh(std::string materialName, long ID, Mesh* mesh);
+            void AddSceneViewMaterialMesh(std::string materialName, long objectID);
+            void AddGameViewMaterialMesh(std::string materialName, long objectID);
+            void RemoveSceneViewMaterialMesh(std::string materialName, long ID);
+            void RemoveGameViewMaterialMesh(std::string materialName, long ID);
             void ClearGroupedByMaterialMeshes();
             std::shared_ptr<Model> GetModel(std::string modelPath);
             std::shared_ptr<Model> LoadModel(std::string modelPath);
@@ -110,8 +111,8 @@ namespace FlatEngine
             std::shared_ptr<Material> m_imGuiMaterial;
             std::map<std::string, std::shared_ptr<Material>> m_sceneViewMaterials;
             std::map<std::string, std::shared_ptr<Material>> m_gameViewMaterials;
-            std::map<std::string, std::map<std::string, std::map<long, Mesh*>>> m_sceneViewMaterialMeshes;
-            std::map<std::string, std::map<std::string, std::map<long, Mesh*>>> m_gameViewMaterialMeshes;
+            std::map<std::string, UMapVector<long>> m_sceneViewMaterialMeshes;
+            std::map<std::string, UMapVector<long>> m_gameViewMaterialMeshes;
             std::map<std::string, std::shared_ptr<Model>> m_models;
             Texture m_sceneViewTexture;
             Texture m_gameViewTexture;      

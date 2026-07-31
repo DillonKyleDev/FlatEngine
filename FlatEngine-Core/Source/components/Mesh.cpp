@@ -209,8 +209,8 @@ namespace FlatEngine
 
 		if (b_addMaterialMesh)
 		{
-			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetID(), this);
-			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetID(), this);
+			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
+			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
 		}
 	}
 
@@ -226,13 +226,13 @@ namespace FlatEngine
 
 		if (m_materialName != "")
 		{			
-			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(m_materialName, GetID(), this);
-			VulkanManager::vulkan.RemoveGameViewMaterialMesh(m_materialName, GetID(), this);
+			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(m_materialName, GetParentObjectID());
+			VulkanManager::vulkan.RemoveGameViewMaterialMesh(m_materialName, GetParentObjectID());
 		}
 		m_materialName = materialName;
 
-		VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetID(), this);
-		VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetID(), this);
+		VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
+		VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
 
 		if (m_sceneViewMaterial != nullptr)
 		{

@@ -1,5 +1,8 @@
+#include "Types.h"
 #include "components/Animation.h"
+#include "components/Body.h"
 #include "components/Component.h"
+#include "components/JointMaker.h"
 #include "components/Script.h"
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
@@ -12,32 +15,10 @@ namespace FlatEngine
 	Scene::Scene()
 	{
 		name = "New Scene";
-		path = "";				 
-		m_sceneObjects = std::vector<GameObject>();		
-		m_IDToIndex = std::unordered_map<long, size_t>();
-		m_animatorPreviewObjects = std::vector<GameObject*>();			
+		path = "";				 		
 		m_nextGameObjectID = 0;
 		m_nextComponentID = 0;
-		m_freedComponentIDs = std::vector<long>();
-		m_freedGameObjectIDs = std::vector<long>();
 		m_primaryCamera = nullptr;
-
-		m_Transforms = std::map<long, Transform>();
-		m_Sprites = std::map<long, Sprite>();
-		m_Cameras = std::map<long, Camera>();
-		m_Scripts = std::map<long, Script>();
-		m_LuaScriptsByOwner = std::map<long, std::vector<std::string>>();
-		m_Buttons = std::map<long, Button>();
-		m_Canvases = std::map<long, Canvas>();
-		m_Animations = std::map<long, Animation>();
-		m_Audios = std::map<long, Audio>();
-		m_Texts = std::map<long, Text>();		
-		m_Bodies = std::map<long, Body>();
-		m_Bodies2D = std::map<long, Body2D>();
-		m_CharacterControllers = std::map<long, CharacterController>();		
-		m_TileMaps = std::map<long, TileMap>();
-		m_Meshes = std::map<long, Mesh>();
-		m_MeshesByMaterial = std::map<std::string, std::vector<Mesh>>();
 	}
 	
 	bool Scene::SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB)
@@ -47,32 +28,31 @@ namespace FlatEngine
 
 	void Scene::Unload()
 	{
-		m_sceneObjects.clear();
+		m_sceneObjects.Clear();
 
-		m_Transforms.clear();
-		m_Sprites.clear();
-		m_Cameras.clear();
-		m_Scripts.clear();
-		m_LuaScriptsByOwner.clear();
-		m_Buttons.clear();
-		m_Canvases.clear();
-		m_Animations.clear();
-		m_Audios.clear();
-		m_Texts.clear();
-		m_CharacterControllers.clear();		
-		m_TileMaps.clear();
+		m_Transforms.Clear();
+		m_Sprites.Clear();
+		m_Cameras.Clear();
+		m_Scripts.Clear();		
+		m_Buttons.Clear();
+		m_Canvases.Clear();
+		m_Animations.Clear();
+		m_Audios.Clear();
+		m_Texts.Clear();
+		m_CharacterControllers.Clear();		
+		m_TileMaps.Clear();
 
-		for (std::map<long, Body2D>::iterator iterator = m_Bodies2D.begin(); iterator != m_Bodies2D.end(); iterator++)
+		for (Body2D& body : m_Bodies2D.GetAll())
 		{
-			iterator->second.Cleanup();
+			body.Cleanup();
 		}
-		m_Bodies2D.clear();
+		m_Bodies2D.Clear();
 
-		for (std::map<long, JointMaker>::iterator iterator = m_JointMakers.begin(); iterator != m_JointMakers.end(); iterator++)
+		for (JointMaker& jointMaker : m_JointMakers.GetAll())
 		{
-			iterator->second.Cleanup();
+			jointMaker.Cleanup();
 		}
-		m_JointMakers.clear();
+		m_JointMakers.Clear();
 	}
 
 	GameObject* Scene::AddSceneObject(GameObject sceneObject)
@@ -81,12 +61,6 @@ namespace FlatEngine
 
 		if (ID == -1)
 			ID = GetNextGameObjectID();
-		
-		if (m_IDToIndex.count(ID))
-		{
-			Logger::log.Err("GameObject not created, ID taken already: {}", std::to_string(ID));
-			return nullptr;
-		}
 
 		sceneObject.SetID(ID);
 
@@ -98,15 +72,12 @@ namespace FlatEngine
 			GetObjectByID(parentID)->AddChild(ID);
 		}	
 
-		sceneObject.SetHierarchyPosition((int)m_sceneObjects.size());		    
-
-		m_IDToIndex[ID] = m_sceneObjects.size();
-		m_sceneObjects.push_back(std::move(sceneObject));
+		sceneObject.SetHierarchyPosition((int)m_sceneObjects.GetAll().size());		    
 
 		KeepNextGameObjectIDUpToDate(ID);
 		SortSceneObjects();
 
-		return &m_sceneObjects.back();
+		return m_sceneObjects.Add(ID, sceneObject);
 	}
 
 	void Scene::KeepNextGameObjectIDUpToDate(long ID)
@@ -119,7 +90,7 @@ namespace FlatEngine
 
 	std::vector<GameObject> &Scene::GetSceneObjects()
 	{
-		return m_sceneObjects;
+		return m_sceneObjects.GetAll();
 	}
 
 	void Scene::SetAnimatorPreviewObjects(std::vector<GameObject*> previewObjects)
@@ -134,19 +105,12 @@ namespace FlatEngine
 
 	GameObject* Scene::GetObjectByID(long ID)
 	{
-		auto iter = m_IDToIndex.find(ID);
-
-		if (iter == m_IDToIndex.end())
-		{
-			return nullptr;
-		}
-
-		return &m_sceneObjects[iter->second];
+		return m_sceneObjects.Get(ID);
 	}
 
 	GameObject* Scene::GetObjectByName(std::string name)
 	{
-		for (GameObject& gameObject : m_sceneObjects)
+		for (GameObject& gameObject : m_sceneObjects.GetAll())
 		{
 			if (name == gameObject.GetName())
 			{
@@ -159,7 +123,7 @@ namespace FlatEngine
 
 	GameObject* Scene::GetObjectByTag(std::string tag)
 	{
-		for (GameObject& gameObject : m_sceneObjects)
+		for (GameObject& gameObject : m_sceneObjects.GetAll())
 		{
 			if (gameObject.GetTagList().HasTag(tag))
 			{
@@ -181,12 +145,6 @@ namespace FlatEngine
 	{
 		if (myID == -1)
 			myID = GetNextGameObjectID();
-		
-		if (m_IDToIndex.count(myID))
-		{
-			Logger::log.Err("GameObject not created, ID taken already: {}", std::to_string(myID));
-			return nullptr;
-		}
 
 		GameObject newObject = GameObject(parentID, myID);
 		long ID = newObject.GetID();
@@ -220,24 +178,7 @@ namespace FlatEngine
 
 	void Scene::RemoveSceneObject(long ID)
 	{
-		auto it = m_IDToIndex.find(ID);
-		if (it == m_IDToIndex.end()) return;
-
-		size_t index     = it->second;
-		size_t lastIndex = m_sceneObjects.size() - 1;
-
-		if (index != lastIndex)
-		{
-			// Swap target with last element
-			std::swap(m_sceneObjects[index], m_sceneObjects[lastIndex]);
-			// Update the moved element's index entry
-			long movedID = m_sceneObjects[index].GetID();
-			m_IDToIndex[movedID] = index;
-		}
-
-		// Remove the last element (our target is now there)
-		m_sceneObjects.pop_back();
-		m_IDToIndex.erase(it);
+		m_sceneObjects.Remove(ID);
 	}
 
 	// Recursive
@@ -346,7 +287,7 @@ namespace FlatEngine
 	{
 		m_sortedHierarchyObjects.clear();
 
-		for (GameObject& gameObject : m_sceneObjects)
+		for (GameObject& gameObject : m_sceneObjects.GetAll())
 		{
 			m_sortedHierarchyObjects.push_back(&(gameObject));
 		}
@@ -361,9 +302,9 @@ namespace FlatEngine
 
 	void Scene::CreateJoints()
 	{
-		for (std::map<long, JointMaker>::iterator iter = m_JointMakers.begin(); iter != m_JointMakers.end(); iter++)
+		for (JointMaker& jointMaker : m_JointMakers.GetAll())
 		{
-			for (Joint* joint : iter->second.GetJoints())
+			for (Joint* joint : jointMaker.GetJoints())
 			{
 				if (joint->HasValidBodies())
 				{
@@ -381,27 +322,23 @@ namespace FlatEngine
 		}
 	}
 
-	template<> std::map<long, Animation>&           Scene::GetContainer<Animation>()  		   { return m_Animations; }
-	template<> std::map<long, Audio>&      			Scene::GetContainer<Audio>()      		   { return m_Audios; }
-	template<> std::map<long, Body>&       			Scene::GetContainer<Body>()       		   { return m_Bodies; }
-	template<> std::map<long, Body2D>&       		Scene::GetContainer<Body2D>()       	   { return m_Bodies2D; }
-	template<> std::map<long, Button>&     			Scene::GetContainer<Button>() 	 		   { return m_Buttons; }
-	template<> std::map<long, Camera>&     			Scene::GetContainer<Camera>() 			   { return m_Cameras; }
-	template<> std::map<long, Canvas>&     			Scene::GetContainer<Canvas>() 	 		   { return m_Canvases; }
-	template<> std::map<long, CharacterController>& Scene::GetContainer<CharacterController>() { return m_CharacterControllers; }
-	template<> std::map<long, JointMaker>& 			Scene::GetContainer<JointMaker>()		   { return m_JointMakers; }
-	template<> std::map<long, Light>&      			Scene::GetContainer<Light>()      		   { return m_Lights; }
-	template<> std::map<long, Mesh>&       			Scene::GetContainer<Mesh>() 			   { return m_Meshes; }
-	template<> std::map<long, Script>&     			Scene::GetContainer<Script>()    		   { return m_Scripts; }
-	template<> std::map<long, Sprite>&     			Scene::GetContainer<Sprite>()    		   { return m_Sprites; }
-	template<> std::map<long, Text>&       			Scene::GetContainer<Text>() 			   { return m_Texts; }
-	template<> std::map<long, TileMap>&    			Scene::GetContainer<TileMap>() 	 		   { return m_TileMaps; }
-	template<> std::map<long, Transform>&  			Scene::GetContainer<Transform>()  		   { return m_Transforms; }
+	template<> UMapVector<Animation>&           Scene::GetContainer<Animation>()  		   { return m_Animations; }
+	template<> UMapVector<Audio>&      			Scene::GetContainer<Audio>()      		   { return m_Audios; }
+	template<> UMapVector<Body>&       			Scene::GetContainer<Body>()       		   { return m_Bodies; }
+	template<> UMapVector<Body2D>&       		Scene::GetContainer<Body2D>()       	   { return m_Bodies2D; }
+	template<> UMapVector<Button>&     			Scene::GetContainer<Button>() 	 		   { return m_Buttons; }
+	template<> UMapVector<Camera>&     			Scene::GetContainer<Camera>() 			   { return m_Cameras; }
+	template<> UMapVector<Canvas>&     			Scene::GetContainer<Canvas>() 	 		   { return m_Canvases; }
+	template<> UMapVector<CharacterController>& Scene::GetContainer<CharacterController>() { return m_CharacterControllers; }
+	template<> UMapVector<JointMaker>& 			Scene::GetContainer<JointMaker>()		   { return m_JointMakers; }
+	template<> UMapVector<Light>&      			Scene::GetContainer<Light>()      		   { return m_Lights; }
+	template<> UMapVector<Mesh>&       			Scene::GetContainer<Mesh>() 			   { return m_Meshes; }
+	template<> UMapVector<Script>&     			Scene::GetContainer<Script>()    		   { return m_Scripts; }
+	template<> UMapVector<Sprite>&     			Scene::GetContainer<Sprite>()    		   { return m_Sprites; }
+	template<> UMapVector<Text>&       			Scene::GetContainer<Text>() 			   { return m_Texts; }
+	template<> UMapVector<TileMap>&    			Scene::GetContainer<TileMap>() 	 		   { return m_TileMaps; }
+	template<> UMapVector<Transform>&  			Scene::GetContainer<Transform>()  		   { return m_Transforms; }
 
-	std::map<long, std::vector<std::string>> &Scene::GetLuaScriptsByOwner()
-	{
-		return m_LuaScriptsByOwner;
-	}
 	std::map<std::string, std::vector<Mesh>>& Scene::GetMeshesByMaterial()
 	{
 		return m_MeshesByMaterial;
@@ -433,32 +370,29 @@ namespace FlatEngine
 
 	template<> void Scene::Remove<Camera>(long ownerID)
 	{
-		if (m_Cameras.count(ownerID))
+		if (m_Cameras.Get(ownerID) && m_Cameras.Get(ownerID)->IsPrimary())
 		{
-			if (m_Cameras.at(ownerID).IsPrimary())
-			{
-				RemovePrimaryCamera();
-			}
-			m_Cameras.erase(ownerID);			
+			RemovePrimaryCamera();
+			m_Cameras.Remove(ownerID);			
 		}
 	}
 	template<> void Scene::Remove<Body2D>(long ownerID)
 	{
-		if (m_Bodies2D.count(ownerID))
+		if (m_Bodies2D.Get(ownerID))
 		{
-			m_Bodies2D.at(ownerID).Cleanup();
-			m_Bodies2D.erase(ownerID);			
+			m_Bodies2D.Get(ownerID)->Cleanup();
+			m_Bodies2D.Remove(ownerID);			
 		}
 	}
 	template<> void Scene::Remove<Mesh>(long ownerID)
 	{
-		if (m_Meshes.count(ownerID))
+		if (m_Meshes.Get(ownerID))
 		{
-			std::string materialName = m_Meshes.at(ownerID).GetMaterialName();
-			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(materialName, m_Meshes.at(ownerID).GetID(), &m_Meshes.at(ownerID));
-			VulkanManager::vulkan.RemoveGameViewMaterialMesh(materialName, m_Meshes.at(ownerID).GetID(), &m_Meshes.at(ownerID));
-			m_Meshes.at(ownerID).Cleanup();
-			m_Meshes.erase(ownerID);
+			std::string materialName = m_Meshes.Get(ownerID)->GetMaterialName();
+			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(materialName, ownerID);
+			VulkanManager::vulkan.RemoveGameViewMaterialMesh(materialName, ownerID);
+			m_Meshes.Get(ownerID)->Cleanup();
+			m_Meshes.Remove(ownerID);
 		}
 	}
 

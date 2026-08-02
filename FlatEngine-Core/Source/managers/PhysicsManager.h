@@ -72,7 +72,8 @@ namespace FlatEngine
 			void Init();
 			void Shutdown();
 			void Update(float deltaTime);
-			void HandleCollisions();
+
+			void DrawDebugShapes();
 
 			void CreateBody(FL::Body2D* parentBody);
 			void DestroyBody(b2BodyId bodyID);
@@ -88,6 +89,8 @@ namespace FlatEngine
 			void RecreateJoint();
 
 		private:
+			void HandleCollisions();
+
 			b2WorldId m_worldID;
 		};
 

@@ -48,9 +48,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Allocator.o",
       "Source/render/Allocator.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/Allocator.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Allocator.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/Allocator.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Allocator.o"
   },
   {
     "arguments": [
@@ -101,9 +101,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Animation.o",
       "Source/components/Animation.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Animation.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Animation.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Animation.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Animation.o"
   },
   {
     "arguments": [
@@ -154,9 +154,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/AnimationManager.o",
       "Source/managers/AnimationManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/AnimationManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/AnimationManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/AnimationManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/AnimationManager.o"
   },
   {
     "arguments": [
@@ -207,9 +207,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Application.o",
       "Source/Application.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/Application.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Application.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/Application.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Application.o"
   },
   {
     "arguments": [
@@ -260,9 +260,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Assets.o",
       "Source/managers/Assets.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/Assets.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Assets.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/Assets.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Assets.o"
   },
   {
     "arguments": [
@@ -313,9 +313,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Audio.o",
       "Source/components/Audio.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Audio.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Audio.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Audio.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Audio.o"
   },
   {
     "arguments": [
@@ -366,9 +366,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/AudioManager.o",
       "Source/managers/AudioManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/AudioManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/AudioManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/AudioManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/AudioManager.o"
   },
   {
     "arguments": [
@@ -419,9 +419,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Body.o",
       "Source/components/Body.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Body.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Body.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Body.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Body.o"
   },
   {
     "arguments": [
@@ -472,9 +472,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Body2D.o",
       "Source/components/Body2D.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Body2D.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Body2D.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Body2D.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Body2D.o"
   },
   {
     "arguments": [
@@ -525,9 +525,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Box.o",
       "Source/shapes/Box.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Box.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Box.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Box.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Box.o"
   },
   {
     "arguments": [
@@ -578,9 +578,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Button.o",
       "Source/components/Button.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Button.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Button.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Button.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Button.o"
   },
   {
     "arguments": [
@@ -631,9 +631,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScript.o",
       "Source/scripting/CPPScript.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/scripting/CPPScript.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScript.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/scripting/CPPScript.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScript.o"
   },
   {
     "arguments": [
@@ -684,9 +684,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScriptMethods.o",
       "Source/scripting/CPPScriptMethods.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/scripting/CPPScriptMethods.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScriptMethods.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/scripting/CPPScriptMethods.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScriptMethods.o"
   },
   {
     "arguments": [
@@ -737,9 +737,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScriptsHookup.o",
       "Source/scripting/CPPScriptsHookup.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/scripting/CPPScriptsHookup.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScriptsHookup.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/scripting/CPPScriptsHookup.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CPPScriptsHookup.o"
   },
   {
     "arguments": [
@@ -790,9 +790,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Camera.o",
       "Source/components/Camera.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Camera.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Camera.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Camera.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Camera.o"
   },
   {
     "arguments": [
@@ -843,9 +843,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Canvas.o",
       "Source/components/Canvas.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Canvas.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Canvas.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Canvas.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Canvas.o"
   },
   {
     "arguments": [
@@ -896,9 +896,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Capsule.o",
       "Source/shapes/Capsule.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Capsule.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Capsule.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Capsule.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Capsule.o"
   },
   {
     "arguments": [
@@ -949,9 +949,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Chain.o",
       "Source/shapes/Chain.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Chain.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Chain.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Chain.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Chain.o"
   },
   {
     "arguments": [
@@ -1002,9 +1002,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CharacterController.o",
       "Source/components/CharacterController.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/CharacterController.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CharacterController.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/CharacterController.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/CharacterController.o"
   },
   {
     "arguments": [
@@ -1055,9 +1055,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Circle.o",
       "Source/shapes/Circle.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Circle.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Circle.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Circle.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Circle.o"
   },
   {
     "arguments": [
@@ -1108,9 +1108,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Component.o",
       "Source/components/Component.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Component.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Component.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Component.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Component.o"
   },
   {
     "arguments": [
@@ -1161,9 +1161,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Controls.o",
       "Source/managers/Controls.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/Controls.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Controls.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/Controls.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Controls.o"
   },
   {
     "arguments": [
@@ -1214,9 +1214,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/DeviceManager.o",
       "Source/render/DeviceManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/DeviceManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/DeviceManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/DeviceManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/DeviceManager.o"
   },
   {
     "arguments": [
@@ -1267,9 +1267,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/DistanceJoint.o",
       "Source/joints/DistanceJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/DistanceJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/DistanceJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/DistanceJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/DistanceJoint.o"
   },
   {
     "arguments": [
@@ -1320,9 +1320,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Easing.o",
       "Source/tools/Easing.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Easing.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Easing.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Easing.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Easing.o"
   },
   {
     "arguments": [
@@ -1373,9 +1373,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/EntryPoint.o",
       "Source/EntryPoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/EntryPoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/EntryPoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/EntryPoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/EntryPoint.o"
   },
   {
     "arguments": [
@@ -1426,9 +1426,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/FileHelper.o",
       "Source/tools/FileHelper.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/FileHelper.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/FileHelper.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/FileHelper.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/FileHelper.o"
   },
   {
     "arguments": [
@@ -1479,9 +1479,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/FlatEngine.o",
       "Source/FlatEngine.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/FlatEngine.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/FlatEngine.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/FlatEngine.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/FlatEngine.o"
   },
   {
     "arguments": [
@@ -1532,9 +1532,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameLoop.o",
       "Source/GameLoop.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/GameLoop.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameLoop.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/GameLoop.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameLoop.o"
   },
   {
     "arguments": [
@@ -1585,9 +1585,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameObject.o",
       "Source/GameObject.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/GameObject.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameObject.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/GameObject.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameObject.o"
   },
   {
     "arguments": [
@@ -1638,9 +1638,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameView.o",
       "Source/render/GameView.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/GameView.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameView.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/GameView.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GameView.o"
   },
   {
     "arguments": [
@@ -1691,9 +1691,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GraphicsPipeline.o",
       "Source/render/GraphicsPipeline.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/GraphicsPipeline.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GraphicsPipeline.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/GraphicsPipeline.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GraphicsPipeline.o"
   },
   {
     "arguments": [
@@ -1744,9 +1744,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GuiCore.o",
       "Source/GuiCore.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/GuiCore.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GuiCore.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/GuiCore.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/GuiCore.o"
   },
   {
     "arguments": [
@@ -1797,9 +1797,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Helper.o",
       "Source/render/Helper.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/Helper.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Helper.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/Helper.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Helper.o"
   },
   {
     "arguments": [
@@ -1850,9 +1850,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ImGuiManager.o",
       "Source/render/ImGuiManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/ImGuiManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ImGuiManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/ImGuiManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ImGuiManager.o"
   },
   {
     "arguments": [
@@ -1903,9 +1903,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Joint.o",
       "Source/joints/Joint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/Joint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Joint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/Joint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Joint.o"
   },
   {
     "arguments": [
@@ -1956,9 +1956,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/JointMaker.o",
       "Source/components/JointMaker.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/JointMaker.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/JointMaker.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/JointMaker.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/JointMaker.o"
   },
   {
     "arguments": [
@@ -2009,9 +2009,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/JsonHelper.o",
       "Source/tools/JsonHelper.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/JsonHelper.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/JsonHelper.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/JsonHelper.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/JsonHelper.o"
   },
   {
     "arguments": [
@@ -2062,9 +2062,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Light.o",
       "Source/components/Light.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Light.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Light.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Light.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Light.o"
   },
   {
     "arguments": [
@@ -2115,9 +2115,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Line.o",
       "Source/shapes/Line.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Line.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Line.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Line.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Line.o"
   },
   {
     "arguments": [
@@ -2168,9 +2168,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Logger.o",
       "Source/tools/Logger.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Logger.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Logger.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Logger.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Logger.o"
   },
   {
     "arguments": [
@@ -2221,9 +2221,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/LuaManager.o",
       "Source/managers/LuaManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/LuaManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/LuaManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/LuaManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/LuaManager.o"
   },
   {
     "arguments": [
@@ -2274,9 +2274,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Material.o",
       "Source/render/Material.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/Material.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Material.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/Material.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Material.o"
   },
   {
     "arguments": [
@@ -2327,9 +2327,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Matrix.o",
       "Source/tools/Matrix.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Matrix.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Matrix.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Matrix.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Matrix.o"
   },
   {
     "arguments": [
@@ -2380,9 +2380,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Mesh.o",
       "Source/components/Mesh.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Mesh.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Mesh.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Mesh.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Mesh.o"
   },
   {
     "arguments": [
@@ -2433,9 +2433,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Model.o",
       "Source/render/Model.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/Model.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Model.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/Model.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Model.o"
   },
   {
     "arguments": [
@@ -2486,9 +2486,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/MotorJoint.o",
       "Source/joints/MotorJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/MotorJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/MotorJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/MotorJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/MotorJoint.o"
   },
   {
     "arguments": [
@@ -2539,9 +2539,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/MouseJoint.o",
       "Source/joints/MouseJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/MouseJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/MouseJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/MouseJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/MouseJoint.o"
   },
   {
     "arguments": [
@@ -2592,9 +2592,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Numbers.o",
       "Source/tools/Numbers.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Numbers.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Numbers.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Numbers.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Numbers.o"
   },
   {
     "arguments": [
@@ -2645,9 +2645,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PhysicsManager.o",
       "Source/managers/PhysicsManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/PhysicsManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PhysicsManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/PhysicsManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PhysicsManager.o"
   },
   {
     "arguments": [
@@ -2698,9 +2698,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PipelineManager.o",
       "Source/render/PipelineManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/PipelineManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PipelineManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/PipelineManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PipelineManager.o"
   },
   {
     "arguments": [
@@ -2751,9 +2751,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Polygon.o",
       "Source/shapes/Polygon.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Polygon.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Polygon.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Polygon.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Polygon.o"
   },
   {
     "arguments": [
@@ -2804,9 +2804,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PrefabManager.o",
       "Source/managers/PrefabManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/PrefabManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PrefabManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/PrefabManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PrefabManager.o"
   },
   {
     "arguments": [
@@ -2857,9 +2857,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PrismaticJoint.o",
       "Source/joints/PrismaticJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/PrismaticJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PrismaticJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/PrismaticJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/PrismaticJoint.o"
   },
   {
     "arguments": [
@@ -2910,9 +2910,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Profiler.o",
       "Source/tools/Profiler.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Profiler.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Profiler.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Profiler.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Profiler.o"
   },
   {
     "arguments": [
@@ -2963,9 +2963,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ProjectManager.o",
       "Source/managers/ProjectManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/ProjectManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ProjectManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/ProjectManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ProjectManager.o"
   },
   {
     "arguments": [
@@ -3016,9 +3016,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RenderPass.o",
       "Source/render/RenderPass.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/RenderPass.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RenderPass.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/RenderPass.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RenderPass.o"
   },
   {
     "arguments": [
@@ -3069,9 +3069,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RenderWindow.o",
       "Source/render/RenderWindow.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/RenderWindow.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RenderWindow.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/RenderWindow.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RenderWindow.o"
   },
   {
     "arguments": [
@@ -3122,9 +3122,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RevoluteJoint.o",
       "Source/joints/RevoluteJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/RevoluteJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RevoluteJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/RevoluteJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/RevoluteJoint.o"
   },
   {
     "arguments": [
@@ -3175,9 +3175,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Scene.o",
       "Source/managers/Scene.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/Scene.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Scene.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/Scene.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Scene.o"
   },
   {
     "arguments": [
@@ -3228,9 +3228,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/SceneManager.o",
       "Source/managers/SceneManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/SceneManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/SceneManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/SceneManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/SceneManager.o"
   },
   {
     "arguments": [
@@ -3281,9 +3281,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/SceneView.o",
       "Source/render/SceneView.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/SceneView.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/SceneView.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/SceneView.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/SceneView.o"
   },
   {
     "arguments": [
@@ -3334,9 +3334,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Script.o",
       "Source/components/Script.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Script.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Script.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Script.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Script.o"
   },
   {
     "arguments": [
@@ -3387,9 +3387,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Settings.o",
       "Source/managers/Settings.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/Settings.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Settings.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/Settings.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Settings.o"
   },
   {
     "arguments": [
@@ -3440,9 +3440,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Shape.o",
       "Source/shapes/Shape.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/shapes/Shape.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Shape.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/shapes/Shape.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Shape.o"
   },
   {
     "arguments": [
@@ -3493,9 +3493,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Sprite.o",
       "Source/components/Sprite.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Sprite.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Sprite.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Sprite.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Sprite.o"
   },
   {
     "arguments": [
@@ -3546,9 +3546,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TagList.o",
       "Source/TagList.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/TagList.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TagList.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/TagList.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TagList.o"
   },
   {
     "arguments": [
@@ -3599,9 +3599,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Text.o",
       "Source/components/Text.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Text.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Text.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Text.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Text.o"
   },
   {
     "arguments": [
@@ -3652,9 +3652,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Texture.o",
       "Source/render/Texture.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/Texture.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Texture.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/Texture.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Texture.o"
   },
   {
     "arguments": [
@@ -3705,9 +3705,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ThreadPool.o",
       "Source/tools/ThreadPool.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/ThreadPool.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ThreadPool.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/ThreadPool.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ThreadPool.o"
   },
   {
     "arguments": [
@@ -3758,9 +3758,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TileMap.o",
       "Source/components/TileMap.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/TileMap.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TileMap.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/TileMap.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TileMap.o"
   },
   {
     "arguments": [
@@ -3811,9 +3811,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TileSetManager.o",
       "Source/managers/TileSetManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/managers/TileSetManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TileSetManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/managers/TileSetManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/TileSetManager.o"
   },
   {
     "arguments": [
@@ -3864,9 +3864,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Time.o",
       "Source/tools/Time.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Time.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Time.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Time.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Time.o"
   },
   {
     "arguments": [
@@ -3917,9 +3917,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Transform.o",
       "Source/components/Transform.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/components/Transform.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Transform.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/components/Transform.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Transform.o"
   },
   {
     "arguments": [
@@ -3970,9 +3970,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ValidationLayers.o",
       "Source/render/ValidationLayers.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/ValidationLayers.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ValidationLayers.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/ValidationLayers.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ValidationLayers.o"
   },
   {
     "arguments": [
@@ -4023,9 +4023,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector2.o",
       "Source/tools/Vector2.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Vector2.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector2.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Vector2.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector2.o"
   },
   {
     "arguments": [
@@ -4076,9 +4076,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector3.o",
       "Source/tools/Vector3.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Vector3.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector3.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Vector3.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector3.o"
   },
   {
     "arguments": [
@@ -4129,9 +4129,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector4.o",
       "Source/tools/Vector4.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/tools/Vector4.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector4.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/tools/Vector4.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/Vector4.o"
   },
   {
     "arguments": [
@@ -4182,9 +4182,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ViewportManager.o",
       "Source/render/ViewportManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/ViewportManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ViewportManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/ViewportManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/ViewportManager.o"
   },
   {
     "arguments": [
@@ -4235,9 +4235,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/VulkanManager.o",
       "Source/render/VulkanManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/render/VulkanManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/VulkanManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/render/VulkanManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/VulkanManager.o"
   },
   {
     "arguments": [
@@ -4288,9 +4288,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/WeldJoint.o",
       "Source/joints/WeldJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/WeldJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/WeldJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/WeldJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/WeldJoint.o"
   },
   {
     "arguments": [
@@ -4341,9 +4341,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/WheelJoint.o",
       "Source/joints/WheelJoint.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core/Source/joints/WheelJoint.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/WheelJoint.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core/Source/joints/WheelJoint.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/WheelJoint.o"
   },
   {
     "arguments": [
@@ -4394,9 +4394,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/binary_to_compressed_c.o",
       "../Vendor/includes/ImGui/ImGui_Docking/misc/fonts/binary_to_compressed_c.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/misc/fonts/binary_to_compressed_c.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/binary_to_compressed_c.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/misc/fonts/binary_to_compressed_c.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/binary_to_compressed_c.o"
   },
   {
     "arguments": [
@@ -4447,9 +4447,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui.o",
       "../Vendor/includes/ImGui/ImGui_Docking/imgui.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui.o"
   },
   {
     "arguments": [
@@ -4500,9 +4500,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_demo.o",
       "../Vendor/includes/ImGui/ImGui_Docking/imgui_demo.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_demo.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_demo.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_demo.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_demo.o"
   },
   {
     "arguments": [
@@ -4553,9 +4553,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_draw.o",
       "../Vendor/includes/ImGui/ImGui_Docking/imgui_draw.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_draw.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_draw.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_draw.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_draw.o"
   },
   {
     "arguments": [
@@ -4606,9 +4606,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_sdl2.o",
       "../Vendor/includes/ImGui/Backends/imgui_impl_sdl2.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/Backends/imgui_impl_sdl2.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_sdl2.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/Backends/imgui_impl_sdl2.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_sdl2.o"
   },
   {
     "arguments": [
@@ -4659,9 +4659,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_sdlrenderer2.o",
       "../Vendor/includes/ImGui/Backends/imgui_impl_sdlrenderer2.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/Backends/imgui_impl_sdlrenderer2.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_sdlrenderer2.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/Backends/imgui_impl_sdlrenderer2.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_sdlrenderer2.o"
   },
   {
     "arguments": [
@@ -4712,9 +4712,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_vulkan.o",
       "../Vendor/includes/ImGui/Backends/imgui_impl_vulkan.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/Backends/imgui_impl_vulkan.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_vulkan.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/Backends/imgui_impl_vulkan.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_impl_vulkan.o"
   },
   {
     "arguments": [
@@ -4765,9 +4765,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_stdlib.o",
       "../Vendor/includes/ImGui/ImGui_Docking/misc/cpp/imgui_stdlib.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/misc/cpp/imgui_stdlib.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_stdlib.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/misc/cpp/imgui_stdlib.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_stdlib.o"
   },
   {
     "arguments": [
@@ -4818,9 +4818,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_tables.o",
       "../Vendor/includes/ImGui/ImGui_Docking/imgui_tables.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_tables.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_tables.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_tables.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_tables.o"
   },
   {
     "arguments": [
@@ -4871,9 +4871,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_widgets.o",
       "../Vendor/includes/ImGui/ImGui_Docking/imgui_widgets.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Core",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_widgets.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_widgets.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Core",
+    "file": "/home/dillon/Downloads/FlatEngine/Vendor/includes/ImGui/ImGui_Docking/imgui_widgets.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Core/imgui_widgets.o"
   },
   {
     "arguments": [
@@ -4906,9 +4906,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Animator.o",
       "Source/Animator.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/Animator.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Animator.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/Animator.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Animator.o"
   },
   {
     "arguments": [
@@ -4941,9 +4941,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FileManager.o",
       "Source/FileManager.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/FileManager.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FileManager.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/FileManager.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FileManager.o"
   },
   {
     "arguments": [
@@ -4976,9 +4976,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FlatEngine-Editor.o",
       "Source/FlatEngine-Editor.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/FlatEngine-Editor.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FlatEngine-Editor.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/FlatEngine-Editor.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FlatEngine-Editor.o"
   },
   {
     "arguments": [
@@ -5011,9 +5011,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FlatGui.o",
       "Source/FlatGui.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/FlatGui.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FlatGui.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/FlatGui.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/FlatGui.o"
   },
   {
     "arguments": [
@@ -5046,9 +5046,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Hierarchy.o",
       "Source/Hierarchy.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/Hierarchy.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Hierarchy.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/Hierarchy.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Hierarchy.o"
   },
   {
     "arguments": [
@@ -5081,9 +5081,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Inspector.o",
       "Source/Inspector.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/Inspector.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Inspector.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/Inspector.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Inspector.o"
   },
   {
     "arguments": [
@@ -5116,9 +5116,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Log.o",
       "Source/Log.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/Log.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Log.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/Log.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Log.o"
   },
   {
     "arguments": [
@@ -5151,9 +5151,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MainMenu.o",
       "Source/MainMenu.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/MainMenu.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MainMenu.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/MainMenu.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MainMenu.o"
   },
   {
     "arguments": [
@@ -5186,9 +5186,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MappingContextEditor.o",
       "Source/MappingContextEditor.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/MappingContextEditor.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MappingContextEditor.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/MappingContextEditor.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MappingContextEditor.o"
   },
   {
     "arguments": [
@@ -5221,9 +5221,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MaterialEditor.o",
       "Source/MaterialEditor.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/MaterialEditor.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MaterialEditor.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/MaterialEditor.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/MaterialEditor.o"
   },
   {
     "arguments": [
@@ -5256,9 +5256,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Modals.o",
       "Source/Modals.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/Modals.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Modals.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/Modals.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Modals.o"
   },
   {
     "arguments": [
@@ -5291,9 +5291,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/PersistantScript.o",
       "Source/PersistantScript.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/PersistantScript.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/PersistantScript.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/PersistantScript.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/PersistantScript.o"
   },
   {
     "arguments": [
@@ -5326,9 +5326,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/ProfilerGui.o",
       "Source/ProfilerGui.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/ProfilerGui.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/ProfilerGui.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/ProfilerGui.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/ProfilerGui.o"
   },
   {
     "arguments": [
@@ -5361,9 +5361,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/ProjectHub.o",
       "Source/ProjectHub.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/ProjectHub.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/ProjectHub.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/ProjectHub.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/ProjectHub.o"
   },
   {
     "arguments": [
@@ -5396,9 +5396,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/SettingsGui.o",
       "Source/SettingsGui.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/SettingsGui.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/SettingsGui.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/SettingsGui.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/SettingsGui.o"
   },
   {
     "arguments": [
@@ -5431,9 +5431,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/TileSetEditor.o",
       "Source/TileSetEditor.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/TileSetEditor.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/TileSetEditor.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/TileSetEditor.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/TileSetEditor.o"
   },
   {
     "arguments": [
@@ -5466,9 +5466,9 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Toolbar.o",
       "Source/Toolbar.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Editor/Source/Toolbar.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Toolbar.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Editor/Source/Toolbar.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor/Toolbar.o"
   },
   {
     "arguments": [
@@ -5499,8 +5499,8 @@
       "../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Runtime/FlatEngine-Runtime.o",
       "Source/FlatEngine-Runtime.cpp"
     ],
-    "directory": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Runtime",
-    "file": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/FlatEngine-Runtime/Source/FlatEngine-Runtime.cpp",
-    "output": "/home/dillon/Shared_Backup_Data/Software/repos/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Runtime/FlatEngine-Runtime.o"
+    "directory": "/home/dillon/Downloads/FlatEngine/FlatEngine-Runtime",
+    "file": "/home/dillon/Downloads/FlatEngine/FlatEngine-Runtime/Source/FlatEngine-Runtime.cpp",
+    "output": "/home/dillon/Downloads/FlatEngine/Build/Intermediates/linux-x86_64/Debug/FlatEngine-Runtime/FlatEngine-Runtime.o"
   }
 ]

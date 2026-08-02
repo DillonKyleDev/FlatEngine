@@ -1,3 +1,5 @@
+#include "components/Sprite.h"
+#include "Types.h"
 #include "managers/Assets.h"
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
@@ -12,7 +14,6 @@
 
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
-#include <fstream>
 #include <list>
 #include "SDL_vulkan.h"
 
@@ -977,25 +978,13 @@ namespace FlatEngine
             {
                 if (m_sceneViewMaterialMeshes.count(materialName)) // Material key exists
                 {
-                    // if (m_sceneViewMaterialMeshes.at(materialName).count(mesh->GetModel()->GetModelPath())) // Model key exists
-                    // {
-  
-                            m_sceneViewMaterialMeshes.at(materialName).Add(objectID, objectID);
-
-                    // else
-                    // {
-                    //     std::map<long, Mesh*> newMap = std::map<long, Mesh*>();
-                    //     newMap.emplace(ID, mesh);
-                    //     m_sceneViewMaterialMeshes.at(materialName).emplace(mesh->GetModel()->GetModelPath(), newMap);
-                    // }
+                    m_sceneViewMaterialMeshes.at(materialName).Add(objectID, objectID);
                 }
                 else
                 {
-                    // std::map<std::string, std::map<long, Mesh*>> modelMap = std::map<std::string, std::map<long, Mesh*>>();
-                    // std::map<long, Mesh*> meshMap = std::map<long, Mesh*>();
-                    // meshMap.emplace(ID, mesh);
-                    // modelMap.emplace(mesh->GetModel()->GetModelPath(), meshMap);
-                    // m_sceneViewMaterialMeshes.emplace(materialName, modelMap);
+                    UMapVector<long> IDs;
+                    IDs.Add(objectID, objectID);
+                    m_sceneViewMaterialMeshes.emplace(materialName, IDs);
                 }
             }
         }
@@ -1008,14 +997,12 @@ namespace FlatEngine
                 {
                     m_gameViewMaterialMeshes.at(materialName).Add(objectID, objectID);
                 }
-                // else
-                // {
-                //     std::map<std::string, std::map<long, Mesh*>> modelMap = std::map<std::string, std::map<long, Mesh*>>();
-                //     std::map<long, Mesh*> meshMap = std::map<long, Mesh*>();
-                //     meshMap.emplace(ID, mesh);
-                //     modelMap.emplace(mesh->GetModel()->GetModelPath(), meshMap);
-                //     m_gameViewMaterialMeshes.emplace(materialName, modelMap);
-                // }
+                else
+                {
+                    UMapVector<long> IDs;
+                    IDs.Add(objectID, objectID);
+                    m_gameViewMaterialMeshes.emplace(materialName, IDs);
+                }
             }
         }
 
@@ -1230,11 +1217,17 @@ namespace FlatEngine
                             std::shared_ptr<Material> material = m_sceneViewMaterials.at(materials.first);
                             m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());      
 
-                            for (auto& meshID : materials.second.GetAll())
+                            for (auto& objectID : materials.second.GetAll())
                             {
-                                Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(meshID);
+                                Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(objectID);
                                 if (mesh == nullptr)
-                                    continue;
+                                {
+                                    Sprite* sprite = SceneManager::loadedScene.Get<Sprite>(objectID);
+                                    if (sprite != nullptr)
+                                        mesh = &sprite->mesh;
+                                    else
+                                        continue;
+                                }
 
                                 m_renderToTextureSceneViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
 
@@ -1293,62 +1286,59 @@ namespace FlatEngine
             //threads.emplace_back([this, &commandBuffers, imageIndex]
             //{
                 // // Game View
-                // if (m_renderToTextureGameViewRenderPass.Initialized() && Settings::settings.b_showGameView)
-                // {            
-                // m_renderToTextureGameViewRenderPass.BeginRenderPass(imageIndex);
+            if (m_renderToTextureGameViewRenderPass.Initialized() && Settings::settings.b_showGameView)
+            {            
+                m_renderToTextureGameViewRenderPass.BeginRenderPass(imageIndex);
 
-                // std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
+                std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
+                for (auto& materials : m_gameViewMaterialMeshes)
+                {
+                    if (m_gameViewMaterials.count(materials.first))
+                    {
+                        std::shared_ptr<Material> material = m_gameViewMaterials.at(materials.first);
+                        m_renderToTextureGameViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());      
 
-                // for (std::map<std::string, std::map<std::string, std::map<long, Mesh*>>>::iterator materials = m_gameViewMaterialMeshes.begin(); materials != m_gameViewMaterialMeshes.end(); materials++)
-                // {
-                //     if (m_gameViewMaterials.count(materials->first))
-                //     {
-                //         std::shared_ptr<Material> material = m_gameViewMaterials.at(materials->first);
+                        for (auto& meshID : materials.second.GetAll())
+                        {
+                            Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(meshID);
+                            if (mesh == nullptr)
+                                continue;
 
-                //         m_renderToTextureGameViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());                        
+                            m_renderToTextureGameViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
 
-                //         for (std::map<std::string, std::map<long, Mesh*>>::iterator models = materials->second.begin(); models != materials->second.end(); models++)
-                //             {
-                //                 m_renderToTextureSceneViewRenderPass.BindIndexed(GetModel(models->first));
-
-                //                 for (std::map<long, Mesh*>::iterator meshes = models->second.begin(); meshes != models->second.end(); meshes++)
-                //                 {
-                //                     Mesh* mesh = meshes->second;
-
-                //                     if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
-                //                     {
-                //                         mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneView::IsOrthoGraphic());
-                //                         m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
-                //                         m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetGameViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_GameView);
-                //                         m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       
-                //                     }
-                //                     else if (mesh->MissingTextures())
-                //                     {
-                //                         meshesMissingTextures.push_back(mesh);
-                //                     }
-                //                 }
-                //         }                        
-                //     }                    
-                // }
+                            if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
+                            {
+                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneView::IsOrthoGraphic());
+                                m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
+                                m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetGameViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_GameView);
+                                m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       
+                            }
+                            else if (mesh->MissingTextures())
+                            {
+                                meshesMissingTextures.push_back(mesh);
+                            }
+                        }                        
+                    }                    
+                }
 
                 // Render the Mesh but using the fl_empty material (empty meshes
-                // if (meshesMissingTextures.size())
-                // {
-                //     m_renderToTextureGameViewRenderPass.RecordCommandBuffer(GetMaterial("fl_empty")->GetGraphicsPipeline());
+                if (meshesMissingTextures.size())
+                {
+                    m_renderToTextureGameViewRenderPass.RecordCommandBuffer(GetMaterial("fl_empty")->GetGraphicsPipeline());
 
-                //     for (Mesh* mesh : meshesMissingTextures)
-                //     {
-                //         mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneView::IsOrthoGraphic());
-                //         m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
-                //         m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetEmptyGameViewDescriptorSets()[currentFrame], GetMaterial("fl_empty"), ViewportType::ViewportType_GameView);
-                //         m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_gameViewTexture's m_images member variable   
-                //     }
-                // }
+                    for (Mesh* mesh : meshesMissingTextures)
+                    {
+                        mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneView::IsOrthoGraphic());
+                        m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
+                        m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetEmptyGameViewDescriptorSets()[currentFrame], GetMaterial("fl_empty"), ViewportType::ViewportType_GameView);
+                        m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_gameViewTexture's m_images member variable   
+                    }
+                }
 
-                // m_renderToTextureGameViewRenderPass.EndRenderPass();
+                m_renderToTextureGameViewRenderPass.EndRenderPass();
 
-                // commandBuffers.push_back(m_renderToTextureGameViewRenderPass.GetCommandBuffers()[currentFrame]);
-                // }
+                commandBuffers.push_back(m_renderToTextureGameViewRenderPass.GetCommandBuffers()[currentFrame]);
+            }
             //});
             
             //for (auto& thread : threads)

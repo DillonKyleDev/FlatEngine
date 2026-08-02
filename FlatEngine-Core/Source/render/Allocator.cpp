@@ -246,7 +246,8 @@ namespace FlatEngine
 			VkResult err = vkAllocateDescriptorSets(DeviceManager::logicalDevice.GetDevice(), &allocInfo, descriptorSets.data());
 			if (err != VK_SUCCESS)
 			{
-				FlatEngine::Logger::log.Err("failed to allocate descriptor sets!");
+				FlatEngine::Logger::log.Critical("failed to allocate descriptor sets!");
+				return;
 			}
 
 			for (int i = 0; i < VulkanManager::MAX_FRAMES_IN_FLIGHT; i++)
@@ -333,7 +334,7 @@ namespace FlatEngine
 		{
 		case AllocatorType::DescriptorPool:
 
-			if (availableSets == 0)
+			if (availableSets < VulkanManager::MAX_FRAMES_IN_FLIGHT)
 			{
 				VkDescriptorPool descriptorPool{};
 				CreateDescriptorPool(descriptorPool);
@@ -345,6 +346,15 @@ namespace FlatEngine
 
 			break;
 		case AllocatorType::CommandPool:
+			if (availableSets == 0)
+			{
+				VkDescriptorPool descriptorPool{};
+				// CreateCommandPool(descriptorPool);
+				// m_descriptorPools.push_back(descriptorPool);
+				// m_allocationsRemainingByPool.push_back(m_sizePerPool);
+				// m_setsFreedByPool.push_back(0);
+				// m_currentPoolIndex++;
+			}
 			break;
 		default:
 			break;

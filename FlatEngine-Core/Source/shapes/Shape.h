@@ -13,7 +13,6 @@ namespace FlatEngine
 
 	class Shape
 	{
-		
 		friend class Box;
 		friend class Circle;
 		friend class Capsule;

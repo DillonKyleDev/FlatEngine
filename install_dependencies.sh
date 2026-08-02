@@ -5,6 +5,12 @@ echo "Installing FlatEngine 3D dependencies..."
 # Update first
 sudo dnf update -y
 
+sudo dnf install -y cmake
+
+sudo dnf install -y gcc gcc-c++
+
+sudo dnf install -y vulkan-devel vulkan-loader-devel vulkan-validation-layers
+
 # SDL2
 sudo dnf install -y SDL2-devel SDL2_image-devel SDL2_ttf-devel SDL2_mixer-devel
 

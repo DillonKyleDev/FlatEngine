@@ -11,6 +11,8 @@
 #include "joints/WeldJoint.h"
 #include "joints/WheelJoint.h"
 #include "managers/PhysicsManager.h"
+#include "managers/SceneManager.h"
+#include "render/SceneView.h"
 #include "shapes/Shape.h"
 #include "TagList.h"
 #include "tools/Logger.h"
@@ -58,6 +60,7 @@ namespace FlatEngine
 
 			b2World_Step(m_worldID, timeStep, substepCount);
 			HandleCollisions();
+			// DrawDebugShapes();
 		}
 
 		void Physics2D::HandleCollisions()
@@ -109,6 +112,24 @@ namespace FlatEngine
 				if (hitEvent->approachSpeed > hitSpeedForSound)
 				{
 					// Play sound, etc..
+				}
+			}
+		}
+
+		void Physics2D::DrawDebugShapes()
+		{
+			std::vector<Body2D> bodies = SceneManager::loadedScene.GetAll<Body2D>().GetAll();
+
+			for (Body2D body : bodies)
+			{
+				Transform* transform = body.GetParentObject()->Get<Transform>();
+
+				for (Box box : body.GetBoxes())
+				{		
+					// Transform boxTransform = *transform;
+					// boxTransform.SetPosition(boxTransform.GetPosition() + box.GetShapeProps().positionOffset) = 			
+					// box.
+					SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Quad, *transform);
 				}
 			}
 		}

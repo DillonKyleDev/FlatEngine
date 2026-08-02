@@ -39,9 +39,10 @@ namespace FlatEngine
 		Vector4 GetTintColor();
 		void SetAlpha(float);
 		float GetAlpha();
+		
+		Mesh mesh;
 
 	private:		
-		Mesh m_mesh;
 		int m_renderOrder;
 		int m_textureWidth;
 		int m_textureHeight;

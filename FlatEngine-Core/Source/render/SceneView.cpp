@@ -2,6 +2,7 @@
 #include "FlatEngine.h"
 #include "GameObject.h"
 #include "GuiCore.h"
+#include "managers/PhysicsManager.h"
 #include "render/RenderWindow.h"
 #include "render/VulkanManager.h"
 #include "managers/Assets.h"
@@ -430,8 +431,8 @@ namespace FlatEngine
 				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].mesh.SetActive(false);
 			}		
 
-			AddDebugDrawObject(DebugSceneObjectType_Quad, Transform());
-			AddDebugDrawObject(DebugSceneObjectType_Circle, Transform());
+			// AddDebugDrawObject(DebugSceneObjectType_Quad, Transform());
+			// AddDebugDrawObject(DebugSceneObjectType_Circle, Transform());
         }
 
 		void ClearDebugDrawObjects()
@@ -447,6 +448,7 @@ namespace FlatEngine
 		void RenderSceneView(bool& b_show)
 		{		
 			ClearDebugDrawObjects();
+			PhysicsManager::physics2D.DrawDebugShapes();
 
 			if (!b_show)
 				return;

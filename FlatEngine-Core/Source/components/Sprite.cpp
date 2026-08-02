@@ -11,7 +11,7 @@ namespace FlatEngine
 		SetType(ComponentType_Sprite);
 		SetID(myID);
 		SetParentObjectID(parentObjectID);		
-		m_mesh = Mesh(-1, parentObjectID);
+		mesh = Mesh(-1, parentObjectID);
 		m_textureWidth = 0;
 		m_textureHeight = 0;
 		m_scale = Vector2(1);
@@ -79,20 +79,20 @@ namespace FlatEngine
 
 	void Sprite::SetTexture(std::string newPath)
 	{		
-		// m_mesh.CleanupTextures();
+		// mesh.CleanupTextures();
 
 		if (newPath != "")
 		{				
-			m_mesh.CreateUniformBuffers();
-			m_mesh.SetMaterial("fl_unlit");
-			m_mesh.SetModel("../engine/models/plane.obj");					
-			m_mesh.CreateResources();	
+			mesh.CreateUniformBuffers();
+			mesh.SetMaterial("fl_unlit");
+			mesh.SetModel("../engine/models/plane.obj");					
+			mesh.CreateResources();	
 
 			m_path = newPath;
-			std::map<uint32_t, Texture>& meshTextures = m_mesh.GetTextures();
+			std::map<uint32_t, Texture>& meshTextures = mesh.GetTextures();
 			if (meshTextures.count(0) && meshTextures.at(0).LoadFromFile(m_path))
 			{
-				m_mesh.CreateResources();	
+				mesh.CreateResources();	
 				m_textureWidth = meshTextures.at(0).GetWidth();
 				m_textureHeight = meshTextures.at(0).GetHeight();
 
@@ -130,7 +130,7 @@ namespace FlatEngine
 
 	VkDescriptorSet Sprite::GetTexture()
 	{
-		return m_mesh.GetTextures().at(0).GetTexture();
+		return mesh.GetTextures().at(0).GetTexture();
 	}
 
 	void Sprite::SetScale(Vector2 newScale)
@@ -145,7 +145,7 @@ namespace FlatEngine
 
 		if (m_scale.x == 0 || m_scale.y == 0)
 		{
-			m_mesh.CleanupTextures();
+			mesh.CleanupTextures();
 		}
 	}
 
@@ -182,7 +182,7 @@ namespace FlatEngine
 	void Sprite::RemoveTexture()
 	{
 		m_path = "";
-		m_mesh.CleanupTextures();
+		// mesh.CleanupTextures();
 	}
 
 	void Sprite::SetPivotPoint(Pivot newPivot)

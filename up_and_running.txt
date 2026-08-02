@@ -2,19 +2,20 @@ Just these steps:
 
 Run the install script
 
-bash./install-deps-linux.sh
+sh install_dependencies.sh
+
 
 Generate makefiles
 
-bashpremake5 gmake
+bash premake5 gmake
 
 Build
 
-bashmake config=debug
+bash make config=debug
 
 Generate compile_commands.json for clangd (optional, for VSCodium intellisense)
 
-bashbear -- make config=debug
+bash bear -- make config=debug
 That's it. Everything else is either in your repo (source, vendor headers, lua files) or installed by the script (system libs, build tools).
 The only gotcha is VSCodium itself — the install script doesn't set that up. If you want it on the new machine add the repo and install it as we did earlier, then install the CodeLLDB and clangd extensions manually. You could add that to the script too if you want it fully automated.
 
@@ -34,3 +35,12 @@ make clean && bear -- make
 # But the generated Makefile on disk still has the old, frozen list of .o targets from the last time you ran premake5 gmake2 — it has no idea NewFile.cpp exists.
 # Running premake5 gmake2 again re-reads the Lua, re-expands the wildcard, and rewrites the Makefiles with the new file included.
 # make then sees NewFile.cpp as a build target for the first time and compiles it.
+
+install code lldb extension, clangd, clang-format by xaver
+
+once all is said and done, red squiggles may be present due to compile_commands.json not being properly created or filled. run:
+premake5 gmake2
+make clean
+bear -- make
+
+Then restart clangd (Command Palette → clangd: Restart language server). ctrl + shift + p : "clangd restart..."

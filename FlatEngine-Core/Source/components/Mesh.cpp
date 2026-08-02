@@ -207,11 +207,12 @@ namespace FlatEngine
 
 		m_model = loadedModel;
 
-		if (b_addMaterialMesh)
-		{
-			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
-			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
-		}
+		// Already done by SetMaterial().
+		// if (b_addMaterialMesh)
+		// {
+		// 	VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
+		// 	VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
+		// }
 	}
 
 	std::shared_ptr<Model> Mesh::GetModel()
@@ -231,8 +232,11 @@ namespace FlatEngine
 		}
 		m_materialName = materialName;
 
-		VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
-		VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
+		if (GetParentObjectID() != -1)
+		{
+			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
+			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
+		}
 
 		if (m_sceneViewMaterial != nullptr)
 		{

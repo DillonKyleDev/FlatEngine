@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "GuiCore.h"
 #include "managers/PhysicsManager.h"
+#include "managers/Scene.h"
 #include "render/RenderWindow.h"
 #include "render/VulkanManager.h"
 #include "managers/Assets.h"
@@ -11,6 +12,7 @@
 #include "managers/Settings.h"
 #include "managers/ProjectManager.h"
 #include "SceneView.h"
+#include "tools/Pool.h"
 #include "tools/Time.h"
 #include "tools/Vector2.h"
 
@@ -24,8 +26,54 @@ namespace FlatEngine
 	namespace SceneView
 	{
 		std::vector<SceneRenderObject> persistentSceneRenderObjects;
-        std::vector<SceneRenderObject> debugDrawSceneRenderObjects;
+        std::vector<PoolObject<SceneRenderObject>> debugDrawSceneRenderObjects;
         std::unordered_map<long, SceneRenderObject> transientSceneRenderObjects;
+
+		SceneRenderObject CreateLinePoolObject()
+		{
+			SceneRenderObject poolObject;
+
+			poolObject.mesh.CreateUniformBuffers();
+			poolObject.mesh.SetMaterial("fl_debugDraw");
+			poolObject.mesh.SetModel("../engine/models/line.obj", false);	
+			poolObject.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
+			poolObject.mesh.CreateResources();
+
+			return poolObject;
+		}
+		SceneRenderObject CreateQuadPoolObject()
+		{
+			SceneRenderObject poolObject;
+
+			poolObject.mesh.CreateUniformBuffers();
+			poolObject.mesh.SetMaterial("fl_debugDraw");
+			poolObject.mesh.SetModel("../engine/models/quadLines.obj", false);	
+			poolObject.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
+			poolObject.mesh.CreateResources();
+
+			return poolObject;
+		}
+		SceneRenderObject CreateCirclePoolObject()
+		{
+			SceneRenderObject poolObject;
+
+			poolObject.mesh.CreateUniformBuffers();
+			poolObject.mesh.SetMaterial("fl_debugDraw");
+			poolObject.mesh.SetModel("../engine/models/quadLines.obj", false);	
+			poolObject.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
+			poolObject.mesh.CreateResources();
+
+			return poolObject;
+		}
+
+		void CleanupPoolObject(SceneRenderObject& object)
+		{
+			object.mesh.Cleanup();
+		}
+
+		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(CreateLinePoolObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(CreateCirclePoolObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(CreateQuadPoolObject, CleanupPoolObject, 10);
 
 		Vector2 sceneViewDimensions = Vector2(600, 400);	
 		Vector2 sceneViewCenter = Vector2();
@@ -437,16 +485,27 @@ namespace FlatEngine
 
 		void ClearDebugDrawObjects()
 		{
-			for (SceneRenderObject& debugObject : debugDrawSceneRenderObjects)
-			{
-				debugObject.mesh.Cleanup();
-			}
+			debugLinePool.ReturnAll();
+			debugQuadPool.ReturnAll();
+			debugCirclePool.ReturnAll();
 
 			debugDrawSceneRenderObjects.clear();
 		}
 
 		void RenderSceneView(bool& b_show)
 		{		
+			if (!debugLinePool.Initialized())
+			{
+				debugLinePool.Init();
+			}
+			if (!debugCirclePool.Initialized())
+			{
+				debugCirclePool.Init();
+			}
+			if (!debugQuadPool.Initialized())
+			{
+				debugQuadPool.Init();
+			}
 			ClearDebugDrawObjects();
 			PhysicsManager::physics2D.DrawDebugShapes();
 
@@ -645,65 +704,36 @@ namespace FlatEngine
 
 		void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color)
 		{
-			SceneRenderObject debugObject;
-			debugDrawSceneRenderObjects.push_back(debugObject);
-			debugDrawSceneRenderObjects.back().transform.PutData(transform.GetData(), "Debug Draw Object");
-
 			switch (type)
 			{
 				case DebugSceneObjectType_Line: 
 				{					
-					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
-					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
-					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/line.obj", false);	
-					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
-					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					debugDrawSceneRenderObjects.push_back(debugLinePool.Get());
+					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Line Object");
 					break;
 				}
 				case DebugSceneObjectType_Circle: 
 				{					
-					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
-					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
-					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/circle.obj", false);	
-					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
-					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					debugDrawSceneRenderObjects.push_back(debugCirclePool.Get());
+					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Circle Object");
 					break;
 				}
 				case DebugSceneObjectType_Quad: 
 				{					
-					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
-					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
-					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/quadLines.obj", false);	
-					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
-					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					
+					debugDrawSceneRenderObjects.push_back(debugQuadPool.Get());
+					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Quad Object");
 					break;
 				}
 				case DebugSceneObjectType_Sphere: 
 				{					
-					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
-					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDrawSphere");
-					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/quad.obj", false);	
-					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
-					debugDrawSceneRenderObjects.back().mesh.CreateResources();
-
-					SceneRenderObject debugCircle;
-					debugDrawSceneRenderObjects.push_back(debugCircle);					
-					transform.SetXRotation(90);
-					debugDrawSceneRenderObjects.back().transform.PutData(transform.GetData(), "Debug Draw Object");
-					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
-					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
-					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/circle.obj", false);	
-					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
-					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					
+					// AddDebugDrawObject(DebugSceneObjectType_Circle, transform);
 					break;
 				}
 				case DebugSceneObjectType_Cube: 
 				{					
-					debugDrawSceneRenderObjects.back().mesh.CreateUniformBuffers();
-					debugDrawSceneRenderObjects.back().mesh.SetMaterial("fl_debugDraw");
-					debugDrawSceneRenderObjects.back().mesh.SetModel("../engine/models/cubeLines.obj", false);	
-					debugDrawSceneRenderObjects.back().mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color)); 				          
-					debugDrawSceneRenderObjects.back().mesh.CreateResources();
+					
 					break;
 				}
 				default: break;

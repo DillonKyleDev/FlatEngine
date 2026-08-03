@@ -11,11 +11,13 @@
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
 #include "tools/Logger.h"
+#include "tools/Pool.h"
 
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
 #include <list>
 #include "SDL_vulkan.h"
+#include "tools/Pool.h"
 
 namespace FL = FlatEngine;
 
@@ -1189,18 +1191,18 @@ namespace FlatEngine
                         }
                     }     
                     
-                    for (SceneView::SceneRenderObject& renderObject : SceneView::debugDrawSceneRenderObjects)                        
+                    for (PoolObject<SceneView::SceneRenderObject>& poolRenderObject : SceneView::debugDrawSceneRenderObjects)                        
                     {                                                        
-                        std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
-                        if (renderObject.mesh.Initialized() && material != nullptr)
+                        std::shared_ptr<Material> material = poolRenderObject.object->mesh.GetSceneViewMaterial();
+                        if (poolRenderObject.object->mesh.Initialized() && material != nullptr)
                         {                                                  
-                            if (renderObject.mesh.IsActive())
+                            if (poolRenderObject.object->mesh.IsActive())
                             {                                    
                                 m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
-                                m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
-                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
-                                m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                                poolRenderObject.object->mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &poolRenderObject.object->transform);
+                                m_renderToTextureSceneViewRenderPass.BindIndexed(poolRenderObject.object->mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(poolRenderObject.object->mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                m_renderToTextureSceneViewRenderPass.DrawIndexed(poolRenderObject.object->mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                             }
                         }
                     }

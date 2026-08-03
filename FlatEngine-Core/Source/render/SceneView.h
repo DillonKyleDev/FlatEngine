@@ -4,6 +4,7 @@
 #include "components/Transform.h"
 #include "shapes/Line.h"
 #include "tools/JsonHelper.h"
+#include "tools/Pool.h"
 #include "tools/Vector2.h"
 
 #include <string>
@@ -48,7 +49,7 @@ namespace FlatEngine
         };
 
         extern std::vector<SceneRenderObject> persistentSceneRenderObjects;
-        extern std::vector<SceneRenderObject> debugDrawSceneRenderObjects;
+        extern std::vector<PoolObject<SceneRenderObject>> debugDrawSceneRenderObjects;
         extern std::unordered_map<long, SceneRenderObject> transientSceneRenderObjects;
 
         extern Vector2 sceneViewportCenter;

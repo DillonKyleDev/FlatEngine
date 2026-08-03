@@ -292,9 +292,13 @@ namespace FlatEngine
 				{
 					F_b_closeProgramQueued = true;
 				};
-			lua["DrawLineInScene"] = [](Vector2 startPoint, Vector2 endPoint, std::string color, float thickness)
+			lua["DrawLineInScene"] = []()
 			{
-				SceneView::DrawLineInScene(startPoint, endPoint, color, thickness);
+				// SceneView::DrawLineInScene(startPoint, endPoint, color, thickness);
+				// Transform transform;
+				// Vector3 
+				// transform.SetPosition()
+				SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Line, Transform());
 			};
 			lua["DrawLineInGame"] = [](Vector2 startPoint, Vector2 endPoint, std::string color, float thickness)
 			{
@@ -774,8 +778,8 @@ namespace FlatEngine
 						}
 						else
 						{
-							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), loadedSceneScriptFiles);
-							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), "Awake");
+							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
+							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Awake");
 						}
 					}
 				}
@@ -793,8 +797,8 @@ namespace FlatEngine
 						}
 						else
 						{
-							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), loadedSceneScriptFiles);
-							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetID()), "Start");
+							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
+							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Start");
 						}
 					}
 				}		

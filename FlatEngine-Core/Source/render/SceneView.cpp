@@ -12,10 +12,12 @@
 #include "managers/Settings.h"
 #include "managers/ProjectManager.h"
 #include "SceneView.h"
+#include "tools/Numbers.h"
 #include "tools/Pool.h"
 #include "tools/Time.h"
 #include "tools/Vector2.h"
 
+#include <cmath>
 #include "imgui.h"
 
 namespace FL = FlatEngine;
@@ -701,6 +703,16 @@ namespace FlatEngine
 				transientSceneRenderObjects.erase(ID);
 			}
 		}
+		
+		void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color)
+		{
+			Transform transform;
+			Vector3 direction = endPos - startPos;
+			transform.SetScale(Vector3(direction.GetMagnitude()));
+			Vector3 normDirection = Vector3::Normalize(direction);
+			transform.SetRotation(Vector3(0, Numbers::RadiansToDegrees(std::atan2(normDirection.z, normDirection.x)), Numbers::RadiansToDegrees(std::asin(std::clamp(normDirection.y, -1.0f, 1.0f)))));
+			AddDebugDrawObject(DebugSceneObjectType_Line, transform, color);
+		}
 
 		void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color)
 		{
@@ -710,12 +722,14 @@ namespace FlatEngine
 				{					
 					debugDrawSceneRenderObjects.push_back(debugLinePool.Get());
 					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Line Object");
+					debugDrawSceneRenderObjects.back().object->mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
 					break;
 				}
 				case DebugSceneObjectType_Circle: 
 				{					
 					debugDrawSceneRenderObjects.push_back(debugCirclePool.Get());
 					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Circle Object");
+					debugDrawSceneRenderObjects.back().object->mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
 					break;
 				}
 				case DebugSceneObjectType_Quad: 
@@ -723,6 +737,7 @@ namespace FlatEngine
 					
 					debugDrawSceneRenderObjects.push_back(debugQuadPool.Get());
 					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Quad Object");
+					debugDrawSceneRenderObjects.back().object->mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
 					break;
 				}
 				case DebugSceneObjectType_Sphere: 

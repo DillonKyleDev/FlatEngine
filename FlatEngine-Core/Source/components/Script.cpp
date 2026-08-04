@@ -61,7 +61,7 @@ namespace FlatEngine
 		for (auto scriptData : componentJson.at("scripts"))
 		{			
 			ScriptData script = ScriptData();
-			script.name = JsonHelper::CheckJsonString(scriptData, "name", objectName);;
+			script.name = JsonHelper::CheckJsonString(scriptData, "name", objectName);
 			json scriptParamsJson = JsonHelper::JsonContains(scriptData, "parameters", objectName) ? scriptData.at("parameters") : json::array();
 
 			for (int i = 0; i < scriptParamsJson.size(); i++)

@@ -69,7 +69,8 @@ namespace FlatEngine
 
         extern void RenderSceneView(bool& b_show);         
                
-        extern void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color = "debugDraw");
+        extern void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color = "debugDraw");
+        extern void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color);
         extern void LoadPersistentSceneViewObjects();
         extern void UpdateSceneObjectColors();        
         extern void ToggleShowSceneViewGridObjects();

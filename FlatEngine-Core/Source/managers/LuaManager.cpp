@@ -292,13 +292,9 @@ namespace FlatEngine
 				{
 					F_b_closeProgramQueued = true;
 				};
-			lua["DrawLineInScene"] = []()
+			lua["DrawLineInScene"] = [](Vector3 startPos, Vector3 endPos, std::string color)
 			{
-				// SceneView::DrawLineInScene(startPoint, endPoint, color, thickness);
-				// Transform transform;
-				// Vector3 
-				// transform.SetPosition()
-				SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Line, Transform());
+				SceneView::DebugDrawLine(startPos, endPos, color);
 			};
 			lua["DrawLineInGame"] = [](Vector2 startPoint, Vector2 endPoint, std::string color, float thickness)
 			{
@@ -952,7 +948,7 @@ namespace FlatEngine
 			// Store the name of the script being called in the Lua state (for hands-off named logging from Lua)
 			lua["calling_script_name"] = scriptName;
 			// Store this object object the Lua state to be accessed by the next Lua function calls
-			lua["this_object"] = object != nullptr ? sol::make_object(lua, object) : sol::make_object(lua, sol::lua_nil);
+			lua["this_object"] = object;// != nullptr ? sol::make_object(lua., object) : sol::make_object(lua, sol::lua_nil);
 			// Store object id
 			lua["my_id"] = object != nullptr ? object->GetID() : FL::ProjectManager::PERSISTENT_SCRIPT_ID;
 		}

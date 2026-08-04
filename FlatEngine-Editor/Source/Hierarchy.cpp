@@ -448,7 +448,7 @@ namespace FlatGui
 			float isPrefabIconColumnWidth = 24;
 			static float currentIndent = 10;
 			static bool b_allAreVisible = false;
-			std::vector<FL::GameObject*> sceneObjects = FL::SceneManager::loadedScene.GetSortedHierarchyObjects();			
+			std::vector<FL::GameObject> sceneObjects = FL::SceneManager::loadedScene.GetSceneObjects();			
 
 			static long node_clicked = -1;
 
@@ -475,9 +475,9 @@ namespace FlatGui
 					{						
 						if (FL::GuiCore::RenderImageButton("##SetAllInvisible", FL::Assets::assetManager.GetTexture("show"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
 						{
-							for (FL::GameObject* sceneObject : sceneObjects)
+							for (FL::GameObject& sceneObject : sceneObjects)
 							{
-								sceneObject->SetActive(false);
+								sceneObject.SetActive(false);
 							}
 
 							b_allAreVisible = false;
@@ -487,9 +487,9 @@ namespace FlatGui
 					{						
 						if (FL::GuiCore::RenderImageButton("##SetAllVisible", FL::Assets::assetManager.GetTexture("hide"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
 						{
-							for (FL::GameObject* sceneObject : sceneObjects)
+							for (FL::GameObject& sceneObject : sceneObjects)
 							{
-								sceneObject->SetActive(true);
+								sceneObject.SetActive(true);
 							}
 							b_allAreVisible = true;
 						}
@@ -513,16 +513,16 @@ namespace FlatGui
 						ImGui::SetMouseCursor(0);
 					}
 
-					for (FL::GameObject* sceneObject : sceneObjects)
+					for (FL::GameObject& sceneObject : sceneObjects)
 					{
 						// If this object does not have a parent we render it and all of its children.
-						if (sceneObject->GetParentID() == -1)
+						if (sceneObject.GetParentID() == -1)
 						{
-							std::string name = sceneObject->GetName();
+							std::string name = sceneObject.GetName();
 							const char* charName = name.c_str();
 							float indent = 0;
 
-							AddObjectToHierarchy(*sceneObject, charName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
+							AddObjectToHierarchy(sceneObject, charName, node_clicked, queuedForDelete, parentToUnparent, childToRemove, indent);
 						}
 					}
 

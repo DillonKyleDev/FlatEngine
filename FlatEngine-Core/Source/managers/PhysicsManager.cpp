@@ -129,7 +129,7 @@ namespace FlatEngine
 					// Transform boxTransform = *transform;
 					// boxTransform.SetPosition(boxTransform.GetPosition() + box.GetShapeProps().positionOffset) = 			
 					// box.
-					SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Quad, *transform);
+					SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Quad, *transform, "debug");
 				}
 			}
 		}

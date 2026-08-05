@@ -122,14 +122,13 @@ namespace FlatEngine
 
 			for (Body2D body : bodies)
 			{
-				Transform* transform = body.GetParentObject()->Get<Transform>();
+				Transform transform = *body.GetParentObject()->Get<Transform>();
 
 				for (Box box : body.GetBoxes())
 				{		
-					// Transform boxTransform = *transform;
-					// boxTransform.SetPosition(boxTransform.GetPosition() + box.GetShapeProps().positionOffset) = 			
-					// box.
-					SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Quad, *transform, "debug");
+					Vector2 dimensions = box.GetShapeProps().dimensions;
+					transform.SetScale(Vector3(dimensions.x, dimensions.y, 1));					
+					SceneView::AddDebugDrawObject(SceneView::DebugSceneObjectType_Quad, transform, "debug");
 				}
 			}
 		}

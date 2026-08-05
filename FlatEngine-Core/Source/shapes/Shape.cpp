@@ -44,7 +44,7 @@ namespace FlatEngine
 		return b2CastOutput();
 	}
 
-	Shape::Shape(Body2D* parentBody)
+	Shape::Shape(long parentID)
 	{		
 		b_editingPoints = false;
 		b_showPoints = false;
@@ -54,7 +54,7 @@ namespace FlatEngine
 
 		m_shapeID = b2_nullShapeId;
 		m_chainID = b2_nullChainId;
-		m_parentBody = parentBody;
+		m_parentID = parentID;
 	}
 
 	Shape::ShapeType Shape::GetShapeType()
@@ -156,14 +156,14 @@ namespace FlatEngine
 		return m_chainID;
 	}
 
-	Body2D* Shape::GetParentBody()
+	long Shape::GetParentID()
 	{
-		return m_parentBody;
+		return m_parentID;
 	}
 
 	b2BodyId Shape::GetParentBodyID()
 	{
-		return m_parentBody->GetBodyID();
+		return SceneManager::loadedScene.GetObjectByID(m_parentID)->Get<Body2D>()->GetBodyID();
 	}
 
 	void Shape::SetShapeProps(ShapeProps shapeProps)
@@ -183,18 +183,18 @@ namespace FlatEngine
 	}
 
 	// Creates a shape and links it to a Body, affecting it's properties
-	void Shape::CreateBodyShape()
+	void Shape::CreateBodyShape(Body2D* parent)
 	{
-		PhysicsManager::physics2D.CreateBodyShape(m_parentBody, this);
+		PhysicsManager::physics2D.CreateBodyShape(parent, this);
 	}
 
 	void Shape::RecreateShape()
 	{
 		DestroyShape();	
 
-		if (m_parentBody != nullptr)
+		if (m_parentID != -1)
 		{
-			CreateBodyShape();
+			CreateBodyShape(SceneManager::loadedScene.GetObjectByID(m_parentID)->Get<Body2D>());
 		}
 		else
 		{

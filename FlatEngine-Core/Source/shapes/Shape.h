@@ -59,7 +59,7 @@ namespace FlatEngine
 			float rollingResistance = 0.0f;
 		};
 
-		Shape(Body2D* parentBody);	
+		Shape(long parentID);	
 		json GetShapeData();
 		ShapeType GetShapeType();
 		std::string GetShapeString();
@@ -68,12 +68,12 @@ namespace FlatEngine
 		b2ShapeId GetShapeID();
 		void SetChainID(b2ChainId chainID);
 		b2ChainId GetChainID();
-		Body2D* GetParentBody();
+		long GetParentID();
 		b2BodyId GetParentBodyID();
 		void SetShapeProps(ShapeProps shapeProps);
 		ShapeProps& GetShapeProps();
 		void CreateShape();
-		void CreateBodyShape();
+		void CreateBodyShape(Body2D* parent);
 		void RecreateShape();
 		void DestroyShape();
 		bool PointInShape(Vector2 point);
@@ -107,7 +107,7 @@ namespace FlatEngine
 	private:
 		b2ShapeId m_shapeID;
 		b2ChainId m_chainID;
-		Body2D* m_parentBody;
+		long m_parentID;
 		ShapeProps m_shapeProps;
 		b2Polygon m_polygon;
 		b2Circle m_circle;

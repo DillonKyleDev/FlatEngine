@@ -9,7 +9,7 @@ namespace FlatEngine
 	class Capsule : public Shape
 	{		
 	public:
-		Capsule(Body2D* parentBody = nullptr);		
+		Capsule(long parentID = -1);		
 
 		void SetCapsuleLength(float length);
 		void SetRadius(float radius);			

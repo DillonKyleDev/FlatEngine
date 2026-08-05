@@ -27,6 +27,7 @@
 
 #include <fstream>
 #include <lua.h>
+#include <optional>
 
 
 namespace FlatEngine
@@ -292,9 +293,17 @@ namespace FlatEngine
 				{
 					F_b_closeProgramQueued = true;
 				};
-			lua["DrawLineInScene"] = [](Vector3 startPos, Vector3 endPos, std::string color)
+			lua["DebugDrawLine"] = [](Vector3 startPos, Vector3 endPos, std::optional<std::string> color, std::optional<Vector3> rotation)
 			{
-				SceneView::DebugDrawLine(startPos, endPos, color);
+				SceneView::DebugDrawLine(startPos, endPos, color.value_or("debugDraw"));
+			};
+			lua["DebugDrawQuad"] = [](Vector3 position, Vector2 size, std::optional<std::string> color, std::optional<Vector3> rotation)
+			{
+				SceneView::DebugDrawQuad(position, size, color.value_or("debugDraw"), rotation.value_or(Vector3()));
+			};
+			lua["DebugDrawCircle"] = [](Vector3 position, float radius, std::optional<std::string> color, std::optional<Vector3> rotation)
+			{
+				SceneView::DebugDrawCircle(position, radius, color.value_or("debugDraw"), rotation.value_or(Vector3()));
 			};
 			lua["DrawLineInGame"] = [](Vector2 startPoint, Vector2 endPoint, std::string color, float thickness)
 			{
@@ -702,13 +711,16 @@ namespace FlatEngine
 				{
 					for (ScriptData scriptData : script.GetScripts())
 					{
-						if (scriptData.GetCPPScript() != nullptr)
+						if (scriptData.name != "")
 						{
-							scriptData.GetCPPScript()->Update();
-						}
-						else
-						{
-							RunLuaFuncOnSingleScript(scriptData, script.GetParentObject(), functionName);
+							if (scriptData.GetCPPScript() != nullptr)
+							{
+								scriptData.GetCPPScript()->Update();
+							}
+							else
+							{
+								RunLuaFuncOnSingleScript(scriptData, script.GetParentObject(), functionName);
+							}
 						}
 					}
 				}
@@ -719,7 +731,10 @@ namespace FlatEngine
 			{
 				for (ScriptData scriptData : persistentScript.GetScripts())
 				{
-					RunLuaFuncOnSingleScript(scriptData, nullptr, functionName);
+					if (scriptData.name != "")
+					{
+						RunLuaFuncOnSingleScript(scriptData, nullptr, functionName);
+					}
 				}
 			}
 		}
@@ -767,15 +782,18 @@ namespace FlatEngine
 				{
 					for (ScriptData scriptData : script.GetScripts())
 					{
-						std::string attachedScript = scriptData.name;
-						if (attachedScript.find("C++") != std::string::npos)
+						if (scriptData.name != "")
 						{
-							scriptData.GetCPPScript()->Awake();
-						}
-						else
-						{
-							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
-							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Awake");
+							std::string attachedScript = scriptData.name;
+							if (attachedScript.find("C++") != std::string::npos)
+							{
+								scriptData.GetCPPScript()->Awake();
+							}
+							else
+							{
+								InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
+								RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Awake");
+							}
 						}
 					}
 				}
@@ -786,15 +804,18 @@ namespace FlatEngine
 				{
 					for (ScriptData scriptData : script.GetScripts())
 					{
-						std::string scriptName = scriptData.name;
-						if (scriptName.find("C++") != std::string::npos)
+						if (scriptData.name != "")
 						{
-							scriptData.GetCPPScript()->Start();
-						}
-						else
-						{
-							InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
-							RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Start");
+							std::string scriptName = scriptData.name;
+							if (scriptName.find("C++") != std::string::npos)
+							{
+								scriptData.GetCPPScript()->Start();
+							}
+							else
+							{
+								InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
+								RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Start");
+							}
 						}
 					}
 				}		
@@ -810,13 +831,19 @@ namespace FlatEngine
 			{
 				for (ScriptData scriptData : persistentScript.GetScripts())
 				{
-					InitLuaScript(scriptData, nullptr, loadedPersistentScriptFiles);
-					RunLuaFuncOnSingleScript(scriptData, nullptr, "Awake");
+					if (scriptData.name != "")
+					{
+						InitLuaScript(scriptData, nullptr, loadedPersistentScriptFiles);
+						RunLuaFuncOnSingleScript(scriptData, nullptr, "Awake");
+					}
 				}
 				for (ScriptData scriptData : persistentScript.GetScripts())
 				{
-					InitLuaScript(scriptData, nullptr, loadedPersistentScriptFiles);
-					RunLuaFuncOnSingleScript(scriptData, nullptr, "Start");
+					if (scriptData.name != "")
+					{
+						InitLuaScript(scriptData, nullptr, loadedPersistentScriptFiles);
+						RunLuaFuncOnSingleScript(scriptData, nullptr, "Start");
+					}
 				}
 			}
 		}
@@ -965,7 +992,7 @@ namespace FlatEngine
 			}
 			else
 			{
-				Logger::log.Err("Could not initialize {} on {} \n Not found in luaScriptsMap.", attachedScript, caller != nullptr ? caller->GetName() : "Caller was nullptr.");
+				Logger::log.Err("Could not initialize {} on {} \n Not found in luaScriptsMap.", attachedScript, caller != nullptr ? caller->GetName() : "<Caller was nullptr>");
 				return false;
 			}
 
@@ -973,7 +1000,7 @@ namespace FlatEngine
 			{
 				if (caller != nullptr)
 				{
-					Logger::log.Err("Could not initialize {} script on {}.. File does not exist", attachedScript, caller != nullptr ? caller->GetName() : "Caller was nullptr.");
+					Logger::log.Err("Could not initialize {} script on {}.. File does not exist", attachedScript, caller != nullptr ? caller->GetName() : "<Caller was nullptr>");
 				}
 				else
 				{

@@ -74,8 +74,8 @@ namespace FlatEngine
 		}
 
 		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(CreateLinePoolObject, CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(CreateCirclePoolObject, CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(CreateQuadPoolObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(CreateQuadPoolObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(CreateCirclePoolObject, CleanupPoolObject, 10);
 
 		Vector2 sceneViewDimensions = Vector2(600, 400);	
 		Vector2 sceneViewCenter = Vector2();
@@ -712,6 +712,24 @@ namespace FlatEngine
 			Vector3 normDirection = Vector3::Normalize(direction);
 			transform.SetRotation(Vector3(0, Numbers::RadiansToDegrees(std::atan2(normDirection.z, normDirection.x)), Numbers::RadiansToDegrees(std::asin(std::clamp(normDirection.y, -1.0f, 1.0f)))));
 			AddDebugDrawObject(DebugSceneObjectType_Line, transform, color);
+		}
+
+		void DebugDrawQuad(Vector3 position, Vector2 scale, std::string color, Vector3 rotation)
+		{
+			Transform transform;
+			transform.SetPosition(position);
+			transform.SetScale(Vector3(scale.x, scale.y, 1));
+			transform.SetRotation(rotation);
+			AddDebugDrawObject(DebugSceneObjectType_Quad, transform, color);
+		}
+
+		void DebugDrawCircle(Vector3 position, float radius, std::string color, Vector3 rotation)
+		{
+			Transform transform;
+			transform.SetPosition(position);
+			transform.SetScale(Vector3(radius, radius, 1));
+			transform.SetRotation(rotation);
+			AddDebugDrawObject(DebugSceneObjectType_Circle, transform, color);
 		}
 
 		void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color)

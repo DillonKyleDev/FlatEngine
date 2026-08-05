@@ -1,4 +1,5 @@
 #include "components/Body2D.h"
+#include "managers/SceneManager.h"
 #include "render/SceneView.h"
 #include "shapes/Box.h"
 #include "tools/Numbers.h"
@@ -6,7 +7,7 @@
 
 namespace FlatEngine
 {
-	Box::Box(Body2D* parentBody) : Shape(parentBody)
+	Box::Box(long parentID) : Shape(parentID)
 	{
 		m_shapeProps.shape = Shape::ShapeType::ShapeType_Box;
 		m_shapeProps.dimensions = Vector2(2.0f, 2.0f);		
@@ -24,7 +25,7 @@ namespace FlatEngine
 	void Box::UpdateCorners()
 	{
 		float rotationOffset = Numbers::RadiansToDegrees(b2Rot_GetAngle(m_shapeProps.rotationOffset));
-		float rotation = m_parentBody->GetRotation() + rotationOffset;
+		float rotation = SceneManager::loadedScene.GetObjectByID(m_parentID)->Get<Body2D>()->GetRotation() + rotationOffset;
 		float width = m_shapeProps.dimensions.x;
 		float height = m_shapeProps.dimensions.y;
 		Vector2 offset = m_shapeProps.positionOffset;
@@ -34,7 +35,7 @@ namespace FlatEngine
 		Vector2 bottomRight = Vector2::Rotate(Vector2(+width / 2, -height / 2) + offset, rotation);
 		Vector2 bottomLeft = Vector2::Rotate(Vector2(-width / 2, -height / 2) + offset, rotation);
 
-		Vector2 position = m_parentBody->GetPosition();
+		Vector2 position = SceneManager::loadedScene.GetObjectByID(m_parentID)->Get<Body2D>()->GetPosition();
 		Vector2 corners[4] =
 		{
 			position + topLeft,

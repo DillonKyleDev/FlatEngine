@@ -11,8 +11,7 @@ namespace FlatEngine
 	class CPPScript;
 
 	struct ScriptData {			
-        std::string name = "";  
-		long parentID = -1;      
+        std::string name = "";      
 		LuaManager::LuaParameterContainer scriptParamContainer;
 		std::shared_ptr<CPPScript> cppScript;
 

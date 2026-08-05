@@ -9,7 +9,7 @@ namespace FlatEngine
 	class Circle : public Shape
 	{
 	public:
-		Circle(Body2D* parentBody = nullptr);
+		Circle(long parentID = -1);
 
 		void SetRadius(float radius);
 	};

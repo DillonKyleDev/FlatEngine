@@ -9,7 +9,7 @@ namespace FlatEngine
     class Chain : public Shape
     {
     public:
-        Chain(Body2D* parentBody);            
+        Chain(long parentID);            
         void SetTangentSpeed(float tangentSpeed);
         void SetRollingResistance(float rollingResistance);
 

@@ -4,7 +4,7 @@
 
 namespace FlatEngine
 {
-	Chain::Chain(Body2D* parentBody) : Shape::Shape(parentBody)
+	Chain::Chain(long parentID) : Shape::Shape(parentID)
 	{				
 		m_shapeProps.shape = Shape::ShapeType::ShapeType_Chain;
 		m_shapeProps.points = { {4.0f, -2.0f}, {4.0f, 0.0f}, {-4.0f, 0.0f}, {-4.0f, -2.0f} };		

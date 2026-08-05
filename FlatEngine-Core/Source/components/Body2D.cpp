@@ -2,6 +2,7 @@
 #include "joints/DistanceJoint.h"
 #include "joints/Joint.h"
 #include "managers/LuaManager.h"
+#include "managers/SceneManager.h"
 #include "tools/Logger.h"
 #include "tools/Numbers.h"
 
@@ -216,11 +217,11 @@ namespace FlatEngine
 
 		if (b2Shape_IsValid(shape->GetShapeID()))
 		{
-			return shape->GetParentBody();
+			return SceneManager::loadedScene.GetObjectByID(shape->GetParentID())->Get<Body2D>();
 		}
 		else if (b2Chain_IsValid(shape->GetChainID()))
 		{
-			return shape->GetParentBody();
+			return SceneManager::loadedScene.GetObjectByID(shape->GetParentID())->Get<Body2D>();
 		}
 		return nullptr;
 	}
@@ -429,7 +430,7 @@ namespace FlatEngine
 	{
 		for (Shape* shape : GetShapes())
 		{
-			shape->CreateBodyShape();
+			shape->CreateBodyShape(this);
 		}
 	}
 
@@ -636,57 +637,57 @@ namespace FlatEngine
 
 	void Body2D::AddBox(Shape::ShapeProps shapeProps)
 	{
-		Box box = Box(this);
+		Box box = Box(GetParentObjectID());
 		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			box.SetShapeProps(shapeProps);
 		}
 		m_boxes.push_back(box);
-		m_boxes.back().CreateBodyShape();
+		m_boxes.back().CreateBodyShape(this);
 	}
 
 	void Body2D::AddCircle(Shape::ShapeProps shapeProps)
 	{
-		Circle circle = Circle(this);
+		Circle circle = Circle(GetParentObjectID());
 		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			circle.SetShapeProps(shapeProps);
 		}		
 		m_circles.push_back(circle);		
-		m_circles.back().CreateBodyShape();
+		m_circles.back().CreateBodyShape(this);
 	}
 
 	void Body2D::AddCapsule(Shape::ShapeProps shapeProps)
 	{
-		Capsule capsule = Capsule(this);
+		Capsule capsule = Capsule(GetParentObjectID());
 		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			capsule.SetShapeProps(shapeProps);
 		}
 		m_capsules.push_back(capsule);
-		m_capsules.back().CreateBodyShape();
+		m_capsules.back().CreateBodyShape(this);
 	}
 
 	void Body2D::AddPolygon(Shape::ShapeProps shapeProps)
 	{
-		Polygon polygon = Polygon(this);
+		Polygon polygon = Polygon(GetParentObjectID());
 		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			polygon.SetShapeProps(shapeProps);
 		}
 		m_polygons.push_back(polygon);
-		m_polygons.back().CreateBodyShape();
+		m_polygons.back().CreateBodyShape(this);
 	}
 
 	void Body2D::AddChain(Shape::ShapeProps shapeProps)
 	{
-		Chain chain = Chain(this);
+		Chain chain = Chain(GetParentObjectID());
 		if (shapeProps.shape != Shape::ShapeType_None)
 		{
 			chain.SetShapeProps(shapeProps);
 		}
 		m_chains.push_back(chain);
-		m_chains.back().CreateBodyShape();
+		m_chains.back().CreateBodyShape(this);
 	}
 
 	void Body2D::AddJoint(Joint* joint)

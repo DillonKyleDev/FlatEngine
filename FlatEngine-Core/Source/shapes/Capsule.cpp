@@ -5,7 +5,7 @@
 
 namespace FlatEngine
 {
-	Capsule::Capsule(Body2D* parentBody) : Shape::Shape(parentBody)
+	Capsule::Capsule(long parentID) : Shape::Shape(parentID)
 	{		
 		m_shapeProps.shape = Shape::ShapeType::ShapeType_Capsule;
 		m_shapeProps.radius = 1.0f;

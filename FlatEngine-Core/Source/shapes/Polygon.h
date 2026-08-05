@@ -9,7 +9,7 @@ namespace FlatEngine
     class Polygon : public Shape
     {
     public:
-        Polygon(Body2D* parentBody = nullptr);         
+        Polygon(long parentID = -1);         
         
         void SetCornerRadius(float cornerRadius);
     };

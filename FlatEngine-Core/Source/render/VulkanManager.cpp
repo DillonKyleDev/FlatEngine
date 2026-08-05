@@ -1165,129 +1165,123 @@ namespace FlatEngine
             std::list<VkCommandBuffer> commandBuffers = std::list<VkCommandBuffer>();       
             std::vector<std::thread> threads = std::vector<std::thread>();
 
-            //threads.emplace_back([this, &commandBuffers, imageIndex]
-            //{
-                // Scene View
-                if (m_renderToTextureSceneViewRenderPass.Initialized() && Settings::settings.b_showSceneView)
-                {                                  
-                    m_renderToTextureSceneViewRenderPass.BeginRenderPass(imageIndex);
+            // Scene View
+            if (m_renderToTextureSceneViewRenderPass.Initialized() && Settings::settings.b_showSceneView)
+            {                                  
+                m_renderToTextureSceneViewRenderPass.BeginRenderPass(imageIndex);
 
-                    if (SceneView::ShouldShowSceneViewGridObjects())
-                    {
-                        for (SceneView::SceneRenderObject& renderObject : SceneView::persistentSceneRenderObjects)                        
-                        {                                                        
-                            std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
-                            if (renderObject.mesh.Initialized() && material != nullptr)
-                            {                                                  
-                                if (renderObject.mesh.IsActive())
-                                {                                    
-                                    m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                    renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
-                                    m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
-                                    m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
-                                    m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
-                                }
-                            }
-                        }
-                    }     
-                    
-                    for (PoolObject<SceneView::SceneRenderObject>& poolRenderObject : SceneView::debugDrawSceneRenderObjects)                        
+                if (SceneView::ShouldShowSceneViewGridObjects())
+                {
+                    for (SceneView::SceneRenderObject& renderObject : SceneView::persistentSceneRenderObjects)                        
                     {                                                        
-                        std::shared_ptr<Material> material = poolRenderObject.object->mesh.GetSceneViewMaterial();
-                        if (poolRenderObject.object->mesh.Initialized() && material != nullptr)
+                        std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
+                        if (renderObject.mesh.Initialized() && material != nullptr)
                         {                                                  
-                            if (poolRenderObject.object->mesh.IsActive())
+                            if (renderObject.mesh.IsActive())
                             {                                    
                                 m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                poolRenderObject.object->mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &poolRenderObject.object->transform);
-                                m_renderToTextureSceneViewRenderPass.BindIndexed(poolRenderObject.object->mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
-                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(poolRenderObject.object->mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
-                                m_renderToTextureSceneViewRenderPass.DrawIndexed(poolRenderObject.object->mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                                renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
+                                m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                             }
                         }
                     }
-
-
-                    std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
-
-                    std::vector<VkDrawIndirectCommand> drawCommands = std::vector<VkDrawIndirectCommand>();
-                    uint32_t meshCount = 0;
-                    for (auto& materials : m_sceneViewMaterialMeshes)
-                    {
-                        if (m_sceneViewMaterials.count(materials.first))
-                        {
-                            std::shared_ptr<Material> material = m_sceneViewMaterials.at(materials.first);
-                            m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());      
-
-                            for (auto& objectID : materials.second.GetAll())
-                            {
-                                Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(objectID);
-                                if (mesh == nullptr)
-                                {
-                                    Sprite* sprite = SceneManager::loadedScene.Get<Sprite>(objectID);
-                                    if (sprite != nullptr)
-                                        mesh = &sprite->mesh;
-                                    else
-                                        continue;
-                                }
-
-                                m_renderToTextureSceneViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
-
-
-                                //encode the draw data of each object into the indirect draw buffer
-
-                                //drawCommands[meshCount].vertexCount = GetModel(models->first)->GetVertices().size();
-                                //drawCommands[meshCount].instanceCount = 1;
-                                //drawCommands[meshCount].firstVertex = 0;
-                                //drawCommands[meshCount].firstInstance = meshCount; //used to access object matrix in the shader
-                            
-                                //VkDeviceSize indirectOffset = draw.first * sizeof(VkDrawIndirectCommand);
-                                //uint32_t draw_stride = sizeof(VkDrawIndirectCommand);
-
-                                ////execute the draw command buffer on each section as defined by the array of draws
-                                //vkCmdDrawIndirect(m_renderToTextureSceneViewRenderPass.GetCommandBuffers()[currentFrame], get_current_frame().indirectBuffer, indirectOffset, draw.count, draw_stride);
-                                //
-
-                                if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
-                                {
-                                    mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic());
-                                    m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh->GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
-                                    m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       
-                                }
-                                else if (mesh->MissingTextures())
-                                {
-                                    meshesMissingTextures.push_back(mesh);
-                                }
-
-                                meshCount++;
-                            }                   
+                }     
+                
+                for (PoolObject<SceneView::SceneRenderObject>& poolRenderObject : SceneView::debugDrawSceneRenderObjects)                        
+                {                                                        
+                    std::shared_ptr<Material> material = poolRenderObject.object->mesh.GetSceneViewMaterial();
+                    if (poolRenderObject.object->mesh.Initialized() && material != nullptr)
+                    {                                                  
+                        if (poolRenderObject.object->mesh.IsActive())
+                        {                                    
+                            m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                            poolRenderObject.object->mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &poolRenderObject.object->transform);
+                            m_renderToTextureSceneViewRenderPass.BindIndexed(poolRenderObject.object->mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                            m_renderToTextureSceneViewRenderPass.BindDescriptorSets(poolRenderObject.object->mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                            m_renderToTextureSceneViewRenderPass.DrawIndexed(poolRenderObject.object->mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                         }
                     }
-
-                    // Render the Mesh but using the fl_empty material
-                    if (meshesMissingTextures.size())
-                    {
-                        m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(GetMaterial("fl_empty")->GetGraphicsPipeline());
-
-                        for (Mesh* mesh : meshesMissingTextures)
-                        {
-                            mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic());
-                            m_renderToTextureSceneViewRenderPass.BindIndexed(mesh->GetModel());
-                            m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh->GetEmptySceneViewDescriptorSets()[currentFrame], GetMaterial("fl_empty"), ViewportType::ViewportType_SceneView);
-                            m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable   
-                        }
-                    }
-
-                    m_renderToTextureSceneViewRenderPass.EndRenderPass();
-
-                    commandBuffers.push_back(m_renderToTextureSceneViewRenderPass.GetCommandBuffers()[currentFrame]);  
                 }
-            //});
 
 
-            //threads.emplace_back([this, &commandBuffers, imageIndex]
-            //{
-                // // Game View
+                std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
+
+                std::vector<VkDrawIndirectCommand> drawCommands = std::vector<VkDrawIndirectCommand>();
+                uint32_t meshCount = 0;
+                for (auto& materials : m_sceneViewMaterialMeshes)
+                {
+                    if (m_sceneViewMaterials.count(materials.first))
+                    {
+                        std::shared_ptr<Material> material = m_sceneViewMaterials.at(materials.first);
+                        m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());      
+
+                        for (auto& objectID : materials.second.GetAll())
+                        {
+                            Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(objectID);
+                            if (mesh == nullptr)
+                            {
+                                Sprite* sprite = SceneManager::loadedScene.Get<Sprite>(objectID);
+                                if (sprite != nullptr)
+                                    mesh = &sprite->mesh;
+                                else
+                                    continue;
+                            }
+
+                            m_renderToTextureSceneViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
+
+
+                            //encode the draw data of each object into the indirect draw buffer
+
+                            //drawCommands[meshCount].vertexCount = GetModel(models->first)->GetVertices().size();
+                            //drawCommands[meshCount].instanceCount = 1;
+                            //drawCommands[meshCount].firstVertex = 0;
+                            //drawCommands[meshCount].firstInstance = meshCount; //used to access object matrix in the shader
+                        
+                            //VkDeviceSize indirectOffset = draw.first * sizeof(VkDrawIndirectCommand);
+                            //uint32_t draw_stride = sizeof(VkDrawIndirectCommand);
+
+                            ////execute the draw command buffer on each section as defined by the array of draws
+                            //vkCmdDrawIndirect(m_renderToTextureSceneViewRenderPass.GetCommandBuffers()[currentFrame], get_current_frame().indirectBuffer, indirectOffset, draw.count, draw_stride);
+                            //
+
+                            if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
+                            {
+                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic());
+                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh->GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       
+                            }
+                            else if (mesh->MissingTextures())
+                            {
+                                meshesMissingTextures.push_back(mesh);
+                            }
+
+                            meshCount++;
+                        }                   
+                    }
+                }
+
+                // Render the Mesh but using the fl_empty material
+                if (meshesMissingTextures.size())
+                {
+                    m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(GetMaterial("fl_empty")->GetGraphicsPipeline());
+
+                    for (Mesh* mesh : meshesMissingTextures)
+                    {
+                        mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic());
+                        m_renderToTextureSceneViewRenderPass.BindIndexed(mesh->GetModel());
+                        m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh->GetEmptySceneViewDescriptorSets()[currentFrame], GetMaterial("fl_empty"), ViewportType::ViewportType_SceneView);
+                        m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable   
+                    }
+                }
+
+                m_renderToTextureSceneViewRenderPass.EndRenderPass();
+
+                commandBuffers.push_back(m_renderToTextureSceneViewRenderPass.GetCommandBuffers()[currentFrame]);  
+            }
+            
+            // Game View
             if (m_renderToTextureGameViewRenderPass.Initialized() && Settings::settings.b_showGameView)
             {            
                 m_renderToTextureGameViewRenderPass.BeginRenderPass(imageIndex);
@@ -1341,15 +1335,7 @@ namespace FlatEngine
 
                 commandBuffers.push_back(m_renderToTextureGameViewRenderPass.GetCommandBuffers()[currentFrame]);
             }
-            //});
-            
-            //for (auto& thread : threads)
-            //{
-            //    if (thread.joinable())
-            //    {
-            //        thread.join();
-            //    }
-            //}
+        
 
             //if (m_postProcessingRenderPass.Initialized())
             //{

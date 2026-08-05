@@ -400,28 +400,35 @@ namespace FlatGui
 						FL::Settings::settings.SaveSettings();
 					}			
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
-					if (ImGui::BeginMenu(" Scene View Camera Perspective Angle"))
+					if (ImGui::BeginMenu(" Orthogonal View Size"))
+					{					
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraOrthoSize", 100.0f, FL::SceneView::sceneViewCamera.m_orthoSize, 0.2f, 0.1f, FLT_MAX))
+							FL::Settings::settings.SaveSettings();	
+						ImGui::EndMenu();
+					}
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
+					if (ImGui::BeginMenu(" Scene View Perspective Angle"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraPerspective", 100.0f, FL::SceneView::sceneViewCamera.m_perspectiveAngle, 0.1f, 0, 359))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Camera Near Clip"))
+					if (ImGui::BeginMenu(" Scene View Near Clip"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClip", 100.0f, FL::SceneView::sceneViewCamera.m_nearClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Camera Far Clip"))
+					if (ImGui::BeginMenu(" Scene View Far Clip"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClip", 100.0f, FL::SceneView::sceneViewCamera.m_farClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Camera Move Damp"))
+					if (ImGui::BeginMenu(" Scene View Move Damp"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraDamping", 100.0f, FL::Settings::settings.sceneViewCameraSpeed, 1, 0, 500))
 							FL::Settings::settings.SaveSettings();											

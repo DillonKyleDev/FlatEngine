@@ -98,7 +98,8 @@ namespace FlatEngine
                 SceneView::sceneViewCamera.SetNearClippingDistance(JsonHelper::CheckJsonFloat(settings, "sceneViewNearClippingDistance", name));
                 SceneView::sceneViewCamera.SetFarClippingDistance(JsonHelper::CheckJsonFloat(settings, "sceneViewFarClippingDistance", name));
                 SceneView::sceneViewCamera.SetPerspectiveAngle(JsonHelper::CheckJsonFloat(settings, "sceneViewPerspectiveAngle", name));
-                SceneView::SetOrthographic(JsonHelper::CheckJsonBool(settings, "b_orthographic", name));
+                SceneView::sceneViewCamera.b_orthographic = (JsonHelper::CheckJsonBool(settings, "b_orthographic", name));
+                SceneView::sceneViewCamera.m_orthoSize = JsonHelper::CheckJsonFloat(settings, "orthoSize", name);
                 SceneView::SetShowSceneViewGridObjects(JsonHelper::CheckJsonBool(settings, "b_showGridObjects", name));
                 sceneViewCameraSpeed = JsonHelper::CheckJsonFloat(settings, "sceneViewCameraSpeed", name);                
             }
@@ -160,8 +161,9 @@ namespace FlatEngine
                 { "sceneViewNearClippingDistance",   SceneView::sceneViewCamera.GetNearClippingDistance() },
                 { "sceneViewFarClippingDistance",    SceneView::sceneViewCamera.GetFarClippingDistance() },
                 { "sceneViewPerspectiveAngle",       SceneView::sceneViewCamera.GetPerspectiveAngle() },
-                { "b_showGridObjects",               SceneView::ShouldShowSceneViewGridObjects() },
-                { "b_orthographic",                  SceneView::IsOrthoGraphic() },
+                { "b_orthographic",                  SceneView::sceneViewCamera.b_orthographic },
+                { "orthoSize",                       SceneView::sceneViewCamera.m_orthoSize },
+                { "b_showGridObjects",               SceneView::ShouldShowSceneViewGridObjects() },                
                 { "sceneViewCameraSpeed",            sceneViewCameraSpeed }                
             });
 

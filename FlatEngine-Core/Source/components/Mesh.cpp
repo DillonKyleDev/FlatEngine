@@ -475,7 +475,7 @@ namespace FlatEngine
 
 		if (b_orthographic)
 		{    
-			aspectRatio = SceneView::sceneViewDimensions.x / ( SceneView::sceneViewDimensions.y != 0 ? SceneView::sceneViewDimensions.y : 1);			
+			//aspectRatio = SceneView::sceneViewDimensions.x / ( SceneView::sceneViewDimensions.y != 0 ? SceneView::sceneViewDimensions.y : 1);			
 			float halfWidth  = primaryCamera->m_orthoSize * aspectRatio;
 			float halfHeight = primaryCamera->m_orthoSize;
 			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -500.0f, 500.0f);			
@@ -487,8 +487,6 @@ namespace FlatEngine
 			projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
 			projection[1][1] *= -1;
 		}
-
-
 
 		CustomUBO ubo{};
 

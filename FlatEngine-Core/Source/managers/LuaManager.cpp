@@ -290,9 +290,9 @@ namespace FlatEngine
 				return newObject;
 			};
 			lua["CloseProgram"] = []()
-				{
-					F_b_closeProgramQueued = true;
-				};
+			{
+				F_b_closeProgramQueued = true;
+			};
 			lua["DebugDrawLine"] = [](Vector3 startPos, Vector3 endPos, std::optional<std::string> color, std::optional<Vector3> rotation)
 			{
 				SceneView::DebugDrawLine(startPos, endPos, color.value_or("debugDraw"));

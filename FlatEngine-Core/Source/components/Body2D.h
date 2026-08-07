@@ -2,7 +2,6 @@
 #include "components/Component.h"
 #include "physics/PhysicsManager.h"
 #include "physics/Shape.h"
-#include "render/SceneView.h"
 #include "tools/Vector2.h"
 
 #include <list>
@@ -82,8 +81,7 @@ namespace FlatEngine
 		float gravityScale = 1.0f;
 		float linearDamping = 0.0f;
 		float angularDamping = 0.0f;
-
-		std::vector<SceneView::SceneRenderObject> renderShapes;
+		
 		std::list<Shape> boxes;
 		std::list<Shape> circles;
 		std::list<Shape> capsules;
@@ -93,7 +91,6 @@ namespace FlatEngine
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
 		std::list<DistanceJoint*> m_distanceJoints;
-		
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

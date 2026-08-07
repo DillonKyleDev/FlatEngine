@@ -1313,18 +1313,21 @@ namespace FlatEngine
                 // BODY2D DRAW SHAPES
                 for (Body2D body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
                 {
-                    for (SceneView::SceneRenderObject& renderShape : body2D.renderShapes)                        
-                    {                 
-                        std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
-                        if (renderShape.mesh.Initialized() && material != nullptr)
-                        {                                                  
-                            if (renderShape.mesh.IsActive())
-                            {                                    
-                                m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderShape.transform);
-                                m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
-                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
-                                m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                    for (Shape* shape : body2D.GetShapes())
+                    {
+                        for (SceneView::SceneRenderObject& renderShape : shape->renderShapes)                        
+                        {                 
+                            std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
+                            if (renderShape.mesh.Initialized() && material != nullptr)
+                            {                                                  
+                                if (renderShape.mesh.IsActive())
+                                {                                    
+                                    m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                                    renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderShape.transform);
+                                    m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                    m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                    m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                                }
                             }
                         }
                     }

@@ -1,5 +1,6 @@
 #include "components/Body2D.h"
 #include "managers/SceneManager.h"
+#include "physics/Shape.h"
 #include "physics/joints/DistanceJoint.h"
 #include "physics/joints/Joint.h"
 #include "managers/LuaManager.h"
@@ -74,13 +75,14 @@ namespace FlatEngine
 			for (int i = 0; i < jsonData.at("shapes").size(); i++)
 			{
 				json shapeJson = jsonData.at("shapes").at(i);
-				Shape shape = Shape(GetOwnerID());
+				ShapeType shapeType = (JsonHelper::CheckJsonInt(jsonData, "type", objectName)) != -1 ? (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "type", objectName)) : ShapeType_None;				
+				Shape shape = Shape(GetOwnerID(), shapeType);
 				shape.PutData(shapeJson, objectName);
 
 				switch (shape.GetType())
 				{
-					case ShapeType_Box:	boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); renderShapes.push_back(SceneView::CreateQuadObject());; break;
-					case ShapeType_Circle: circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); renderShapes.push_back(SceneView::CreateCircleObject());break;
+					case ShapeType_Box:	boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break;
+					case ShapeType_Circle: circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); break;
 					case ShapeType_Capsule: capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break;
 					case ShapeType_Polygon:	polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break;
 					case ShapeType_Chain: chains.push_back(shape); PhysicsManager::physics2D.CreateShape(&chains.back(), this); break;
@@ -218,6 +220,9 @@ namespace FlatEngine
 
 		for (Shape* shape : GetShapes())
 		{
+			if (shape->renderShapes.size() == 0)
+				return;
+
 			std::visit([this, shape, ownerTransform](auto&& sData)
 			{
 				using T = std::decay_t<decltype(sData)>;
@@ -228,13 +233,15 @@ namespace FlatEngine
 					Vector3 ownerPos = ownerTransform->GetPosition();					
 					renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
 					renderTransform.SetScale(Vector3(sData.dimensions.x, sData.dimensions.y, 1));
-					renderShapes[0].transform = renderTransform;
+					shape->renderShapes[0].transform = renderTransform;
 				}
 				else if constexpr (std::is_same_v<T, CircleShapeData>)
 				{
 					Transform renderTransform;
+					Vector3 ownerPos = ownerTransform->GetPosition();	
+					renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
 					renderTransform.SetScale(Vector3(sData.radius, sData.radius, 1));
-					renderShapes[0].transform = renderTransform;
+					shape->renderShapes[0].transform = renderTransform;
 				}
 				else if constexpr (std::is_same_v<T, CapsuleShapeData>)
 				{
@@ -269,14 +276,14 @@ namespace FlatEngine
 
 	void Body2D::AddShape(ShapeType type)
 	{
-		Shape shape = Shape(GetOwnerID());
+		Shape shape = Shape(GetOwnerID(), type);
 		switch (type)
 		{
-			case ShapeType_Box: { BoxShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-			case ShapeType_Circle: { CircleShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateCircleObject()); break; }
-			case ShapeType_Polygon: { PolygonShapeData shapeData; shape.shapeData = shapeData; renderShapes = CreateCapsuleRenderObjects(); break; }
-			case ShapeType_Capsule: { CapsuleShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateLineObject()); break; }
-			case ShapeType_Chain: { ChainShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateLineObject()); break; }
+			case ShapeType_Box: { BoxShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateQuadObject()); boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break; }
+			case ShapeType_Circle: { CircleShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateCircleObject()); circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); break; }
+			case ShapeType_Capsule: { CapsuleShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break; }
+			case ShapeType_Polygon: { PolygonShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes = CreateCapsuleRenderObjects(); polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break; }			
+			case ShapeType_Chain: { ChainShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); chains.push_back(shape); break; PhysicsManager::physics2D.CreateShape(&chains.back(), this); }
 			default: break;
 		}
 	}
@@ -546,10 +553,10 @@ namespace FlatEngine
 
 	void Body2D::Cleanup()
 	{
-		for (Shape* shape : GetShapes())
-		{
-			PhysicsManager::physics2D.DestroyShape(shape);
-		}
+		// for (Shape* shape : GetShapes())
+		// {
+		// 	PhysicsManager::physics2D.DestroyShape(shape);
+		// }
 
 		boxes.clear();
 		circles.clear();

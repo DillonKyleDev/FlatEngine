@@ -93,12 +93,16 @@ namespace FlatEngine
                 SceneView::SetGridHorizontal(JsonHelper::CheckJsonBool(settings, "b_gridHorizontal", name));
                 // Scene View Camera
                 SceneView::sceneViewCameraTransform.SetPosition(FL::Vector3(JsonHelper::CheckJsonFloat(settings, "sceneCameraPosX", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosY", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosZ", name)));
-                SceneView::sceneViewCamera.SetHorizontalViewAngle(JsonHelper::CheckJsonFloat(settings, "sceneCameraHorizontalViewAngle", name));
-                SceneView::sceneViewCamera.SetVerticalViewAngle(JsonHelper::CheckJsonFloat(settings, "sceneCameraVerticalViewAngle", name));
-                SceneView::sceneViewCamera.SetNearClippingDistance(JsonHelper::CheckJsonFloat(settings, "sceneViewNearClippingDistance", name));
-                SceneView::sceneViewCamera.SetFarClippingDistance(JsonHelper::CheckJsonFloat(settings, "sceneViewFarClippingDistance", name));
-                SceneView::sceneViewCamera.SetPerspectiveAngle(JsonHelper::CheckJsonFloat(settings, "sceneViewPerspectiveAngle", name));                
-                SceneView::sceneViewCamera.m_orthoSize = JsonHelper::CheckJsonFloat(settings, "orthoSize", name);
+                SceneView::sceneViewCamera.orthoHorizontalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraOrthoHorizontalViewAngle", name);
+                SceneView::sceneViewCamera.orthoVerticalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraOrthoVerticalViewAngle", name);
+                SceneView::sceneViewCamera.horizontalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraHorizontalViewAngle", name);
+                SceneView::sceneViewCamera.verticalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraVerticalViewAngle", name);
+                SceneView::sceneViewCamera.orthoNearClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewOrthoNearClippingDistance", name);
+                SceneView::sceneViewCamera.orthoFarClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewOrthoFarClippingDistance", name);
+                SceneView::sceneViewCamera.nearClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewNearClippingDistance", name);
+                SceneView::sceneViewCamera.farClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewFarClippingDistance", name);
+                SceneView::sceneViewCamera.perspectiveAngle = JsonHelper::CheckJsonFloat(settings, "sceneViewPerspectiveAngle", name);                
+                SceneView::sceneViewCamera.gridStep = JsonHelper::CheckJsonFloat(settings, "gridStep", name);
                 SceneView::SetOrthographic(JsonHelper::CheckJsonBool(settings, "b_orthographic", name));
                 SceneView::SetShowSceneViewGridObjects(JsonHelper::CheckJsonBool(settings, "b_showGridObjects", name));
                 sceneViewCameraSpeed = JsonHelper::CheckJsonFloat(settings, "sceneViewCameraSpeed", name);                
@@ -122,49 +126,53 @@ namespace FlatEngine
             Vector3 sceneViewPos = SceneView::sceneViewCameraTransform.GetPosition();
 
             json settings = json::object({
-                { "path",                            m_path },
+                { "path",                               m_path },
                 // Viewports
-                { "b_showDemoWindow",                b_showDemoWindow },     
-                { "b_showFileExplorer",              b_showFileExplorer },
-                { "b_showTileSetEditor",             b_showTileSetEditor },                
-                { "b_showSceneView",                 b_showSceneView },
-                { "b_showGameView",                  b_showGameView },
-                { "b_showHierarchy",                 b_showHierarchy },
-                { "b_showPersistentScript",          b_showPersistentScript },
-                { "b_showInspector",                 b_showInspector },
-                { "b_showAnimator",                  b_showAnimator },
-                { "b_showAnimationPreview",          b_showAnimationPreview },
-                { "b_showKeyFrameEditor",            b_showKeyFrameEditor },
-                { "b_showLog",                       b_showLog },
-                { "b_showProfiler",                  b_showProfiler },
-                { "b_showMappingContextEditor",      b_showMappingContextEditor },    
-                { "b_showMaterialEditor",            b_showMaterialEditor },     
-                { "b_showSettings",                  b_showSettings },    
+                { "b_showDemoWindow",                   b_showDemoWindow },     
+                { "b_showFileExplorer",                 b_showFileExplorer },
+                { "b_showTileSetEditor",                b_showTileSetEditor },                
+                { "b_showSceneView",                    b_showSceneView },
+                { "b_showGameView",                     b_showGameView },
+                { "b_showHierarchy",                    b_showHierarchy },
+                { "b_showPersistentScript",             b_showPersistentScript },
+                { "b_showInspector",                    b_showInspector },
+                { "b_showAnimator",                     b_showAnimator },
+                { "b_showAnimationPreview",             b_showAnimationPreview },
+                { "b_showKeyFrameEditor",               b_showKeyFrameEditor },
+                { "b_showLog",                          b_showLog },
+                { "b_showProfiler",                     b_showProfiler },
+                { "b_showMappingContextEditor",         b_showMappingContextEditor },    
+                { "b_showMaterialEditor",               b_showMaterialEditor },     
+                { "b_showSettings",                     b_showSettings },    
                 // Log verbosity
-                { "b_showTrace",                     b_showTrace },
-                { "b_showDebug",                     b_showDebug },
-                { "b_showInfo",                      b_showInfo },
-                { "b_showWarn",                      b_showWarn },    
-                { "b_showError",                     b_showError },     
-                { "b_showCritical",                  b_showCritical },   
+                { "b_showTrace",                        b_showTrace },
+                { "b_showDebug",                        b_showDebug },
+                { "b_showInfo",                         b_showInfo },
+                { "b_showWarn",                         b_showWarn },    
+                { "b_showError",                        b_showError },     
+                { "b_showCritical",                     b_showCritical },   
                 // Settings
-                { "b_fullscreen",                    b_fullscreen },
-                { "b_vsyncEnabled",                  b_vsyncEnabled },
-                { "fileExplorerThumbnailSize",       fileExplorerThumbnailSize },     
-                { "b_gridHorizontal",                SceneView::IsGridHorizontal() },       
+                { "b_fullscreen",                       b_fullscreen },
+                { "b_vsyncEnabled",                     b_vsyncEnabled },
+                { "fileExplorerThumbnailSize",          fileExplorerThumbnailSize },     
+                { "b_gridHorizontal",                   SceneView::IsGridHorizontal() },       
                 // Scene View Camera
-                { "sceneCameraPosX",                 sceneViewPos.x },
-                { "sceneCameraPosY",                 sceneViewPos.y },
-                { "sceneCameraPosZ",                 sceneViewPos.z },
-                { "sceneCameraHorizontalViewAngle",  SceneView::sceneViewCamera.GetHorizontalViewAngle() },
-                { "sceneCameraVerticalViewAngle",    SceneView::sceneViewCamera.GetVerticalViewAngle() },
-                { "sceneViewNearClippingDistance",   SceneView::sceneViewCamera.GetNearClippingDistance() },
-                { "sceneViewFarClippingDistance",    SceneView::sceneViewCamera.GetFarClippingDistance() },
-                { "sceneViewPerspectiveAngle",       SceneView::sceneViewCamera.GetPerspectiveAngle() },
-                { "b_orthographic",                  SceneView::sceneViewCamera.b_orthographic },
-                { "orthoSize",                       SceneView::sceneViewCamera.m_orthoSize },
-                { "b_showGridObjects",               SceneView::ShouldShowSceneViewGridObjects() },                
-                { "sceneViewCameraSpeed",            sceneViewCameraSpeed }                
+                { "sceneCameraPosX",                    sceneViewPos.x },
+                { "sceneCameraPosY",                    sceneViewPos.y },
+                { "sceneCameraPosZ",                    sceneViewPos.z },
+                { "sceneCameraOrthoHorizontalViewAngle",SceneView::sceneViewCamera.orthoHorizontalViewAngle },
+                { "sceneCameraOrthoVerticalViewAngle",  SceneView::sceneViewCamera.orthoVerticalViewAngle },
+                { "sceneCameraHorizontalViewAngle",     SceneView::sceneViewCamera.horizontalViewAngle },
+                { "sceneCameraVerticalViewAngle",       SceneView::sceneViewCamera.verticalViewAngle },
+                { "sceneViewOrthoNearClippingDistance", SceneView::sceneViewCamera.orthoNearClippingDistance },
+                { "sceneViewOrthoFarClippingDistance",  SceneView::sceneViewCamera.orthoFarClippingDistance },
+                { "sceneViewNearClippingDistance",      SceneView::sceneViewCamera.nearClippingDistance },
+                { "sceneViewFarClippingDistance",       SceneView::sceneViewCamera.farClippingDistance },
+                { "sceneViewPerspectiveAngle",          SceneView::sceneViewCamera.perspectiveAngle },
+                { "b_orthographic",                     SceneView::sceneViewCamera.b_orthographic },
+                { "gridStep",                           SceneView::sceneViewCamera.gridStep },
+                { "b_showGridObjects",                  SceneView::ShouldShowSceneViewGridObjects() },                
+                { "sceneViewCameraSpeed",               sceneViewCameraSpeed }                
             });
 
             json settingsObject = json::object({ {"Settings", settings } });

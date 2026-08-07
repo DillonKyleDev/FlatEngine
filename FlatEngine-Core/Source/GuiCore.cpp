@@ -729,7 +729,7 @@ namespace FlatEngine
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, increment, min, max, ImGuiSliderFlags_AlwaysClamp);
+				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, increment, min, max);
 				ImGui::PushID(ID.c_str());
 				ImGui::PopID();
 				GuiCore::PopTable();
@@ -1540,7 +1540,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 
-			bool b_sliderChanged = ImGui::DragFloat(ID.c_str(), &value, increment, min, max, "%.3f", flags);
+			bool b_sliderChanged = ImGui::DragFloat(ID.c_str(), &value, increment, min, max, "%.3f", flags | ImGuiSliderFlags_AlwaysClamp);
 
 			if (ImGui::IsItemHovered())
 			{
@@ -1567,7 +1567,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 
-			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_Double, &value, increment, "%.3f");			
+			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_Double, &value, increment, "%.3f", NULL, NULL, ImGuiSliderFlags_AlwaysClamp);			
 
 			if (ImGui::IsItemHovered())
 			{
@@ -1601,7 +1601,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 			
-			bool b_sliderChanged = ImGui::DragInt(ID.c_str(), &value, speed, min, max, "%d", flags);
+			bool b_sliderChanged = ImGui::DragInt(ID.c_str(), &value, speed, min, max, "%d", flags | ImGuiSliderFlags_AlwaysClamp);
 			
 			if (ImGui::IsItemHovered())
 			{
@@ -1635,7 +1635,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 			
-			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_S64, &value, 1.0f);			
+			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_S64, &value, 1.0f, NULL, NULL, NULL, ImGuiSliderFlags_AlwaysClamp);			
 			
 			if (ImGui::IsItemHovered())
 			{

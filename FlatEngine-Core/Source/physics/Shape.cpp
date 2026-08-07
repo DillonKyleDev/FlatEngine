@@ -9,9 +9,9 @@
 
 namespace FlatEngine
 {
-	Shape::Shape(long ownerID)
+	Shape::Shape(long ownerID, ShapeType shapeType)
 	{		
-		type = ShapeType_None;
+		type = shapeType;
 		m_shapeID = b2_nullShapeId;
 		m_chainID = b2_nullChainId;
 		m_ownerID = ownerID;
@@ -36,7 +36,7 @@ namespace FlatEngine
 	json Shape::GetData()
 	{
 		json jsonData = {
-			{ "shape", (int)type },
+			{ "type", (int)type },
 			{ "b_enableContactEvents", b_enableContactEvents },
 			{ "b_enableSensorEvents", b_enableSensorEvents },
 			{ "b_isSensor", b_isSensor },
@@ -54,7 +54,7 @@ namespace FlatEngine
 
 	void Shape::PutData(json jsonData, std::string objectName)
 	{
-		type = (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "shape", objectName));
+		type = (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "type", objectName));
 		b_enableContactEvents = JsonHelper::CheckJsonBool(jsonData, "b_enableContactEvents", objectName);
 		b_enableSensorEvents = JsonHelper::CheckJsonBool(jsonData, "b_enableSensorEvents", objectName);
 		b_isSensor = JsonHelper::CheckJsonBool(jsonData, "b_isSensor", objectName);				
@@ -68,8 +68,8 @@ namespace FlatEngine
 		{
 			switch (type)
 			{
-				case ShapeType_Box: { BoxShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
-				case ShapeType_Circle: { CircleShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
+				case ShapeType_Box: { BoxShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
+				case ShapeType_Circle: { CircleShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
 				case ShapeType_Polygon: { PolygonShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
 				case ShapeType_Capsule: { CapsuleShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
 				case ShapeType_Chain: { ChainShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
@@ -77,11 +77,6 @@ namespace FlatEngine
 			}
 		}
 	}	
-
-	//void Shape::SetShapeUserData(std::shared_ptr<Shape> shapePtr)
-	//{
-	//	b2Shape_SetUserData(m_shapeID, shapePtr);
-	//}
 
 	void Shape::SetShapeID(b2ShapeId shapeID)
 	{

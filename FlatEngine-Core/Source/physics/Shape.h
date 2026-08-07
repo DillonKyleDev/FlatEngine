@@ -317,7 +317,7 @@ namespace FlatEngine
 	class Shape
 	{
 	public:
-		Shape(long ownerID);	
+		Shape(long ownerID, ShapeType type = ShapeType_None);	
 		json GetData();
 		void PutData(json jsonData, std::string name);
 		ShapeType GetType();		
@@ -346,6 +346,7 @@ namespace FlatEngine
 		b2Polygon polygon;
 		b2Circle circle;
 		b2Capsule capsule;		
+		std::vector<SceneView::SceneRenderObject> renderShapes;
 		std::variant<BoxShapeData, CircleShapeData, PolygonShapeData, CapsuleShapeData, ChainShapeData> shapeData;
 		bool b_enableContactEvents;
 		bool b_enableSensorEvents;

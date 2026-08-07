@@ -454,8 +454,7 @@ namespace FlatEngine
 
 		Vector3 meshPosition = transform->GetPosition();
 		glm::mat4 meshScale = transform->GetScaleMatrix();
-		glm::mat4 meshRotation = transform->GetRotationMatrix();
-		bool b_forceZUp = primaryCamera->ForceZUp();
+		glm::mat4 meshRotation = transform->GetRotationMatrix();		
 		glm::vec4 lookDir = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? primaryCamera->GetLookDirectionNoRoll() : primaryCamera->GetLookDirection();
 		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -466,22 +465,22 @@ namespace FlatEngine
 		glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), glm::vec3(up));
 
 		glm::mat4 projection;			
-		float aspectRatio = 16.0f / 9.0f; // (float)RenderWindow::window.GetExtent().width / (float)RenderWindow::window.GetExtent().height;
-		float nearClip = primaryCamera->GetNearClippingDistance();
-		float farClip = primaryCamera->GetFarClippingDistance();
-
+		float aspectRatio = 16.0f / 9.0f;
 
 		if (b_orthographic)
 		{    		
-			float halfWidth  = (float)primaryCamera->m_orthoSize * aspectRatio;
-			float halfHeight = (float)primaryCamera->m_orthoSize;
-			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -500.0f, 500.0f);			
+			// Position the actual image on an integer pixel location, not just dead center.
+			// float orthoSize = SceneView::finalImageSize.y / primaryCamera->gridStep / 2.0f;
+			// Logger::log.Debug("{} {}", SceneView::finalImageSize.x, SceneView::finalImageSize.y);
+			float halfWidth  = SceneView::finalImageSize.x / primaryCamera->gridStep / 2.0f;
+			float halfHeight = SceneView::finalImageSize.y / primaryCamera->gridStep / 2.0f;
+			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, SceneView::sceneViewCamera.orthoNearClippingDistance, SceneView::sceneViewCamera.orthoFarClippingDistance);			
 			projection[1][1] *= -1;
 		}
 		else
 		{
-			float perspectiveAngle = primaryCamera->GetPerspectiveAngle();
-			projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClip, farClip);
+			float perspectiveAngle = primaryCamera->perspectiveAngle;
+			projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, primaryCamera->nearClippingDistance, primaryCamera->farClippingDistance);
 			projection[1][1] *= -1;
 		}
 

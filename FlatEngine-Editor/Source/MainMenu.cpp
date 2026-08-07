@@ -16,6 +16,7 @@
 #include "tools/FileHelper.h"
 
 #include "imgui.h"
+#include <cstdint>
 
 namespace FL = FlatEngine;
 
@@ -400,30 +401,55 @@ namespace FlatGui
 						FL::Settings::settings.SaveSettings();
 					}			
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
-					if (ImGui::BeginMenu(" Orthogonal View Size"))
+					if (ImGui::BeginMenu(" Pixels/Grid Square"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraOrthoSize", 100.0f, FL::SceneView::sceneViewCamera.m_orthoSize, 0.2f, 0.1f, FLT_MAX))
+						int gridStep = (int)FL::SceneView::sceneViewCamera.gridStep;
+						if (FL::GuiCore::RenderDragInt("##SceneViewCameraGridStep", 100.0f, gridStep, 1, FL::SceneView::minGridStep, FL::SceneView::maxGridStep))
+						{
+							if (gridStep > 0) FL::SceneView::sceneViewCamera.gridStep = (uint32_t)gridStep;
 							FL::Settings::settings.SaveSettings();	
+						}
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
 					if (ImGui::BeginMenu(" Scene View Perspective Angle"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraPerspective", 100.0f, FL::SceneView::sceneViewCamera.m_perspectiveAngle, 0.1f, 0, 359))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraPerspective", 100.0f, FL::SceneView::sceneViewCamera.perspectiveAngle, 0.1f, 0, 359))
+							FL::Settings::settings.SaveSettings();	
+						ImGui::EndMenu();
+					}
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");		
+					if (ImGui::MenuItem(" Reset Ortho View"))
+					{						
+						FL::SceneView::sceneViewCamera.orthoHorizontalViewAngle = 180;
+						FL::SceneView::sceneViewCamera.orthoVerticalViewAngle = 0;
+						FL::Settings::settings.SaveSettings();
+					}								
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+					if (ImGui::BeginMenu(" Scene View Near Clip (Ortho)"))
+					{					
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoNearClippingDistance, 0.1f, -1000, 1000))
+							FL::Settings::settings.SaveSettings();	
+						ImGui::EndMenu();
+					}
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+					if (ImGui::BeginMenu(" Scene View Far Clip (Ortho)"))
+					{					
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoFarClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					if (ImGui::BeginMenu(" Scene View Near Clip"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClip", 100.0f, FL::SceneView::sceneViewCamera.m_nearClippingDistance, 0.1f, -1000, 1000))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClip", 100.0f, FL::SceneView::sceneViewCamera.nearClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					if (ImGui::BeginMenu(" Scene View Far Clip"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClip", 100.0f, FL::SceneView::sceneViewCamera.m_farClippingDistance, 0.1f, -1000, 1000))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClip", 100.0f, FL::SceneView::sceneViewCamera.farClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}

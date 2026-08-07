@@ -17,6 +17,7 @@
 #include "render/SceneView.h"
 #include "TagList.h"
 #include "tools/Logger.h"
+#include <box2d.h>
 #include <id.h>
 
 
@@ -38,7 +39,10 @@ namespace FlatEngine
 		{
 			if (b_visible)
 			{
-				SceneView::DrawLineInScene(initialPos, (initialPos + direction) * 10, "rayCast", 2);
+				Vector3 start = Vector3(initialPos.x, initialPos.y, 0);
+				Vector2 endPos2 = (initialPos + direction) * 10;
+				Vector3 endPos = Vector3(endPos2.x, endPos2.y, 0);
+				SceneView::DebugDrawLine(start, endPos, "rayCast");
 			}
 
 			for (Body2D& body : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
@@ -109,16 +113,28 @@ namespace FlatEngine
 			{
 				b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
 				b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;	
-				GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
-				GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
+				if (GetBodyFromShapeID(beginEvent->shapeIdA) != nullptr)
+					GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
+				else
+				 	Logger::log.Err("Body not found from shapeID: {}, {}", beginEvent->shapeIdA.index1, beginEvent->shapeIdA.generation);
+				if (GetBodyFromShapeID(beginEvent->shapeIdB))
+					GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
+				else
+				 	Logger::log.Err("Body not found from shapeID: {}, {}", beginEvent->shapeIdB.index1, beginEvent->shapeIdB.generation);
 			}
 			for (int i = 0; i < contactEvents.endCount; ++i)
 			{
 				b2ContactEndTouchEvent* endEvent = contactEvents.endEvents + i;
 				if (b2Shape_IsValid(endEvent->shapeIdA) && b2Shape_IsValid(endEvent->shapeIdB))
 				{
-					GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
-					GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
+					if (GetBodyFromShapeID(endEvent->shapeIdA) != nullptr)
+						GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
+					else
+						Logger::log.Err("Body not found from shapeID: {}, {}", endEvent->shapeIdA.index1, endEvent->shapeIdA.generation);
+					if (GetBodyFromShapeID(endEvent->shapeIdB))
+						GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
+					else
+						Logger::log.Err("Body not found from shapeID: {}, {}", endEvent->shapeIdB.index1, endEvent->shapeIdB.generation);
 				}
 			}
 
@@ -155,16 +171,16 @@ namespace FlatEngine
 		Body2D* Physics2D::GetBodyFromShapeID(b2ShapeId shapeID)
 		{
 			Shape* shape = static_cast<Shape*>(b2Shape_GetUserData(shapeID));
-
-			if (b2Shape_IsValid(shape->GetShapeID()))
+			if (shape != nullptr && b2Shape_IsValid(shape->GetShapeID()))
 			{
-				return SceneManager::loadedScene.GetObjectByID(shape->GetOwnerID())->Get<Body2D>();
+				// Logger::log.Debug("Data found for: index: {}, world: {}, generation: {}", shapeID.index1, shapeID.world0, shapeID.generation);
+				return SceneManager::loadedScene.Get<Body2D>(shape->GetOwnerID());
 			}
-			else if (b2Chain_IsValid(shape->GetChainID()))
+			else
 			{
-				return SceneManager::loadedScene.GetObjectByID(shape->GetOwnerID())->Get<Body2D>();
+				Logger::log.Debug("user data not found for: index: {}, world: {}, generation: {}", shapeID.index1, shapeID.world0, shapeID.generation);
+				return nullptr;
 			}
-			return nullptr;
 		}
 
 		void Physics2D::CreateBody(Body2D* parentBody)
@@ -174,7 +190,7 @@ namespace FlatEngine
 			bodyDef.isEnabled = parentBody->IsActive();
 			bodyDef.isAwake = true;
 			bodyDef.enableSleep = true;
-			bodyDef.userData = parentBody;
+			bodyDef.userData = reinterpret_cast<void*>(parentBody->GetOwnerID());
 			bodyDef.position = position;
 			bodyDef.rotation = parentBody->rotation;
 			b2MotionLocks motionLocks;		
@@ -211,19 +227,11 @@ namespace FlatEngine
 			filter.maskBits = tagList.GetMaskBits();
 			shapeDef.filter = filter;
 
-			b2ShapeId shapeID = b2ShapeId();
-			// Vector2 position = parentBody != nullptr ? parentBody->GetPosition() : Vector2();
-			// Vector2 offset = shape->positionOffset;
-
 			b2SurfaceMaterial material = b2DefaultSurfaceMaterial();
 			material.friction = shape->friction;
 			material.restitution = shape->restitution;
 			material.rollingResistance = shape->rollingResistance;
 			material.tangentSpeed = shape->tangentSpeed;
-			
-			// shape->renderShape.transform.SetScale(Vector3(shapeProps.radius, shapeProps.radius, 1));
-			// shape->renderShape.transform.SetScale(Vector3(shapeProps.dimensions.x, shapeProps.dimensions.y, 0));
-			// shape->renderShape.transform.SetPosition(Vector3(position.x + offset.x, position.y + offset.y, SceneManager::loadedScene.Get<Transform>(parentBody->GetOwnerID()) != nullptr ? SceneManager::loadedScene.Get<Transform>(parentBody->GetOwnerID())->GetPosition().z : 0));	
 
 			std::visit([parentBody, bodyID, shapeDef, filter, material, shape](auto&& sData) -> void
 			{
@@ -234,8 +242,12 @@ namespace FlatEngine
 					b2Vec2 center = b2Vec2(sData.offset.x, sData.offset.y);
 					shape->polygon = b2MakeOffsetRoundedBox(sData.dimensions.x / 2, sData.dimensions.y / 2, center, rotationOffset, sData.cornerRadius);
 
-					if (parentBody != nullptr)				
-						shape->SetShapeID(b2CreatePolygonShape(bodyID, &shapeDef, &shape->polygon));	
+					if (parentBody != nullptr)	
+					{	
+						b2ShapeId id = b2CreatePolygonShape(bodyID, &shapeDef, &shape->polygon);
+						// Logger::log.Debug("Box: index: {}, world: {}, generation: {}", id.index1, id.world0, id.generation);
+						shape->SetShapeID(id);	
+					}
 				}
 				else if constexpr (std::is_same_v<T, CircleShapeData>)
 				{
@@ -245,8 +257,12 @@ namespace FlatEngine
 					circle.radius = sData.radius;
 					shape->circle = circle;
 
-					if (parentBody != nullptr)		
-						shape->SetShapeID(b2CreateCircleShape(bodyID, &shapeDef, &circle));	
+					if (parentBody != nullptr)	
+					{	
+						b2ShapeId id = b2CreateCircleShape(bodyID, &shapeDef, &shape->circle);
+						// Logger::log.Debug("Circle: index: {}, world: {}, generation: {}", id.index1, id.world0, id.generation);
+						shape->SetShapeID(id);	
+					}
 				}
 				else if constexpr (std::is_same_v<T, PolygonShapeData>)
 				{
@@ -301,7 +317,7 @@ namespace FlatEngine
 					shape->capsule = capsule;
 
 					if (parentBody != nullptr)				
-						shape->SetShapeID(b2CreateCapsuleShape(bodyID, &shapeDef, &capsule));		
+						shape->SetShapeID(b2CreateCapsuleShape(bodyID, &shapeDef, &shape->capsule));		
 				}
 				else if constexpr (std::is_same_v<T, ChainShapeData>)
 				{
@@ -330,10 +346,11 @@ namespace FlatEngine
 				}
 			}, shape->shapeData);
 
-			if (b2Shape_IsValid(shapeID))
-			{						
-				shape->SetShapeID(shapeID);
-			}
+			// if (b2Shape_IsValid(shape->GetShapeID()))
+			// {
+			// 	Shape* b2shape = static_cast<Shape*>(b2Shape_GetUserData(shape->GetShapeID()));
+			// 	Logger::log.Debug("Success. User Data ID: {}", b2shape != nullptr ? b2shape->GetOwnerID() : -1);
+			// }
 		}
 
 		void Physics2D::DestroyBody(b2BodyId bodyID)
@@ -352,6 +369,7 @@ namespace FlatEngine
 		{
 			if (b2Shape_IsValid(shape->GetShapeID()))
 			{
+				// Logger::log.Debug("Destroying: index: {}, world: {}, generation: {}", shape->GetShapeID().index1, shape->GetShapeID().world0, shape->GetShapeID().generation);
 				b2DestroyShape(shape->GetShapeID(), true);
 			}
 			if (b2Chain_IsValid(shape->GetChainID()))

@@ -9,25 +9,22 @@ namespace FlatEngine
 	{
 		SetType(ComponentType_Camera);
 		SetOwnerID(ownerID);
-		m_b_isPrimaryCamera = false;
-		m_b_forceZup = true;
-		m_width = 50;
-		m_height = 30;
-		m_zoom = 10;
-		m_lookDirection = Vector3(0.0f, 1.0f, 0.0f);
-		m_nearClippingDistance = 0.1f;
-		m_farClippingDistance = 100.0f;
-		m_perspectiveAngle = 90.0f;
-		m_frustrumColor = Vector4(255,255,255,255);
-		m_b_shouldFollow = false;
-		m_toFollowID = -1;
-		m_followSmoothing = 0.1f;
-		m_horizontalViewAngle = 0.0f;
-		m_verticalViewAngle = 0.0f;
-		b_orthographic = true;
-		m_orthoSize = 5.0f;
-		m_orthoHorizontalViewAngle = 180.0;
-		m_orthoVerticalViewAngle = 0.0;
+		orthoNearClippingDistance = -500;
+		orthoFarClippingDistance = 500;
+		nearClippingDistance = 0.1f;
+		farClippingDistance = 100.0f;
+		perspectiveAngle = 90.0f;
+		b_shouldFollow = false;
+		toFollowID = -1;
+		followSmoothing = 0.1f;
+		horizontalViewAngle = 0.0f;
+		verticalViewAngle = 0.0f;
+		b_orthographic = true;		
+		gridStep = 20;
+		orthoHorizontalViewAngle = 180.0;
+		orthoVerticalViewAngle = 0.0;		
+		m_b_isPrimaryCamera = false;		
+		m_lookDirection = Vector3(0.0f, 0.0f, 1.0f);
 	}
 
 	json Camera::GetData(bool b_IDOverride)
@@ -36,22 +33,17 @@ namespace FlatEngine
 			{ "type", (int)GetType()},
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
-			{ "width", m_width },
-			{ "height", m_height },
+			{ "gridStep", gridStep },
+			{ "b_orthographic", b_orthographic },
 			{ "b_isPrimaryCamera", m_b_isPrimaryCamera },
-			{ "zoom", m_zoom },
-			{ "frustrumRed", m_frustrumColor.x },
-			{ "frustrumGreen", m_frustrumColor.y },
-			{ "frustrumBlue", m_frustrumColor.z },
-			{ "frustrumAlpha", m_frustrumColor.w },
-			{ "b_follow", m_b_shouldFollow },
-			{ "followSmoothing", m_followSmoothing },
-			{ "following", m_toFollowID },
-			{ "perspectiveAngle", m_perspectiveAngle },
-			{ "nearClippingDistance", m_nearClippingDistance },
-			{ "farClippingDistance", m_farClippingDistance },
-			{ "horizontalViewAngle", m_horizontalViewAngle },
-			{ "verticalViewAngle", m_verticalViewAngle }			
+			{ "b_follow", b_shouldFollow },
+			{ "followSmoothing", followSmoothing },
+			{ "following", toFollowID },
+			{ "perspectiveAngle", perspectiveAngle },
+			{ "nearClippingDistance", nearClippingDistance },
+			{ "farClippingDistance", farClippingDistance },
+			{ "horizontalViewAngle", horizontalViewAngle },
+			{ "verticalViewAngle", verticalViewAngle }			
 		};
 
 		return jsonData;
@@ -61,25 +53,19 @@ namespace FlatEngine
 	{
         Component::PutData(componentJson, objectName);
 		
-		bool b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "b_isPrimaryCamera", objectName);
-		SetDimensions(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName));
+		bool b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "b_isPrimaryCamera", objectName);		
 		SetPrimaryCamera(b_isPrimaryCamera);
 		SceneManager::loadedScene.SetPrimaryCamera(this);                                    
-		SetZoom(JsonHelper::CheckJsonFloat(componentJson, "zoom", objectName));
-		SetFrustrumColor(Vector4(
-			JsonHelper::CheckJsonFloat(componentJson, "frustrumRed", objectName),
-			JsonHelper::CheckJsonFloat(componentJson, "frustrumGreen", objectName),
-			JsonHelper::CheckJsonFloat(componentJson, "frustrumBlue", objectName),
-			JsonHelper::CheckJsonFloat(componentJson, "frustrumAlpha", objectName)
-		));
-		SetPerspectiveAngle(JsonHelper::CheckJsonFloat(componentJson, "perspectiveAngle", objectName));
-		SetNearClippingDistance(JsonHelper::CheckJsonFloat(componentJson, "nearClippingDistance", objectName));
-		SetFarClippingDistance(JsonHelper::CheckJsonFloat(componentJson, "farClippingDistance", objectName));
-		SetHorizontalViewAngle(JsonHelper::CheckJsonFloat(componentJson, "horizontalViewAngle", objectName));
-		SetVerticalViewAngle(JsonHelper::CheckJsonFloat(componentJson, "verticalViewAngle", objectName));
-		SetShouldFollow(JsonHelper::CheckJsonBool(componentJson, "b_follow", objectName));
-		SetFollowSmoothing(JsonHelper::CheckJsonFloat(componentJson, "followSmoothing", objectName));
-		SetToFollowID(JsonHelper::CheckJsonLong(componentJson, "following", objectName));
+		b_orthographic = JsonHelper::CheckJsonBool(componentJson, "b_orthographic", objectName);
+		gridStep = JsonHelper::CheckJsonFloat(componentJson, "gridStep", objectName);
+		perspectiveAngle = JsonHelper::CheckJsonFloat(componentJson, "perspectiveAngle", objectName);
+		nearClippingDistance = JsonHelper::CheckJsonFloat(componentJson, "nearClippingDistance", objectName);
+		farClippingDistance = JsonHelper::CheckJsonFloat(componentJson, "farClippingDistance", objectName);
+		horizontalViewAngle = JsonHelper::CheckJsonFloat(componentJson, "horizontalViewAngle", objectName);
+		verticalViewAngle = JsonHelper::CheckJsonFloat(componentJson, "verticalViewAngle", objectName);
+		b_shouldFollow = JsonHelper::CheckJsonBool(componentJson, "b_follow", objectName);
+		followSmoothing = JsonHelper::CheckJsonFloat(componentJson, "followSmoothing", objectName);
+		toFollowID = JsonHelper::CheckJsonLong(componentJson, "following", objectName);
     }
 
 	void Camera::SetPrimaryCamera(bool b_isPrimary)
@@ -87,33 +73,13 @@ namespace FlatEngine
 		m_b_isPrimaryCamera = b_isPrimary;
 		if (b_isPrimary)
 		{
-			// SceneManager::loadedScene.GetObjectByID(GetParentObjectID())->Get<Transform>()->SetPosition(Vector3(0,0,0));
+			SceneManager::loadedScene.SetPrimaryCamera(this);
 		}
 	}
 
 	bool Camera::IsPrimary()
 	{
 		return m_b_isPrimaryCamera;
-	}
-
-	bool Camera::ForceZUp()
-	{
-		return m_b_forceZup;
-	}
-
-	void Camera::SetForceZUp(bool b_forceZUp)
-	{
-		m_b_forceZup = b_forceZUp;
-	}
-
-	void Camera::SetFrustrumColor(Vector4 color)
-	{
-		m_frustrumColor = color;
-	}
-
-	Vector4 Camera::GetFrustrumColor()
-	{
-		return m_frustrumColor;
 	}
 
 	void Camera::Follow()
@@ -127,49 +93,6 @@ namespace FlatEngine
 
 		//	cameraTransform->SetPosition(Lerp(currentPos, followPos, m_followSmoothing));
 		//}
-	}
-
-	void Camera::SetShouldFollow(bool b_shouldFollow)
-	{
-		m_b_shouldFollow = b_shouldFollow;
-	}
-
-	bool Camera::GetShouldFollow()
-	{
-		return m_b_shouldFollow;
-	}
-
-	void Camera::SetToFollowID(long toFollow)
-	{
-		m_toFollowID = toFollow;
-	}
-
-	long Camera::GetToFollowID()
-	{
-		return m_toFollowID;
-	}
-
-	void Camera::SetFollowSmoothing(float smoothing)
-	{
-		m_followSmoothing = smoothing;
-	}
-
-	float Camera::GetFollowSmoothing()
-	{
-		return m_followSmoothing;
-	}
-
-	void Camera::SetZoom(float newZoom)
-	{
-		if (newZoom >= 1 && newZoom <= 100)
-		{
-			m_zoom = newZoom;
-		}
-	}
-
-	float Camera::GetZoom()
-	{
-		return m_zoom;
 	}
 
 	glm::vec4 Camera::GetLookDirection()
@@ -191,98 +114,27 @@ namespace FlatEngine
 	// Meant for the Scene View Camera because it does not exist in the Scene objects pool and would crash with above function
 	glm::vec4 Camera::GetLookDirectionNoRoll()
 	{
-		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? m_orthoHorizontalViewAngle : m_horizontalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? m_orthoVerticalViewAngle : m_verticalViewAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? orthoHorizontalViewAngle : horizontalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? orthoVerticalViewAngle : verticalViewAngle), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 rotationMatrix = horCameraRotationMatrix * vertCameraRotationMatrix;
 
 		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	}
 
-	float Camera::GetNearClippingDistance()
-	{
-		return m_nearClippingDistance;
-	}
-
-	void Camera::SetNearClippingDistance(float nearDistance)
-	{
-		m_nearClippingDistance = nearDistance;
-	}
-
-	float Camera::GetFarClippingDistance()
-	{
-		return m_farClippingDistance;
-	}
-
-	void Camera::SetFarClippingDistance(float farDistance)
-	{
-		m_farClippingDistance = farDistance;
-	}
-
-	float Camera::GetPerspectiveAngle()
-	{
-		return m_perspectiveAngle;
-	}
-
-	void Camera::SetPerspectiveAngle(float angle)
-	{
-		m_perspectiveAngle = angle;
-	}
-
-	void Camera::SetHorizontalViewAngle(float angle)
-	{
-		m_horizontalViewAngle = angle;
-	}
-
-	void Camera::SetVerticalViewAngle(float angle)
-	{
-		m_verticalViewAngle = angle;
-	}
-
-	float Camera::GetHorizontalViewAngle()
-	{
-		return m_horizontalViewAngle;
-	}
-
-	float Camera::GetVerticalViewAngle()
-	{
-		return m_verticalViewAngle;
-	}
-
-	void Camera::AddToHorizontalViewAngle(float toAdd)
-	{
-		m_horizontalViewAngle += toAdd;
-	}
-
 	void Camera::AddToVerticalViewAngle(float toAdd)
 	{
-		if (m_verticalViewAngle + toAdd >= 90)
+		if (verticalViewAngle + toAdd >= 90)
 		{
-			m_verticalViewAngle = 89.99f;
+			verticalViewAngle = 89.99f;
 		}
-		else if (m_verticalViewAngle + toAdd <= -90)
+		else if (verticalViewAngle + toAdd <= -90)
 		{
-			m_verticalViewAngle = -89.99f;
+			verticalViewAngle = -89.99f;
 		}
 		else
 		{
-			m_verticalViewAngle += toAdd;
+			verticalViewAngle += toAdd;
 		}
-	}
-
-	void Camera::SetDimensions(float newWidth, float newHeight)
-	{
-		m_width = newWidth;
-		m_height = newHeight;
-	}
-
-	float Camera::GetWidth()
-	{
-		return m_width;
-	}
-
-	float Camera::GetHeight()
-	{
-		return m_height;
 	}
 
 	void Camera::AddVelocity(Vector3 velocity)

@@ -33,6 +33,7 @@ namespace FlatEngine
 		UMapVector<SceneRenderObject> lightSceneRenderObjects;
 		SceneRenderObject transformGizmoRenderObject;
 		SceneRenderObject orientationGizmoRenderObject;
+		Vector2 finalImageSize;
 
 		SceneRenderObject CreateLineObject()
 		{
@@ -179,51 +180,36 @@ namespace FlatEngine
 			ImGui::PopStyleColor();
 		}
 
-		void UpdateSceneViewCamera()
+		void GetMouseDelta(Vector2& mouseDelta, Vector2 mousePos, Vector2& lastMousePos)
 		{
-			if (b_sceneViewRightClicked)
-			{			
-				Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
-				glm::vec4 lookDir = sceneViewCamera.GetLookDirectionNoRoll();
-				Vector2 xzPlane = Vector2(lookDir.x, lookDir.z);
-				Vector2 leftDir = Vector2::Rotate(xzPlane, -90);
-				Vector2 rightDir = Vector2::Rotate(xzPlane, 90);
-				float moveDamping = Settings::settings.sceneViewCameraSpeed * 0.00001f;
-
-				if (engineContext->ActionPressed("MoveCameraLeft"))
-				{
-					sceneViewCamera.AddVelocity(Vector3(leftDir.x * moveDamping, 0, leftDir.y * moveDamping));
-				}
-				if (engineContext->ActionPressed("MoveCameraRight"))
-				{
-					sceneViewCamera.AddVelocity(Vector3(rightDir.x * moveDamping, 0, rightDir.y * moveDamping));
-				}
-				if (engineContext->ActionPressed("MoveCameraForward"))
-				{
-					sceneViewCamera.AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
-				}
-				if (engineContext->ActionPressed("MoveCameraBack"))
-				{
-					sceneViewCamera.AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
-				}
-				if (engineContext->ActionPressed("MoveCameraUp"))
-				{
-					sceneViewCamera.AddVelocity(Vector3(0, moveDamping, 0));
-				}
-				if (engineContext->ActionPressed("MoveCameraDown"))
-				{
-					sceneViewCamera.AddVelocity(Vector3(0, -moveDamping, 0));
-				}
-			}		
-
-			Vector3& cameraVelocity = sceneViewCamera.GetVelocity();
-			if (cameraVelocity != 0)
-			{				
-				Vector3 position = sceneViewCameraTransform.GetPosition();
-				sceneViewCameraTransform.SetPosition(position + cameraVelocity);
-				cameraVelocity = cameraVelocity * 0.95f;
-				// Settings::settings.SaveSettings();
+			Vector2 extent = Vector2((float)RenderWindow::window.GetExtent().width, (float)RenderWindow::window.GetExtent().height);
+			mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);
+			lastMousePos = mousePos;
+			
+			if (mousePos.x > extent.x - 2)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, (int)mousePos.y);
+				lastMousePos = Vector2(0, mousePos.y);
+				mouseDelta.x = 1;
 			}
+			else if (mousePos.x < 1)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)extent.x - 2, (int)mousePos.y);
+				lastMousePos = Vector2(extent.x - 1, mousePos.y);
+				mouseDelta.x = -1;
+			}
+			if (mousePos.y > extent.y - 1)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, 1);
+				lastMousePos = Vector2(mousePos.x, 0);
+				mouseDelta.y = 1;
+			}
+			else if (mousePos.y < 1)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, (int)extent.y - 1);
+				lastMousePos = Vector2(mousePos.x, extent.y);
+				mouseDelta.y = 1;
+			}			
 		}
 
 		void AddSceneViewMouseControls(Vector2 startPos, Vector2 size)
@@ -234,10 +220,9 @@ namespace FlatEngine
 			ImGuiButtonFlags buttonFlags; 
 			bool b_allowOverlap = true; 
 			bool b_weightedScroll = false; 
-			float zoomMultiplier = 1; 
-			float minGridStep = 5; 
-			float maxGridStep = 100;
-			Vector2 mouseDelta = Vector2();
+			float zoomMultiplier = 2; 
+			Vector2 rightMouseDelta = Vector2();
+			Vector2 leftMouseDelta = Vector2();
 			Vector2 mousePos = ImGui::GetIO().MousePos;
 			static Vector2 lastMousePos = ImGui::GetIO().MousePos;
 
@@ -255,127 +240,120 @@ namespace FlatEngine
 				const bool b_isClicked = ImGui::IsItemClicked();
 
 				const float mouse_threshold_for_pan = 0.0f;
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
 				{
 					lastMousePos = mousePos;
 					b_sceneViewRightClicked = true;
-				}
-				if (ImGui::IsItemActivated())
-				{
 					SDL_ShowCursor(SDL_FALSE);
 				}
-				if (b_isActive && ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
+				if (b_isActive)
 				{
-					Vector2 extent = Vector2((float)RenderWindow::window.GetExtent().width, (float)RenderWindow::window.GetExtent().height);
-					mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);
-					lastMousePos = mousePos;
-					
-					if (mousePos.x > extent.x - 2)
-					{
-						SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, (int)mousePos.y);
-						lastMousePos = Vector2(0, mousePos.y);
-						mouseDelta.x = 1;
-					}
-					else if (mousePos.x < 1)
-					{
-						SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)extent.x - 2, (int)mousePos.y);
-						lastMousePos = Vector2(extent.x - 1, mousePos.y);
-						mouseDelta.x = -1;
-					}
-					if (mousePos.y > extent.y - 1)
-					{
-						SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, 1);
-						lastMousePos = Vector2(mousePos.x, 0);
-						mouseDelta.y = 1;
-					}
-					else if (mousePos.y < 1)
-					{
-						SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, (int)extent.y - 1);
-						lastMousePos = Vector2(mousePos.x, extent.y);
-						mouseDelta.y = 1;
-					}			
+					if (ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
+					{	
+						GetMouseDelta(rightMouseDelta, mousePos, lastMousePos);
 
-					sceneViewScrolling.x += mouseDelta.x;
-					sceneViewScrolling.y += mouseDelta.y;
+						float moveDamping = Settings::settings.sceneViewCameraSpeed * 0.00001f;									
 
-					sceneViewCamera.AddToHorizontalViewAngle(-mouseDelta.x * 0.25f);
-					sceneViewCamera.AddToVerticalViewAngle(mouseDelta.y * 0.25f);
-					
-					UpdateSceneViewCamera();					
+						if (IsOrthoGraphic())
+						{
+							Vector3 cameraPos = sceneViewCameraTransform.GetPosition();
+							sceneViewCameraTransform.SetPosition(Vector3(cameraPos.x - (rightMouseDelta.x / (float)sceneViewCamera.gridStep), cameraPos.y + (rightMouseDelta.y / (float)sceneViewCamera.gridStep), cameraPos.z));			
+						}
+						else 
+						{						
+							sceneViewCamera.horizontalViewAngle += -rightMouseDelta.x * 0.25f;
+							sceneViewCamera.verticalViewAngle += rightMouseDelta.y * 0.25f;
+
+							Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
+							glm::vec4 lookDir = sceneViewCamera.GetLookDirectionNoRoll();
+							Vector2 xzPlane = Vector2(lookDir.x, lookDir.z);
+							Vector2 leftDir = Vector2::Rotate(xzPlane, -90);
+							Vector2 rightDir = Vector2::Rotate(xzPlane, 90);
+							
+							if (engineContext->ActionPressed("MoveCameraLeft"))
+							{
+								sceneViewCamera.AddVelocity(Vector3(leftDir.x * moveDamping, 0, leftDir.y * moveDamping));
+							}
+							if (engineContext->ActionPressed("MoveCameraRight"))
+							{
+								sceneViewCamera.AddVelocity(Vector3(rightDir.x * moveDamping, 0, rightDir.y * moveDamping));
+							}
+							if (engineContext->ActionPressed("MoveCameraForward"))
+							{
+								sceneViewCamera.AddVelocity(Vector3(lookDir.x * moveDamping, lookDir.y * moveDamping, lookDir.z * moveDamping));
+							}
+							if (engineContext->ActionPressed("MoveCameraBack"))
+							{
+								sceneViewCamera.AddVelocity(Vector3(-lookDir.x * moveDamping, -lookDir.y * moveDamping, -lookDir.z * moveDamping));
+							}
+							if (engineContext->ActionPressed("MoveCameraUp"))
+							{
+								sceneViewCamera.AddVelocity(Vector3(0, moveDamping, 0));
+							}
+							if (engineContext->ActionPressed("MoveCameraDown"))
+							{
+								sceneViewCamera.AddVelocity(Vector3(0, -moveDamping, 0));
+							}
+						}				
+					}				
+					if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, mouse_threshold_for_pan))
+					{	
+						GetMouseDelta(leftMouseDelta, mousePos, lastMousePos);
+
+						if (IsOrthoGraphic())
+						{
+							sceneViewCamera.orthoHorizontalViewAngle += -leftMouseDelta.x * 0.01f;
+							sceneViewCamera.orthoVerticalViewAngle += leftMouseDelta.y * 0.01f;
+						}
+					}									
+				}
+
+				Vector3& cameraVelocity = sceneViewCamera.GetVelocity();
+				if (cameraVelocity != 0)
+				{				
+					Vector3 position = sceneViewCameraTransform.GetPosition();
+					sceneViewCameraTransform.SetPosition(position + cameraVelocity);
+					cameraVelocity = cameraVelocity * 0.95f;
+				}
+
+				if (b_isHovered)
+				{
+					// Get scroll amount for changing zoom level of scene view
+					Vector2 mousePos = Vector2(inputOutput.MousePos.x, inputOutput.MousePos.y);
+					float scrollInput = inputOutput.MouseWheel;
+					float weight = 0.1f;
+					Vector2 signedMousePos = mousePos - sceneViewCenter - (sceneViewDimensions * 0.5f);
+					float zoomSpeed = 1;					
+
+					if (inputOutput.KeyCtrl)
+					{
+						zoomSpeed += zoomMultiplier;
+					}
+
+					if (scrollInput != 0)
+					{
+						if (b_weightedScroll)
+						{
+							Vector3 currentPos = sceneViewCameraTransform.GetPosition();
+							sceneViewCameraTransform.SetPosition(Vector3(currentPos.x + scrollInput * (signedMousePos.x * weight), currentPos.y - scrollInput * (signedMousePos.y * weight), 0));
+						}
+
+						if (sceneViewCamera.gridStep + zoomSpeed * scrollInput < maxGridStep && sceneViewCamera.gridStep + zoomSpeed * scrollInput > minGridStep)
+						{
+							sceneViewCamera.gridStep += zoomSpeed * scrollInput;
+						}
+					}
 				}
 				if (ImGui::IsItemDeactivated())
 				{				
 					b_sceneViewRightClicked = false;
-					// SDL_ShowCursor(SDL_TRUE);
+					SDL_ShowCursor(SDL_TRUE);
 				}
 
 				// Show cursor position in scene view when pressing Alt
 				if (b_isHovered && inputOutput.KeyAlt)
 				{
 					RenderSceneViewTooltip();
-				}
-
-				// Get scroll amount for changing zoom level of scene view
-				Vector2 mousePos = Vector2(inputOutput.MousePos.x, inputOutput.MousePos.y);
-				float scrollInput = inputOutput.MouseWheel;
-				float weight = 0.01f;
-				Vector2 signedMousePos = mousePos - sceneViewCenter - (sceneViewDimensions * 0.5f);
-				float zoomSpeed = 1;
-				float finalZoomSpeed = zoomSpeed * zoomMultiplier;
-
-				if (inputOutput.KeyCtrl)
-				{
-					finalZoomSpeed += zoomMultiplier;
-				}
-
-				if (b_isHovered)
-				{
-					if (scrollInput > 0)
-					{
-						if (b_weightedScroll)
-						{
-							sceneViewScrolling = sceneViewScrolling - signedMousePos * weight;
-						}
-						if (sceneViewGridStep + finalZoomSpeed < maxGridStep)
-						{
-							sceneViewGridStep += finalZoomSpeed;
-						}
-						else
-						{
-							sceneViewGridStep = maxGridStep;
-						}
-						if (sceneViewGridStep + finalZoomSpeed < maxGridStep)
-						{
-							sceneViewGridStep += finalZoomSpeed;
-						}
-						else
-						{
-							sceneViewGridStep = maxGridStep;
-						}
-					}
-					else if (scrollInput < 0)
-					{
-						if (b_weightedScroll)
-						{
-							sceneViewScrolling = sceneViewScrolling + signedMousePos * weight;
-						}
-						if (sceneViewGridStep - finalZoomSpeed > minGridStep)
-						{
-							sceneViewGridStep -= finalZoomSpeed;
-						}
-						else
-						{
-							sceneViewGridStep = minGridStep;
-						}
-						if (sceneViewGridStep - finalZoomSpeed > minGridStep)
-						{
-							sceneViewGridStep -= finalZoomSpeed;
-						}
-						else
-						{
-							sceneViewGridStep = minGridStep;
-						}
-					}				
 				}
 			}
 		}
@@ -461,7 +439,6 @@ namespace FlatEngine
 				Vector2 currentPos = ImGui::GetCursorScreenPos();
 				Vector2 centerOffset = sceneViewDimensions * 0.5f;
 				bool b_weightedScroll = false;
-				Vector2 size;
 				Vector2 startingPos = ImGui::GetCursorScreenPos();
 				
 				std::vector<VkDescriptorSet> descriptors = VulkanManager::vulkan.GetSceneViewDescriptorSets();
@@ -477,20 +454,20 @@ namespace FlatEngine
 						// Too wide — pillarbox
 						float w = regionAvailable.y * targetAspect;
 						float offset = (regionAvailable.x - w) / 2.0f;
-						startingPos.x += offset;
-						size = Vector2(w, regionAvailable.y);
+						startingPos.x += (int)offset;
+						finalImageSize = Vector2((int)w, regionAvailable.y);
 					}
 					else
 					{
 						// Too tall — letterbox
 						float h = regionAvailable.x / targetAspect;
 						float offset = (regionAvailable.y - h) / 2.0f;
-						startingPos.y += offset;
-						size = Vector2(regionAvailable.x, h);
+						startingPos.y += (int)offset;
+						finalImageSize = Vector2(regionAvailable.x, (int)h);
 					}
 
 					ImGui::SetCursorScreenPos(startingPos);
-					ImGui::Image(descriptors[VulkanManager::currentFrame], size);
+					ImGui::Image(descriptors[VulkanManager::currentFrame], finalImageSize);
 				}
 				
 				AddSceneViewMouseControls(canvas_p0, canvas_sz);
@@ -520,21 +497,6 @@ namespace FlatEngine
 					//	SetFocusedGameObjectID(newObject->GetID());
 					//}
 				}
-								
-				std::vector<GameObject> sceneObjects = SceneManager::loadedScene.GetSceneObjects();
-
-				//RenderViewObjects(sceneObjects, sceneViewCenter, canvas_p0, canvas_sz, sceneViewGridStep);
-				//RenderViewObjects(persistantObjects, sceneViewCenter, canvas_p0, canvas_sz, sceneViewGridStep);
-				//RenderTransformArrowWidget();								
-
-				//// For centering on focused GameObject
-				//GameObject* lockedObject = GetObjectByID(sceneViewLockedObjectID);
-				//if (b_sceneViewLockedOnObject && lockedObject != nullptr)
-				//{
-				//	Transform* transform = lockedObject->Get<Transform>();
-				//	Vector2 position = transform->GetAbsoluteScale();
-				//	sceneViewScrolling = Vector2(position.x * -sceneViewGridStep + (ImGui::GetWindowWidth() / 2), position.y * sceneViewGridStep + (ImGui::GetWindowHeight() / 2));
-				//}
 
 				// Cursor mode select
 				ImGui::SetCursorScreenPos(canvas_p0);
@@ -555,12 +517,7 @@ namespace FlatEngine
 
 				// Game Stats in SceneView
 				ImGui::SetCursorScreenPos(Vector2(canvas_p0.x + 3, canvas_p1.y - 40)); // was - 54 y
-				RenderGameTimeStats();
-
-				// Game Stats in GameView
-				//RenderStatsOnGameView();
-			
-				// RenderSceneLines();				
+				RenderGameTimeStats();		
 			}			
 			
 			ImGui::PopStyleVar(2);
@@ -746,6 +703,8 @@ namespace FlatEngine
 		void SetOrthographic(bool b_isOrthographic)
         {
             sceneViewCamera.b_orthographic = b_isOrthographic;
+			Vector3 cameraPos = sceneViewCameraTransform.GetPosition();
+			sceneViewCameraTransform.SetPosition(Vector3((int)cameraPos.x, (int)cameraPos.y, (int)cameraPos.z));
 
 			// Position and rotate the grid as necessary
 			if (sceneViewCamera.b_orthographic)
@@ -755,8 +714,8 @@ namespace FlatEngine
 				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].transform.SetPosition(Vector3(0,0,-1)); // Check in the shader
 				persistentSceneRenderObjects[PersistentSceneObjectIndex_XAxis].transform.SetPosition(Vector3(0,0,-1));
 				persistentSceneRenderObjects[PersistentSceneObjectIndex_YAxis].transform.SetPosition(Vector3(0,0,-1));				
-				sceneViewCamera.m_orthoHorizontalViewAngle = 180;
-				sceneViewCamera.m_orthoVerticalViewAngle = 0;
+				// sceneViewCamera.orthoHorizontalViewAngle = 180;
+				// sceneViewCamera.orthoVerticalViewAngle = 0;
 			}
 			else
 			{				
@@ -801,38 +760,6 @@ namespace FlatEngine
 		const bool IsGridHorizontal()
 		{
 			return b_gridHorizontal;
-		}
-
-		void AddLineToScene(Vector2 startingPoint, Vector2 endingPoint, std::string color, float thickness)
-		{
-			// Line newLine(startingPoint, endingPoint, color, thickness);
-			// F_SceneLines.push_back(newLine);
-		}
-
-		void RenderSceneLines()
-		{
-			// for (Line line : F_SceneLines)
-			// {
-			// 	DrawLineInScene(line.m_start, line.m_end, line.m_color, line.m_thickness);
-			// }
-		}
-
-			// Start and End are in world coordinates
-		void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, std::string color, float thickness)
-		{
-			// ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-			// ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));		
-			// ImGui::Begin("Scene View", 0, 16 | 8);		
-			// // {
-
-			// Vector2 start = Scene_ConvertWorldToScreen(startingPoint);
-			// Vector2 end = Scene_ConvertWorldToScreen(endingPoint);
-			// FL::Logger::log.DrawLine(start, end, color, thickness, ImGui::GetWindowDrawList());
-
-			// // }
-			// ImGui::PopStyleVar();
-			// ImGui::PopStyleVar();
-			// ImGui::End(); // Scene View
 		}
 
 		// Converts from world grid space in Scene View to screen space

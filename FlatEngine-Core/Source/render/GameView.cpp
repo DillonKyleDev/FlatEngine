@@ -543,10 +543,6 @@ namespace FlatEngine
 				{
 					cameraTransform = owner->Get<FL::Transform>();
 				}
-				cameraWidth = primaryCamera->GetWidth();
-				cameraHeight = primaryCamera->GetHeight();
-				gameViewGridStep = primaryCamera->GetZoom();				
-				frustrumColor = primaryCamera->GetFrustrumColor();
 				
 				if (cameraTransform != nullptr)
 				{

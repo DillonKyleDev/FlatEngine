@@ -8,8 +8,8 @@
 #include "tools/Pool.h"
 #include "tools/Vector2.h"
 
+#include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 
@@ -56,6 +56,9 @@ namespace FlatEngine
 		extern UMapVector<SceneRenderObject> lightSceneRenderObjects;
 		extern SceneRenderObject transformGizmoRenderObject;
         extern SceneRenderObject orientationGizmoRenderObject;
+        extern Vector2 finalImageSize;
+        const uint32_t minGridStep = 1; 
+        const uint32_t maxGridStep = 800;
 
         extern Vector2 sceneViewportCenter;
         extern Vector2 sceneViewDimensions;      
@@ -94,9 +97,6 @@ namespace FlatEngine
         extern void SetGridHorizontal(bool b_horizontal);
         extern const bool IsGridHorizontal();
  
-        extern void AddLineToScene(Vector2 startingPoint, Vector2 endingPoint, std::string color, float thickness);
-        extern void RenderSceneLines();
-        extern void DrawLineInScene(Vector2 startingPoint, Vector2 endingPoint, std::string color, float thickness);
         extern Vector2 Scene_ConvertWorldToScreen(Vector2 positionInWorld);
         extern Vector2 Scene_ConvertScreenToWorld(Vector2 positionOnScreen);
         extern Vector2 Scene_GetMousePosWorld();

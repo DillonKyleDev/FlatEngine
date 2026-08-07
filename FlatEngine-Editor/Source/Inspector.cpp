@@ -36,6 +36,7 @@
 #include "imgui.h"
 #include "tools/Vector2.h"
 #include <X11/Xlib.h>
+#include <cstdint>
 #include <string>
 
 namespace FL = FlatEngine;
@@ -338,21 +339,17 @@ namespace FlatGui
 		}
 
 		void RenderCameraComponent(FL::Camera* camera)
-		{
-			float width = camera->GetWidth();
-			float height = camera->GetHeight();
+		{			
 			bool b_isPrimary = camera->IsPrimary();
-			float zoom = camera->GetZoom();
-			ImVec4 frustrumColor = camera->GetFrustrumColor();
 			long ownerID = camera->GetOwnerID();
-			bool b_follow = camera->GetShouldFollow();
+			bool b_follow = camera->b_shouldFollow;
 			std::string followingName = "";
-			long toFollowID = camera->GetToFollowID();
+			long toFollowID = camera->toFollowID;
 			FL::GameObject* followingObject = FL::SceneManager::loadedScene.GetObjectByID(toFollowID);
 
-			float nearClippingDistance = camera->GetNearClippingDistance();
-			float farClippingDistance = camera->GetFarClippingDistance();
-			float perspectiveAngle = camera->GetPerspectiveAngle();
+			float nearClippingDistance = camera->nearClippingDistance;
+			float farClippingDistance = camera->farClippingDistance;
+			float perspectiveAngle = camera->perspectiveAngle;
 
 			if (toFollowID != -1 && followingObject != nullptr)
 			{
@@ -360,43 +357,22 @@ namespace FlatGui
 			}
 			else if (followingObject == nullptr)
 			{
-				camera->SetToFollowID(-1);
+				camera->toFollowID = -1;
 			}
 
-			float followSmoothing = camera->GetFollowSmoothing();
+			float followSmoothing = camera->followSmoothing;
 			
 			if (FL::GuiCore::PushTable("##CameraProperties" + std::to_string(ownerID), 2))
 			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##cameraWidth" + std::to_string(ownerID), "Camera width", width, 0.1f, 0, 1000))
-				{
-					camera->SetDimensions(width, height);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##cameraHeight" + std::to_string(ownerID), "Camera height", height, 0.1f, 0, 1000))
-				{
-					camera->SetDimensions(width, height);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##cameraZoom" + std::to_string(ownerID), "Camera zoom", zoom, 0.1f, 1, 100))
-				{
-					camera->SetZoom(zoom);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##nearClip" + std::to_string(ownerID), "Near Clip", nearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					camera->SetNearClippingDistance(nearClippingDistance);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##farClip" + std::to_string(ownerID), "Far Clip", farClippingDistance, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					camera->SetFarClippingDistance(farClippingDistance);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##perspectiveAngle" + std::to_string(ownerID), "Perspective Angle", perspectiveAngle, 0.1f, -180.0, 180))
-				{
-					camera->SetPerspectiveAngle(perspectiveAngle);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##cameraFollowSmoothing" + std::to_string(ownerID), "Follow smoothing", followSmoothing, 0.01f, 0, 1))
-				{
-					camera->SetFollowSmoothing(followSmoothing);
-				}
+				FL::GuiCore::RenderFloatDragTableRow("##nearClip" + std::to_string(ownerID), "Near Clip", camera->nearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
+				FL::GuiCore::RenderFloatDragTableRow("##farClip" + std::to_string(ownerID), "Far Clip", camera->farClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
+				FL::GuiCore::RenderFloatDragTableRow("##perspectiveAngle" + std::to_string(ownerID), "Perspective Angle", camera->perspectiveAngle, 0.1f, -180.0, 180);
+				FL::GuiCore::RenderFloatDragTableRow("##cameraFollowSmoothing" + std::to_string(ownerID), "Follow smoothing", camera->followSmoothing, 0.01f, 0, 1);	
+				int gridStep = (int)camera->gridStep;			
+				if (FL::GuiCore::RenderIntDragTableRow("##gridStep" + std::to_string(ownerID), "Pixels/Grid Square", gridStep, 1, FL::SceneView::minGridStep, FL::SceneView::maxGridStep)) { if (gridStep > 0) camera->gridStep = (uint32_t)gridStep;}
 				FL::GuiCore::PopTable();
 			}
+			FL::GuiCore::RenderBoolTable("##Orthographic" + std::to_string(ownerID), "Orthographic", camera->b_orthographic);
 
 			FL::GuiCore::RenderSeparator(3, 3);
 
@@ -405,15 +381,12 @@ namespace FlatGui
 			{
 				if (FL::SceneManager::loadedScene.GetObjectByID(droppedValue) != nullptr || droppedValue == -1)
 				{
-					camera->SetToFollowID(droppedValue);
+					camera->toFollowID = droppedValue;
 				}
 			}
 
 			ImGui::BeginDisabled(toFollowID == -1);
-			if (FL::GuiCore::RenderCheckbox("Follow", b_follow))
-			{
-				camera->SetShouldFollow(b_follow);
-			}
+			FL::GuiCore::RenderCheckbox("Follow", camera->b_shouldFollow);
 			ImGui::EndDisabled();
 
 			FL::GuiCore::RenderSeparator(3, 3);
@@ -432,12 +405,12 @@ namespace FlatGui
 			}		
 
 			// Frustrum color picker
-			std::string frustrumID = "##FrustrumColor" + std::to_string(ownerID);
-			ImVec4 color = ImVec4(frustrumColor.x / 255.0f, frustrumColor.y / 255.0f, frustrumColor.z / 255.0f, frustrumColor.w / 255.0f);
-			ImGui::ColorEdit4(frustrumID.c_str(), (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
-			ImGui::SameLine(0, 5);
-			ImGui::Text("%s", "Frustrum color");
-			camera->SetFrustrumColor(ImVec4(color.x * 255.0f, color.y * 255.0f, color.z * 255.0f, color.w * 255.0f));
+			// std::string frustrumID = "##FrustrumColor" + std::to_string(ownerID);
+			// ImVec4 color = ImVec4(frustrumColor.x / 255.0f, frustrumColor.y / 255.0f, frustrumColor.z / 255.0f, frustrumColor.w / 255.0f);
+			// ImGui::ColorEdit4(frustrumID.c_str(), (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+			// ImGui::SameLine(0, 5);
+			// ImGui::Text("%s", "Frustrum color");
+			// camera->SetFrustrumColor(ImVec4(color.x * 255.0f, color.y * 255.0f, color.z * 255.0f, color.w * 255.0f));
 		}
 
 		void RenderScriptComponent(FL::Script* script)
@@ -1304,10 +1277,10 @@ namespace FlatGui
 			FL::ShapeType shapeType = shape->GetType();		
 			std::string ID = "";
 			if (shapeType != FL::ShapeType::ShapeType_Chain)			
-				ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);			
+				ID = " (index:" + std::to_string(shapeID.index1) + " gen:" + std::to_string(shapeID.generation) + " world:" + std::to_string(shapeID.world0) + ")";			
 			else			
-				ID = "chain_" + std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);	
-			std::string shapeString = FL::ShapeTypeStrings[(int)shapeType] + " ID: " + ID;		
+				ID = " (index:" + std::to_string(chainID.index1) + " gen:" + std::to_string(chainID.generation) + " world:" + std::to_string(chainID.world0) + ")";			
+			std::string shapeString = FL::ShapeTypeStrings[(int)shapeType] + ID;		
 
 			FL::GuiCore::RenderSectionHeader(shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
 			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);

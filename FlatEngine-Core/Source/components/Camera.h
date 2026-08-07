@@ -12,7 +12,7 @@ namespace FlatEngine
 	class Camera : public Component
 	{
 	public:
-		Camera(long myID = -1, long parentObjectID = -1);
+		Camera(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 

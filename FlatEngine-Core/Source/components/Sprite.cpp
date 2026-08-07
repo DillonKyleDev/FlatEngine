@@ -6,12 +6,11 @@
 
 namespace FlatEngine
 {
-	Sprite::Sprite(long myID, long parentObjectID)
+	Sprite::Sprite(long ownerID)
 	{
 		SetType(ComponentType_Sprite);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);		
-		mesh = Mesh(-1, parentObjectID);
+		SetOwnerID(ownerID);
+		mesh = Mesh(ownerID);
 		m_textureWidth = 0;
 		m_textureHeight = 0;
 		m_scale = Vector2(1);
@@ -32,7 +31,6 @@ namespace FlatEngine
 	{
 		json jsonData = { 
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "path", m_path },

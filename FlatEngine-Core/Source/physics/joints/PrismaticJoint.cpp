@@ -1,4 +1,4 @@
-#include "joints/PrismaticJoint.h"
+#include "physics/joints/PrismaticJoint.h"
 
 
 namespace FlatEngine

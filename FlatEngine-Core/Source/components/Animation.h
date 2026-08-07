@@ -576,7 +576,7 @@ namespace FlatEngine
     class Animation : public Component
     {
     public:
-        Animation(long myID = -1, long parentObjectID = -1);
+        Animation(long ownerID = -1);
         json GetData(bool b_IDOverride = false);
         void PutData(json componentJson, std::string objectName);
 

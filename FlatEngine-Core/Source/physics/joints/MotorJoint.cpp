@@ -1,4 +1,4 @@
-#include "joints/MotorJoint.h"
+#include "physics/joints/MotorJoint.h"
 
 
 namespace FlatEngine

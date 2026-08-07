@@ -10,11 +10,10 @@
 
 namespace FlatEngine
 {
-	Button::Button(long myID, long parentObjectID)
+	Button::Button(long ownerID)
 	{
 		SetType(ComponentType_Button);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		m_b_mouseIsOver = false;
 		m_b_hasMouseOverFired = false;
 		m_activeWidth = 5;
@@ -44,7 +43,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "activeWidth", m_activeWidth },
@@ -152,7 +150,7 @@ namespace FlatEngine
 
 	void Button::CalculateActiveEdges()
 	{
-		Transform* transform = GetParentObject()->Get<Transform>();
+		Transform* transform = GetOwningObject()->Get<Transform>();
 		
 		if (transform != nullptr)
 		{
@@ -286,26 +284,26 @@ namespace FlatEngine
 
 	void Button::OnMouseEnter()
 	{
-		m_onMouseEnterCallback(GetParentObject());
+		m_onMouseEnterCallback(GetOwningObject());
 	}
 
 	void Button::OnMouseLeave()
 	{
-		m_onMouseLeaveCallback(GetParentObject());
+		m_onMouseLeaveCallback(GetOwningObject());
 	}
 
 	void Button::OnMouseOver()
 	{
-		m_onMouseOverCallback(GetParentObject());
+		m_onMouseOverCallback(GetOwningObject());
 	}
 
 	void Button::OnLeftClick()
 	{
-		m_onLeftClickCallback(GetParentObject());
+		m_onLeftClickCallback(GetOwningObject());
 	}
 
 	void Button::OnRightClick()
 	{
-		m_onRightClickCallback(GetParentObject());
+		m_onRightClickCallback(GetOwningObject());
 	}
 }

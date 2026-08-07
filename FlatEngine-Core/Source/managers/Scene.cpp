@@ -17,7 +17,6 @@ namespace FlatEngine
 		name = "New Scene";
 		path = "";				 		
 		m_nextGameObjectID = 0;
-		m_nextComponentID = 0;
 		m_primaryCamera = nullptr;
 	}
 	
@@ -188,7 +187,7 @@ namespace FlatEngine
 		{
 			long ID = objectToDelete->GetID();
 
-			if (m_primaryCamera != nullptr && m_primaryCamera->GetParentObjectID() == objectToDelete->GetID())
+			if (m_primaryCamera != nullptr && m_primaryCamera->GetOwnerID() == objectToDelete->GetID())
 			{
 				m_primaryCamera->SetPrimaryCamera(false);
 				m_primaryCamera = nullptr;
@@ -256,29 +255,6 @@ namespace FlatEngine
 		return ID;
 	}
 
-	void Scene::SetNextComponentID(long nextID)
-	{
-		m_nextComponentID = nextID;
-	}
-
-	long  Scene::GetNextComponentID()
-	{
-		long ID;
-
-		if (m_freedComponentIDs.size() > 0)
-		{
-			ID = m_freedComponentIDs.back();
-			m_freedComponentIDs.pop_back();
-		}
-		else
-		{
-			ID = m_nextComponentID;
-			m_nextComponentID += 1;
-		}
-
-		return ID;
-	}
-
 	void Scene::OnPrefabInstantiated()
 	{		
 	}
@@ -314,14 +290,6 @@ namespace FlatEngine
 		}
 	}
 
-	void Scene::KeepNextComponentIDUpToDate(long ID)
-	{
-		if (ID >= m_nextComponentID)
-		{
-			m_nextComponentID = ID + 1;
-		}
-	}
-
 	template<> UMapVector<Animation>&           Scene::GetContainer<Animation>()  		   { return m_Animations; }
 	template<> UMapVector<Audio>&      			Scene::GetContainer<Audio>()      		   { return m_Audios; }
 	template<> UMapVector<Body>&       			Scene::GetContainer<Body>()       		   { return m_Bodies; }
@@ -344,26 +312,26 @@ namespace FlatEngine
 		return m_MeshesByMaterial;
 	}
 
-	Component* Scene::AddComponent(ComponentType type, long ownerID, long componentID)
+	Component* Scene::AddComponent(ComponentType type, long ownerID)
 	{
 		switch (type)
 		{
-			case ComponentType_Animation:  			return Add<Animation>(ownerID, componentID);
-			case ComponentType_Audio:      			return Add<Audio>(ownerID, componentID);
-			case ComponentType_Body:       			return Add<Body>(ownerID, componentID);
-			case ComponentType_Body2D:       		return Add<Body2D>(ownerID, componentID);
-			case ComponentType_Button:     			return Add<Button>(ownerID, componentID);
-			case ComponentType_Camera:     			return Add<Camera>(ownerID, componentID);
-			case ComponentType_Canvas:     			return Add<Canvas>(ownerID, componentID);
-			case ComponentType_CharacterController: return Add<CharacterController>(ownerID, componentID);
-			case ComponentType_JointMaker: 			return Add<JointMaker>(ownerID, componentID);
-			case ComponentType_Light:      			return Add<Light>(ownerID, componentID);
-			case ComponentType_Mesh:       			return Add<Mesh>(ownerID, componentID);
-			case ComponentType_Script:     			return Add<Script>(ownerID, componentID);
-			case ComponentType_Sprite:     			return Add<Sprite>(ownerID, componentID);
-			case ComponentType_Text:       			return Add<Text>(ownerID, componentID);
-			case ComponentType_TileMap:    			return Add<TileMap>(ownerID, componentID);
-			case ComponentType_Transform:  			return Add<Transform>(ownerID, componentID);
+			case ComponentType_Animation:  			return Add<Animation>(ownerID);
+			case ComponentType_Audio:      			return Add<Audio>(ownerID);
+			case ComponentType_Body:       			return Add<Body>(ownerID);
+			case ComponentType_Body2D:       		return Add<Body2D>(ownerID);
+			case ComponentType_Button:     			return Add<Button>(ownerID);
+			case ComponentType_Camera:     			return Add<Camera>(ownerID);
+			case ComponentType_Canvas:     			return Add<Canvas>(ownerID);
+			case ComponentType_CharacterController: return Add<CharacterController>(ownerID);
+			case ComponentType_JointMaker: 			return Add<JointMaker>(ownerID);
+			case ComponentType_Light:      			return Add<Light>(ownerID);
+			case ComponentType_Mesh:       			return Add<Mesh>(ownerID);
+			case ComponentType_Script:     			return Add<Script>(ownerID);
+			case ComponentType_Sprite:     			return Add<Sprite>(ownerID);
+			case ComponentType_Text:       			return Add<Text>(ownerID);
+			case ComponentType_TileMap:    			return Add<TileMap>(ownerID);
+			case ComponentType_Transform:  			return Add<Transform>(ownerID);
 			default:                       			return nullptr;
 		}
 	}
@@ -401,7 +369,7 @@ namespace FlatEngine
 		if (component == nullptr)
 			return;
 
-		long ownerID = component->GetParentObjectID();
+		long ownerID = component->GetOwnerID();
 		switch (component->GetType())
 		{
 			case ComponentType_Animation:  			Remove<Animation>(ownerID); break;

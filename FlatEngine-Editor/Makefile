@@ -8,123 +8,129 @@ ifndef verbose
   SILENT = @
 endif
 
-.PHONY: clean prebuild prelink
-
-ifeq ($(config),debug)
-  RESCOMP = windres
-  TARGETDIR = ../Build/linux-x86_64/Debug/FlatEngine-Editor
-  TARGET = $(TARGETDIR)/FlatEngine-Editor
-  OBJDIR = ../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor
-  DEFINES += -D_LINUX -DLINUX -D_DEBUG
-  INCLUDES += -ISource -I../FlatEngine-Core/Source -I../scripts -I../Vendor/includes/ImGui/Backends -I../Vendor/includes/ImGui/ImGui_Docking -I../Vendor/includes/ImGui/ImGui_Docking/misc/debuggers -I../Vendor/includes/Json_Formatter -I../Vendor/includes/ImSequencer -I../Vendor/includes/Lua -I../Vendor/includes/Sol2/include -I../Vendor/includes/Sol2/include/sol -I../Vendor/includes/Box2D/include -I../Vendor/includes/spdlog/include -I/usr/include/SDL2 -I/usr/include/vulkan -I/usr/include/glm
-  FORCE_INCLUDE +=
-  ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++20
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++20 -std=c++20
-  ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../Build/linux-x86_64/Debug/FlatEngine-Core/libFlatEngine-Core.a -lvulkan -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -llua-5.4 -l:libbox2d.a -ldl -lpthread
-  LDDEPS += ../Build/linux-x86_64/Debug/FlatEngine-Core/libFlatEngine-Core.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib64 -L/usr/lib64 -m64
-  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-all: prebuild prelink $(TARGET)
-	@:
-
-endif
-
-ifeq ($(config),release)
-  RESCOMP = windres
-  TARGETDIR = ../Build/linux-x86_64/Release/FlatEngine-Editor
-  TARGET = $(TARGETDIR)/FlatEngine-Editor
-  OBJDIR = ../Build/Intermediates/linux-x86_64/Release/FlatEngine-Editor
-  DEFINES += -D_LINUX -DLINUX -DNDEBUG
-  INCLUDES += -ISource -I../FlatEngine-Core/Source -I../scripts -I../Vendor/includes/ImGui/Backends -I../Vendor/includes/ImGui/ImGui_Docking -I../Vendor/includes/ImGui/ImGui_Docking/misc/debuggers -I../Vendor/includes/Json_Formatter -I../Vendor/includes/ImSequencer -I../Vendor/includes/Lua -I../Vendor/includes/Sol2/include -I../Vendor/includes/Sol2/include/sol -I../Vendor/includes/Box2D/include -I../Vendor/includes/spdlog/include -I/usr/include/SDL2 -I/usr/include/vulkan -I/usr/include/glm
-  FORCE_INCLUDE +=
-  ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g -std=c++20
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g -std=c++20 -std=c++20
-  ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../Build/linux-x86_64/Release/FlatEngine-Core/libFlatEngine-Core.a -lvulkan -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -llua-5.4 -l:libbox2d.a -ldl -lpthread
-  LDDEPS += ../Build/linux-x86_64/Release/FlatEngine-Core/libFlatEngine-Core.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib64 -L/usr/lib64 -m64
-  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-all: prebuild prelink $(TARGET)
-	@:
-
-endif
-
-ifeq ($(config),dist)
-  RESCOMP = windres
-  TARGETDIR = ../Build/linux-x86_64/Dist/FlatEngine-Editor
-  TARGET = $(TARGETDIR)/FlatEngine-Editor
-  OBJDIR = ../Build/Intermediates/linux-x86_64/Dist/FlatEngine-Editor
-  DEFINES += -D_LINUX -DLINUX -DNDEBUG
-  INCLUDES += -ISource -I../FlatEngine-Core/Source -I../scripts -I../Vendor/includes/ImGui/Backends -I../Vendor/includes/ImGui/ImGui_Docking -I../Vendor/includes/ImGui/ImGui_Docking/misc/debuggers -I../Vendor/includes/Json_Formatter -I../Vendor/includes/ImSequencer -I../Vendor/includes/Lua -I../Vendor/includes/Sol2/include -I../Vendor/includes/Sol2/include/sol -I../Vendor/includes/Box2D/include -I../Vendor/includes/spdlog/include -I/usr/include/SDL2 -I/usr/include/vulkan -I/usr/include/glm
-  FORCE_INCLUDE +=
-  ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++20
-  ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++20 -std=c++20
-  ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += ../Build/linux-x86_64/Dist/FlatEngine-Core/libFlatEngine-Core.a -lvulkan -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -llua-5.4 -l:libbox2d.a -ldl -lpthread
-  LDDEPS += ../Build/linux-x86_64/Dist/FlatEngine-Core/libFlatEngine-Core.a
-  ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib64 -L/usr/lib64 -m64 -s
-  LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
-  define PREBUILDCMDS
-  endef
-  define PRELINKCMDS
-  endef
-  define POSTBUILDCMDS
-  endef
-all: prebuild prelink $(TARGET)
-	@:
-
-endif
-
-OBJECTS := \
-	$(OBJDIR)/Animator.o \
-	$(OBJDIR)/FileManager.o \
-	$(OBJDIR)/FlatEngine-Editor.o \
-	$(OBJDIR)/FlatGui.o \
-	$(OBJDIR)/Hierarchy.o \
-	$(OBJDIR)/Inspector.o \
-	$(OBJDIR)/Log.o \
-	$(OBJDIR)/MainMenu.o \
-	$(OBJDIR)/MappingContextEditor.o \
-	$(OBJDIR)/MaterialEditor.o \
-	$(OBJDIR)/Modals.o \
-	$(OBJDIR)/PersistantScript.o \
-	$(OBJDIR)/ProfilerGui.o \
-	$(OBJDIR)/ProjectHub.o \
-	$(OBJDIR)/SettingsGui.o \
-	$(OBJDIR)/TileSetEditor.o \
-	$(OBJDIR)/Toolbar.o \
-
-RESOURCES := \
-
-CUSTOMFILES := \
+.PHONY: clean prebuild
 
 SHELLTYPE := posix
-ifeq (.exe,$(findstring .exe,$(ComSpec)))
+ifeq ($(shell echo "test"), "test")
 	SHELLTYPE := msdos
 endif
 
-$(TARGET): $(GCH) ${CUSTOMFILES} $(OBJECTS) $(LDDEPS) $(RESOURCES) | $(TARGETDIR)
+# Configurations
+# #############################################
+
+ifeq ($(origin CC), default)
+  CC = gcc
+endif
+ifeq ($(origin CXX), default)
+  CXX = g++
+endif
+ifeq ($(origin AR), default)
+  AR = ar
+endif
+RESCOMP = windres
+INCLUDES += -ISource -I../FlatEngine-Core/Source -I../scripts -I../Vendor/includes/ImGui/Backends -I../Vendor/includes/ImGui/ImGui_Docking -I../Vendor/includes/ImGui/ImGui_Docking/misc/debuggers -I../Vendor/includes/Json_Formatter -I../Vendor/includes/ImSequencer -I../Vendor/includes/Lua -I../Vendor/includes/Sol2/include -I../Vendor/includes/Sol2/include/sol -I../Vendor/includes/Box2D/include -I../Vendor/includes/spdlog/include -I/usr/include/SDL2 -I/usr/include/vulkan -I/usr/include/glm
+FORCE_INCLUDE +=
+ALL_CPPFLAGS += $(CPPFLAGS) -MD -MP $(DEFINES) $(INCLUDES)
+ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
+LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
+define PREBUILDCMDS
+endef
+define PRELINKCMDS
+endef
+define POSTBUILDCMDS
+endef
+
+ifeq ($(config),debug)
+TARGETDIR = ../Build/linux-x86_64/Debug/FlatEngine-Editor
+TARGET = $(TARGETDIR)/FlatEngine-Editor
+OBJDIR = ../Build/Intermediates/linux-x86_64/Debug/FlatEngine-Editor
+DEFINES += -D_LINUX -DLINUX -D_DEBUG
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++20
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -g -std=c++20 -std=c++20
+LIBS += ../Build/linux-x86_64/Debug/FlatEngine-Core/libFlatEngine-Core.a -lvulkan -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -llua-5.4 -l:libbox2d.a -ldl -lpthread
+LDDEPS += ../Build/linux-x86_64/Debug/FlatEngine-Core/libFlatEngine-Core.a
+ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib64 -L/usr/lib64 -m64
+
+else ifeq ($(config),release)
+TARGETDIR = ../Build/linux-x86_64/Release/FlatEngine-Editor
+TARGET = $(TARGETDIR)/FlatEngine-Editor
+OBJDIR = ../Build/Intermediates/linux-x86_64/Release/FlatEngine-Editor
+DEFINES += -D_LINUX -DLINUX -DNDEBUG
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g -std=c++20
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -g -std=c++20 -std=c++20
+LIBS += ../Build/linux-x86_64/Release/FlatEngine-Core/libFlatEngine-Core.a -lvulkan -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -llua-5.4 -l:libbox2d.a -ldl -lpthread
+LDDEPS += ../Build/linux-x86_64/Release/FlatEngine-Core/libFlatEngine-Core.a
+ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib64 -L/usr/lib64 -m64
+
+else ifeq ($(config),dist)
+TARGETDIR = ../Build/linux-x86_64/Dist/FlatEngine-Editor
+TARGET = $(TARGETDIR)/FlatEngine-Editor
+OBJDIR = ../Build/Intermediates/linux-x86_64/Dist/FlatEngine-Editor
+DEFINES += -D_LINUX -DLINUX -DNDEBUG
+ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++20
+ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CPPFLAGS) -m64 -O2 -std=c++20 -std=c++20
+LIBS += ../Build/linux-x86_64/Dist/FlatEngine-Core/libFlatEngine-Core.a -lvulkan -lSDL2 -lSDL2_ttf -lSDL2_image -lSDL2_mixer -llua-5.4 -l:libbox2d.a -ldl -lpthread
+LDDEPS += ../Build/linux-x86_64/Dist/FlatEngine-Core/libFlatEngine-Core.a
+ALL_LDFLAGS += $(LDFLAGS) -L/usr/local/lib64 -L/usr/lib64 -m64 -s
+
+endif
+
+# Per File Configurations
+# #############################################
+
+
+# File sets
+# #############################################
+
+GENERATED :=
+OBJECTS :=
+
+GENERATED += $(OBJDIR)/Animator.o
+GENERATED += $(OBJDIR)/FileManager.o
+GENERATED += $(OBJDIR)/FlatEngine-Editor.o
+GENERATED += $(OBJDIR)/FlatGui.o
+GENERATED += $(OBJDIR)/Hierarchy.o
+GENERATED += $(OBJDIR)/Inspector.o
+GENERATED += $(OBJDIR)/Log.o
+GENERATED += $(OBJDIR)/MainMenu.o
+GENERATED += $(OBJDIR)/MappingContextEditor.o
+GENERATED += $(OBJDIR)/MaterialEditor.o
+GENERATED += $(OBJDIR)/Modals.o
+GENERATED += $(OBJDIR)/PersistantScript.o
+GENERATED += $(OBJDIR)/ProfilerGui.o
+GENERATED += $(OBJDIR)/ProjectHub.o
+GENERATED += $(OBJDIR)/SettingsGui.o
+GENERATED += $(OBJDIR)/TileSetEditor.o
+GENERATED += $(OBJDIR)/Toolbar.o
+OBJECTS += $(OBJDIR)/Animator.o
+OBJECTS += $(OBJDIR)/FileManager.o
+OBJECTS += $(OBJDIR)/FlatEngine-Editor.o
+OBJECTS += $(OBJDIR)/FlatGui.o
+OBJECTS += $(OBJDIR)/Hierarchy.o
+OBJECTS += $(OBJDIR)/Inspector.o
+OBJECTS += $(OBJDIR)/Log.o
+OBJECTS += $(OBJDIR)/MainMenu.o
+OBJECTS += $(OBJDIR)/MappingContextEditor.o
+OBJECTS += $(OBJDIR)/MaterialEditor.o
+OBJECTS += $(OBJDIR)/Modals.o
+OBJECTS += $(OBJDIR)/PersistantScript.o
+OBJECTS += $(OBJDIR)/ProfilerGui.o
+OBJECTS += $(OBJDIR)/ProjectHub.o
+OBJECTS += $(OBJDIR)/SettingsGui.o
+OBJECTS += $(OBJDIR)/TileSetEditor.o
+OBJECTS += $(OBJDIR)/Toolbar.o
+
+# Rules
+# #############################################
+
+all: $(TARGET)
+	@:
+
+$(TARGET): $(GENERATED) $(OBJECTS) $(LDDEPS) | $(TARGETDIR)
+	$(PRELINKCMDS)
 	@echo Linking FlatEngine-Editor
 	$(SILENT) $(LINKCMD)
 	$(POSTBUILDCMDS)
-
-$(CUSTOMFILES): | $(OBJDIR)
 
 $(TARGETDIR):
 	@echo Creating $(TARGETDIR)
@@ -146,80 +152,89 @@ clean:
 	@echo Cleaning FlatEngine-Editor
 ifeq (posix,$(SHELLTYPE))
 	$(SILENT) rm -f  $(TARGET)
+	$(SILENT) rm -rf $(GENERATED)
 	$(SILENT) rm -rf $(OBJDIR)
 else
 	$(SILENT) if exist $(subst /,\\,$(TARGET)) del $(subst /,\\,$(TARGET))
+	$(SILENT) $(foreach f,$(subst /,\\,$(GENERATED)),if exist $(f) del /s /q $(f) >nul &)
 	$(SILENT) if exist $(subst /,\\,$(OBJDIR)) rmdir /s /q $(subst /,\\,$(OBJDIR))
 endif
 
-prebuild:
+prebuild: | $(OBJDIR)
 	$(PREBUILDCMDS)
 
-prelink:
-	$(PRELINKCMDS)
-
 ifneq (,$(PCH))
-$(OBJECTS): $(GCH) $(PCH) | $(OBJDIR)
-$(GCH): $(PCH) | $(OBJDIR)
+$(OBJECTS): $(GCH) | $(PCH_PLACEHOLDER)
+$(GCH): $(PCH) | prebuild
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) -x c++-header $(ALL_CXXFLAGS) -o "$@" -MF "$(@:%.gch=%.d)" -c "$<"
+$(PCH_PLACEHOLDER): $(GCH) | $(OBJDIR)
+ifeq (posix,$(SHELLTYPE))
+	$(SILENT) touch "$@"
 else
-$(OBJECTS): | $(OBJDIR)
+	$(SILENT) echo $null >> "$@"
+endif
+else
+$(OBJECTS): | prebuild
 endif
 
+
+# File Rules
+# #############################################
+
 $(OBJDIR)/Animator.o: Source/Animator.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/FileManager.o: Source/FileManager.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/FlatEngine-Editor.o: Source/FlatEngine-Editor.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/FlatGui.o: Source/FlatGui.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Hierarchy.o: Source/Hierarchy.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Inspector.o: Source/Inspector.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Log.o: Source/Log.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/MainMenu.o: Source/MainMenu.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/MappingContextEditor.o: Source/MappingContextEditor.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/MaterialEditor.o: Source/MaterialEditor.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Modals.o: Source/Modals.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/PersistantScript.o: Source/PersistantScript.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/ProfilerGui.o: Source/ProfilerGui.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/ProjectHub.o: Source/ProjectHub.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/SettingsGui.o: Source/SettingsGui.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/TileSetEditor.o: Source/TileSetEditor.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Toolbar.o: Source/Toolbar.cpp
-	@echo $(notdir $<)
+	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)
 ifneq (,$(PCH))
-  -include $(OBJDIR)/$(notdir $(PCH)).d
+  -include $(PCH_PLACEHOLDER).d
 endif

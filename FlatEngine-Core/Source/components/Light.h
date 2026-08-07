@@ -14,7 +14,7 @@ namespace FlatEngine
 	class Light : public Component
 	{
 	public:
-		Light(long myID = -1, long parentObjectID = -1);
+		Light(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 

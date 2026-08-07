@@ -13,7 +13,7 @@ namespace FlatEngine
 	class Transform : public Component
 	{
 	public:
-		Transform(long myID = -1, long parentID = -1);
+		Transform(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 

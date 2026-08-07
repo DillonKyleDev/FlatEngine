@@ -29,7 +29,7 @@ namespace FlatEngine
     class TileMap : public Component
     {
     public:
-        TileMap(long myID = -1, long parentObjectID = -1);        
+        TileMap(long ownerID = -1);        
         json GetData(bool b_IDOverride = false);
         void PutData(json componentJson, std::string objectName);
 

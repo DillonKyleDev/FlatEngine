@@ -19,6 +19,9 @@ namespace FlatEngine
 
             T* Get(long ID)
             {
+                if (ID == -1)
+                    return nullptr;
+
                 auto iter = IDtoIndex.find(ID);
                 if (iter == IDtoIndex.end())
                 {

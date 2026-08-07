@@ -58,7 +58,7 @@ namespace FlatEngine
 	class Script : public Component
 	{
 	public:		
-		Script(long myID = -1, long parentObjectID = -1);	
+		Script(long ownerID = -1);	
 		~Script();	
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);

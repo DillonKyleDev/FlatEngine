@@ -7,11 +7,10 @@
 
 namespace FlatEngine
 {
-	Transform::Transform(long myID, long parentObjectID)
+	Transform::Transform(long ownerID)
 	{
 		SetType(ComponentType_Transform);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);		
+		SetOwnerID(ownerID);
 		m_position = Vector3();
 		m_scale = Vector3(1);		
 		m_rotation = Vector3();
@@ -21,7 +20,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "xPosition", m_position.x },
@@ -63,9 +61,9 @@ namespace FlatEngine
 
 	Vector3 Transform::GetAbsolutePosition()
 	{
-		if (GetParentObject() != nullptr)
+		if (GetOwningObject() != nullptr)
 		{
-			GameObject* parent = GetParentObject();
+			GameObject* parent = GetOwningObject();
 			Body2D* body2D = parent->Get<Body2D>();
 
 			if (body2D != nullptr)
@@ -90,9 +88,9 @@ namespace FlatEngine
 
 	Vector3 Transform::GetPositionOrigin()
 	{
-		if (GetParentObject() != nullptr)
+		if (GetOwningObject() != nullptr)
 		{
-			GameObject* parent = GetParentObject();			
+			GameObject* parent = GetOwningObject();			
 			Vector3 positionOrigin = Vector3();
 
 			if (parent->GetParent() != nullptr)
@@ -110,9 +108,9 @@ namespace FlatEngine
 	{
 		m_position = newPosition;
 
-		if (GetParentObject() != nullptr)
+		if (GetOwningObject() != nullptr)
 		{
-			GameObject* parent = GetParentObject();
+			GameObject* parent = GetOwningObject();
 			Body2D* body2D = parent->Get<Body2D>();
 
 			if (body2D != nullptr)
@@ -126,9 +124,9 @@ namespace FlatEngine
 	Vector3 Transform::GetPosition()
 	{
 		Body2D* body2D = nullptr;
-		if (GetParentObject() != nullptr)
+		if (GetOwningObject() != nullptr)
 		{
-			body2D = GetParentObject()->Get<Body2D>();
+			body2D = GetOwningObject()->Get<Body2D>();
 		}
 
 		if (body2D != nullptr)
@@ -150,9 +148,9 @@ namespace FlatEngine
 	{
 		Vector3 scaleOrigin = 1;
 
-		if (GetParentObject() != nullptr && GetParentObject()->GetParent() != nullptr)
+		if (GetOwningObject() != nullptr && GetOwningObject()->GetParent() != nullptr)
 		{
-			scaleOrigin = GetParentObject()->GetParent()->Get<Transform>()->GetAbsoluteScale();
+			scaleOrigin = GetOwningObject()->GetParent()->Get<Transform>()->GetAbsoluteScale();
 		}
 
 		return scaleOrigin * m_scale;
@@ -184,9 +182,9 @@ namespace FlatEngine
 	{
 		m_rotation.z = ClampRotation(newRotation);
 
-		if (GetParentObject() != nullptr && GetParentObject()->Get<Body2D>() != nullptr)
+		if (GetOwningObject() != nullptr && GetOwningObject()->Get<Body2D>() != nullptr)
 		{
-			GetParentObject()->Get<Body2D>()->SetRotation(m_rotation.z);
+			GetOwningObject()->Get<Body2D>()->SetRotation(m_rotation.z);
 		}
 	}
 
@@ -194,9 +192,9 @@ namespace FlatEngine
 	{
 		m_rotation = rotation;
 
-		if (GetParentObject() != nullptr && GetParentObject()->Get<Body2D>() != nullptr)
+		if (GetOwningObject() != nullptr && GetOwningObject()->Get<Body2D>() != nullptr)
 		{
-			GetParentObject()->Get<Body2D>()->SetRotation(m_rotation.z);
+			GetOwningObject()->Get<Body2D>()->SetRotation(m_rotation.z);
 		}
 	}
 
@@ -207,7 +205,7 @@ namespace FlatEngine
 
 	float Transform::GetRotation()
 	{
-		Body2D* body2D = GetParentObject()->Get<Body2D>();
+		Body2D* body2D = GetOwningObject()->Get<Body2D>();
 
 		if (body2D != nullptr)
 		{
@@ -219,9 +217,9 @@ namespace FlatEngine
 
 	Vector3 Transform::GetRotations()
 	{
-		if (GetParentObject() != nullptr)
+		if (GetOwningObject() != nullptr)
 		{
-			Body2D* body2D = GetParentObject()->Get<Body2D>();
+			Body2D* body2D = GetOwningObject()->Get<Body2D>();
 
 			if (body2D != nullptr)
 			{
@@ -239,9 +237,9 @@ namespace FlatEngine
 
 	glm::mat4 Transform::GetRotationMatrix()
 	{
-		if (GetParentObject() != nullptr)
+		if (GetOwningObject() != nullptr)
 		{
-			Body2D* body2D = GetParentObject()->Get<Body2D>();
+			Body2D* body2D = GetOwningObject()->Get<Body2D>();
 
 			if (body2D != nullptr)
 			{

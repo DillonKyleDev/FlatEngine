@@ -6,11 +6,10 @@
 
 namespace FlatEngine
 {
-	Script::Script(long myID, long parentObjectID)
+	Script::Script(long ownerID)
 	{
 		SetType(ComponentType_Script);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 	}
 
 	Script::~Script()
@@ -22,7 +21,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() }			
 		};

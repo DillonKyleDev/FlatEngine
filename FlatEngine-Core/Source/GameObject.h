@@ -37,13 +37,13 @@ namespace FlatEngine
 
 		// Components
 		template<class T>
-		T* Add(long componentID = -1, json componentJson = json::object());
+		T* Add(json componentJson = json::object());
 		template<class T>
 		T* Get();
 		template<class T>
 		void Remove(long ownerID);
 
-		Component* AddComponent(ComponentType type, long componentID = -1, json componentJson = json::object());
+		Component* AddComponent(ComponentType type, json componentJson = json::object());
 		void RemoveComponent(Component* component);		
 		Component* GetComponent(ComponentType type);
 		std::vector<Component*> GetComponents();

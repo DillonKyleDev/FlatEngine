@@ -3,8 +3,8 @@
 #include "components/Transform.h"
 #include "GameLoop.h"
 #include "GameObject.h"
-#include "managers/PhysicsManager.h"
 #include "managers/SceneManager.h"
+#include "physics/PhysicsManager.h"
 #include "tools/Time.h"
 
 #ifdef _WINDOWS
@@ -52,50 +52,18 @@ namespace FlatEngine
 		AddFrame();
 		m_activeTime = m_time - m_pausedTime;
 
+		SceneView::ClearDebugDrawObjects();	
 		HandleCamera();
 		ResetCharacterControllers();
-		HandleButtons();
+		HandleButtons();	
 		RunUpdateOnScripts();
 		HandleAnimations();
-		// PhysicsManager::physics.Update(GetDeltaTime());
 		PhysicsManager::physics2D.Update(GetDeltaTime());
-
-		for (Body2D& body : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
-		{
-			// Logger::log.Debug("Position: {}", iterator->second.GetPosition().y);
-			//LogInt(iterator->second.GetBoxes().size());
-			//LogVector2(iterator->second.GetPosition(), "Pos: ");
-			for (Box& box : body.GetBoxes())
-			{
-
-			}
-			//for (Circle& circle : iterator->second.GetCircles())
-			//{
-			//	LogString("Circle");
-			//	Circle* circlePtr = static_cast<Circle*>(b2Shape_GetUserData(circle.GetShapeID()));
-			//}
-			//LogInt((int)iterator->second.GetBodyProps().type);
-			//LogVector2(iterator->second.GetBodyProps().position, iterator->second.GetParent()->GetName() + " Props Pos: ");	
-			
-			//LogVector2(iterator->second.GetBodyProps().dimensions);
-		}
-		//std::map<long, CircleBody> circleBodies = GetLoadedScene()->GetCircleBodies();
-		//for (std::map<long, CircleBody>::iterator iterator = circleBodies.begin(); iterator != circleBodies.end(); iterator++)
-		//{
-		//	//LogVector2(iterator->second.GetPosition(), "Pos: ");
-		//}
-		//std::map<long, CapsuleBody> capsuleBodies = GetLoadedScene()->GetCapsuleBodies();
-		//for (std::map<long, CapsuleBody>::iterator iterator = capsuleBodies.begin(); iterator != capsuleBodies.end(); iterator++)
-		//{
-		//	b2ShapeId id = iterator->second.GetShapeIDs().back();
-		//	b2Capsule capsule = b2Shape_GetCapsule(id);
-		//	//LogVector2(capsule.center1, "Center1: ");
-		//	//LogVector2(capsule.center2, "Center2: ");
-		//}
 	}
 
 	void GameLoop::Stop()
 	{
+		SceneView::ClearDebugDrawObjects();	
 		m_b_started = false;
 		m_b_paused = false;
 		m_framesCounted = 0;
@@ -153,7 +121,7 @@ namespace FlatEngine
 			{
 				if (hovered.GetActiveLayer() >= GetFirstUnblockedLayer())
 				{
-					GameObject* owner = hovered.GetParentObject();
+					GameObject* owner = hovered.GetOwningObject();
 					LuaManager::LuaParameter functionParams = hovered.GetFunctionParams();					
 					std::string functionName = hovered.GetFunctionName();
 
@@ -177,7 +145,7 @@ namespace FlatEngine
 							// {
 							// 	if (F_CPPAnimationEventFunctions.count(functionName))
 							// 	{
-							// 		F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParentObject(), functionParams->parameters);
+							// 		F_CPPAnimationEventFunctions.at(functionName)(hovered.GetOwningObject(), functionParams->parameters);
 							// 	}
 							// }
 							// else if (functionParams->b_luaEvent)
@@ -210,7 +178,7 @@ namespace FlatEngine
 							// {
 							// 	if (F_CPPAnimationEventFunctions.count(functionName))
 							// 	{
-							// 		F_CPPAnimationEventFunctions.at(functionName)(hovered.GetParentObject(), functionParams->parameters);
+							// 		F_CPPAnimationEventFunctions.at(functionName)(hovered.GetOwningObject(), functionParams->parameters);
 							// 	}
 							// }
 							// else if (functionParams->b_luaEvent)
@@ -235,9 +203,9 @@ namespace FlatEngine
 
 		for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())
 		{
-			if (button.IsActive() && button.GetParentObject()->IsActive())
+			if (button.IsActive() && button.GetOwningObject()->IsActive())
 			{
-				Transform* transform = button.GetParentObject()->Get<Transform>();
+				Transform* transform = button.GetOwningObject()->Get<Transform>();
 				Vector4 activeEdges = button.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
@@ -247,7 +215,7 @@ namespace FlatEngine
 					{
 						m_hoveredButtons.push_back(button);
 						button.SetMouseIsOver(true);
-						GameObject* owner = button.GetParentObject();
+						GameObject* owner = button.GetOwningObject();
 
 						if (button.MouseOverSet())
 						{
@@ -266,7 +234,7 @@ namespace FlatEngine
 			bool b_mouseJustEntered = true;
 			for (Button& lastHovered : lastHovered)
 			{
-				if (hoveredButton.GetID() == lastHovered.GetID())
+				if (hoveredButton.GetOwnerID() == lastHovered.GetOwnerID())
 				{
 					b_mouseJustEntered = false;
 				}
@@ -278,7 +246,7 @@ namespace FlatEngine
 					hoveredButton.OnMouseEnter();
 				}
 
-				CallLuaButtonEventFunction(hoveredButton.GetParentObject(), LuaManager::LuaEventFunction::OnButtonMouseEnter);			
+				CallLuaButtonEventFunction(hoveredButton.GetOwningObject(), LuaManager::LuaEventFunction::OnButtonMouseEnter);			
 			}
 		}
 
@@ -288,19 +256,19 @@ namespace FlatEngine
 			bool b_stillHovered = false;
 			for (Button& hoveredButton : m_hoveredButtons)
 			{
-				if (hoveredButton.GetID() == lastHovered.GetID())
+				if (hoveredButton.GetOwnerID() == lastHovered.GetOwnerID())
 				{
 					b_stillHovered = true;
 				}
 			}
-			if (!b_stillHovered && lastHovered.GetParentObject() != nullptr)
+			if (!b_stillHovered && lastHovered.GetOwningObject() != nullptr)
 			{
 				if (lastHovered.MouseLeaveSet())
 				{
 					lastHovered.OnMouseLeave();
 				}
 
-				CallLuaButtonEventFunction(lastHovered.GetParentObject(), LuaManager::LuaEventFunction::OnButtonMouseLeave);			
+				CallLuaButtonEventFunction(lastHovered.GetOwningObject(), LuaManager::LuaEventFunction::OnButtonMouseLeave);			
 			}
 		}
 
@@ -320,7 +288,7 @@ namespace FlatEngine
 	int GameLoop::GetFirstUnblockedLayer()
 	{
 		Canvas canvas = GetFirstUnblockedCanvas();
-		if (canvas.GetID() != -1)
+		if (canvas.GetOwnerID() != -1)
 		{
 			return canvas.GetLayerNumber();
 		}

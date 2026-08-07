@@ -1,3 +1,4 @@
+#include "components/Body2D.h"
 #include "components/Sprite.h"
 #include "Types.h"
 #include "managers/Assets.h"
@@ -170,7 +171,7 @@ namespace FlatEngine
 
                     LoadEngineMaterials();                    
 
-                    SceneView::LoadPersistentSceneViewObjects();
+                    SceneView::LoadSceneViewObjects();
                 }
             }
 
@@ -1188,7 +1189,53 @@ namespace FlatEngine
                         }
                     }
                 }     
+
+                // CAMERA GIZMOS
+                for (auto& renderObject : SceneView::cameraSceneRenderObjects.GetAll())                        
+                {                                                        
+                    std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
+                    if (renderObject.mesh.Initialized() && material != nullptr)
+                    {                                                  
+                        if (renderObject.mesh.IsActive())
+                        {                                    
+                            m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                            renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
+                            m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                            m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                            m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                        }
+                    }
+                }
+
+                // TRANSFORM GIZMO
+                std::shared_ptr<Material> transformGizmoMaterial = SceneView::transformGizmoRenderObject.mesh.GetSceneViewMaterial();              
+                if (SceneView::transformGizmoRenderObject.mesh.Initialized() && transformGizmoMaterial != nullptr)
+                {                                                  
+                    if (SceneView::transformGizmoRenderObject.mesh.IsActive())
+                    {                                    
+                        m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(transformGizmoMaterial->GetGraphicsPipeline());
+                        SceneView::transformGizmoRenderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &SceneView::transformGizmoRenderObject.transform);
+                        m_renderToTextureSceneViewRenderPass.BindIndexed(SceneView::transformGizmoRenderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                        m_renderToTextureSceneViewRenderPass.BindDescriptorSets(SceneView::transformGizmoRenderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], transformGizmoMaterial, ViewportType::ViewportType_SceneView);
+                        m_renderToTextureSceneViewRenderPass.DrawIndexed(SceneView::transformGizmoRenderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                    }
+                }
+
+                // ORIENTATION GIZMO
+                std::shared_ptr<Material> orientationGizmoMaterial = SceneView::orientationGizmoRenderObject.mesh.GetSceneViewMaterial();              
+                if (SceneView::orientationGizmoRenderObject.mesh.Initialized() && orientationGizmoMaterial != nullptr)
+                {                                                  
+                    if (SceneView::orientationGizmoRenderObject.mesh.IsActive())
+                    {                                    
+                        m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(orientationGizmoMaterial->GetGraphicsPipeline());
+                        SceneView::orientationGizmoRenderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &SceneView::orientationGizmoRenderObject.transform);
+                        m_renderToTextureSceneViewRenderPass.BindIndexed(SceneView::orientationGizmoRenderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                        m_renderToTextureSceneViewRenderPass.BindDescriptorSets(SceneView::orientationGizmoRenderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], orientationGizmoMaterial, ViewportType::ViewportType_SceneView);
+                        m_renderToTextureSceneViewRenderPass.DrawIndexed(SceneView::orientationGizmoRenderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                    }
+                }
                 
+                // LUA DEBUG DRAW SHAPES
                 for (PoolObject<SceneView::SceneRenderObject>& poolRenderObject : SceneView::debugDrawSceneRenderObjects)                        
                 {                                                        
                     std::shared_ptr<Material> material = poolRenderObject.object->mesh.GetSceneViewMaterial();
@@ -1204,6 +1251,7 @@ namespace FlatEngine
                         }
                     }
                 }
+                
 
 
                 std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
@@ -1259,6 +1307,26 @@ namespace FlatEngine
 
                             meshCount++;
                         }                   
+                    }
+                }
+
+                // BODY2D DRAW SHAPES
+                for (Body2D body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
+                {
+                    for (SceneView::SceneRenderObject& renderShape : body2D.renderShapes)                        
+                    {                 
+                        std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
+                        if (renderShape.mesh.Initialized() && material != nullptr)
+                        {                                                  
+                            if (renderShape.mesh.IsActive())
+                            {                                    
+                                m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                                renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderShape.transform);
+                                m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                            }
+                        }
                     }
                 }
 

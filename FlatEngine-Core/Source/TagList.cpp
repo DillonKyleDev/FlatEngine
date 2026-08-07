@@ -1,6 +1,7 @@
 #include "components/Body2D.h"
 #include "GameObject.h"
 #include "managers/Assets.h"
+#include "physics/PhysicsManager.h"
 #include "managers/SceneManager.h"
 #include "tools/JsonHelper.h"
 #include "TagList.h"
@@ -135,7 +136,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body2D>()->RecreateLiveBody();
+			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 
@@ -149,7 +150,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body2D>()->RecreateLiveBody();
+			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 
@@ -175,7 +176,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body2D>()->RecreateLiveBody();
+			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 
@@ -189,7 +190,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			owner->Get<Body2D>()->RecreateLiveBody();
+			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 

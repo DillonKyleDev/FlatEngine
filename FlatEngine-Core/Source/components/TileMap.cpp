@@ -6,11 +6,10 @@
 
 namespace FlatEngine
 {
-	TileMap::TileMap(long myID, long parentObjectID)
+	TileMap::TileMap(long ownerID)
 	{
 		SetType(ComponentType::ComponentType_TileMap);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		m_width = 10;
 		m_height = 5;
 		m_tileWidth = 16;
@@ -82,7 +81,6 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "width", m_width },

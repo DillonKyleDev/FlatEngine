@@ -46,11 +46,8 @@ namespace FlatEngine
 		void DeleteGameObject(GameObject* objectToDelete);
 
 		void KeepNextGameObjectIDUpToDate(long id);
-		void KeepNextComponentIDUpToDate(long ID);
 		void SetNextGameObjectID(long nextID);
 		long GetNextGameObjectID();
-		void SetNextComponentID(long nextID);
-		long GetNextComponentID();
 
 		void OnPrefabInstantiated();
 		void SortSceneObjects();
@@ -69,11 +66,11 @@ namespace FlatEngine
 		void SetPrimaryCamera(Camera* camera);
 		void RemovePrimaryCamera();
 
-		Component* AddComponent(ComponentType type, long ownerID, long componentID = -1);
+		Component* AddComponent(ComponentType type, long ownerID);
 		
-		template<class T> T* Add(long ownerID, long componentID)
+		template<class T> T* Add(long ownerID)
 		{
-			return GetContainer<T>().Add(ownerID, T(componentID == -1 ? GetNextComponentID() : componentID, ownerID));			
+			return GetContainer<T>().Add(ownerID, T(ownerID));			
 		}
 		template<class T> T* Get(long ownerID)	
 		{			
@@ -96,8 +93,6 @@ namespace FlatEngine
 		std::vector<GameObject*> m_sortedHierarchyObjects;
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		long m_nextGameObjectID;
-		long m_nextComponentID;
-		std::vector<long> m_freedComponentIDs;
 		std::vector<long> m_freedGameObjectIDs;
 		Camera* m_primaryCamera;
 

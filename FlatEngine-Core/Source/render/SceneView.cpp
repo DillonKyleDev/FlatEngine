@@ -2,7 +2,7 @@
 #include "FlatEngine.h"
 #include "GameObject.h"
 #include "GuiCore.h"
-#include "managers/PhysicsManager.h"
+#include "physics/PhysicsManager.h"
 #include "managers/Scene.h"
 #include "render/RenderWindow.h"
 #include "render/VulkanManager.h"
@@ -29,43 +29,40 @@ namespace FlatEngine
 	{
 		std::vector<SceneRenderObject> persistentSceneRenderObjects;
         std::vector<PoolObject<SceneRenderObject>> debugDrawSceneRenderObjects;
-        std::unordered_map<long, SceneRenderObject> transientSceneRenderObjects;
+        UMapVector<SceneRenderObject> cameraSceneRenderObjects;		
+		UMapVector<SceneRenderObject> lightSceneRenderObjects;
+		SceneRenderObject transformGizmoRenderObject;
+		SceneRenderObject orientationGizmoRenderObject;
 
-		SceneRenderObject CreateLinePoolObject()
+		SceneRenderObject CreateLineObject()
 		{
-			SceneRenderObject poolObject;
-
-			poolObject.mesh.CreateUniformBuffers();
-			poolObject.mesh.SetMaterial("fl_debugDraw");
-			poolObject.mesh.SetModel("../engine/models/line.obj", false);	
-			poolObject.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
-			poolObject.mesh.CreateResources();
-
-			return poolObject;
+			SceneRenderObject object;
+			object.mesh.CreateUniformBuffers();
+			object.mesh.SetMaterial("fl_debugDraw");
+			object.mesh.SetModel("../engine/models/line.obj", false);	
+			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
+			object.mesh.CreateResources();
+			return object;
 		}
-		SceneRenderObject CreateQuadPoolObject()
+		SceneRenderObject CreateQuadObject()
 		{
-			SceneRenderObject poolObject;
-
-			poolObject.mesh.CreateUniformBuffers();
-			poolObject.mesh.SetMaterial("fl_debugDraw");
-			poolObject.mesh.SetModel("../engine/models/quadLines.obj", false);	
-			poolObject.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
-			poolObject.mesh.CreateResources();
-
-			return poolObject;
+			SceneRenderObject object;
+			object.mesh.CreateUniformBuffers();
+			object.mesh.SetMaterial("fl_debugDraw");
+			object.mesh.SetModel("../engine/models/quadLines.obj", false);	
+			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
+			object.mesh.CreateResources();
+			return object;
 		}
-		SceneRenderObject CreateCirclePoolObject()
+		SceneRenderObject CreateCircleObject()
 		{
-			SceneRenderObject poolObject;
-
-			poolObject.mesh.CreateUniformBuffers();
-			poolObject.mesh.SetMaterial("fl_debugDraw");
-			poolObject.mesh.SetModel("../engine/models/quadLines.obj", false);	
-			poolObject.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
-			poolObject.mesh.CreateResources();
-
-			return poolObject;
+			SceneRenderObject object;
+			object.mesh.CreateUniformBuffers();
+			object.mesh.SetMaterial("fl_debugDraw");
+			object.mesh.SetModel("../engine/models/circle.obj", false);	
+			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
+			object.mesh.CreateResources();
+			return object;
 		}
 
 		void CleanupPoolObject(SceneRenderObject& object)
@@ -73,9 +70,9 @@ namespace FlatEngine
 			object.mesh.Cleanup();
 		}
 
-		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(CreateLinePoolObject, CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(CreateQuadPoolObject, CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(CreateCirclePoolObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(CreateLineObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(CreateQuadObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(CreateCircleObject, CleanupPoolObject, 10);
 
 		Vector2 sceneViewDimensions = Vector2(600, 400);	
 		Vector2 sceneViewCenter = Vector2();
@@ -141,91 +138,6 @@ namespace FlatEngine
 			{
 				GuiCore::RenderTextToolTip("Translate Mode");
 			}
-			// ImGui::SameLine();
-
-			// if (GuiCore::cursorMode == GuiCore::CURSOR_MODE::TILE_BRUSH)
-			// {
-			// 	Vector2 currentPos = ImGui::GetCursorScreenPos();			
-			// 	if (RenderImageButton("#TileBrushModeIcon", Assets::assetManager.GetTexture("tileBrush"), iconSize, 0, Vector2(1, 1), "selectedCursorModeButtonBg", "imageButtonTint", "cursorModeButtonHoverSelected"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_BRUSH;
-			// 	}
-			// }
-			// else
-			// {
-			// 	if (RenderImageButton("#TileBrushModeIcon", Assets::assetManager.GetTexture("tileBrush"), iconSize, 0, Vector2(1, 1), "transparent", "imageButtonTint", "cursorModeButtonHover"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_BRUSH;
-			// 	}
-			// }
-			// if (ImGui::IsItemHovered())
-			// {
-			// 	RenderTextToolTip("Tile Brush Mode");
-			// }
-			// ImGui::SameLine();
-
-
-			// if (GuiCore::cursorMode == GuiCore::CURSOR_MODE::TILE_ERASE)
-			// {
-			// 	Vector2 currentPos = ImGui::GetCursorScreenPos();			
-			// 	if (RenderImageButton("#TileEraseModeIcon", Assets::assetManager.GetTexture("tileErase"), iconSize, 0, Vector2(1, 1), "selectedCursorModeButtonBg", "imageButtonTint", "cursorModeButtonHoverSelected"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_ERASE;
-			// 	}
-			// }
-			// else
-			// {
-			// 	if (RenderImageButton("#TileEraseModeIcon", Assets::assetManager.GetTexture("tileErase"), iconSize, 0, Vector2(1, 1), "transparent", "imageButtonTint", "cursorModeButtonHover"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_ERASE;
-			// 	}
-			// }
-			// if (ImGui::IsItemHovered())
-			// {
-			// 	RenderTextToolTip("Tile Erase Mode");
-			// }
-			// ImGui::SameLine();
-
-			// if (GuiCore::cursorMode == GuiCore::CURSOR_MODE::TILE_MULTISELECT)
-			// {
-			// 	Vector2 currentPos = ImGui::GetCursorScreenPos();			
-			// 	if (RenderImageButton("#SelectTilesModeIcon", Assets::assetManager.GetTexture("tileSelect"), iconSize, 0, Vector2(1, 1), "selectedCursorModeButtonBg", "imageButtonTint", "cursorModeButtonHoverSelected"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_MULTISELECT;
-			// 	}
-			// }
-			// else
-			// {
-			// 	if (RenderImageButton("#SelectTilesModeIcon", Assets::assetManager.GetTexture("tileSelect"), iconSize, 0, Vector2(1, 1), "transparent", "imageButtonTint", "cursorModeButtonHover"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_MULTISELECT;
-			// 	}
-			// }
-			// if (ImGui::IsItemHovered())
-			// {
-			// 	RenderTextToolTip("Select Tiles Mode");
-			// }
-			// ImGui::SameLine();
-
-			// if (GuiCore::cursorMode == GuiCore::CURSOR_MODE::TILE_MOVE)
-			// {
-			// 	Vector2 currentPos = ImGui::GetCursorScreenPos();			
-			// 	if (RenderImageButton("#MoveTilesModeIcon", Assets::assetManager.GetTexture("tileMove"), iconSize, 0, Vector2(1, 1), "selectedCursorModeButtonBg", "imageButtonTint", "cursorModeButtonHoverSelected"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_MOVE;
-			// 	}
-			// }
-			// else
-			// {
-			// 	if (RenderImageButton("#MoveTilesModeIcon", Assets::assetManager.GetTexture("tileMove"), iconSize, 0, Vector2(1, 1), "transparent", "imageButtonTint", "cursorModeButtonHover"))
-			// 	{
-			// 		GuiCore::cursorMode = GuiCore::CURSOR_MODE::TILE_MOVE;
-			// 	}
-			// }
-			// if (ImGui::IsItemHovered())
-			// {
-			// 	RenderTextToolTip("Move Tiles Mode *experimental*");
-			// }		
 		}
 
 		void RenderGameTimeStats()
@@ -473,12 +385,12 @@ namespace FlatEngine
 			if (ProjectManager::loadedProject.focusedGameObjectID != -1)
 			{
 				Vector3 position = SceneManager::loadedScene.GetObjectByID(ProjectManager::loadedProject.focusedGameObjectID)->Get<Transform>()->GetPosition();
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].mesh.SetActive(true);
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].transform.SetPosition(position);
+				transformGizmoRenderObject.mesh.SetActive(true);
+				transformGizmoRenderObject.transform.SetPosition(position);
 			}
 			else 
 			{
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_TransformGizmo].mesh.SetActive(false);
+				transformGizmoRenderObject.mesh.SetActive(false);
 			}		
 
 			// AddDebugDrawObject(DebugSceneObjectType_Quad, Transform());
@@ -500,16 +412,19 @@ namespace FlatEngine
 			{
 				debugLinePool.Init();
 			}
-			if (!debugCirclePool.Initialized())
-			{
-				debugCirclePool.Init();
-			}
 			if (!debugQuadPool.Initialized())
 			{
 				debugQuadPool.Init();
 			}
-			ClearDebugDrawObjects();
-			PhysicsManager::physics2D.DrawDebugShapes();
+			if (!debugCirclePool.Initialized())
+			{
+				debugCirclePool.Init();
+			}	
+			
+			for (Body2D& body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
+			{
+				body2D.UpdateRenderShapes();
+			}
 
 			if (!b_show)
 				return;
@@ -681,27 +596,32 @@ namespace FlatEngine
             persistentSceneRenderObjects[PersistentSceneObjectIndex_ZAxis].mesh.SetUBOVec4("color", Assets::assetManager.GetColor("zAxis"));
         }
 
-		long AddSceneViewCameraGizmo(Transform transform)
+		long AddSceneViewCameraGizmo(Transform transform, long ownerID)
 		{
 			SceneRenderObject sceneObject;
-			sceneObject.ID = (long)transientSceneRenderObjects.size();
-			transientSceneRenderObjects.emplace(sceneObject.ID, sceneObject);
-			SceneRenderObject& ref = transientSceneRenderObjects.at(sceneObject.ID);
-			ref.mesh.CreateUniformBuffers();
-			ref.mesh.SetMaterial("fl_unlit");
-            ref.mesh.SetModel("../engine/models/camera.obj", false);
-            ref.mesh.AddTexture("../engine/images/textures/camera.png", 0);            
-            ref.mesh.CreateResources();
-			ref.transform.PutData(transform.GetData(), "Scene Camera Gizmo");
-			return ref.ID;
+			sceneObject.ID = ownerID;
+			SceneRenderObject* ref = cameraSceneRenderObjects.Add(sceneObject.ID, sceneObject);			
+			ref->mesh.CreateUniformBuffers();
+			ref->mesh.SetMaterial("fl_unlit");
+            ref->mesh.SetModel("../engine/models/camera.obj", false);
+            ref->mesh.AddTexture("../engine/images/textures/camera.png", 0);            
+            ref->mesh.CreateResources();
+			ref->transform.PutData(transform.GetData(), "Scene Camera Gizmo");
+			return ref->ID;
 		}
 
-		void RemoveSceneViewCameraGizmo(long ID)
+		long AddSceneViewLightGizmo(Transform transform, long ownerID)
 		{
-			if (transientSceneRenderObjects.count(ID))
-			{
-				transientSceneRenderObjects.erase(ID);
-			}
+			SceneRenderObject sceneObject;
+			sceneObject.ID = ownerID;
+			SceneRenderObject* ref = lightSceneRenderObjects.Add(sceneObject.ID, sceneObject);			
+			ref->mesh.CreateUniformBuffers();
+			ref->mesh.SetMaterial("fl_unlit");
+            ref->mesh.SetModel("../engine/models/camera.obj", false);
+            ref->mesh.AddTexture("../engine/images/textures/camera.png", 0);            
+            ref->mesh.CreateResources();
+			ref->transform.PutData(transform.GetData(), "Scene Camera Gizmo");
+			return ref->ID;
 		}
 		
 		void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color)
@@ -751,8 +671,7 @@ namespace FlatEngine
 					break;
 				}
 				case DebugSceneObjectType_Quad: 
-				{					
-					
+				{										
 					debugDrawSceneRenderObjects.push_back(debugQuadPool.Get());
 					debugDrawSceneRenderObjects.back().object->transform.PutData(transform.GetData(), "Debug Quad Object");
 					debugDrawSceneRenderObjects.back().object->mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
@@ -773,7 +692,7 @@ namespace FlatEngine
 			}
 		}
 
-        void LoadPersistentSceneViewObjects()
+        void LoadSceneViewObjects()
         {            
 			json persistentSceneObjectJson = JsonHelper::LoadFileData("../engine/scene_view_grid_objects.json");
 			persistentSceneRenderObjects.resize(persistentSceneObjectJson.size());
@@ -788,6 +707,18 @@ namespace FlatEngine
 				}
 				persistentSceneRenderObjects[ID].PutData(jsonData);
 			}
+
+			transformGizmoRenderObject.mesh.CreateUniformBuffers();
+			transformGizmoRenderObject.mesh.SetMaterial("fl_transformGizmo");
+			transformGizmoRenderObject.mesh.SetModel("../engine/models/transform_gizmo.obj");			
+			transformGizmoRenderObject.mesh.AddTexture("../engine/images/textures/transform_gizmo.png", 0);
+			transformGizmoRenderObject.mesh.CreateResources();
+
+			orientationGizmoRenderObject.mesh.CreateUniformBuffers();
+			orientationGizmoRenderObject.mesh.SetMaterial("fl_unlit");
+			orientationGizmoRenderObject.mesh.SetModel("../engine/models/orientation_gizmo.obj");			
+			orientationGizmoRenderObject.mesh.AddTexture("../engine/images/textures/orientation_gizmo.png", 0);
+			orientationGizmoRenderObject.mesh.CreateResources();
         }
 
 		bool ShowSceneViewGridObjects()
@@ -819,16 +750,19 @@ namespace FlatEngine
 			// Position and rotate the grid as necessary
 			if (sceneViewCamera.b_orthographic)
 			{					
-				persistentSceneRenderObjects[0].mesh.SetActive(false);
-				persistentSceneRenderObjects[1].mesh.SetActive(true);			
-				persistentSceneRenderObjects[1].transform.SetPosition(Vector3(0,0,-100000));				
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridH].mesh.SetActive(false);
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].mesh.SetActive(true);	
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].transform.SetPosition(Vector3(0,0,-1)); // Check in the shader
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_XAxis].transform.SetPosition(Vector3(0,0,-1));
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_YAxis].transform.SetPosition(Vector3(0,0,-1));				
 				sceneViewCamera.m_orthoHorizontalViewAngle = 180;
 				sceneViewCamera.m_orthoVerticalViewAngle = 0;
 			}
 			else
-			{
-				persistentSceneRenderObjects[1].transform.SetPosition(Vector3(0,0,0));
-				SetGridHorizontal(b_gridHorizontal); // Handles the activation/deactivation logic
+			{				
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_XAxis].transform.SetPosition(Vector3(0,0,0));
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_YAxis].transform.SetPosition(Vector3(0,0,0));				
+				SetGridHorizontal(b_gridHorizontal); // Handles activation/deactivation logic
 			} 
         }
 

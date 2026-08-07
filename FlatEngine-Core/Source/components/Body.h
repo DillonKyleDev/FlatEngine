@@ -1,16 +1,8 @@
 #pragma once
 #include "components/Component.h"
-#include "managers/PhysicsManager.h"
-#include "shapes/Box.h"
-#include "shapes/Capsule.h"
-#include "shapes/Circle.h"
-#include "shapes/Chain.h"
-#include "shapes/Polygon.h"
-#include "shapes/Shape.h"
-#include "tools/Vector2.h"
+#include "physics/PhysicsManager.h"
 
 #include <list>
-#include <vector>
 
 
 namespace FlatEngine
@@ -21,7 +13,7 @@ namespace FlatEngine
 	class Body : public Component
 	{
 	public:
-		Body(long myID = -1, long parentObjectID = -1);
+		Body(long ownerID = -1);
 		// json GetData(bool b_IDOverride = false);
 		// void PutData(json componentJson, std::string objectName);
 		// void SetActive(bool b_isActive);
@@ -95,13 +87,12 @@ namespace FlatEngine
 
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
-		std::list<Box> m_boxes;
-		std::list<Circle> m_circles;
-		std::list<Capsule> m_capsules;
-		std::list<Polygon> m_polygons;
-		std::list<Chain> m_chains;
-		std::list<DistanceJoint*> m_distanceJoints;
-		PhysicsManager::BodyProps m_bodyProps;			
+		// std::list<Box> m_boxes;
+		// std::list<Circle> m_circles;
+		// std::list<Capsule> m_capsules;
+		// std::list<Polygon> m_polygons;
+		// std::list<Chain> m_chains;
+		std::list<DistanceJoint*> m_distanceJoints;		
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

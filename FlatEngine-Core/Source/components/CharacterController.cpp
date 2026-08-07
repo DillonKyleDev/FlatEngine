@@ -3,13 +3,12 @@
 
 namespace FlatEngine 
 {
-	CharacterController::CharacterController(long myID, long parentObjectID)
+	CharacterController::CharacterController(long ownerID)
 	{
 		SetType(ComponentType_CharacterController);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);		
-		m_capsule = Capsule();
-		m_capsule.CreateShape();
+		SetOwnerID(ownerID);
+		// m_capsule = Shape(-1);
+		// PhysicsManager::physics2D.CreateShape(&m_capsule);		
 		m_maxAcceleration = 0.5f;
 		m_maxSpeed = 10.0f;
 		m_airControl = 0.2f;
@@ -21,7 +20,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },			
 			{ "maxAcceleration", m_maxAcceleration },
@@ -41,10 +39,10 @@ namespace FlatEngine
 		SetAirControl(JsonHelper::CheckJsonFloat(componentJson, "airControl", objectName));
     }
 
-	Capsule& CharacterController::GetCapsule()
-	{
-		return m_capsule;
-	}
+	// Shape& CharacterController::GetCapsule()
+	// {
+	// 	// return m_capsule;
+	// }
 
 	void CharacterController::Move(Vector2 direction)
 	{

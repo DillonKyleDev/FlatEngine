@@ -1,6 +1,6 @@
 #pragma once
 #include "components/Component.h"
-#include "shapes/Capsule.h"
+#include "physics/Shape.h"
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
@@ -12,11 +12,11 @@ namespace FlatEngine
 	class CharacterController : public Component
 	{
 	public:
-		CharacterController(long myID, long parentObjectID);
+		CharacterController(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
-		Capsule& GetCapsule();
+		Shape& GetCapsule();
 		void Move(Vector2 direction);
 		void MoveToward(Vector2 position);
 		void SetMaxAcceleration(float speed);
@@ -29,7 +29,7 @@ namespace FlatEngine
 		bool IsMoving();
 
 	private:
-		Capsule m_capsule;
+		// Shape m_capsule;
 		float m_maxAcceleration;
 		float m_maxSpeed;
 		float m_airControl;

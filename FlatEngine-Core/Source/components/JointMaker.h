@@ -1,12 +1,12 @@
 #pragma once
 #include "components/Component.h"
-#include "joints/DistanceJoint.h"
-#include "joints/PrismaticJoint.h"
-#include "joints/RevoluteJoint.h"
-#include "joints/MotorJoint.h"
-#include "joints/MouseJoint.h"
-#include "joints/WeldJoint.h"
-#include "joints/WheelJoint.h"
+#include "physics/joints/DistanceJoint.h"
+#include "physics/joints/PrismaticJoint.h"
+#include "physics/joints/RevoluteJoint.h"
+#include "physics/joints/MotorJoint.h"
+#include "physics/joints/MouseJoint.h"
+#include "physics/joints/WeldJoint.h"
+#include "physics/joints/WheelJoint.h"
 
 #include <list>
 
@@ -18,7 +18,7 @@ namespace FlatEngine
     class JointMaker : public Component
     {
     public:
-        JointMaker(long myID = -1, long parentObjectID = -1);        
+        JointMaker(long ownerID = -1);        
         json GetData(bool b_IDOverride = false);
         void PutData(json componentJson, std::string objectName);
         

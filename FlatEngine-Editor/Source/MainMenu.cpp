@@ -233,7 +233,7 @@ namespace FlatGui
 						{
 							FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);						 
 							newObject->AddComponent((FL::ComponentType)i);
-							newObject->SetName(FL::ComponentTypeStrings[i] + "(" + std::to_string(newObject->GetID()) + ")");
+							newObject->SetName(FL::ComponentTypeStrings[i]);
 							FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
 							ImGui::CloseCurrentPopup();
 						}

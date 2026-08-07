@@ -112,10 +112,9 @@ namespace FlatEngine
 		{
 			for (int j = 0; j < objectJson.at("components").size(); j++)
 			{
-				json componentJson = objectJson.at("components").at(j);
-				long id = JsonHelper::CheckJsonLong(componentJson, "id", m_name);
+				json componentJson = objectJson.at("components").at(j);				
 				ComponentType type = (ComponentType)JsonHelper::CheckJsonInt(componentJson, "type", m_name);
-				Component* component = AddComponent(type, id, componentJson);   				
+				Component* component = AddComponent(type, componentJson);   				
 			}
 
 			Body2D* body2D = Get<Body2D>();
@@ -245,43 +244,43 @@ namespace FlatEngine
 	template<> TileMap*    			GameObject::Get<TileMap>() 	 		   { return SceneManager::loadedScene.Get<TileMap>(m_ID); }
 	// Body2D, Button and Transform above
 	
-	template<> Animation*           GameObject::Add<Animation>(long componentID, json componentJson)  		   { Animation* component = SceneManager::loadedScene.Add<Animation>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Audio*      			GameObject::Add<Audio>(long componentID, json componentJson)      		   { Audio* component = SceneManager::loadedScene.Add<Audio>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Body*      			GameObject::Add<Body>(long componentID, json componentJson)      		   { Body* component = SceneManager::loadedScene.Add<Body>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Body2D*      		GameObject::Add<Body2D>(long componentID, json componentJson)      		   { Body2D* component = SceneManager::loadedScene.Add<Body2D>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Button*     			GameObject::Add<Button>(long componentID, json componentJson) 	 		   { Button* component = SceneManager::loadedScene.Add<Button>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Camera*     			GameObject::Add<Camera>(long componentID, json componentJson) 			   { Camera* component = SceneManager::loadedScene.Add<Camera>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Canvas*     			GameObject::Add<Canvas>(long componentID, json componentJson) 	 		   { Canvas* component = SceneManager::loadedScene.Add<Canvas>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> CharacterController* GameObject::Add<CharacterController>(long componentID, json componentJson) { CharacterController* component = SceneManager::loadedScene.Add<CharacterController>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> JointMaker* 			GameObject::Add<JointMaker>(long componentID, json componentJson)		   { JointMaker* component = SceneManager::loadedScene.Add<JointMaker>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Light*      			GameObject::Add<Light>(long componentID, json componentJson)      		   { Light* component = SceneManager::loadedScene.Add<Light>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Mesh*       			GameObject::Add<Mesh>(long componentID, json componentJson) 			   { Mesh* component = SceneManager::loadedScene.Add<Mesh>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Script*    			GameObject::Add<Script>(long componentID, json componentJson) 	 		   { Script* component = SceneManager::loadedScene.Add<Script>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Sprite*     			GameObject::Add<Sprite>(long componentID, json componentJson)    		   { Sprite* component = SceneManager::loadedScene.Add<Sprite>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Text*       			GameObject::Add<Text>(long componentID, json componentJson) 			   { Text* component = SceneManager::loadedScene.Add<Text>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> TileMap*    			GameObject::Add<TileMap>(long componentID, json componentJson) 	 		   { TileMap* component = SceneManager::loadedScene.Add<TileMap>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
-	template<> Transform*           GameObject::Add<Transform>(long componentID, json componentJson)		   { Transform* component = SceneManager::loadedScene.Add<Transform>(m_ID, componentID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Animation*           GameObject::Add<Animation>(json componentJson)  		   { Animation* component = SceneManager::loadedScene.Add<Animation>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Audio*      			GameObject::Add<Audio>(json componentJson)      		   { Audio* component = SceneManager::loadedScene.Add<Audio>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Body*      			GameObject::Add<Body>(json componentJson)      		   { Body* component = SceneManager::loadedScene.Add<Body>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Body2D*      		GameObject::Add<Body2D>(json componentJson)      		   { Body2D* component = SceneManager::loadedScene.Add<Body2D>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Button*     			GameObject::Add<Button>(json componentJson) 	 		   { Button* component = SceneManager::loadedScene.Add<Button>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Camera*     			GameObject::Add<Camera>(json componentJson) 			   { Camera* component = SceneManager::loadedScene.Add<Camera>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Canvas*     			GameObject::Add<Canvas>(json componentJson) 	 		   { Canvas* component = SceneManager::loadedScene.Add<Canvas>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> CharacterController* GameObject::Add<CharacterController>(json componentJson) { CharacterController* component = SceneManager::loadedScene.Add<CharacterController>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> JointMaker* 			GameObject::Add<JointMaker>(json componentJson)		   { JointMaker* component = SceneManager::loadedScene.Add<JointMaker>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Light*      			GameObject::Add<Light>(json componentJson)      		   { Light* component = SceneManager::loadedScene.Add<Light>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Mesh*       			GameObject::Add<Mesh>(json componentJson) 			   { Mesh* component = SceneManager::loadedScene.Add<Mesh>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Script*    			GameObject::Add<Script>(json componentJson) 	 		   { Script* component = SceneManager::loadedScene.Add<Script>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Sprite*     			GameObject::Add<Sprite>(json componentJson)    		   { Sprite* component = SceneManager::loadedScene.Add<Sprite>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Text*       			GameObject::Add<Text>(json componentJson) 			   { Text* component = SceneManager::loadedScene.Add<Text>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> TileMap*    			GameObject::Add<TileMap>(json componentJson) 	 		   { TileMap* component = SceneManager::loadedScene.Add<TileMap>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
+	template<> Transform*           GameObject::Add<Transform>(json componentJson)		   { Transform* component = SceneManager::loadedScene.Add<Transform>(m_ID); if (componentJson != json::object()) component->PutData(componentJson, m_name); return component; }
 
-	Component* GameObject::AddComponent(ComponentType type, long componentID, json componentJson)
+	Component* GameObject::AddComponent(ComponentType type, json componentJson)
 	{
 		switch (type)
 		{
-			case ComponentType_Animation:  			return Add<Animation>(componentID, componentJson);
-			case ComponentType_Audio:      			return Add<Audio>(componentID, componentJson);
-			case ComponentType_Body:       			return Add<Body>(componentID, componentJson);
-			case ComponentType_Body2D:       		return Add<Body2D>(componentID, componentJson);
-			case ComponentType_Button:     			return Add<Button>(componentID, componentJson);
-			case ComponentType_Camera:     			return Add<Camera>(componentID, componentJson);
-			case ComponentType_Canvas:     			return Add<Canvas>(componentID, componentJson);
-			case ComponentType_CharacterController: return Add<CharacterController>(componentID, componentJson);
-			case ComponentType_JointMaker: 			return Add<JointMaker>(componentID, componentJson);
-			case ComponentType_Light:      			return Add<Light>(componentID, componentJson);
-			case ComponentType_Mesh:       			return Add<Mesh>(componentID, componentJson);
-			case ComponentType_Script:     			return Add<Script>(componentID, componentJson);
-			case ComponentType_Sprite:     			return Add<Sprite>(componentID, componentJson);
-			case ComponentType_Text:       			return Add<Text>(componentID, componentJson);
-			case ComponentType_TileMap:    			return Add<TileMap>(componentID, componentJson);
-			case ComponentType_Transform:  			return Add<Transform>(componentID, componentJson);
+			case ComponentType_Animation:  			return Add<Animation>(componentJson);
+			case ComponentType_Audio:      			return Add<Audio>(componentJson);
+			case ComponentType_Body:       			return Add<Body>(componentJson);
+			case ComponentType_Body2D:       		return Add<Body2D>(componentJson);
+			case ComponentType_Button:     			return Add<Button>(componentJson);
+			case ComponentType_Camera:     			return Add<Camera>(componentJson);
+			case ComponentType_Canvas:     			return Add<Canvas>(componentJson);
+			case ComponentType_CharacterController: return Add<CharacterController>(componentJson);
+			case ComponentType_JointMaker: 			return Add<JointMaker>(componentJson);
+			case ComponentType_Light:      			return Add<Light>(componentJson);
+			case ComponentType_Mesh:       			return Add<Mesh>(componentJson);
+			case ComponentType_Script:     			return Add<Script>(componentJson);
+			case ComponentType_Sprite:     			return Add<Sprite>(componentJson);
+			case ComponentType_Text:       			return Add<Text>(componentJson);
+			case ComponentType_TileMap:    			return Add<TileMap>(componentJson);
+			case ComponentType_Transform:  			return Add<Transform>(componentJson);
 			default:                       			return nullptr;
 		}
 	}

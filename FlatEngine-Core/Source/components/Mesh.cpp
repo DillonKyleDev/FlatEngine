@@ -17,10 +17,9 @@
 
 namespace FlatEngine
 {
-	Mesh::Mesh(long myID, long parentObjectID)
+	Mesh::Mesh(long ownerID)
 	{
-		SetID(myID != -1 ? myID : SceneManager::loadedScene.GetNextComponentID());
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		SetType(ComponentType_Mesh);
 
 		m_model = nullptr;
@@ -78,7 +77,6 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "textures", texturesData },
@@ -210,8 +208,8 @@ namespace FlatEngine
 		// Already done by SetMaterial().
 		// if (b_addMaterialMesh)
 		// {
-		// 	VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
-		// 	VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
+		// 	VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetOwnerID());
+		// 	VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetOwnerID());
 		// }
 	}
 
@@ -227,15 +225,15 @@ namespace FlatEngine
 
 		if (m_materialName != "")
 		{			
-			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(m_materialName, GetParentObjectID());
-			VulkanManager::vulkan.RemoveGameViewMaterialMesh(m_materialName, GetParentObjectID());
+			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(m_materialName, GetOwnerID());
+			VulkanManager::vulkan.RemoveGameViewMaterialMesh(m_materialName, GetOwnerID());
 		}
 		m_materialName = materialName;
 
-		if (GetParentObjectID() != -1)
+		if (GetOwnerID() != -1)
 		{
-			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetParentObjectID());
-			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetParentObjectID());
+			VulkanManager::vulkan.AddSceneViewMaterialMesh(m_materialName, GetOwnerID());
+			VulkanManager::vulkan.AddGameViewMaterialMesh(m_materialName, GetOwnerID());
 		}
 
 		if (m_sceneViewMaterial != nullptr)
@@ -418,7 +416,7 @@ namespace FlatEngine
 
 	void Mesh::UpdateUniformBuffer(ViewportType viewportType, bool b_orthographic, Transform* transform)
 	{
-		GameObject* parent = SceneManager::loadedScene.GetObjectByID(GetParentObjectID());		
+		GameObject* parent = SceneManager::loadedScene.GetObjectByID(GetOwnerID());		
 		Camera* primaryCamera = &SceneView::sceneViewCamera;                        
 		Vector3 cameraPosition = SceneView::sceneViewCameraTransform.GetPosition();
 		std::map<uint32_t, std::string> materialVec4s;
@@ -444,8 +442,8 @@ namespace FlatEngine
 				primaryCamera = &SceneView::sceneViewCamera;
 				cameraPosition = Vector3();
 			}
-			else if (primaryCamera->GetParentObject() != nullptr)
-				cameraPosition = primaryCamera->GetParentObject()->Get<Transform>()->GetPosition();
+			else if (primaryCamera->GetOwningObject() != nullptr)
+				cameraPosition = primaryCamera->GetOwningObject()->Get<Transform>()->GetPosition();
 			
 			materialVec4s = m_gameViewMaterial->GetUBOVec4Names();
 			break;
@@ -468,16 +466,15 @@ namespace FlatEngine
 		glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), glm::vec3(up));
 
 		glm::mat4 projection;			
-		float aspectRatio = (float)RenderWindow::window.GetExtent().width / (float)RenderWindow::window.GetExtent().height;
+		float aspectRatio = 16.0f / 9.0f; // (float)RenderWindow::window.GetExtent().width / (float)RenderWindow::window.GetExtent().height;
 		float nearClip = primaryCamera->GetNearClippingDistance();
 		float farClip = primaryCamera->GetFarClippingDistance();
 
 
 		if (b_orthographic)
-		{    
-			//aspectRatio = SceneView::sceneViewDimensions.x / ( SceneView::sceneViewDimensions.y != 0 ? SceneView::sceneViewDimensions.y : 1);			
-			float halfWidth  = primaryCamera->m_orthoSize * aspectRatio;
-			float halfHeight = primaryCamera->m_orthoSize;
+		{    		
+			float halfWidth  = (float)primaryCamera->m_orthoSize * aspectRatio;
+			float halfHeight = (float)primaryCamera->m_orthoSize;
 			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -500.0f, 500.0f);			
 			projection[1][1] *= -1;
 		}

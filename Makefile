@@ -12,16 +12,19 @@ ifeq ($(config),debug)
   FlatEngine_Core_config = debug
   FlatEngine_Editor_config = debug
   FlatEngine_Runtime_config = debug
-endif
-ifeq ($(config),release)
+
+else ifeq ($(config),release)
   FlatEngine_Core_config = release
   FlatEngine_Editor_config = release
   FlatEngine_Runtime_config = release
-endif
-ifeq ($(config),dist)
+
+else ifeq ($(config),dist)
   FlatEngine_Core_config = dist
   FlatEngine_Editor_config = dist
   FlatEngine_Runtime_config = dist
+
+else
+  $(error "invalid configuration $(config)")
 endif
 
 PROJECTS := FlatEngine-Core FlatEngine-Editor FlatEngine-Runtime

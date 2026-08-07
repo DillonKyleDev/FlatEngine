@@ -1,4 +1,4 @@
-#include "joints/MouseJoint.h"
+#include "physics/joints/MouseJoint.h"
 
 
 namespace FlatEngine

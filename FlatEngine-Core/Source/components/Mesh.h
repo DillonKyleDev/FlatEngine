@@ -16,7 +16,7 @@ namespace FlatEngine
 	class Mesh : public Component
 	{
 	public:
-		Mesh(long myID = -1, long parentObjectID = -1);		
+		Mesh(long ownerID = -1);		
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 		void CleanupTextures();

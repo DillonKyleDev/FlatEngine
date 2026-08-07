@@ -1,27 +1,22 @@
 #include "components/Body2D.h"
-#include "joints/DistanceJoint.h"
-#include "joints/Joint.h"
-#include "managers/LuaManager.h"
 #include "managers/SceneManager.h"
-#include "tools/Logger.h"
+#include "physics/joints/DistanceJoint.h"
+#include "physics/joints/Joint.h"
+#include "managers/LuaManager.h"
+#include "physics/PhysicsManager.h"
+#include "render/SceneView.h"
 #include "tools/Numbers.h"
+#include "tools/Vector3.h"
 
 
 namespace FlatEngine
 {
-	Body2D::Body2D(long myID, long parentObjectID)
+	Body2D::Body2D(long ownerID)
 	{
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		SetType(ComponentType_Body2D);
 
 		m_bodyID = b2BodyId();
-		bodyProps = PhysicsManager::BodyProps();		
-		m_boxes = std::list<Box>();
-		m_circles = std::list<Circle>();
-		m_capsules = std::list<Capsule>();
-		m_polygons = std::list<Polygon>();
-		m_chains = std::list<Chain>();
 		// Contacts
 		m_beginContactCallback = nullptr;
 		m_b_beginContactCallbackSet = false;
@@ -33,9 +28,7 @@ namespace FlatEngine
 		m_endSensorTouchCallback = nullptr;
 		m_b_endSensorTouchCallbackSet = false;
 
-		m_distanceJoints = std::list<DistanceJoint*>();
-
-		CreateBody();
+		PhysicsManager::physics2D.CreateBody(this);
 	}
 
 	json Body2D::GetData(bool b_IDOverride)
@@ -44,111 +37,54 @@ namespace FlatEngine
 
 		for (Shape* shape : GetShapes())
 		{
-			shapesArray.push_back(shape->GetShapeData());
+			shapesArray.push_back(shape->GetData());
 		}
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
-			{ "bodyType", (int)bodyProps.type },
-			{ "b_lockedRotation", bodyProps.b_lockedRotation },
-			{ "b_lockedXAxis", bodyProps.b_lockedXAxis },
-			{ "b_lockedYAxis", bodyProps.b_lockedYAxis },
-			{ "gravityScale", bodyProps.gravityScale },
-			{ "linearDamping", bodyProps.linearDamping },
-			{ "angularDamping", bodyProps.angularDamping },
+			{ "bodyType", (int)type },
+			{ "b_lockedRotation", b_lockedRotation },
+			{ "b_lockedXAxis", b_lockedXAxis },
+			{ "b_lockedYAxis", b_lockedYAxis },
+			{ "gravityScale", gravityScale },
+			{ "linearDamping", linearDamping },
+			{ "angularDamping", angularDamping },
 			{ "shapes", shapesArray }
 		};
 		
 		return jsonData;
 	}
 
-
-	void RetrieveShapeProps(Shape::ShapeProps& shapeProps, json componentJson, std::string objectName)
+	void Body2D::PutData(json jsonData, std::string objectName)
 	{
-		shapeProps.shape = (Shape::ShapeType)(JsonHelper::CheckJsonInt(componentJson, "shape", objectName));
-		shapeProps.b_enableContactEvents = JsonHelper::CheckJsonBool(componentJson, "b_enableContactEvents", objectName);
-		shapeProps.b_enableSensorEvents = JsonHelper::CheckJsonBool(componentJson, "b_enableSensorEvents", objectName);
-		shapeProps.b_isSensor = JsonHelper::CheckJsonBool(componentJson, "b_isSensor", objectName);
-		shapeProps.positionOffset = Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName));
-		shapeProps.rotationOffset.c = JsonHelper::CheckJsonFloat(componentJson, "rotationOffsetCos", objectName);
-		shapeProps.rotationOffset.s = JsonHelper::CheckJsonFloat(componentJson, "rotationOffsetSin", objectName);
-		shapeProps.restitution = JsonHelper::CheckJsonFloat(componentJson, "restitution", objectName);
-		shapeProps.density = JsonHelper::CheckJsonFloat(componentJson, "density", objectName);
-		shapeProps.friction = JsonHelper::CheckJsonFloat(componentJson, "friction", objectName);
-		shapeProps.dimensions = Vector2(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName));
-		shapeProps.cornerRadius = JsonHelper::CheckJsonFloat(componentJson, "cornerRadius", objectName);
-		shapeProps.radius = JsonHelper::CheckJsonFloat(componentJson, "radius", objectName);
-		shapeProps.capsuleLength = JsonHelper::CheckJsonFloat(componentJson, "capsuleLength", objectName);
-		shapeProps.b_horizontal = JsonHelper::CheckJsonBool(componentJson, "b_horizontal", objectName);
-		shapeProps.b_isLoop = JsonHelper::CheckJsonBool(componentJson, "b_isLoop", objectName);
-		shapeProps.tangentSpeed = JsonHelper::CheckJsonFloat(componentJson, "tangentSpeed", objectName);
-		shapeProps.rollingResistance = JsonHelper::CheckJsonFloat(componentJson, "rollingResistance", objectName);
-		std::vector<Vector2> points = std::vector<Vector2>();
+        Component::PutData(jsonData, objectName);
 
-		for (int i = 0; i < componentJson.at("points").size(); i++)
-		{
-			try
-			{
-				json pointsJson = componentJson.at("points").at(i);
-				Vector2 point = Vector2(JsonHelper::CheckJsonFloat(pointsJson, "xPos", objectName), JsonHelper::CheckJsonFloat(pointsJson, "yPos", objectName));
-				points.push_back(point);
-			}
-			catch (const json::out_of_range& e)
-			{
-				Logger::log.Err("{}", e.what());
-			}
-		}
-
-		shapeProps.points = points;
-	}
-
-	void RetrieveBodyProps(PhysicsManager::BodyProps& bodyProps, json componentJson, std::string objectName)
-	{
-		bodyProps.type = (b2BodyType)JsonHelper::CheckJsonInt(componentJson, "bodyType", objectName);
-		bodyProps.b_lockedRotation = JsonHelper::CheckJsonBool(componentJson, "b_lockedRotation", objectName);
-		bodyProps.b_lockedXAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedXAxis", objectName);
-		bodyProps.b_lockedYAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedYAxis", objectName);
-		bodyProps.gravityScale = JsonHelper::CheckJsonFloat(componentJson, "gravityScale", objectName);
-		bodyProps.linearDamping = JsonHelper::CheckJsonFloat(componentJson, "linearDamping", objectName);
-		bodyProps.angularDamping = JsonHelper::CheckJsonFloat(componentJson, "angularDamping", objectName);
-	}
-
-	void Body2D::PutData(json componentJson, std::string objectName)
-	{
-        Component::PutData(componentJson, objectName);
-
-		RetrieveBodyProps(bodyProps, componentJson, objectName);
+		type = (b2BodyType)JsonHelper::CheckJsonInt(jsonData, "bodyType", objectName);
+		b_lockedRotation = JsonHelper::CheckJsonBool(jsonData, "b_lockedRotation", objectName);
+		b_lockedXAxis = JsonHelper::CheckJsonBool(jsonData, "b_lockedXAxis", objectName);
+		b_lockedYAxis = JsonHelper::CheckJsonBool(jsonData, "b_lockedYAxis", objectName);
+		gravityScale = JsonHelper::CheckJsonFloat(jsonData, "gravityScale", objectName);
+		linearDamping = JsonHelper::CheckJsonFloat(jsonData, "linearDamping", objectName);
+		angularDamping = JsonHelper::CheckJsonFloat(jsonData, "angularDamping", objectName);
 		
-		if (JsonHelper::JsonContains(componentJson, "shapes", objectName))
+		if (JsonHelper::JsonContains(jsonData, "shapes", objectName))
 		{
-			for (int i = 0; i < componentJson.at("shapes").size(); i++)
+			for (int i = 0; i < jsonData.at("shapes").size(); i++)
 			{
-				json shapeJson = componentJson.at("shapes").at(i);
-				Shape::ShapeProps shapeProps;
-				RetrieveShapeProps(shapeProps, shapeJson, objectName);
+				json shapeJson = jsonData.at("shapes").at(i);
+				Shape shape = Shape(GetOwnerID());
+				shape.PutData(shapeJson, objectName);
 
-				switch (shapeProps.shape)
+				switch (shape.GetType())
 				{
-				case Shape::ShapeType_None:												
-					break;
-				case Shape::ShapeType_Box:
-					AddBox(shapeProps);
-					break;
-				case Shape::ShapeType_Circle:
-					AddCircle(shapeProps);
-					break;
-				case Shape::ShapeType_Capsule:
-					AddCapsule(shapeProps);
-					break;
-				case Shape::ShapeType_Polygon:
-					AddPolygon(shapeProps);
-					break;
-				case Shape::ShapeType_Chain:
-					AddChain(shapeProps);
-					break;
+					case ShapeType_Box:	boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); renderShapes.push_back(SceneView::CreateQuadObject());; break;
+					case ShapeType_Circle: circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); renderShapes.push_back(SceneView::CreateCircleObject());break;
+					case ShapeType_Capsule: capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break;
+					case ShapeType_Polygon:	polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break;
+					case ShapeType_Chain: chains.push_back(shape); PhysicsManager::physics2D.CreateShape(&chains.back(), this); break;
+					default: break;
 				}
 			}
 		}			
@@ -206,24 +142,9 @@ namespace FlatEngine
 			m_beginContactCallback(manifold, myID, collidedWithID);		
 		}
 		// Lua scripts
-		Body2D* caller = GetBodyFromShapeID(myID);
-		Body2D* collidedWith = GetBodyFromShapeID(collidedWithID);
+		Body2D* caller = PhysicsManager::physics2D.GetBodyFromShapeID(myID);
+		Body2D* collidedWith = PhysicsManager::physics2D.GetBodyFromShapeID(collidedWithID);
 		CallLuaCollisionFunction2D(LuaManager::LuaEventFunction::OnBeginCollision, caller, collidedWith, manifold);
-	}
-
-	Body2D* Body2D::GetBodyFromShapeID(b2ShapeId shapeID)
-	{
-		Shape* shape = static_cast<Shape*>(b2Shape_GetUserData(shapeID));
-
-		if (b2Shape_IsValid(shape->GetShapeID()))
-		{
-			return SceneManager::loadedScene.GetObjectByID(shape->GetParentID())->Get<Body2D>();
-		}
-		else if (b2Chain_IsValid(shape->GetChainID()))
-		{
-			return SceneManager::loadedScene.GetObjectByID(shape->GetParentID())->Get<Body2D>();
-		}
-		return nullptr;
 	}
 
 	void Body2D::SetOnEndContact(void(*endContactCallback)(b2ShapeId myID, b2ShapeId collidedWithID))
@@ -240,8 +161,8 @@ namespace FlatEngine
 			m_endContactCallback(myID, collidedWithID);	
 		}
 		// Lua scripts
-		Body2D* caller = GetBodyFromShapeID(myID);
-		Body2D* collidedWith = GetBodyFromShapeID(collidedWithID);
+		Body2D* caller = PhysicsManager::physics2D.GetBodyFromShapeID(myID);
+		Body2D* collidedWith = PhysicsManager::physics2D.GetBodyFromShapeID(collidedWithID);
 		CallLuaCollisionFunction2D(LuaManager::LuaEventFunction::OnEndCollision, caller, collidedWith);
 	}
 
@@ -259,8 +180,8 @@ namespace FlatEngine
 			m_beginSensorTouchCallback(myID, touchedID);
 		}
 		// Lua scripts
-		Body2D* caller = GetBodyFromShapeID(myID);
-		Body2D* touched = GetBodyFromShapeID(touchedID);
+		Body2D* caller = PhysicsManager::physics2D.GetBodyFromShapeID(myID);
+		Body2D* touched = PhysicsManager::physics2D.GetBodyFromShapeID(touchedID);
 		CallLuaSensorFunction2D(LuaManager::LuaEventFunction::OnBeginSensorTouch, caller, touched);
 	}
 
@@ -278,26 +199,9 @@ namespace FlatEngine
 			m_endSensorTouchCallback(myID, touchedID);
 		}
 		// Lua scripts
-		Body2D* caller = GetBodyFromShapeID(myID);
-		Body2D* touched = GetBodyFromShapeID(touchedID);
+		Body2D* caller = PhysicsManager::physics2D.GetBodyFromShapeID(myID);
+		Body2D* touched = PhysicsManager::physics2D.GetBodyFromShapeID(touchedID);
 		CallLuaSensorFunction2D(LuaManager::LuaEventFunction::OnEndSensorTouch, caller, touched);
-	}
-
-
-	PhysicsManager::BodyProps Body2D::GetLiveProps()
-	{
-		PhysicsManager::BodyProps liveProps;				
-		liveProps.type = bodyProps.type;		
-		liveProps.position = GetPosition();
-		liveProps.rotation = GetB2Rotation();
-		liveProps.b_lockedRotation = bodyProps.b_lockedRotation;
-		liveProps.b_lockedXAxis = bodyProps.b_lockedXAxis;
-		liveProps.b_lockedYAxis = bodyProps.b_lockedYAxis;
-		liveProps.gravityScale = bodyProps.gravityScale;
-		liveProps.linearDamping = bodyProps.linearDamping;
-		liveProps.angularDamping = bodyProps.angularDamping;
-
-		return liveProps;
 	}
 
 	void Body2D::SetBodyID(b2BodyId bodyID)
@@ -305,33 +209,101 @@ namespace FlatEngine
 		m_bodyID = bodyID;
 	}
 
-	void Body2D::SetPosition(Vector2 position)
+	void Body2D::UpdateRenderShapes()
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.position = position;	
-		b2Body_SetTransform(m_bodyID, Vector2::GetB2Vev2(position), GetB2Rotation());
-		RecreateBody();
+		if (SceneManager::loadedScene.Get<Transform>(GetOwnerID()) == nullptr)
+			return;
+
+		Transform* ownerTransform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());		
+
+		for (Shape* shape : GetShapes())
+		{
+			std::visit([this, shape, ownerTransform](auto&& sData)
+			{
+				using T = std::decay_t<decltype(sData)>;
+
+				if constexpr (std::is_same_v<T, BoxShapeData>)
+				{	
+					Transform renderTransform;
+					Vector3 ownerPos = ownerTransform->GetPosition();					
+					renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
+					renderTransform.SetScale(Vector3(sData.dimensions.x, sData.dimensions.y, 1));
+					renderShapes[0].transform = renderTransform;
+				}
+				else if constexpr (std::is_same_v<T, CircleShapeData>)
+				{
+					Transform renderTransform;
+					renderTransform.SetScale(Vector3(sData.radius, sData.radius, 1));
+					renderShapes[0].transform = renderTransform;
+				}
+				else if constexpr (std::is_same_v<T, CapsuleShapeData>)
+				{
+					// shape->renderShapes[0].transform = ComposeTransform(ownerTransform, sData.point1);
+					// shape->renderShapes[1].transform = ComposeTransform(ownerTransform, sData.point2);
+					// shape->renderShapes[2].transform = ComposeCapsuleBodyTransform(ownerTransform, sData.point1,sData.point2);
+				}
+				else if constexpr (std::is_same_v<T, PolygonShapeData>)
+				{
+					// for (size_t i = 0; i < sData.vertices.size(); i++)
+					// {
+					// 	size_t next = (i + 1) % sData.vertices.size();
+					// 	shape->renderShapes[i].transform = ComposeSegmentTransform(bodyTransform, sData.vertices[i], sData.vertices[next]);
+					// }
+				}
+				else if constexpr (std::is_same_v<T, ChainShapeData>)
+				{
+					// for (size_t i = 0; i < sData.vertices.size(); i++)
+					// {
+					// 	size_t next = (i + 1) % sData.vertices.size();
+					// 	shape->renderShapes[i].transform = ComposeSegmentTransform(bodyTransform, sData.vertices[i], sData.vertices[next]);
+					// }
+				}
+			}, shape->shapeData);
+		}
+	}
+
+	std::vector<SceneView::SceneRenderObject> CreateCapsuleRenderObjects()
+	{
+		return std::vector<SceneView::SceneRenderObject>();
+	}
+
+	void Body2D::AddShape(ShapeType type)
+	{
+		Shape shape = Shape(GetOwnerID());
+		switch (type)
+		{
+			case ShapeType_Box: { BoxShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
+			case ShapeType_Circle: { CircleShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateCircleObject()); break; }
+			case ShapeType_Polygon: { PolygonShapeData shapeData; shape.shapeData = shapeData; renderShapes = CreateCapsuleRenderObjects(); break; }
+			case ShapeType_Capsule: { CapsuleShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateLineObject()); break; }
+			case ShapeType_Chain: { ChainShapeData shapeData; shape.shapeData = shapeData; renderShapes.push_back(SceneView::CreateLineObject()); break; }
+			default: break;
+		}
+	}
+
+	void Body2D::SetPosition(Vector2 newPosition)
+	{
+		position = newPosition;	
+		b2Body_SetTransform(m_bodyID, Vector2::GetB2Vec2(position), GetB2Rotation());
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
 	Vector2 Body2D::GetPosition()
 	{
-		b2Vec2 b2Position = b2Body_GetPosition(m_bodyID);
-		Vector2 position = Vector2(b2Position.x, b2Position.y);
-		return position;
+		b2Vec2 b2Position = b2Body_GetPosition(m_bodyID);		
+		return Vector2(b2Position.x, b2Position.y);
 	}
 
-	void Body2D::SetRotation(float rotation)
+	void Body2D::SetRotation(float newRotation)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.rotation = b2MakeRot(Numbers::DegreesToRadians(rotation));
-		RecreateBody();
+		rotation = b2MakeRot(Numbers::DegreesToRadians(newRotation));
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
-	void Body2D::SetRotation(b2Rot rotation)
+	void Body2D::SetRotation(b2Rot newRotation)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.rotation = rotation;
-		RecreateBody();
+		rotation = newRotation;
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
 	// Returns rotation in degrees between -180 and 180
@@ -348,59 +320,52 @@ namespace FlatEngine
 		return b2Body_GetRotation(m_bodyID);
 	}
 
-	void Body2D::SetLockedRotation(bool b_lockedRotation)
+	void Body2D::SetLockedRotation(bool b_lockRotation)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.b_lockedRotation = b_lockedRotation;
-		RecreateBody();
+		b_lockedRotation = b_lockRotation;
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
-	void Body2D::SetLockedXAxis(bool b_lockedXAxis)
+	void Body2D::SetLockedXAxis(bool b_lockXAxis)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.b_lockedXAxis = b_lockedXAxis;
-		RecreateBody();
+		b_lockedXAxis = b_lockXAxis;
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
-	void Body2D::SetLockedYAxis(bool b_lockedYAxis)
+	void Body2D::SetLockedYAxis(bool b_lockYAxis)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.b_lockedYAxis = b_lockedYAxis;
-		RecreateBody();
+		b_lockedYAxis = b_lockYAxis;
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
-	void Body2D::SetGravityScale(float gravityScale)
+	void Body2D::SetGravityScale(float newGravityScale)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.gravityScale = gravityScale;
-		RecreateBody();
+		gravityScale = newGravityScale;
+		PhysicsManager::physics2D.RecreateBody(this);
 	}
 
-	void Body2D::SetLinearDamping(float linearDamping)
+	void Body2D::SetLinearDamping(float newLinearDamping)
 	{
 		if (linearDamping >= 0)
 		{
-			bodyProps = GetLiveProps();
-			bodyProps.linearDamping = linearDamping;
-			RecreateBody();
+			linearDamping = newLinearDamping;
+			PhysicsManager::physics2D.RecreateBody(this);
 		}
 	}
 
-	void Body2D::SetAngularDamping(float angularDamping)
+	void Body2D::SetAngularDamping(float newAngularDamping)
 	{
 		if (angularDamping >= 0)
 		{
-			bodyProps = GetLiveProps();
-			bodyProps.angularDamping = angularDamping;
-			RecreateBody();
+			angularDamping = newAngularDamping;
+			PhysicsManager::physics2D.RecreateBody(this);
 		}
 	}
 
-	void Body2D::SetBodyType(b2BodyType type)
+	void Body2D::SetBodyType(b2BodyType newType)
 	{
-		bodyProps = GetLiveProps();
-		bodyProps.type = type;
-		RecreateBody();
+		type = newType;
+		PhysicsManager::physics2D.RecreateBody(this);
 
 		// If is KINEMATIC, you can drive the body to a specific transform (position and rotation) using:
 		// b2Vec2 targetPosition = { x, y };
@@ -409,28 +374,11 @@ namespace FlatEngine
 		// b2Body_SetTargetTransform(m_bodyID, target, timeStep);
 	}
 
-
-	void Body2D::CreateBody()
-	{
-		PhysicsManager::physics2D.CreateBody(this);
-	}
-
-	void Body2D::RecreateBody()
-	{
-		PhysicsManager::physics2D.RecreateBody(this);
-	}
-
-	void Body2D::RecreateLiveBody()
-	{
-		bodyProps = GetLiveProps();
-		RecreateBody();
-	}
-
 	void Body2D::RecreateShapes()
 	{
 		for (Shape* shape : GetShapes())
 		{
-			shape->CreateBodyShape(this);
+			PhysicsManager::physics2D.RecreateShape(shape);			
 		}
 	}
 
@@ -489,23 +437,23 @@ namespace FlatEngine
 	{
 		std::vector<Shape*> shapes = std::vector<Shape*>();
 		
-		for (Box& shape : m_boxes)
+		for (Shape& shape : boxes)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Circle& shape : m_circles)
+		for (Shape& shape : circles)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Capsule& shape : m_capsules)
+		for (Shape& shape : capsules)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Polygon& shape : m_polygons)
+		for (Shape& shape : polygons)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Chain& shape : m_chains)
+		for (Shape& shape : chains)
 		{
 			shapes.push_back(&shape);
 		}
@@ -518,63 +466,60 @@ namespace FlatEngine
 		int toDelete = -1;
 		int counter = 0;
 
-		for (Box box : m_boxes)
+		for (Shape& shape : boxes)
 		{
-			if (box.GetShapeID().index1 == shapeID.index1)
+			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
-				box.DestroyShape();
+				PhysicsManager::physics2D.DestroyShape(&shape);
 				toDelete = counter;
 				break;
 			}
 		}
 		if (toDelete != -1)
 		{
-			m_boxes.erase(std::next(m_boxes.begin(), toDelete));
+			boxes.erase(std::next(boxes.begin(), toDelete));
 			toDelete = -1;
 		}
-
-		for (Circle circle : m_circles)
+		for (Shape& shape : circles)
 		{
-			if (circle.GetShapeID().index1 == shapeID.index1)
+			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
-				circle.DestroyShape();
+				PhysicsManager::physics2D.DestroyShape(&shape);
 				toDelete = counter;
 				break;
 			}
 		}
 		if (toDelete != -1)
 		{
-			m_circles.erase(std::next(m_circles.begin(), toDelete));
+			circles.erase(std::next(circles.begin(), toDelete));
 			toDelete = -1;
 		}
-
-		for (Capsule capsule : m_capsules)
+		for (Shape& shape : polygons)
 		{
-			if (capsule.GetShapeID().index1 == shapeID.index1)
+			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
-				capsule.DestroyShape();
+				PhysicsManager::physics2D.DestroyShape(&shape);
 				toDelete = counter;
 				break;
 			}
 		}
 		if (toDelete != -1)
 		{
-			m_capsules.erase(std::next(m_capsules.begin(), toDelete));
+			polygons.erase(std::next(polygons.begin(), toDelete));
 			toDelete = -1;
 		}
-
-		for (Polygon polygon : m_polygons)
+		for (Shape& shape : capsules)
 		{
-			if (polygon.GetShapeID().index1 == shapeID.index1)
+			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
-				polygon.DestroyShape();
+				PhysicsManager::physics2D.DestroyShape(&shape);
 				toDelete = counter;
 				break;
 			}
 		}
 		if (toDelete != -1)
 		{
-			m_polygons.erase(std::next(m_polygons.begin(), toDelete));
+			capsules.erase(std::next(capsules.begin(), toDelete));
 			toDelete = -1;
 		}
 	}
@@ -582,112 +527,38 @@ namespace FlatEngine
 	void Body2D::RemoveChain(b2ChainId chainID)
 	{
 		int toDelete = -1;
-		int chainCounter = 0;
+		int shapeCounter = 0;
 
-		for (Chain chain : m_chains)
+		for (Shape& shape : chains)
 		{
-			if (chain.GetChainID().index1 == chainID.index1)
+			if (shape.GetChainID().index1 == chainID.index1)
 			{
-				chain.DestroyShape();
-				toDelete = chainCounter;
+				PhysicsManager::physics2D.DestroyShape(&shape);
+				toDelete = shapeCounter;
 			}
-			chainCounter++;
+			shapeCounter++;
 		}
 		if (toDelete != -1)
 		{
-			m_chains.erase(std::next(m_chains.begin(), toDelete));
+			chains.erase(std::next(chains.begin(), toDelete));
 		}
-	}
-
-	std::list<Box>& Body2D::GetBoxes()
-	{
-		return m_boxes;
-	}
-
-	std::list<Circle>& Body2D::GetCircles()
-	{
-		return m_circles;
-	}
-
-	std::list<Capsule>& Body2D::GetCapsules()
-	{
-		return m_capsules;
-	}
-
-	std::list<Polygon>& Body2D::GetPolygons()
-	{
-		return m_polygons;
-	}
-
-	std::list<Chain>& Body2D::GetChains()
-	{
-		return m_chains;
 	}
 
 	void Body2D::Cleanup()
 	{
 		for (Shape* shape : GetShapes())
 		{
-			shape->DestroyShape();
+			PhysicsManager::physics2D.DestroyShape(shape);
 		}
+
+		boxes.clear();
+		circles.clear();
+		polygons.clear();
+		capsules.clear();
+		chains.clear();
 
 		PhysicsManager::physics2D.DestroyBody(m_bodyID);
 		m_bodyID = b2_nullBodyId;
-	}
-
-	void Body2D::AddBox(Shape::ShapeProps shapeProps)
-	{
-		Box box = Box(GetParentObjectID());
-		if (shapeProps.shape != Shape::ShapeType_None)
-		{
-			box.SetShapeProps(shapeProps);
-		}
-		m_boxes.push_back(box);
-		m_boxes.back().CreateBodyShape(this);
-	}
-
-	void Body2D::AddCircle(Shape::ShapeProps shapeProps)
-	{
-		Circle circle = Circle(GetParentObjectID());
-		if (shapeProps.shape != Shape::ShapeType_None)
-		{
-			circle.SetShapeProps(shapeProps);
-		}		
-		m_circles.push_back(circle);		
-		m_circles.back().CreateBodyShape(this);
-	}
-
-	void Body2D::AddCapsule(Shape::ShapeProps shapeProps)
-	{
-		Capsule capsule = Capsule(GetParentObjectID());
-		if (shapeProps.shape != Shape::ShapeType_None)
-		{
-			capsule.SetShapeProps(shapeProps);
-		}
-		m_capsules.push_back(capsule);
-		m_capsules.back().CreateBodyShape(this);
-	}
-
-	void Body2D::AddPolygon(Shape::ShapeProps shapeProps)
-	{
-		Polygon polygon = Polygon(GetParentObjectID());
-		if (shapeProps.shape != Shape::ShapeType_None)
-		{
-			polygon.SetShapeProps(shapeProps);
-		}
-		m_polygons.push_back(polygon);
-		m_polygons.back().CreateBodyShape(this);
-	}
-
-	void Body2D::AddChain(Shape::ShapeProps shapeProps)
-	{
-		Chain chain = Chain(GetParentObjectID());
-		if (shapeProps.shape != Shape::ShapeType_None)
-		{
-			chain.SetShapeProps(shapeProps);
-		}
-		m_chains.push_back(chain);
-		m_chains.back().CreateBodyShape(this);
 	}
 
 	void Body2D::AddJoint(Joint* joint)

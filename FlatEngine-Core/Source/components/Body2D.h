@@ -1,12 +1,8 @@
 #pragma once
 #include "components/Component.h"
-#include "managers/PhysicsManager.h"
-#include "shapes/Box.h"
-#include "shapes/Capsule.h"
-#include "shapes/Circle.h"
-#include "shapes/Chain.h"
-#include "shapes/Polygon.h"
-#include "shapes/Shape.h"
+#include "physics/PhysicsManager.h"
+#include "physics/Shape.h"
+#include "render/SceneView.h"
 #include "tools/Vector2.h"
 
 #include <list>
@@ -21,17 +17,16 @@ namespace FlatEngine
 	class Body2D : public Component
 	{
 	public:
-		Body2D(long myID = -1, long parentObjectID = -1);
+		Body2D(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
-		void PutData(json componentJson, std::string objectName);
+		void PutData(json jsonData, std::string objectName);
 		void SetActive(bool b_isActive);
+		void Cleanup();
 
 		Vector2 ConvertWorldToLocalPoint(Vector2 worldPoint);
 		Vector2 ConvertLocalToWorldPoint(Vector2 localPoint);
 		Vector2 ConvertWorldToLocalVector(Vector2 worldVector);
 		Vector2 ConvertLocalToWorldVector(Vector2 localVector);
-		
-		static Body2D* GetBodyFromShapeID(b2ShapeId shapeID);
 
 		// Contacts
 		void SetOnBeginContact(void (*beginContactCallback)(b2Manifold manifold, b2ShapeId myID, b2ShapeId collidedWithID));
@@ -44,17 +39,15 @@ namespace FlatEngine
 		void SetOnSensorEndTouch(void (*endSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID));
 		void OnSensorEndTouch(b2ShapeId myID, b2ShapeId touchedID);
 	
-		PhysicsManager::BodyProps GetLiveProps();
+		void UpdateRenderShapes();
+		void RecreateShapes();
+
 		void SetBodyID(b2BodyId bodyID);
+		void AddShape(ShapeType type);
 		const b2BodyId GetBodyID();
 		std::vector<Shape*> GetShapes();		
 		void RemoveShape(b2ShapeId shapeID);
 		void RemoveChain(b2ChainId chainID);
-		std::list<Box>& GetBoxes();
-		std::list<Circle>& GetCircles();
-		std::list<Capsule>& GetCapsules();
-		std::list<Polygon>& GetPolygons();
-		std::list<Chain>& GetChains();
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);
 		Vector2 GetPosition();
@@ -68,10 +61,7 @@ namespace FlatEngine
 		void SetGravityScale(float gravityScale);
 		void SetLinearDamping(float linearDamping);	
 		void SetAngularDamping(float angularDamping);
-		void CreateBody();
-		void RecreateBody();
-		void RecreateLiveBody();
-		void RecreateShapes();
+
 		void ApplyForce(Vector2 force, Vector2 worldPoint);
 		void ApplyLinearInpulse(Vector2 impulse, Vector2 worldPoint);
 		void ApplyForceToCenter(Vector2 force);
@@ -81,27 +71,29 @@ namespace FlatEngine
 		Vector2 GetLinearVelocity();
 		float GetAngularVelocity();
 
-		void AddBox(Shape::ShapeProps shapeProps = Shape::ShapeProps());
-		void AddCircle(Shape::ShapeProps shapeProps = Shape::ShapeProps());
-		void AddCapsule(Shape::ShapeProps shapeProps = Shape::ShapeProps());
-		void AddPolygon(Shape::ShapeProps shapeProps = Shape::ShapeProps());
-		void AddChain(Shape::ShapeProps shapeProps = Shape::ShapeProps());
-
 		void AddJoint(Joint* joint);
 
-		void Cleanup();
+		b2BodyType type = b2_dynamicBody;
+		FL::Vector2 position = FL::Vector2();	
+		b2Rot rotation = b2MakeRot(0);
+		bool b_lockedRotation = false;
+		bool b_lockedXAxis = false;
+		bool b_lockedYAxis = false;
+		float gravityScale = 1.0f;
+		float linearDamping = 0.0f;
+		float angularDamping = 0.0f;
 
-		PhysicsManager::BodyProps bodyProps;
+		std::vector<SceneView::SceneRenderObject> renderShapes;
+		std::list<Shape> boxes;
+		std::list<Shape> circles;
+		std::list<Shape> capsules;
+		std::list<Shape> polygons;
+		std::list<Shape> chains;
 
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
-		std::list<Box> m_boxes;
-		std::list<Circle> m_circles;
-		std::list<Capsule> m_capsules;
-		std::list<Polygon> m_polygons;
-		std::list<Chain> m_chains;
 		std::list<DistanceJoint*> m_distanceJoints;
-				
+		
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

@@ -1,7 +1,7 @@
 #include "components/Body2D.h"
-#include "joints/Joint.h"
-#include "managers/PhysicsManager.h"
 #include "managers/SceneManager.h"
+#include "physics/joints/Joint.h"
+#include "physics/PhysicsManager.h"
 
 
 namespace FlatEngine

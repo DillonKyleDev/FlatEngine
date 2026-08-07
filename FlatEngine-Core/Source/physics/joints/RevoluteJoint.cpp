@@ -1,4 +1,4 @@
-#include "joints/RevoluteJoint.h"
+#include "physics/joints/RevoluteJoint.h"
 
 
 namespace FlatEngine

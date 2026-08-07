@@ -14,7 +14,7 @@ namespace FlatEngine
 	class Text : public Component
 	{
 	public:
-		Text(long myID = -1, long parentObjectID = -1);
+		Text(long ownerID = -1);
 		~Text();
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);

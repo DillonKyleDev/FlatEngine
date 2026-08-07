@@ -5,11 +5,10 @@
 
 namespace FlatEngine 
 {
-	Camera::Camera(long myID, long parentObjectID)
+	Camera::Camera(long ownerID)
 	{
 		SetType(ComponentType_Camera);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		m_b_isPrimaryCamera = false;
 		m_b_forceZup = true;
 		m_width = 50;
@@ -35,7 +34,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType()},
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "width", m_width },
@@ -176,7 +174,7 @@ namespace FlatEngine
 
 	glm::vec4 Camera::GetLookDirection()
 	{
-		Vector3 rotation = SceneManager::loadedScene.GetObjectByID(GetParentObjectID())->Get<Transform>()->GetRotations();
+		Vector3 rotation = SceneManager::loadedScene.GetObjectByID(GetOwnerID())->Get<Transform>()->GetRotations();
 		glm::mat4 rollCameraMatrix         = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 horCameraRotationMatrix  = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -306,7 +304,7 @@ namespace FlatEngine
 
 		if (m_velocity != 0)
 		{
-			Transform* transform = GetParentObject()->Get<Transform>();
+			Transform* transform = GetOwningObject()->Get<Transform>();
 			Vector3 position = transform->GetPosition();
 			transform->SetPosition(position + m_velocity);
 			m_velocity.x *= 0.95f;

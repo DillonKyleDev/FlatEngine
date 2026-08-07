@@ -97,9 +97,9 @@ namespace FlatEngine
                 SceneView::sceneViewCamera.SetVerticalViewAngle(JsonHelper::CheckJsonFloat(settings, "sceneCameraVerticalViewAngle", name));
                 SceneView::sceneViewCamera.SetNearClippingDistance(JsonHelper::CheckJsonFloat(settings, "sceneViewNearClippingDistance", name));
                 SceneView::sceneViewCamera.SetFarClippingDistance(JsonHelper::CheckJsonFloat(settings, "sceneViewFarClippingDistance", name));
-                SceneView::sceneViewCamera.SetPerspectiveAngle(JsonHelper::CheckJsonFloat(settings, "sceneViewPerspectiveAngle", name));
-                SceneView::sceneViewCamera.b_orthographic = (JsonHelper::CheckJsonBool(settings, "b_orthographic", name));
+                SceneView::sceneViewCamera.SetPerspectiveAngle(JsonHelper::CheckJsonFloat(settings, "sceneViewPerspectiveAngle", name));                
                 SceneView::sceneViewCamera.m_orthoSize = JsonHelper::CheckJsonFloat(settings, "orthoSize", name);
+                SceneView::SetOrthographic(JsonHelper::CheckJsonBool(settings, "b_orthographic", name));
                 SceneView::SetShowSceneViewGridObjects(JsonHelper::CheckJsonBool(settings, "b_showGridObjects", name));
                 sceneViewCameraSpeed = JsonHelper::CheckJsonFloat(settings, "sceneViewCameraSpeed", name);                
             }

@@ -7,6 +7,7 @@
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
 #include "tools/FileHelper.h"
+#include "tools/Logger.h"
 #include "tools/Profiler.h"
 #include "tools/Time.h"
 
@@ -63,7 +64,6 @@ public:
 	};
 	void Update()
 	{
-		// Call base class GameLoop Update function
 		FL::GameLoop::Update();
 		
 		// Other, application specific updates here if needed
@@ -76,7 +76,6 @@ private:
 
 
 
-// Define our Application
 class EditorApplication : public FL::Application
 {
 public:
@@ -106,7 +105,7 @@ public:
 			renderStartTime = FL::Time::Time(); // Profiler
 
 			BeginRender();
-			FL::Profiler::AddProcessData("Render", (float)(FL::Time::Time() - renderStartTime)); // Profiler
+			FL::Profiler::AddProcessData("Render", (float)(FL::Time::Time() - renderStartTime));
 
 			if ((GameLoopStarted() && !GameLoopPaused()) || (GameLoopPaused() && A_GameLoop->IsFrameSkipped()))
 			{
@@ -227,29 +226,6 @@ public:
 		Application::BeginRender();
 
 
-		//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-		//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));
-		//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-		//FlatEngine::PushWindowStyles();
-		//ImGui::Begin("Scene View", &FlatGui::FG_b_showSceneView, 16 | 8); // Window flags 	ImGuiWindowFlags_NoScrollWithMouse
-		//FlatEngine::PopWindowStyles();
-		// {
-		
-			// Application specific rendering
-			//if (FL::F_VulkanManager->viewportDescriptorSets.size() > 0)
-			//{
-			//	ImVec2 size = ImGui::GetContentRegionAvail();
-			//	ImGui::Image(FL::F_VulkanManager->viewportDescriptorSets[FL::VM_currentFrame], size);
-			//}
-
-		// }
-		//ImGui::End();
-		//ImGui::PopStyleVar();
-		//ImGui::PopStyleVar();
-		//ImGui::PopStyleVar();
-
-
-		// Render the project selection screen
 		if (!FL::ProjectManager::b_projectSelected)
 		{			
 			FlatGui::RenderProjectHub(FL::ProjectManager::b_projectSelected, m_startupProject);

@@ -7,40 +7,29 @@ namespace FlatEngine
 	Component::Component()
 	{
 		m_type = ComponentType_None;
-		m_ID = -1;
-		m_parentObjectID = -1;
+		m_ownerID = -1;
 		m_b_isCollapsed = false;
 		m_b_isActive = true;		
 	}
 
-	void Component::SetParentObjectID(long newParentObjectID)
+	void Component::SetOwnerID(long ownerID)
 	{
-		m_parentObjectID = newParentObjectID;
+		m_ownerID = ownerID;
 	}
 
-	long Component::GetParentObjectID()
+	long Component::GetOwnerID()
 	{
-		return m_parentObjectID;
+		return m_ownerID;
 	}
 
-	GameObject* Component::GetParentObject()
+	GameObject* Component::GetOwningObject()
 	{
-		return SceneManager::loadedScene.GetObjectByID(m_parentObjectID);
+		return SceneManager::loadedScene.GetObjectByID(m_ownerID);
 	}
 
 	void Component::SetType(ComponentType componentType)
 	{
 		m_type = componentType;
-	}
-
-	void Component::SetID(long newID)
-	{
-		m_ID = newID;
-	}
-
-	long Component::GetID()
-	{
-		return m_ID;
 	}
 
 	ComponentType Component::GetType()

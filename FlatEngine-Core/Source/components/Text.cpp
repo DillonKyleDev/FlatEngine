@@ -7,11 +7,10 @@
 
 namespace FlatEngine
 {
-	Text::Text(long myID, long parentObjectID)
+	Text::Text(long ownerID)
 	{
 		SetType(ComponentType_Text);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		m_fontPath = Assets::assetManager.GetFilePath("cinzelBlack");
 		m_fontSize = 40;
 		m_font = TTF_OpenFont(m_fontPath.c_str(), m_fontSize);
@@ -37,7 +36,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "fontPath", m_fontPath },
@@ -91,7 +89,7 @@ namespace FlatEngine
 			if (m_font == nullptr)
 			{
 				TTF_CloseFont(m_font);
-				Logger::log.Err("Font not valid in {} Text component.", GetParentObject() != nullptr ? GetParentObject()->GetName() : "nullptr");
+				Logger::log.Err("Font not valid in {} Text component.", GetOwningObject() != nullptr ? GetOwningObject()->GetName() : "nullptr");
 			}
 			m_texture->FreeTexture();
 			m_pivotOffset = Vector2(0,0);
@@ -132,7 +130,7 @@ namespace FlatEngine
 			{
 				m_texture->FreeTexture();
 			}
-			Logger::log.Err("Font not valid in {} Text component.", GetParentObject() != nullptr ? GetParentObject()->GetName() : "nullptr");
+			Logger::log.Err("Font not valid in {} Text component.", GetOwningObject() != nullptr ? GetOwningObject()->GetName() : "nullptr");
 		}
 	}
 

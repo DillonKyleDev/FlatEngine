@@ -538,7 +538,7 @@ namespace FlatEngine
 			
 			if (primaryCamera != nullptr)
 			{
-				FL::GameObject* owner = primaryCamera->GetParentObject();
+				FL::GameObject* owner = primaryCamera->GetOwningObject();
 				if (owner != nullptr)
 				{
 					cameraTransform = owner->Get<FL::Transform>();

@@ -463,9 +463,8 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Transform>("Transform",
-				"GetParent", &Transform::GetParentObject,
-				"GetParentID", &Transform::GetParentObjectID,
-				"GetID", &Transform::GetID,
+				"GetOwningObject", &Transform::GetOwningObject,
+				"GetOwnerID", &Transform::GetOwnerID,
 				"SetPosition", &Transform::SetPosition,
 				"GetPosition", &Transform::GetPosition,
 				"GetAbsolutePosition", &Transform::GetAbsolutePosition,
@@ -481,9 +480,8 @@ namespace FlatEngine
 			lua.new_usertype<Sprite>("Sprite",
 				"SetActive", &Sprite::SetActive,
 				"IsActive", &Sprite::IsActive,
-				"GetParent", &Sprite::GetParentObject,
-				"GetParentID", &Sprite::GetParentObjectID,
-				"GetID", &Sprite::GetID,
+				"GetOwningObject", &Sprite::GetOwningObject,
+				"GetOwnerID", &Sprite::GetOwnerID,
 				"SetTexture", &Sprite::SetTexture,
 				"GetPath", &Sprite::GetPath,
 				"SetScale", &Sprite::SetScale,
@@ -497,21 +495,19 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Text>("Text",
-				"GetParent", &Text::GetParentObject,
-				"GetParentID", &Text::GetParentObjectID,
+				"GetOwningObject", &Text::GetOwningObject,
+				"GetOwnerID", &Text::GetOwnerID,
 				"SetActive", &Text::SetActive,
 				"IsActive", &Text::IsActive,
-				"GetID", &Text::GetID,
 				"SetText", &Text::SetText,
 				"SetPivotPoint", &Text::SetPivotPointLua
 			);
 
 			lua.new_usertype<Audio>("Audio",
-				"GetParent", &Audio::GetParentObject,
-				"GetParentID", &Audio::GetParentObjectID,
+				"GetOwningObject", &Audio::GetOwningObject,
+				"GetOwnerID", &Audio::GetOwnerID,
 				"SetActive", &Audio::SetActive,
 				"IsActive", &Audio::IsActive,
-				"GetID", &Audio::GetID,
 				"IsSoundPlaying", &Audio::IsMusicPlaying,
 				"Play", &Audio::PlaySound,
 				"Pause", &Audio::PauseSound,
@@ -522,11 +518,10 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Button>("Button",
-				"GetParent", &Button::GetParentObject,
-				"GetParentID", &Button::GetParentObjectID,
+				"GetOwningObject", &Button::GetOwningObject,
+				"GetOwnerID", &Button::GetOwnerID,
 				"SetActive", &Button::SetActive,
 				"IsActive", &Button::IsActive,
-				"GetID", &Button::GetID,
 				"SetActiveDimensions", &Button::SetActiveDimensions,
 				"SetActiveOffset", & Button::SetActiveOffset,
 				"GetActiveOffset", &Button::GetActiveOffset,
@@ -545,22 +540,20 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Script>("Script",
-				"GetParent", &Script::GetParentObject,
-				"GetParentID", &Script::GetParentObjectID,
+				"GetOwningObject", &Script::GetOwningObject,
+				"GetOwnerID", &Script::GetOwnerID,
 				"SetActive", &Script::SetActive,
-				"IsActive", &Script::IsActive,
-				"GetID", &Script::GetID
+				"IsActive", &Script::IsActive
 				// "SetAttachedScript", &Script::SetAttachedScript,
 				// "GetAttachedScript", &Script::GetAttachedScript,
 				// "RunAwakeAndStart", &Script::RunAwakeAndStart
 			);
 
 			lua.new_usertype<Animation>("Animation",
-				"GetParent", &Animation::GetParentObject,
-				"GetParentID", &Animation::GetParentObjectID,
+				"GetOwningObject", &Animation::GetOwningObject,
+				"GetOwnerID", &Animation::GetOwnerID,
 				"SetActive", &Animation::SetActive,
 				"IsActive", &Animation::IsActive,
-				"GetID", &Animation::GetID,
 				"Play", &Animation::PlayFromLua,
 				"Stop", &Animation::Stop,
 				"StopAll", &Animation::StopAll,
@@ -636,8 +629,8 @@ namespace FlatEngine
 			// lua.new_usertype<Body>("Body",
 			// 	"SetActive", &Body::SetActive,
 			// 	"IsActive", &Body::IsActive,
-			// 	"GetParent", &Body::GetParentObject,
-			// 	"GetParentID", &Body::GetParentObjectID,
+			// 	"GetOwningObject", &Body::GetOwningObject,
+			// 	"GetOwnerID", &Body::GetOwnerID,
 			// 	"GetID", &Body::GetID,
 			// 	"GetBodyProps", &Body::GetBodyProps,
 			// 	"SetGravity", &Body::SetGravityScale,			
@@ -656,10 +649,8 @@ namespace FlatEngine
 			lua.new_usertype<Body2D>("Body2D",
 				"SetActive", &Body2D::SetActive,
 				"IsActive", &Body2D::IsActive,
-				"GetParent", &Body2D::GetParentObject,
-				"GetParentID", &Body2D::GetParentObjectID,
-				"GetID", &Body2D::GetID,
-				"bodyProps", &Body2D::bodyProps,
+				"GetOwningObject", &Body2D::GetOwningObject,
+				"GetOwnerID", &Body2D::GetOwnerID,
 				"SetGravity", &Body2D::SetGravityScale,			
 				"SetLinearDamping", &Body2D::SetLinearDamping,
 				"SetAngularDamping", &Body2D::SetAngularDamping,
@@ -683,11 +674,10 @@ namespace FlatEngine
 
 			lua.new_usertype<CharacterController>("CharacterController",
 				"MoveToward", &CharacterController::MoveToward,
-				"GetParent", &CharacterController::GetParentObject,
-				"GetParentID", &CharacterController::GetParentObjectID,
+				"GetOwningObject", &CharacterController::GetOwningObject,
+				"GetOwnerID", &CharacterController::GetOwnerID,
 				"SetActive", &CharacterController::SetActive,
-				"IsActive", &CharacterController::IsActive,
-				"GetID", &CharacterController::GetID
+				"IsActive", &CharacterController::IsActive
 			);
 
 			lua.new_usertype<Controls::InputMapping>("InputMapping",
@@ -719,7 +709,7 @@ namespace FlatEngine
 							}
 							else
 							{
-								RunLuaFuncOnSingleScript(scriptData, script.GetParentObject(), functionName);
+								RunLuaFuncOnSingleScript(scriptData, script.GetOwningObject(), functionName);
 							}
 						}
 					}
@@ -791,8 +781,8 @@ namespace FlatEngine
 							}
 							else
 							{
-								InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
-								RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Awake");
+								InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetOwnerID()), loadedSceneScriptFiles);
+								RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetOwnerID()), "Awake");
 							}
 						}
 					}
@@ -813,8 +803,8 @@ namespace FlatEngine
 							}
 							else
 							{
-								InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), loadedSceneScriptFiles);
-								RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetParentObjectID()), "Start");
+								InitLuaScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetOwnerID()), loadedSceneScriptFiles);
+								RunLuaFuncOnSingleScript(scriptData, SceneManager::loadedScene.GetObjectByID(script.GetOwnerID()), "Start");
 							}
 						}
 					}
@@ -1103,7 +1093,7 @@ namespace FlatEngine
 		// Collision Events Passed to Lua
 		void CallLuaCollisionFunction(LuaEventFunction eventFunc, Body* caller, Body* collidedWith, b2Manifold manifold)
 		{
-			GameObject* callingObject = caller->GetParentObject();
+			GameObject* callingObject = caller->GetOwningObject();
 			Script* script = callingObject->Get<Script>();
 
 			if (script->IsActive() && script->GetScripts().size())
@@ -1118,7 +1108,7 @@ namespace FlatEngine
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetOwningObject()->GetName(), message);
 						}
 						LoadLuaGameObject(callingObject, attachedScript);
 
@@ -1141,7 +1131,7 @@ namespace FlatEngine
 		// Sensor Events Passed to Lua
 		void CallLuaSensorFunction(LuaEventFunction eventFunc, Body* caller, Body* touched)
 		{
-			GameObject* callingObject = caller->GetParentObject();
+			GameObject* callingObject = caller->GetOwningObject();
 			Script* script = callingObject->Get<Script>();
 
 			if (script->IsActive() && script->GetScripts().size())
@@ -1156,7 +1146,7 @@ namespace FlatEngine
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetOwningObject()->GetName(), message);
 						}
 						LoadLuaGameObject(callingObject, attachedScript);
 
@@ -1178,7 +1168,7 @@ namespace FlatEngine
 
 		void CallLuaCollisionFunction2D(LuaEventFunction eventFunc, Body2D* caller, Body2D* collidedWith, b2Manifold manifold)
 		{
-			GameObject* callingObject = caller->GetParentObject();
+			GameObject* callingObject = caller->GetOwningObject();
 			Script* script = callingObject->Get<Script>();
 
 			if (script && script->IsActive() && script->GetScripts().size())
@@ -1193,7 +1183,7 @@ namespace FlatEngine
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetOwningObject()->GetName(), message);
 						}
 						LoadLuaGameObject(callingObject, attachedScript);
 
@@ -1220,7 +1210,7 @@ namespace FlatEngine
 		// Sensor Events Passed to Lua
 		void CallLuaSensorFunction2D(LuaEventFunction eventFunc, Body2D* caller, Body2D* touched)
 		{
-			GameObject* callingObject = caller->GetParentObject();
+			GameObject* callingObject = caller->GetOwningObject();
 			Script* script = callingObject->Get<Script>();
 
 			if (script && script->IsActive() && script->GetScripts().size())
@@ -1235,7 +1225,7 @@ namespace FlatEngine
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetOwningObject()->GetName(), message);
 						}
 						LoadLuaGameObject(callingObject, attachedScript);
 
@@ -1276,7 +1266,7 @@ namespace FlatEngine
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetOwningObject()->GetName(), message);
 						}
 						LoadLuaGameObject(caller, attachedScript);
 						CallVoidLuaFunction<GameObject*>(luaEventNames[eventFunc]);						
@@ -1327,7 +1317,7 @@ namespace FlatEngine
 						std::string message = "";
 						if (!ReadyScriptFile(attachedScript, message))
 						{
-							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetParentObject()->GetName(), message);
+							Logger::log.Err("Could not invoke script file {} on {}\n{}", attachedScript, script->GetOwningObject()->GetName(), message);
 						}
 
 						LoadLuaGameObject(caller, attachedScript);

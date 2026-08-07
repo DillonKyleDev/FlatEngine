@@ -1,5 +1,5 @@
 #pragma once
-#include "joints/Joint.h"
+#include "physics/joints/Joint.h"
 
 
 namespace FlatEngine

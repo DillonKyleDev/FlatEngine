@@ -1,4 +1,4 @@
-#include "joints/DistanceJoint.h"
+#include "physics/joints/DistanceJoint.h"
 
 
 namespace FlatEngine

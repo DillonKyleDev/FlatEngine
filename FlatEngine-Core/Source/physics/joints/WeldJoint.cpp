@@ -1,4 +1,4 @@
-#include "joints/WeldJoint.h"
+#include "physics/joints/WeldJoint.h"
 
 
 namespace FlatEngine

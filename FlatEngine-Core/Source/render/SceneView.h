@@ -1,8 +1,9 @@
 #pragma once
+#include "Types.h"
 #include "components/Camera.h"
 #include "components/Mesh.h"
 #include "components/Transform.h"
-#include "shapes/Line.h"
+#include "render/Line.h"
 #include "tools/JsonHelper.h"
 #include "tools/Pool.h"
 #include "tools/Vector2.h"
@@ -18,14 +19,15 @@ namespace FlatEngine
     {
         enum PersistentSceneObjectIndex {
             PersistentSceneObjectIndex_GridH,
-            PersistentSceneObjectIndex_GridV,
+            PersistentSceneObjectIndex_GridV,   
             PersistentSceneObjectIndex_XAxis,
             PersistentSceneObjectIndex_YAxis,
             PersistentSceneObjectIndex_ZAxis,
-            PersistentSceneObjectIndex_TransformGizmo,
-            PersistentSceneObjectIndex_OrientationGizmo,
             PersistentSceneObjectIndex_Size
         };
+
+        const int TransformGizmoID = 6;
+        const int OrientationGizmoID = 7;
 
         enum DebugSceneObjectType {
             DebugSceneObjectType_Line,
@@ -50,7 +52,10 @@ namespace FlatEngine
 
         extern std::vector<SceneRenderObject> persistentSceneRenderObjects;
         extern std::vector<PoolObject<SceneRenderObject>> debugDrawSceneRenderObjects;
-        extern std::unordered_map<long, SceneRenderObject> transientSceneRenderObjects;
+        extern UMapVector<SceneRenderObject> cameraSceneRenderObjects;		
+		extern UMapVector<SceneRenderObject> lightSceneRenderObjects;
+		extern SceneRenderObject transformGizmoRenderObject;
+        extern SceneRenderObject orientationGizmoRenderObject;
 
         extern Vector2 sceneViewportCenter;
         extern Vector2 sceneViewDimensions;      
@@ -69,11 +74,15 @@ namespace FlatEngine
 
         extern void RenderSceneView(bool& b_show);         
                
+        extern SceneRenderObject CreateLineObject();
+        extern SceneRenderObject CreateQuadObject();
+        extern SceneRenderObject CreateCircleObject();
+        extern void ClearDebugDrawObjects();
         extern void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color = "debugDraw");
         extern void DebugDrawQuad(Vector3 position, Vector2 scale = Vector2(1), std::string color = "debugDraw", Vector3 rotation = Vector3());
         extern void DebugDrawCircle(Vector3 position, float radius, std::string color = "debugDraw", Vector3 rotation = Vector3());
         extern void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color);
-        extern void LoadPersistentSceneViewObjects();
+        extern void LoadSceneViewObjects();
         extern void UpdateSceneObjectColors();        
         extern void ToggleShowSceneViewGridObjects();
         extern void SetShowSceneViewGridObjects(bool b_show);

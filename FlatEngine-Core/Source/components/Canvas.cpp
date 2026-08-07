@@ -7,11 +7,10 @@
 
 namespace FlatEngine 
 {
-	Canvas::Canvas(long myID, long parentObjectID)
+	Canvas::Canvas(long ownerID)
 	{
 		SetType(ComponentType_Canvas);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		m_layerNumber = 0;
 		m_b_blocksLayers = true;
 		m_width = 20;
@@ -23,7 +22,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "width", m_width },
@@ -69,7 +67,7 @@ namespace FlatEngine
 
 	void Canvas::CalculateActiveEdges()
 	{
-		Transform* transform = GetParentObject()->Get<Transform>();
+		Transform* transform = GetOwningObject()->Get<Transform>();
 		Vector3 position = transform->GetAbsolutePosition();
 		Vector3 scale = transform->GetScale();
 

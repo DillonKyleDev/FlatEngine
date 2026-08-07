@@ -8,19 +8,18 @@
 
 namespace FlatEngine
 {
-	Body::Body(long myID, long parentObjectID)
+	Body::Body(long ownerID)
 	{
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		SetType(ComponentType_Body);
 
 		m_bodyID = b2BodyId();
-		m_bodyProps = PhysicsManager::BodyProps();		
-		m_boxes = std::list<Box>();
-		m_circles = std::list<Circle>();
-		m_capsules = std::list<Capsule>();
-		m_polygons = std::list<Polygon>();
-		m_chains = std::list<Chain>();
+		// m_bodyProps = PhysicsManager::BodyProps();		
+		// m_boxes = std::list<Box>();
+		// m_circles = std::list<Circle>();
+		// m_capsules = std::list<Capsule>();
+		// m_polygons = std::list<Polygon>();
+		// m_chains = std::list<Chain>();
 		// Contacts
 		m_beginContactCallback = nullptr;
 		m_b_beginContactCallbackSet = false;

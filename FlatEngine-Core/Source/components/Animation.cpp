@@ -109,11 +109,10 @@ namespace FlatEngine
     }
 
 
-    Animation::Animation(long myID, long parentObjectID)
+    Animation::Animation(long ownerID)
     {
         SetType(ComponentType_Animation);
-        SetID(myID);
-        SetParentObjectID(parentObjectID);
+        SetOwnerID(ownerID);        
         m_animations = std::vector<AnimationData>();
     }
 
@@ -132,8 +131,7 @@ namespace FlatEngine
         }
 
         json jsonData = {
-            { "type", (int)GetType() },
-            { "id", b_IDOverride ? -1 : GetID() },
+            { "type", (int)GetType() },            
             { "b_isCollapsed", IsCollapsed() },
             { "b_isActive", IsActive() },
             { "animationData", animationData }
@@ -217,7 +215,7 @@ namespace FlatEngine
                 animData.b_playing = true;				
                 if (!animData.b_startAtOrigin)
                 {
-                    animData.startingPos = GetParentObject()->Get<Transform>()->GetPosition();
+                    animData.startingPos = GetOwningObject()->Get<Transform>()->GetPosition();
                 }
                 else 
                 {
@@ -339,7 +337,7 @@ namespace FlatEngine
 
                         if (b_shouldApply) 
                         {
-                            frame->Apply(GetParentObject(), percentDone, prev, &animData);
+                            frame->Apply(GetOwningObject(), percentDone, prev, &animData);
                         }
                     }
                 }                

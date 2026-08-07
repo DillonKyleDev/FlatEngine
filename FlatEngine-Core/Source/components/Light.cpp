@@ -3,11 +3,10 @@
 
 namespace FlatEngine
 {
-	Light::Light(long myID, long parentObjectID)
+	Light::Light(long ownerID)
 	{
 		SetType(ComponentType_Light);
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 
 		m_lightType = LightType::LightType_Point;
 		m_direction = Vector3(0, 0, 1);
@@ -18,7 +17,6 @@ namespace FlatEngine
 	{
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "directionX", m_direction.x },

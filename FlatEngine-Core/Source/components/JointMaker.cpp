@@ -1,14 +1,13 @@
 #include "components/JointMaker.h"
-#include "managers/PhysicsManager.h"
+#include "physics/PhysicsManager.h"
 #include "tools/Logger.h"
 
 
 namespace FlatEngine
 {
-	JointMaker::JointMaker(long myID, long parentObjectID)
+	JointMaker::JointMaker(long ownerID)
 	{
-		SetID(myID);
-		SetParentObjectID(parentObjectID);
+		SetOwnerID(ownerID);
 		SetType(ComponentType_JointMaker);
 
 		m_distanceJoints = std::list<DistanceJoint>();
@@ -62,7 +61,6 @@ namespace FlatEngine
 
 		json jsonData = {
 			{ "type", (int)GetType() },
-			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isCollapsed", IsCollapsed() },
 			{ "b_isActive", IsActive() },
 			{ "distanceJoints", distanceJoints },

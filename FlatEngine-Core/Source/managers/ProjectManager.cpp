@@ -180,7 +180,7 @@ namespace FlatEngine
 						newProject.SetEffectsVolume(JsonHelper::CheckJsonInt(projectData, "effectsVolume", name));
 						newProject.currentFileDirectory = JsonHelper::CheckJsonString(projectData, "currentFileDirectory", name);						
 						newProject.persistentScript.PutData(JsonHelper::JsonContains(projectData, "persistentScript", name) ? projectData["persistentScript"] : json::object(), "Persistent Script");						
-						newProject.persistentScript.SetID(PERSISTENT_SCRIPT_ID);
+						newProject.persistentScript.SetOwnerID(PERSISTENT_SCRIPT_ID);
 						newProject.persistentScript.SetActive(JsonHelper::CheckJsonBool(projectData, "b_persistentScriptActive", name));
 					}
 					catch (const json::out_of_range& e)

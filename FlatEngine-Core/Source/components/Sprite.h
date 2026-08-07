@@ -11,7 +11,7 @@ namespace FlatEngine
 	class Sprite : public Component
 	{
 	public:
-		Sprite(long myID = -1, long parentObjectID = -1);
+		Sprite(long ownerID = -1);
 		~Sprite();
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);

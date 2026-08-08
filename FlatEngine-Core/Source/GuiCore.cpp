@@ -1168,7 +1168,7 @@ namespace FlatEngine
 			ImGui::SetCursorScreenPos(Vector2(inputStart.x + 3, inputStart.y + 1));
 			ImGui::Text("%s", displayValue.c_str());
 
-			RenderInvisibleButton("##DropInputdropTarget", inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
+			RenderInvisibleButton("##DropInputdropTarget" + ID, inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
 			ImGui::PopStyleVar();
 			if (toolTip != "" && ImGui::IsItemHovered())
 			{

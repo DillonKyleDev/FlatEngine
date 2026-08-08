@@ -162,7 +162,7 @@ F_Colors = {
 	projectHubTableOutline = Vector4:new(0.36, 0.36, 0.37, 1.0),
 	-- Log
 	logText = Vector4:new(0.75, 0.75, 0.75, 1.0),
-	logBg = Vector4:new(0.15, 0.15, 0.16, 1.0),
+	logBg = Vector4:new(0.14, 0.14, 0.15, 1.0),
 	logOutline = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	trace = Vector4:new(0.5, 0.5, 0.5, 1.0),
 	debug = Vector4:new(0.2, 0.75, 0.2, 1.0),
@@ -174,7 +174,7 @@ F_Colors = {
 	-- DebugDraw
 	debugDraw = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	-- File Explorer
-	explorerFilesPanelBg =  Vector4:new(0.3, 0.3, 0.33, 1.0),
+	explorerFilesPanelBg =  Vector4:new(0.25, 0.25, 0.29, 1.0), -- Vector4:new(0.3, 0.3, 0.33, 1.0),
 	panelTitleBg =  Vector4:new(0.14, 0.14, 0.14, 1.0),
 	filePanelTopBar = Vector4:new(0.2, 0.2, 0.22, 0.0),
 	filesTopBarButtonBg = Vector4:new(0.3, 0.3, 0.65, 1.0),

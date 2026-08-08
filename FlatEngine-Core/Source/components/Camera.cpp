@@ -1,6 +1,7 @@
 #include "components/Camera.h"
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
+#include "render/SceneView.h"
 
 
 namespace FlatEngine 
@@ -9,11 +10,11 @@ namespace FlatEngine
 	{
 		SetType(ComponentType_Camera);
 		SetOwnerID(ownerID);
-		orthoNearClippingDistance = -500;
+		orthoNearClippingDistance = -1000;
 		orthoFarClippingDistance = 500;
 		nearClippingDistance = 0.1f;
-		farClippingDistance = 100.0f;
-		perspectiveAngle = 90.0f;
+		farClippingDistance = 1000.0f;
+		perspectiveAngle = 80.0f;
 		b_shouldFollow = false;
 		toFollowID = -1;
 		followSmoothing = 0.1f;
@@ -25,6 +26,10 @@ namespace FlatEngine
 		orthoVerticalViewAngle = 0.0;		
 		m_b_isPrimaryCamera = false;		
 		m_lookDirection = Vector3(0.0f, 0.0f, 1.0f);
+		
+		Transform* transform = SceneManager::loadedScene.Get<Transform>(ownerID);
+		if (transform != nullptr)
+			SceneView::AddSceneViewCameraGizmo(*transform, ownerID);
 	}
 
 	json Camera::GetData(bool b_IDOverride)
@@ -54,8 +59,7 @@ namespace FlatEngine
         Component::PutData(componentJson, objectName);
 		
 		bool b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "b_isPrimaryCamera", objectName);		
-		SetPrimaryCamera(b_isPrimaryCamera);
-		SceneManager::loadedScene.SetPrimaryCamera(this);                                    
+		SetPrimaryCamera(b_isPrimaryCamera);                                 
 		b_orthographic = JsonHelper::CheckJsonBool(componentJson, "b_orthographic", objectName);
 		gridStep = JsonHelper::CheckJsonFloat(componentJson, "gridStep", objectName);
 		perspectiveAngle = JsonHelper::CheckJsonFloat(componentJson, "perspectiveAngle", objectName);
@@ -71,9 +75,9 @@ namespace FlatEngine
 	void Camera::SetPrimaryCamera(bool b_isPrimary)
 	{
 		m_b_isPrimaryCamera = b_isPrimary;
-		if (b_isPrimary)
+		if (m_b_isPrimaryCamera)
 		{
-			SceneManager::loadedScene.SetPrimaryCamera(this);
+			SceneManager::loadedScene.SetPrimaryCamera(GetOwnerID());
 		}
 	}
 
@@ -98,9 +102,9 @@ namespace FlatEngine
 	glm::vec4 Camera::GetLookDirection()
 	{
 		Vector3 rotation = SceneManager::loadedScene.GetObjectByID(GetOwnerID())->Get<Transform>()->GetRotations();
-		glm::mat4 rollCameraMatrix         = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 rollCameraMatrix         = glm::rotate(glm::mat4(1.0f), glm::radians(-rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 horCameraRotationMatrix  = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(-rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 rotationMatrix = horCameraRotationMatrix * vertCameraRotationMatrix;
 
 		if (rotation.x != 0) // prevent unnecessary matrix multiplication if possible
@@ -121,7 +125,23 @@ namespace FlatEngine
 		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
 	}
 
-	void Camera::AddToVerticalViewAngle(float toAdd)
+	void Camera::AddOrthoVerticalViewAngle(float toAdd)
+	{
+		if (orthoVerticalViewAngle + toAdd >= 90)
+		{
+			orthoVerticalViewAngle = 89.99f;
+		}
+		else if (orthoVerticalViewAngle + toAdd <= -90)
+		{
+			orthoVerticalViewAngle = -89.99f;
+		}
+		else
+		{
+			orthoVerticalViewAngle += toAdd;
+		}
+	}
+
+	void Camera::AddVerticalViewAngle(float toAdd)
 	{
 		if (verticalViewAngle + toAdd >= 90)
 		{

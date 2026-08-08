@@ -359,11 +359,11 @@ namespace FlatGui
 			{
 				camera->toFollowID = -1;
 			}
-
-			float followSmoothing = camera->followSmoothing;
 			
 			if (FL::GuiCore::PushTable("##CameraProperties" + std::to_string(ownerID), 2))
 			{
+				FL::GuiCore::RenderFloatDragTableRow("##orthonearClip" + std::to_string(ownerID), "Near Clip (Ortho)", camera->orthoNearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
+				FL::GuiCore::RenderFloatDragTableRow("##orthofarClip" + std::to_string(ownerID), "Far Clip (Ortho)", camera->orthoFarClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
 				FL::GuiCore::RenderFloatDragTableRow("##nearClip" + std::to_string(ownerID), "Near Clip", camera->nearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
 				FL::GuiCore::RenderFloatDragTableRow("##farClip" + std::to_string(ownerID), "Far Clip", camera->farClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
 				FL::GuiCore::RenderFloatDragTableRow("##perspectiveAngle" + std::to_string(ownerID), "Perspective Angle", camera->perspectiveAngle, 0.1f, -180.0, 180);
@@ -394,14 +394,6 @@ namespace FlatGui
 			if (FL::GuiCore::RenderCheckbox("Is Primary Camera", b_isPrimary))
 			{
 				camera->SetPrimaryCamera(b_isPrimary);
-				if (b_isPrimary)
-				{
-					FL::SceneManager::loadedScene.SetPrimaryCamera(camera);
-				}
-				else
-				{
-					FL::SceneManager::loadedScene.RemovePrimaryCamera();
-				}
 			}		
 
 			// Frustrum color picker

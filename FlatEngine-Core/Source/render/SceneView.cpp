@@ -1,3 +1,4 @@
+#include "Types.h"
 #include "components/Transform.h"
 #include "FlatEngine.h"
 #include "GameObject.h"
@@ -29,7 +30,8 @@ namespace FlatEngine
 	{
 		std::vector<SceneRenderObject> persistentSceneRenderObjects;
         std::vector<PoolObject<SceneRenderObject>> debugDrawSceneRenderObjects;
-        UMapVector<SceneRenderObject> cameraSceneRenderObjects;		
+		void CleanupSceneRenderObject(SceneRenderObject& renderObject) { renderObject.mesh.Cleanup(); }
+        UMapVector<SceneRenderObject> cameraSceneRenderObjects = UMapVector<SceneRenderObject>(&CleanupSceneRenderObject);		
 		UMapVector<SceneRenderObject> lightSceneRenderObjects;
 		SceneRenderObject transformGizmoRenderObject;
 		SceneRenderObject orientationGizmoRenderObject;
@@ -262,7 +264,7 @@ namespace FlatEngine
 						else 
 						{						
 							sceneViewCamera.horizontalViewAngle += -rightMouseDelta.x * 0.25f;
-							sceneViewCamera.verticalViewAngle += rightMouseDelta.y * 0.25f;
+							sceneViewCamera.AddVerticalViewAngle(rightMouseDelta.y * 0.25f);							
 
 							Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
 							glm::vec4 lookDir = sceneViewCamera.GetLookDirectionNoRoll();
@@ -303,7 +305,7 @@ namespace FlatEngine
 						if (IsOrthoGraphic())
 						{
 							sceneViewCamera.orthoHorizontalViewAngle += -leftMouseDelta.x * 0.01f;
-							sceneViewCamera.orthoVerticalViewAngle += leftMouseDelta.y * 0.01f;
+							sceneViewCamera.AddOrthoVerticalViewAngle(leftMouseDelta.y * 0.01f);
 						}
 					}									
 				}
@@ -402,6 +404,13 @@ namespace FlatEngine
 			for (Body2D& body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
 			{
 				body2D.UpdateRenderShapes();
+			}
+			for (SceneRenderObject& renderCamera : cameraSceneRenderObjects.GetAll())
+			{
+				Transform* transform = SceneManager::loadedScene.Get<Transform>(renderCamera.ID);
+				Transform copy = transform != nullptr ? *transform : Transform();
+				copy.SetScale(Vector3(2,3,3));
+				renderCamera.transform = copy;
 			}
 
 			if (!b_show)
@@ -563,6 +572,7 @@ namespace FlatEngine
             ref->mesh.SetModel("../engine/models/camera.obj", false);
             ref->mesh.AddTexture("../engine/images/textures/camera.png", 0);            
             ref->mesh.CreateResources();
+			transform.SetScale(Vector3(2,3,3));
 			ref->transform.PutData(transform.GetData(), "Scene Camera Gizmo");
 			return ref->ID;
 		}

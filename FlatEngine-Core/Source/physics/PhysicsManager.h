@@ -78,7 +78,7 @@ namespace FlatEngine
 			// b2WorldId m_worldID;
 		};
 
-		// extern Physics physics;
+		// 2D Physics for Scene
 		extern Physics2D physics2D;
 	}
 }

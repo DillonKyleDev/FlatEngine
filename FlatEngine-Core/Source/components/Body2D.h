@@ -1,4 +1,5 @@
 #pragma once
+#include "GameObject.h"
 #include "components/Component.h"
 #include "physics/PhysicsManager.h"
 #include "physics/Shape.h"
@@ -15,6 +16,9 @@ namespace FlatEngine
 
 	class Body2D : public Component
 	{
+		friend GameObject;
+		friend PhysicsManager::Physics2D;
+
 	public:
 		Body2D(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
@@ -73,8 +77,6 @@ namespace FlatEngine
 		void AddJoint(Joint* joint);
 
 		b2BodyType type = b2_dynamicBody;
-		FL::Vector2 position = FL::Vector2();	
-		b2Rot rotation = b2MakeRot(0);
 		bool b_lockedRotation = false;
 		bool b_lockedXAxis = false;
 		bool b_lockedYAxis = false;
@@ -91,6 +93,9 @@ namespace FlatEngine
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
 		std::list<DistanceJoint*> m_distanceJoints;
+
+		FL::Vector2 position = FL::Vector2();	
+		b2Rot rotation = b2MakeRot(0);
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

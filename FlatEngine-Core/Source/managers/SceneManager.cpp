@@ -2,6 +2,7 @@
 #include "managers/AudioManager.h"
 #include "managers/SceneManager.h"
 #include "managers/ProjectManager.h"
+#include "render/SceneView.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
@@ -91,6 +92,9 @@ namespace FlatEngine
 			loadedScene.Unload();
 			AudioManager::soundController.StopMusic();
 			VulkanManager::vulkan.ClearGroupedByMaterialMeshes();
+			SceneView::cameraSceneRenderObjects.Clear();
+			PhysicsManager::physics2D.Shutdown();
+			PhysicsManager::physics2D.Init();
 
 			std::string pointToPath = pointTo != "" ? pointTo : actualPath;
 			json fileContentJson = JsonHelper::LoadFileData(actualPath);

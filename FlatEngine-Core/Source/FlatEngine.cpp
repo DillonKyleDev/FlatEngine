@@ -101,9 +101,7 @@ namespace FlatEngine
 							Logger::log.Trace("SDL_mixer initialized...\n");
 						}
 
-						// PhysicsManager::physics.Init();
-						PhysicsManager::physics2D.Init();
-						Logger::log.Trace("Physics initialized...\n");
+						// PhysicsManager::physics.Init();						
 
 						Assets::assetManager.CollectTags();
 						Assets::assetManager.CollectTextures();

@@ -1,4 +1,5 @@
 #include "components/Body2D.h"
+#include "components/Transform.h"
 #include "managers/SceneManager.h"
 #include "physics/Shape.h"
 #include "physics/joints/DistanceJoint.h"
@@ -18,6 +19,15 @@ namespace FlatEngine
 		SetType(ComponentType_Body2D);
 
 		m_bodyID = b2BodyId();
+		type = b2_dynamicBody;
+		rotation = b2MakeRot(0);
+		b_lockedRotation = false;
+		b_lockedXAxis = false;
+		b_lockedYAxis = false;
+		gravityScale = 1.0f;
+		linearDamping = 0.0f;
+		angularDamping = 0.0f;
+
 		// Contacts
 		m_beginContactCallback = nullptr;
 		m_b_beginContactCallbackSet = false;
@@ -27,9 +37,7 @@ namespace FlatEngine
 		m_beginSensorTouchCallback = nullptr;
 		m_b_beginSensorTouchCallbackSet = false;
 		m_endSensorTouchCallback = nullptr;
-		m_b_endSensorTouchCallbackSet = false;
-
-		PhysicsManager::physics2D.CreateBody(this);
+		m_b_endSensorTouchCallbackSet = false;		
 	}
 
 	json Body2D::GetData(bool b_IDOverride)
@@ -69,6 +77,14 @@ namespace FlatEngine
 		gravityScale = JsonHelper::CheckJsonFloat(jsonData, "gravityScale", objectName);
 		linearDamping = JsonHelper::CheckJsonFloat(jsonData, "linearDamping", objectName);
 		angularDamping = JsonHelper::CheckJsonFloat(jsonData, "angularDamping", objectName);
+
+		Transform* transform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());
+		Vector3 pos = transform->GetCleanPosition(); 
+		Vector3 rot = transform->GetCleanRotations();
+		position = Vector2(pos.x, pos.y);		
+		rotation = b2MakeRot(rot.z);
+
+		PhysicsManager::physics2D.CreateBody(this);
 		
 		if (JsonHelper::JsonContains(jsonData, "shapes", objectName))
 		{

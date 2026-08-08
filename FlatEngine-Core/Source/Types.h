@@ -1,6 +1,7 @@
 #pragma once
 #include "tools/Logger.h"
 
+#include <function.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -11,8 +12,9 @@ namespace FlatEngine
     template<class T>
     struct UMapVector {
 
-            UMapVector()
+            UMapVector(std::function<void(T&)> cleanup = nullptr)
             {
+                m_cleanup = cleanup;
                 vec = std::vector<T>();
                 IDtoIndex = std::unordered_map<long, long>();
             }
@@ -29,6 +31,11 @@ namespace FlatEngine
                 }
                 return &vec[iter->second];
             }   
+
+            std::vector<T>& GetAll()
+            {
+                return vec;
+            }
             
             T* Add(long ID, T item)
             {
@@ -51,8 +58,6 @@ namespace FlatEngine
                 size_t index     = it->second;
                 size_t lastIndex = vec.size() - 1;
 
-                long movedKey = IDtoIndex.end()->first;
-
                 if (index != lastIndex)
                 {
                     std::swap(vec[index], vec[lastIndex]);
@@ -74,18 +79,22 @@ namespace FlatEngine
             }
 
             void Clear()
-            {
+            {                
+                if (m_cleanup != nullptr)
+                {
+                    for (T& item : vec)
+                    {
+                        m_cleanup(item);
+                    }
+                }
+
                 vec.clear();
                 IDtoIndex.clear();
-            }
-
-            std::vector<T>& GetAll()
-            {
-                return vec;
             }
 
         private:
             std::vector<T> vec;
             std::unordered_map<long, long> IDtoIndex;
+            std::function<void(T&)> m_cleanup;
     };
 }

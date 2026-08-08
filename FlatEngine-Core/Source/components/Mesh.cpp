@@ -456,7 +456,7 @@ namespace FlatEngine
 		glm::mat4 meshScale = transform->GetScaleMatrix();
 		glm::mat4 meshRotation = transform->GetRotationMatrix();		
 		glm::vec4 lookDir = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? primaryCamera->GetLookDirectionNoRoll() : primaryCamera->GetLookDirection();
-		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+		glm::vec4 up = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 0.0f); //primaryCamera->GetUpDirection();
 
 		glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
 		glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
@@ -467,14 +467,11 @@ namespace FlatEngine
 		glm::mat4 projection;			
 		float aspectRatio = 16.0f / 9.0f;
 
-		if (b_orthographic)
+		if (primaryCamera->b_orthographic)
 		{    		
-			// Position the actual image on an integer pixel location, not just dead center.
-			// float orthoSize = SceneView::finalImageSize.y / primaryCamera->gridStep / 2.0f;
-			// Logger::log.Debug("{} {}", SceneView::finalImageSize.x, SceneView::finalImageSize.y);
 			float halfWidth  = SceneView::finalImageSize.x / primaryCamera->gridStep / 2.0f;
 			float halfHeight = SceneView::finalImageSize.y / primaryCamera->gridStep / 2.0f;
-			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, SceneView::sceneViewCamera.orthoNearClippingDistance, SceneView::sceneViewCamera.orthoFarClippingDistance);			
+			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, primaryCamera->orthoNearClippingDistance, primaryCamera->orthoFarClippingDistance);			
 			projection[1][1] *= -1;
 		}
 		else

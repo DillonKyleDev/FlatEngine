@@ -6,6 +6,7 @@
 #include "components/Script.h"
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
+#include "physics/PhysicsManager.h"
 #include "render/VulkanManager.h"
 #include "tools/Logger.h"
 
@@ -17,7 +18,7 @@ namespace FlatEngine
 		name = "New Scene";
 		path = "";				 		
 		m_nextGameObjectID = 0;
-		m_primaryCamera = nullptr;
+		m_primaryCameraID = -1;
 	}
 	
 	bool Scene::SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB)
@@ -45,7 +46,7 @@ namespace FlatEngine
 		{
 			body.Cleanup();
 		}
-		m_Bodies2D.Clear();
+		m_Bodies2D.Clear();		
 
 		for (JointMaker& jointMaker : m_JointMakers.GetAll())
 		{
@@ -187,10 +188,10 @@ namespace FlatEngine
 		{
 			long ID = objectToDelete->GetID();
 
-			if (m_primaryCamera != nullptr && m_primaryCamera->GetOwnerID() == objectToDelete->GetID())
+			if (SceneManager::loadedScene.Get<Camera>(m_primaryCameraID) && m_primaryCameraID == objectToDelete->GetID())
 			{
-				m_primaryCamera->SetPrimaryCamera(false);
-				m_primaryCamera = nullptr;
+				SceneManager::loadedScene.Get<Camera>(m_primaryCameraID)->SetPrimaryCamera(false);
+				m_primaryCameraID = -1;
 			}
 
 			if (objectToDelete->Get<Animation>() != nullptr)
@@ -341,7 +342,8 @@ namespace FlatEngine
 		if (m_Cameras.Get(ownerID) && m_Cameras.Get(ownerID)->IsPrimary())
 		{
 			RemovePrimaryCamera();
-			m_Cameras.Remove(ownerID);			
+			m_Cameras.Remove(ownerID);	
+			SceneView::cameraSceneRenderObjects.Remove(ownerID);		
 		}
 	}
 	template<> void Scene::Remove<Body2D>(long ownerID)
@@ -394,18 +396,18 @@ namespace FlatEngine
 
 	Camera* Scene::GetPrimaryCamera()
 	{
-		return m_primaryCamera;
+		return SceneManager::loadedScene.Get<Camera>(m_primaryCameraID);
 	}
 
-	void Scene::SetPrimaryCamera(Camera* camera)
+	void Scene::SetPrimaryCamera(long cameraID)
 	{
-		if (camera != nullptr)
+		if (SceneManager::loadedScene.Get<Camera>(cameraID))
 		{
-			if (m_primaryCamera != nullptr)
+			if (SceneManager::loadedScene.Get<Camera>(m_primaryCameraID) != nullptr && cameraID != m_primaryCameraID)
 			{
-				m_primaryCamera->SetPrimaryCamera(false);
+				SceneManager::loadedScene.Get<Camera>(m_primaryCameraID)->SetPrimaryCamera(false);
 			}
-			m_primaryCamera = camera;
+			m_primaryCameraID = cameraID;
 		}
 		else
 		{
@@ -415,10 +417,10 @@ namespace FlatEngine
 
 	void Scene::RemovePrimaryCamera()
 	{
-		if (m_primaryCamera != nullptr)
+		if (SceneManager::loadedScene.Get<Camera>(m_primaryCameraID))
 		{
-			m_primaryCamera->SetPrimaryCamera(false);
-			m_primaryCamera = nullptr;
+			SceneManager::loadedScene.Get<Camera>(m_primaryCameraID)->SetPrimaryCamera(false);
+			m_primaryCameraID = -1;
 		}
 	}
 }

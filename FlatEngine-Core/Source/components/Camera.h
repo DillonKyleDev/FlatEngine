@@ -13,16 +13,16 @@ namespace FlatEngine
 	class Camera : public Component
 	{
 	public:
-		Camera(long ownerID = -1);
+		Camera(long ownerID = -1);		
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
 		void SetPrimaryCamera(bool b_isPrimary);
 		bool IsPrimary();
 		glm::vec4 GetLookDirection();
-		glm::vec4 GetLookDirectionNoRoll();
-		void AddToHorizontalViewAngle(float toAdd);
-		void AddToVerticalViewAngle(float toAdd);
+		glm::vec4 GetLookDirectionNoRoll();		
+		void AddOrthoVerticalViewAngle(float toAdd);		
+		void AddVerticalViewAngle(float toAdd);
 		void Follow();
 		void AddVelocity(Vector3 velocity);
 		Vector3& GetVelocity();

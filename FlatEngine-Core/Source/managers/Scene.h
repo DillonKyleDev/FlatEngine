@@ -63,7 +63,7 @@ namespace FlatEngine
 		void RemoveScript(long ownerID, long scriptID);
 
 		Camera* GetPrimaryCamera();
-		void SetPrimaryCamera(Camera* camera);
+		void SetPrimaryCamera(long cameraID);
 		void RemovePrimaryCamera();
 
 		Component* AddComponent(ComponentType type, long ownerID);
@@ -94,7 +94,7 @@ namespace FlatEngine
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		long m_nextGameObjectID;
 		std::vector<long> m_freedGameObjectIDs;
-		Camera* m_primaryCamera;
+		long m_primaryCameraID;
 
 		UMapVector<Transform> m_Transforms;
 		UMapVector<Animation> m_Animations;

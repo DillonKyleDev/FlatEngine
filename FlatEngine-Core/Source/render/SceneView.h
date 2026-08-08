@@ -36,7 +36,7 @@ namespace FlatEngine
             DebugSceneObjectType_Sphere,
             DebugSceneObjectType_Cube
         };
-    
+
         struct SceneRenderObject {
             long ID;
             Transform transform = Transform();
@@ -45,8 +45,8 @@ namespace FlatEngine
             void PutData(json jsonData)
             {
                 ID = (long)JsonHelper::CheckJsonLong(jsonData, "id", "SceneRenderObject");	
-				mesh.PutData(jsonData.at("mesh"), "SceneRenderObject");
-				transform.PutData(jsonData.at("transform"), "SceneRenderObject");
+                mesh.PutData(jsonData.at("mesh"), "SceneRenderObject");
+                transform.PutData(jsonData.at("transform"), "SceneRenderObject");
             }
         };
 
@@ -86,7 +86,8 @@ namespace FlatEngine
         extern void DebugDrawCircle(Vector3 position, float radius, std::string color = "debugDraw", Vector3 rotation = Vector3());
         extern void AddDebugDrawObject(DebugSceneObjectType type, Transform transform, std::string color);
         extern void LoadSceneViewObjects();
-        extern void UpdateSceneObjectColors();        
+        extern void UpdateSceneObjectColors();  
+        extern long AddSceneViewCameraGizmo(Transform transform, long ownerID);      
         extern void ToggleShowSceneViewGridObjects();
         extern void SetShowSceneViewGridObjects(bool b_show);
         extern const bool ShouldShowSceneViewGridObjects();

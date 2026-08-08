@@ -90,7 +90,8 @@ namespace FlatEngine
 
 		void Physics2D::Shutdown()
 		{
-			b2DestroyWorld(m_worldID);
+			if (b2World_IsValid(m_worldID))
+				b2DestroyWorld(m_worldID);
 		}
 
 		void Physics2D::Update(float deltaTime)

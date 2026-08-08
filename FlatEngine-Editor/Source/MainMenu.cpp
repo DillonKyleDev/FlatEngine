@@ -381,15 +381,9 @@ namespace FlatGui
 					FL::VulkanManager::vulkan.ReloadShaders();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
-				if (ImGui::MenuItem(" Toggle Orthographic", NULL, FL::SceneView::IsOrthoGraphic()))
+				if (ImGui::BeginMenu(" Scene Viewport"))
 				{
-					FL::SceneView::ToggleOrthographic();
-					FL::Settings::settings.SaveSettings();
-				}
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
-				if (ImGui::BeginMenu(" Widgets"))
-				{
-					if (ImGui::MenuItem(" Toggle Grid", NULL, FL::SceneView::ShouldShowSceneViewGridObjects()))
+					if (ImGui::MenuItem(" Show Grid", NULL, FL::SceneView::ShouldShowSceneViewGridObjects()))
 					{
 						FL::SceneView::ToggleShowSceneViewGridObjects();
 						FL::Settings::settings.SaveSettings();
@@ -399,7 +393,20 @@ namespace FlatGui
 					{						
 						FL::SceneView::ToggleGridHorizontal();
 						FL::Settings::settings.SaveSettings();
-					}			
+					}								
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
+					if (ImGui::MenuItem(" Orthographic View", NULL, FL::SceneView::IsOrthoGraphic()))
+					{
+						FL::SceneView::ToggleOrthographic();
+						FL::Settings::settings.SaveSettings();
+					}
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");		
+					if (ImGui::MenuItem(" Reset Ortho View"))
+					{						
+						FL::SceneView::sceneViewCamera.orthoHorizontalViewAngle = 180;
+						FL::SceneView::sceneViewCamera.orthoVerticalViewAngle = 0;
+						FL::Settings::settings.SaveSettings();
+					}	
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
 					if (ImGui::BeginMenu(" Pixels/Grid Square"))
 					{					
@@ -411,50 +418,43 @@ namespace FlatGui
 						}
 						ImGui::EndMenu();
 					}
-					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
-					if (ImGui::BeginMenu(" Scene View Perspective Angle"))
-					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraPerspective", 100.0f, FL::SceneView::sceneViewCamera.perspectiveAngle, 0.1f, 0, 359))
-							FL::Settings::settings.SaveSettings();	
-						ImGui::EndMenu();
-					}
-					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");		
-					if (ImGui::MenuItem(" Reset Ortho View"))
-					{						
-						FL::SceneView::sceneViewCamera.orthoHorizontalViewAngle = 180;
-						FL::SceneView::sceneViewCamera.orthoVerticalViewAngle = 0;
-						FL::Settings::settings.SaveSettings();
-					}								
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Near Clip (Ortho)"))
+					if (ImGui::BeginMenu(" Near Clip (Ortho)"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoNearClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Far Clip (Ortho)"))
+					if (ImGui::BeginMenu(" Far Clip (Ortho)"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoFarClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparator");									
+					if (ImGui::BeginMenu(" Perspective Angle"))
+					{					
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraPerspective", 100.0f, FL::SceneView::sceneViewCamera.perspectiveAngle, 0.1f, 0, 359))
+							FL::Settings::settings.SaveSettings();	
+						ImGui::EndMenu();
+					}												
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Near Clip"))
+					if (ImGui::BeginMenu(" Near Clip (Per)"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClip", 100.0f, FL::SceneView::sceneViewCamera.nearClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Far Clip"))
+					if (ImGui::BeginMenu(" Far Clip (Per)"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClip", 100.0f, FL::SceneView::sceneViewCamera.farClippingDistance, 0.1f, -1000, 1000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-					if (ImGui::BeginMenu(" Scene View Move Damp"))
+					if (ImGui::BeginMenu(" Camera Move Speed"))
 					{					
 						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraDamping", 100.0f, FL::Settings::settings.sceneViewCameraSpeed, 1, 0, 500))
 							FL::Settings::settings.SaveSettings();											

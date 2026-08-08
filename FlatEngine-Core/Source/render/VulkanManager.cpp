@@ -1369,7 +1369,13 @@ namespace FlatEngine
                         {
                             Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(meshID);
                             if (mesh == nullptr)
-                                continue;
+                            {
+                                Sprite* sprite = SceneManager::loadedScene.Get<Sprite>(meshID);
+                                if (sprite != nullptr)
+                                    mesh = &sprite->mesh;
+                                else
+                                    continue;
+                            }
 
                             m_renderToTextureGameViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
 

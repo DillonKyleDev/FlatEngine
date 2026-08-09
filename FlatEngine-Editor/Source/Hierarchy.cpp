@@ -264,7 +264,7 @@ namespace FlatGui
 					ImGui::CloseCurrentPopup();
 				}
 			}			
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
 			if (ImGui::MenuItem(" Delete GameObject"))
 			{
 				queuedForDelete = currentObject.GetID();
@@ -448,7 +448,7 @@ namespace FlatGui
 			float isPrefabIconColumnWidth = 24;
 			static float currentIndent = 10;
 			static bool b_allAreVisible = false;
-			std::vector<FL::GameObject> sceneObjects = FL::SceneManager::loadedScene.GetSceneObjects();			
+			std::vector<FL::GameObject>& sceneObjects = FL::SceneManager::loadedScene.GetSceneObjects();			
 
 			static long node_clicked = -1;
 

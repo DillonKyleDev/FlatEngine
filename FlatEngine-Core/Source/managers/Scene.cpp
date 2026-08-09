@@ -339,9 +339,11 @@ namespace FlatEngine
 
 	template<> void Scene::Remove<Camera>(long ownerID)
 	{
-		if (m_Cameras.Get(ownerID) && m_Cameras.Get(ownerID)->IsPrimary())
+		if (m_Cameras.Get(ownerID))
 		{
-			RemovePrimaryCamera();
+			if (m_Cameras.Get(ownerID)->IsPrimary())
+				RemovePrimaryCamera();
+			
 			m_Cameras.Remove(ownerID);	
 			SceneView::cameraSceneRenderObjects.Remove(ownerID);		
 		}

@@ -235,6 +235,7 @@ namespace FlatEngine
 		return m_rotation;
 	}
 
+	// positive rotation = counterclockwise when viewed from the positive axis looking toward the origin (standard right-hand rule)
 	glm::mat4 Transform::GetRotationMatrix()
 	{
 		if (GetOwningObject() != nullptr)
@@ -248,7 +249,7 @@ namespace FlatEngine
 		}
 		
 		glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(-m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		return (xRotation * yRotation * zRotation);

@@ -44,7 +44,7 @@ namespace FlatEngine
 			rotationOffset.s = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetSin", name);
 			dimensions.x = JsonHelper::CheckJsonFloat(jsonData, "width", name);
 			dimensions.y = JsonHelper::CheckJsonFloat(jsonData, "height", name);
-			cornerRadius = JsonHelper::CheckJsonLong(jsonData, "cornerRadius", name);
+			cornerRadius = JsonHelper::CheckJsonFloat(jsonData, "cornerRadius", name);
 		}
 
 		void SetDimensions(Vector2 newDimensions)
@@ -98,7 +98,7 @@ namespace FlatEngine
 			offset = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xOffset", name), JsonHelper::CheckJsonFloat(jsonData, "yOffset", name));
 			rotationOffset.c = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetCos", name);
 			rotationOffset.s = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetSin", name);
-			radius = JsonHelper::CheckJsonLong(jsonData, "radius", name);
+			radius = JsonHelper::CheckJsonFloat(jsonData, "radius", name);
 		}
 
 		void SetRadius(float newRadius)
@@ -150,7 +150,7 @@ namespace FlatEngine
 			rotationOffset.s = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetSin", name);
 			b_horizontal = JsonHelper::CheckJsonBool(jsonData, "b_horizontal", name);
 			length = JsonHelper::CheckJsonFloat(jsonData, "length", name);
-			radius = JsonHelper::CheckJsonLong(jsonData, "radius", name);
+			radius = JsonHelper::CheckJsonFloat(jsonData, "radius", name);
 		}
 
 		void SetLength(float newLength)

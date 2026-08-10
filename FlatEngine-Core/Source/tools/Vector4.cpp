@@ -35,6 +35,14 @@ namespace FlatEngine
 		w = toCopy.w;
 	}
 
+	Vector4::Vector4(const glm::vec4 vec4)
+	{
+		x = vec4.x;
+		y = vec4.y;
+		z = vec4.z;
+		w = vec4.w;
+	}
+
 	Vector4 Vector4::operator=(ImVec4& toCopy)
 	{
 		x *= toCopy.x;

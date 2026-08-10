@@ -136,6 +136,7 @@ GENERATED += $(OBJDIR)/PrefabManager.o
 GENERATED += $(OBJDIR)/PrismaticJoint.o
 GENERATED += $(OBJDIR)/Profiler.o
 GENERATED += $(OBJDIR)/ProjectManager.o
+GENERATED += $(OBJDIR)/Quaternion.o
 GENERATED += $(OBJDIR)/RenderPass.o
 GENERATED += $(OBJDIR)/RenderWindow.o
 GENERATED += $(OBJDIR)/RevoluteJoint.o
@@ -223,6 +224,7 @@ OBJECTS += $(OBJDIR)/PrefabManager.o
 OBJECTS += $(OBJDIR)/PrismaticJoint.o
 OBJECTS += $(OBJDIR)/Profiler.o
 OBJECTS += $(OBJDIR)/ProjectManager.o
+OBJECTS += $(OBJDIR)/Quaternion.o
 OBJECTS += $(OBJDIR)/RenderPass.o
 OBJECTS += $(OBJDIR)/RenderWindow.o
 OBJECTS += $(OBJDIR)/RevoluteJoint.o
@@ -566,6 +568,9 @@ $(OBJDIR)/Numbers.o: Source/tools/Numbers.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Profiler.o: Source/tools/Profiler.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Quaternion.o: Source/tools/Quaternion.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/ThreadPool.o: Source/tools/ThreadPool.cpp

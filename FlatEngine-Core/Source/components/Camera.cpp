@@ -101,7 +101,7 @@ namespace FlatEngine
 
 	glm::vec4 Camera::GetLookDirection()
 	{
-		Vector3 rotation = SceneManager::loadedScene.GetObjectByID(GetOwnerID())->Get<Transform>()->GetRotations();
+		Vector3 rotation = SceneManager::loadedScene.GetObjectByID(GetOwnerID())->Get<Transform>()->GetRotation();
 		glm::mat4 rollCameraMatrix         = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 horCameraRotationMatrix  = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));

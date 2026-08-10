@@ -88,5 +88,29 @@ namespace FlatEngine
         {
             return t < 0.5f ? 4.0f * t * t * t : 1.0f - std::pow(-2.0f * t + 2.0f, 3.0f) / 2.0f;
         }
+
+        float GetT(InterpType interpType, float percentDone)
+        {
+            float t;
+
+            switch (interpType)
+            {
+                case InterpType_Linear:           t = percentDone; break;
+                case InterpType_EaseInSine:       t = Easing::EaseInSine(percentDone); break;
+                case InterpType_EaseOutSine:      t = Easing::EaseOutSine(percentDone); break;
+                case InterpType_EaseInOutSine:    t = Easing::EaseInOutSine(percentDone); break;
+                case InterpType_EaseInElastic:    t = Easing::EaseInElastic(percentDone); break;
+                case InterpType_EaseOutElastic:   t = Easing::EaseOutElastic(percentDone); break;
+                case InterpType_EaseInOutElastic: t = Easing::EaseInOutElastic(percentDone); break;
+                case InterpType_EaseInBack:       t = Easing::EaseInBack(percentDone); break;
+                case InterpType_EaseOutBack:      t = Easing::EaseOutBack(percentDone); break;
+                case InterpType_EaseInOutBack:    t = Easing::EaseInOutBack(percentDone); break;
+                case InterpType_EaseInOutQuart:   t = Easing::EaseInOutQuart(percentDone); break;
+                case InterpType_EaseInOutCubic:   t = Easing::EaseInOutCubic(percentDone); break;
+                default: break;
+            }
+
+            return t;
+        }
     }
 }

@@ -148,7 +148,7 @@ namespace FlatGui
 		void RenderTransformComponent(FL::Transform* transform)
 		{	
 			FL::Vector3 position = transform->GetPosition();
-			FL::Vector3 rotation = transform->GetRotations();
+			FL::Vector3 rotation = transform->GetRotation();
 			FL::Vector3 scale = transform->GetScale();
 
 			float labelWidth = 68;

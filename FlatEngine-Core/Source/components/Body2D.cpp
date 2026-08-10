@@ -80,7 +80,7 @@ namespace FlatEngine
 
 		Transform* transform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());
 		Vector3 pos = transform->GetCleanPosition(); 
-		Vector3 rot = transform->GetCleanRotations();
+		Vector3 rot = transform->GetCleanRotation();
 		position = Vector2(pos.x, pos.y);		
 		rotation = b2MakeRot(rot.z);
 

@@ -1,87 +1,140 @@
 #include "tools/Numbers.h"
-#include "tools/Vector3.h"
 #include "tools/Quaternion.h"
+#include "tools/Vector3.h"
 
-
+#include <fwd.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 
 
 namespace FlatEngine
 {
-    Quaternion::Quaternion(float scaler, Vector3 vector)
+    // (degrees) Euler xyz-axis rotation Vector3 to Quaternion rotation
+    Quaternion Quaternion::EulerToQuaternion(const Vector3& eulerRotation)
     {
-        s = scaler;
-        v = vector;
+        Quaternion q;
+        q.CreateRotation(eulerRotation);
+        return q;
     }
-        
-    void Quaternion::CreateRotation(Vector3 eulerRotations)
+    // (degrees) Quaternion rotation to Euler xyz-axis Vector3
+    Vector3 Quaternion::QuaternionToEuler(const Quaternion& q)
     {
-        Quaternion q1 = Quaternion(Numbers::CosD(eulerRotations.x / 2), Vector3(Numbers::SinD(eulerRotations.x / 2), 0, 0));
-        Quaternion q2 = Quaternion(Numbers::CosD(eulerRotations.y / 2), Vector3(0, Numbers::SinD(eulerRotations.y / 2), 0));
-        Quaternion q3 = Quaternion(Numbers::CosD(eulerRotations.z / 2), Vector3(0, 0, Numbers::SinD(eulerRotations.z / 2)));
+        float w = q.s, x = q.x, y = q.y, z = q.z;
 
-        Quaternion q = q1 * q2 * q3;
-        q.Normalize();
+        float r02 = 2.0f*(x*z + w*y);
+        float r12 = 2.0f*(y*z - w*x);
+        float r22 = 1.0f - 2.0f*(x*x + y*y);
+        float r01 = 2.0f*(x*y - w*z);
+        float r00 = 1.0f - 2.0f*(y*y + z*z);
 
-        s = q.s;
-        v = q.v;
-    }
+        float sinY = Numbers::Clamp(r02, -1.0f, 1.0f);
 
-    void Quaternion::Normalize()
-    {
-        float magnitude = Numbers::Sqrt(s*s + v.x*v.x + v.y*v.y + v.z*v.z);
+        float angleX, angleY, angleZ;
 
-        s /= magnitude;
-        v.x /= magnitude;
-        v.y /= magnitude;
-        v.z /= magnitude;
+        if (std::abs(sinY) > 0.9999f)
+        {
+            angleY = std::asin(sinY);
+            angleZ = 0.0f;
+            angleX = std::atan2(2.0f*(x*y + w*z), 1.0f - 2.0f*(x*x + z*z));
+        }
+        else
+        {
+            angleY = std::asin(sinY);
+            angleX = std::atan2(-r12, r22);
+            angleZ = std::atan2(-r01, r00);
+        }
+
+        return Vector3(
+            Numbers::RadiansToDegrees(angleX),
+            Numbers::RadiansToDegrees(angleY),
+            Numbers::RadiansToDegrees(angleZ)
+        );
     }
 
     Quaternion Quaternion::Slerp(const Quaternion& a, const Quaternion& b, float t)
     {
-        float dot = a.s * b.s + a.v.x * b.v.x + a.v.y * b.v.y + a.v.z * b.v.z;
+        float dot = a.s * b.s + a.x * b.x + a.y * b.y + a.z * b.z;
 
         Quaternion bAdjusted = b;
         if (dot < 0.0f)
         {
             dot = -dot;
-            bAdjusted = Quaternion(-b.s, Vector3(-b.v.x, -b.v.y, -b.v.z));
+            bAdjusted = Quaternion(-b.s, Vector3(-b.x, -b.y, -b.z));
         }
 
         if (dot > 0.9995f)
         {
-            // a and b are nearly identical; the sin(theta)-based formula becomes numerically
-            // unstable as theta approaches 0 (dividing by something near zero), so fall back
-            // to plain linear interpolation, which is accurate enough at this small a separation
+            // a and b are nearly identical; the sin(theta)-based formula becomes
+            // unstable as theta approaches 0 (dividing by almost zero), so fall back
+            // to linear interpolation
             float w = a.s + t * (bAdjusted.s - a.s);
-            float x = a.v.x + t * (bAdjusted.v.x - a.v.x);
-            float y = a.v.y + t * (bAdjusted.v.y - a.v.y);
-            float z = a.v.z + t * (bAdjusted.v.z - a.v.z);
+            float x = a.x + t * (bAdjusted.x - a.x);
+            float y = a.y + t * (bAdjusted.y - a.y);
+            float z = a.z + t * (bAdjusted.z - a.z);
             Quaternion result(w, Vector3(x, y, z));
             result.Normalize();
             return result;
         }
 
-        float theta = Numbers::ACos(dot);
-        float sinTheta = Numbers::Sin(theta);
-        float scaleA = Numbers::Sin((1.0f - t) * theta) / sinTheta;
-        float scaleB = Numbers::Sin(t * theta) / sinTheta;
+        float theta =    Numbers::ACosR(dot);
+        float sinTheta = Numbers::SinR(theta);
+        float scaleA =   Numbers::SinR((1.0f - t) * theta) / sinTheta;
+        float scaleB =   Numbers::SinR(t * theta) / sinTheta;
 
-        float w = scaleA * a.s + scaleB * bAdjusted.s;
-        float x = scaleA * a.v.x + scaleB * bAdjusted.v.x;
-        float y = scaleA * a.v.y + scaleB * bAdjusted.v.y;
-        float z = scaleA * a.v.z + scaleB * bAdjusted.v.z;
+        float s = scaleA * a.s + scaleB * bAdjusted.s;
+        float x = scaleA * a.x + scaleB * bAdjusted.x;
+        float y = scaleA * a.y + scaleB * bAdjusted.y;
+        float z = scaleA * a.z + scaleB * bAdjusted.z;
 
-        return Quaternion(w, Vector3(x, y, z));
+        return Quaternion(s, Vector3(x, y, z));
+    }
+
+    Quaternion::Quaternion(float scaler, Vector3 vector)
+    {
+        s = scaler;
+        x = vector.x;
+        y = vector.y;
+        z = vector.z;
+    }
+        
+    void Quaternion::CreateRotation(const Vector3& eulerRotations)
+    {
+        Quaternion qx = Quaternion(Numbers::Cos(eulerRotations.x / 2), Vector3(Numbers::Sin(eulerRotations.x / 2), 0, 0));
+        Quaternion qy = Quaternion(Numbers::Cos(eulerRotations.y / 2), Vector3(0, Numbers::Sin(eulerRotations.y / 2), 0));
+        Quaternion qz = Quaternion(Numbers::Cos(eulerRotations.z / 2), Vector3(0, 0, Numbers::Sin(eulerRotations.z / 2)));
+
+        Quaternion q = qx * qy * qz;
+        q.Normalize();
+
+        s = q.s;
+        x = q.x;
+        y = q.y;
+        z = q.z;
+    }
+
+    void Quaternion::Normalize()
+    {
+        float magnitude = Numbers::Sqrt(s*s + x*x + y*y + z*z);
+
+        s /= magnitude;
+        x /= magnitude;
+        y /= magnitude;
+        z /= magnitude;
+    }
+
+    Quaternion Quaternion::Inverse()
+    {
+        return Quaternion(s, Vector3(x, y, z) * -1);
     }
 
     Quaternion Quaternion::operator*(const Quaternion& right) const
     {
-        float scaler = (s * right.s)   - (v.x * right.v.x) - (v.y * right.v.y) - (v.z * right.v.z);
-        float x      = (s * right.v.x) + (right.s * v.x)   + (v.y * right.v.z) - (v.z * right.v.y); 
-        float y      = (s * right.v.y) + (right.s * v.y)   + (v.z * right.v.x) - (v.x * right.v.z);
-        float z      = (s * right.v.z) + (right.s * v.z)   + (v.x * right.v.y) - (v.y * right.v.x);
+        float scaler = (s * right.s) - (x * right.x) - (y * right.y) - (z * right.z);
+        float newX      = (s * right.x) + (right.s * x) + (y * right.z) - (z * right.y); 
+        float newY      = (s * right.y) + (right.s * y) + (z * right.x) - (x * right.z);
+        float newZ      = (s * right.z) + (right.s * z) + (x * right.y) - (y * right.x);
 
-        Quaternion q = Quaternion(scaler, Vector3(x,y,z));
+        Quaternion q = Quaternion(scaler, Vector3(newX, newY, newZ));
         return q;
     }
 }

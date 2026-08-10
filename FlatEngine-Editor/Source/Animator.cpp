@@ -31,7 +31,7 @@ namespace FlatGui
 		float gridStep = 50.0f;
 	}
 
-	void AddAnimatorMouseControls(std::string buttonID, FL::Vector2 startPos, FL::Vector2 size, FL::Vector2 &scrolling, FL::Vector2 centerPoint, FL::Vector2 &gridStep, Uint32 rectColor, bool b_filled, ImGuiButtonFlags buttonFlags, bool b_allowOverlap, bool b_weightedScroll, float zoomMultiplier, float minGridStep, float maxGridStep)
+	void AddAnimatorMouseControls(std::string buttonID, FL::Vector2 startPos, FL::Vector2 size, FL::Vector2 &scrolling, FL::Vector2 centerPoint, FL::Vector2 &gridStep, uint32_t rectColor, bool b_filled, ImGuiButtonFlags buttonFlags, bool b_allowOverlap, bool b_weightedScroll, float zoomMultiplier, float minGridStep, float maxGridStep)
 	{
 		FL::Vector2 mouseDelta = FL::Vector2();
 		FL::Vector2 mousePos = ImGui::GetIO().MousePos;
@@ -706,7 +706,7 @@ namespace FlatGui
 						std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
 						FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
 						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "POSITION", transformProp->position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
-						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "ROTATION", transformProp->rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false);
+						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "ROTATION", transformProp->eulerRotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false);
 						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "SCALE",    transformProp->scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
 
 						FL::GuiCore::RenderSeparator(5, 5);
@@ -749,26 +749,7 @@ namespace FlatGui
 								if (ImGui::Selectable(interpTypes[n].c_str(), is_selected))
 								{
 									current_transform_interp = n;
-									transformProp->positionInterpType = (FL::InterpType)n;
-								}
-								if (is_selected)
-									ImGui::SetItemDefaultFocus();
-							}
-							ImGui::EndCombo();
-						}
-
-						ImGui::SameLine(0,0);
-
-						ImGui::SetNextItemWidth(comboWidths);
-						if (ImGui::BeginCombo("##AnimationKeyframeScaleInterpTypes", interpTypes[current_scale_interp].c_str()))
-						{
-							for (int n = 0; n < interpTypes.size(); n++)
-							{
-								bool is_selected = (interpTypes[current_scale_interp] == interpTypes[n]);
-								if (ImGui::Selectable(interpTypes[n].c_str(), is_selected))
-								{
-									current_scale_interp = n;
-									transformProp->scaleInterpType = (FL::InterpType)n;
+									transformProp->positionInterpType = (FL::Easing::InterpType)n;
 								}
 								if (is_selected)
 									ImGui::SetItemDefaultFocus();
@@ -787,7 +768,26 @@ namespace FlatGui
 								if (ImGui::Selectable(interpTypes[n].c_str(), is_selected))
 								{
 									current_rotation_interp = n;
-									transformProp->rotationInterpType = (FL::InterpType)n;										
+									transformProp->rotationInterpType = (FL::Easing::InterpType)n;										
+								}
+								if (is_selected)
+									ImGui::SetItemDefaultFocus();
+							}
+							ImGui::EndCombo();
+						}
+						
+						ImGui::SameLine(0,0);
+
+						ImGui::SetNextItemWidth(comboWidths);
+						if (ImGui::BeginCombo("##AnimationKeyframeScaleInterpTypes", interpTypes[current_scale_interp].c_str()))
+						{
+							for (int n = 0; n < interpTypes.size(); n++)
+							{
+								bool is_selected = (interpTypes[current_scale_interp] == interpTypes[n]);
+								if (ImGui::Selectable(interpTypes[n].c_str(), is_selected))
+								{
+									current_scale_interp = n;
+									transformProp->scaleInterpType = (FL::Easing::InterpType)n;
 								}
 								if (is_selected)
 									ImGui::SetItemDefaultFocus();

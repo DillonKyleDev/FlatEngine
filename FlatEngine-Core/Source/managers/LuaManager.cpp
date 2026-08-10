@@ -21,6 +21,7 @@
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
 #include "tools/Numbers.h"
+#include "tools/Quaternion.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
@@ -417,6 +418,18 @@ namespace FlatEngine
 				"w", &Vector4::w
 			);
 
+			lua.new_usertype<Quaternion>("Quaternion",
+				sol::constructors<Quaternion(), Quaternion(float s, Vector3 v)>(),				
+				"s", &Quaternion::s,
+				"x", &Quaternion::x,
+				"y", &Quaternion::y,
+				"z", &Quaternion::z,
+				"EulerToQuaternion", &Quaternion::EulerToQuaternion,
+				"QuaternionToEuler", &Quaternion::QuaternionToEuler,
+				"Inverse", &Quaternion::Inverse,
+				"Times", &Quaternion::operator*
+			);
+
 			lua.new_usertype<GameObject>("GameObject",
 				"GetID", &GameObject::GetID,
 				"GetName", &GameObject::GetName,
@@ -468,9 +481,7 @@ namespace FlatEngine
 				"SetPosition", &Transform::SetPosition,
 				"GetPosition", &Transform::GetPosition,
 				"GetAbsolutePosition", &Transform::GetAbsolutePosition,
-				"SetRotation", &Transform::SetZRotation,
 				"GetRotation", &Transform::GetRotation,
-				"GetAbsoluteRotation", &Transform::GetAbsoluteRotation,
 				"SetScale", &Transform::SetScale,
 				"GetScale", &Transform::GetScale,
 				"GetAbsoluteScale", &Transform::GetAbsoluteScale,

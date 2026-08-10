@@ -1,11 +1,12 @@
 #pragma once
+#include "GameObject.h"
 #include "components/Component.h"
 #include "managers/LuaManager.h"
+#include "tools/Easing.h"
 #include "tools/Vector3.h"
 #include "tools/Vector4.h"
 
 #include <memory>
-#include <SDL_syswm.h> // Uint32
 #include <string>
 #include <vector>
 
@@ -14,6 +15,8 @@ namespace FL = FlatEngine;
 
 namespace FlatEngine
 {
+    class GameObject;
+
     enum PropertyType {
         PropertyType_None,
         PropertyType_Event,
@@ -31,21 +34,6 @@ namespace FlatEngine
         "Sprite",
         "Text",
         "Size"
-    };
-
-    enum InterpType {
-        InterpType_Linear,
-        InterpType_EaseInSine,
-        InterpType_EaseOutSine,
-        InterpType_EaseInOutSine,
-        InterpType_EaseInElastic,
-        InterpType_EaseOutElastic,
-        InterpType_EaseInOutElastic,
-        InterpType_EaseInBack,
-        InterpType_EaseOutBack,
-        InterpType_EaseInOutBack,
-        InterpType_EaseInOutQuart,
-        InterpType_EaseInOutCubic
     };
 
     struct AnimationData;
@@ -127,11 +115,11 @@ namespace FlatEngine
         }
     };
     struct TransformProp : public AnimationProperty {
-        InterpType positionInterpType = InterpType_Linear;			
-        InterpType scaleInterpType = InterpType_Linear;			
-        InterpType rotationInterpType = InterpType_Linear;
+        Easing::InterpType positionInterpType = Easing::InterpType_Linear;			
+        Easing::InterpType scaleInterpType = Easing::InterpType_Linear;			
+        Easing::InterpType rotationInterpType = Easing::InterpType_Linear;
         FL::Vector3 position;
-        FL::Vector3 rotation;
+        FL::Vector3 eulerRotation;
         FL::Vector3 scale = FL::Vector3(1);						
 
         bool b_posAnimated = false;
@@ -144,6 +132,7 @@ namespace FlatEngine
         }
 
         void Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData);
+
         json GetData()
         {
             json jsonData = {
@@ -155,9 +144,9 @@ namespace FlatEngine
                 { "xPosition", position.x },
                 { "yPosition", position.y },
                 { "zPosition", position.z },
-                { "xRotation", rotation.x },
-                { "yRotation", rotation.y },
-                { "zRotation", rotation.z },
+                { "xRotation", eulerRotation.x },
+                { "yRotation", eulerRotation.y },
+                { "zRotation", eulerRotation.z },
                 { "xScale", scale.x },
                 { "yScale", scale.y },
                 { "zScale", scale.z },
@@ -170,12 +159,12 @@ namespace FlatEngine
         }
         void PutData(json jsonData, std::string name)
         {        				
-            positionInterpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "positionInterpType", name);
-            scaleInterpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "scaleInterpType", name);
-            rotationInterpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "rotationInterpType", name);						
+            positionInterpType = (Easing::InterpType)JsonHelper::CheckJsonInt(jsonData, "positionInterpType", name);
+            scaleInterpType = (Easing::InterpType)JsonHelper::CheckJsonInt(jsonData, "scaleInterpType", name);
+            rotationInterpType = (Easing::InterpType)JsonHelper::CheckJsonInt(jsonData, "rotationInterpType", name);						
             time = JsonHelper::CheckJsonFloat(jsonData, "time", name) != -1 ? JsonHelper::CheckJsonFloat(jsonData, "time", name) : 0.0;
             position = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xPosition", name),JsonHelper::CheckJsonFloat(jsonData, "yPosition", name), JsonHelper::CheckJsonFloat(jsonData, "zPosition", name));
-            rotation = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xRotation", name), JsonHelper::CheckJsonFloat(jsonData, "yRotation", name), JsonHelper::CheckJsonFloat(jsonData, "zRotation", name));
+            eulerRotation = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xRotation", name), JsonHelper::CheckJsonFloat(jsonData, "yRotation", name), JsonHelper::CheckJsonFloat(jsonData, "zRotation", name));
             scale = Vector3(JsonHelper::CheckJsonFloat(jsonData, "xScale", name), JsonHelper::CheckJsonFloat(jsonData, "yScale", name), JsonHelper::CheckJsonFloat(jsonData, "zScale", name));
             b_posAnimated = JsonHelper::CheckJsonBool(jsonData, "b_posAnimated", name);
             b_scaleAnimated = JsonHelper::CheckJsonBool(jsonData, "b_scaleAnimated", name);
@@ -183,7 +172,7 @@ namespace FlatEngine
         }
     };
     struct SpriteProp : public AnimationProperty {
-        InterpType interpType = InterpType_Linear;
+        Easing::InterpType interpType = Easing::InterpType_Linear;
         float speed = 0.1f;
         std::string path = "";
         float xScale = 1;
@@ -331,7 +320,7 @@ namespace FlatEngine
         }
         void PutData(json jsonData, std::string name)
         {
-    		interpType = (InterpType)JsonHelper::CheckJsonInt(jsonData, "interpType", name);
+    		interpType = (Easing::InterpType)JsonHelper::CheckJsonInt(jsonData, "interpType", name);
     		speed = JsonHelper::CheckJsonFloat(jsonData, "speed", name);
     		time = JsonHelper::CheckJsonFloat(jsonData, "time", name) != -1 ? JsonHelper::CheckJsonFloat(jsonData, "time", name) : 0.0;
     		xOffset = JsonHelper::CheckJsonFloat(jsonData, "xOffset", name);
@@ -497,7 +486,7 @@ namespace FlatEngine
         std::string name = "";
         std::string path = "";
         bool b_playing = false;
-        Uint32 startTime = 0;
+        uint32_t startTime = 0;
         float length = 0.0f;
         bool b_isSorted = false;
         bool b_loop = false;
@@ -583,12 +572,12 @@ namespace FlatEngine
         void AddAnimation(std::string name, std::string filePath);
         bool ContainsName(std::string name);
         std::vector<AnimationData> &GetAnimations();
-        void Play(std::string animationName, Uint32 startTime = 0);
+        void Play(std::string animationName, uint32_t startTime = 0);
         void PlayFromLua(std::string animationName);
         void Stop(std::string animationName);
         void StopAll();
-        void PlayAnimation(std::string animationName, Uint32 elapsedTime);
-        void PlayAnimations(Uint32 elapsedTime);
+        void PlayAnimation(std::string animationName, uint32_t elapsedTime);
+        void PlayAnimations(uint32_t elapsedTime);
         bool IsPlaying(std::string animationName);
         bool HasAnimation(std::string animationName);
     

@@ -32,6 +32,13 @@ namespace FlatEngine
 		z = toCopy.z;
 	}
 
+	Vector3::Vector3(glm::vec3 vec3)
+	{
+		x = vec3.x;
+		y = vec3.y;
+		z = vec3.z;
+	}
+
 	Vector3 Vector3::Normalize(Vector3 vec)
 	{
 		Vector3 temp = Vector3(0);

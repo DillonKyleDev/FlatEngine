@@ -1,6 +1,7 @@
 #include "components/Body2D.h"
 #include "components/Transform.h"
 #include "GameObject.h"
+#include "tools/Vector3.h"
 
 #include <gtc/matrix_transform.hpp>
 
@@ -156,41 +157,14 @@ namespace FlatEngine
 		return scaleOrigin * m_scale;
 	}
 
-	void Transform::AddRotation(float x, float y, float z)
-	{
-		m_rotation.x += x;
-		m_rotation.y += y;
-		m_rotation.z += z;
-	}
-
 	void Transform::SetScale(Vector3 newScale)
 	{
 		m_scale = newScale;		
 	}
 
-	void Transform::SetXRotation(float newRotation)
-	{
-		m_rotation.x = ClampRotation(newRotation);
-	}
-
-	void Transform::SetYRotation(float newRotation)
-	{
-		m_rotation.y = ClampRotation(newRotation);
-	}
-
-	void Transform::SetZRotation(float newRotation)
-	{
-		m_rotation.z = ClampRotation(newRotation);
-
-		if (GetOwningObject() != nullptr && GetOwningObject()->Get<Body2D>() != nullptr)
-		{
-			GetOwningObject()->Get<Body2D>()->SetRotation(m_rotation.z);
-		}
-	}
-
 	void Transform::SetRotation(Vector3 rotation)
 	{
-		m_rotation = rotation;
+		m_rotation = Vector3(ClampRotation(rotation.x), ClampRotation(rotation.y), ClampRotation(rotation.z));
 
 		if (GetOwningObject() != nullptr && GetOwningObject()->Get<Body2D>() != nullptr)
 		{
@@ -203,19 +177,7 @@ namespace FlatEngine
 		return m_scale;
 	}
 
-	float Transform::GetRotation()
-	{
-		Body2D* body2D = GetOwningObject()->Get<Body2D>();
-
-		if (body2D != nullptr)
-		{
-			m_rotation.z = body2D->GetRotation();
-		}
-
-		return m_rotation.z;
-	}
-
-	Vector3 Transform::GetRotations()
+	Vector3 Transform::GetRotation()
 	{
 		if (GetOwningObject() != nullptr)
 		{
@@ -230,7 +192,7 @@ namespace FlatEngine
 		return m_rotation;
 	}
 
-	Vector3 Transform::GetCleanRotations()
+	Vector3 Transform::GetCleanRotation()
 	{
 		return m_rotation;
 	}
@@ -255,8 +217,8 @@ namespace FlatEngine
 		return (xRotation * yRotation * zRotation);
 	}
 
-	float Transform::GetAbsoluteRotation()
-	{
+	// float Transform::GetAbsoluteRotation()
+	// {
 		//Body* body = GetParent()->Get<Body>();
 
 		//if (body != nullptr)
@@ -272,8 +234,8 @@ namespace FlatEngine
 		//}
 
 		//return m_rotation + parentTrueRotation;
-		return m_rotation.z;
-	}
+		// return m_rotation.z;
+	// }
 
 	glm::mat4 Transform::GetScaleMatrix()
 	{

@@ -3,111 +3,33 @@
 #include "FlatEngine.h"
 #include "GameObject.h"
 #include "managers/AnimationManager.h"
-#include "tools/Easing.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
+#include "tools/Quaternion.h"
 
 
 namespace FlatEngine
 {
     void TransformProp::Apply(FL::GameObject* gameObject, float percentDone, AnimationProperty* prev, AnimationData* animData) 
     {
-        Transform* transform = gameObject->Get<Transform>();
-        Vector3 lastPos = Vector3(0);
-        Vector3 lastScale = transform->GetScale();
-        Vector3 lastRot = transform->GetRotations();
         TransformProp* last = static_cast<TransformProp*>(prev);
-        lastPos = animData->startingPos;
+        Transform* transform = gameObject->Get<Transform>();
+        Vector3 lastPos    = prev ? animData->startingPos + last->position : animData->startingPos;
+        Vector3 lastScale  = prev ? last->scale : transform->GetScale();
+        Quaternion lastRot = prev ? Quaternion::EulerToQuaternion(last->eulerRotation) : Quaternion::EulerToQuaternion(transform->GetRotation());
+        Quaternion rot = Quaternion::EulerToQuaternion(eulerRotation);
 
-        if (prev) 
-        {					
-            lastPos   = animData->startingPos + last->position;
-            lastScale = last->scale;
-            lastRot   = last->rotation;
-        }
+        Vector3 posFinal = lastPos + (animData->startingPos + position - lastPos) * Easing::GetT(positionInterpType, percentDone);
+        Vector3 rotFinal = Quaternion::QuaternionToEuler(Quaternion::Slerp(lastRot, rot, Easing::GetT(rotationInterpType, percentDone)));
+        Vector3 scaleFinal = lastScale + (scale - lastScale) * Easing::GetT(scaleInterpType, percentDone);
 
-        Vector3 posFinal;
-        Vector3 rotFinal;
-        Vector3 scaleFinal;
-
-        float posTime;
-        float scaleTime;
-        float rotTime;
-        switch (positionInterpType)
-        {
-            case InterpType_Linear:           posTime = percentDone; break;
-            case InterpType_EaseInSine:       posTime = Easing::EaseInSine(percentDone); break;
-            case InterpType_EaseOutSine:      posTime = Easing::EaseOutSine(percentDone); break;
-            case InterpType_EaseInOutSine:    posTime = Easing::EaseInOutSine(percentDone); break;
-            case InterpType_EaseInElastic:    posTime = Easing::EaseInElastic(percentDone); break;
-            case InterpType_EaseOutElastic:   posTime = Easing::EaseOutElastic(percentDone); break;
-            case InterpType_EaseInOutElastic: posTime = Easing::EaseInOutElastic(percentDone); break;
-            case InterpType_EaseInBack:       posTime = Easing::EaseInBack(percentDone); break;
-            case InterpType_EaseOutBack:      posTime = Easing::EaseOutBack(percentDone); break;
-            case InterpType_EaseInOutBack:    posTime = Easing::EaseInOutBack(percentDone); break;
-            case InterpType_EaseInOutQuart:   posTime = Easing::EaseInOutQuart(percentDone); break;
-            case InterpType_EaseInOutCubic:   posTime = Easing::EaseInOutCubic(percentDone); break;
-            default: break;
-        }
-        switch (scaleInterpType)
-        {
-            case InterpType_Linear:           scaleTime = percentDone; break;
-            case InterpType_EaseInSine:       scaleTime = Easing::EaseInSine(percentDone); break;
-            case InterpType_EaseOutSine:      scaleTime = Easing::EaseOutSine(percentDone); break;
-            case InterpType_EaseInOutSine:    scaleTime = Easing::EaseInOutSine(percentDone); break;
-            case InterpType_EaseInElastic:    scaleTime = Easing::EaseInElastic(percentDone); break;
-            case InterpType_EaseOutElastic:   scaleTime = Easing::EaseOutElastic(percentDone); break;
-            case InterpType_EaseInOutElastic: scaleTime = Easing::EaseInOutElastic(percentDone); break;
-            case InterpType_EaseInBack:       scaleTime = Easing::EaseInBack(percentDone); break;
-            case InterpType_EaseOutBack:      scaleTime = Easing::EaseOutBack(percentDone); break;
-            case InterpType_EaseInOutBack:    scaleTime = Easing::EaseInOutBack(percentDone); break;
-            case InterpType_EaseInOutQuart:   scaleTime = Easing::EaseInOutQuart(percentDone); break;
-            case InterpType_EaseInOutCubic:   scaleTime = Easing::EaseInOutCubic(percentDone); break;
-            default: break;
-        }
-        switch (rotationInterpType)
-        {
-            case InterpType_Linear:           rotTime = percentDone; break;
-            case InterpType_EaseInSine:       rotTime = Easing::EaseInSine(percentDone); break;
-            case InterpType_EaseOutSine:      rotTime = Easing::EaseOutSine(percentDone); break;
-            case InterpType_EaseInOutSine:    rotTime = Easing::EaseInOutSine(percentDone); break;
-            case InterpType_EaseInElastic:    rotTime = Easing::EaseInElastic(percentDone); break;
-            case InterpType_EaseOutElastic:   rotTime = Easing::EaseOutElastic(percentDone); break;
-            case InterpType_EaseInOutElastic: rotTime = Easing::EaseInOutElastic(percentDone); break;
-            case InterpType_EaseInBack:       rotTime = Easing::EaseInBack(percentDone); break;
-            case InterpType_EaseOutBack:      rotTime = Easing::EaseOutBack(percentDone); break;
-            case InterpType_EaseInOutBack:    rotTime = Easing::EaseInOutBack(percentDone); break;
-            case InterpType_EaseInOutQuart:   rotTime = Easing::EaseInOutQuart(percentDone); break;
-            case InterpType_EaseInOutCubic:   rotTime = Easing::EaseInOutCubic(percentDone); break;
-            default: break;
-        }
-
-        posFinal = lastPos + (animData->startingPos + position - lastPos) * posTime;
-        rotFinal = lastRot + (rotation - lastRot) * rotTime;
-        scaleFinal = lastScale + (scale - lastScale) * scaleTime;
-
-        if (!b_fired)
-        {
-            if (b_posAnimated) 
-            {
-                transform->SetPosition(posFinal);
-            }
-            if (b_rotationAnimated)
-            {
-                transform->SetRotation(rotFinal);
-            }
-            if (b_scaleAnimated)
-            {
-                transform->SetScale(scaleFinal);
-            }
-
-            if (time == 0)
-            {
-                b_fired = true;
-            }
-        }
+        if (b_posAnimated) 
+            transform->SetPosition(posFinal);
+        if (b_rotationAnimated)
+            transform->SetRotation(rotFinal);
+        if (b_scaleAnimated)
+            transform->SetScale(scaleFinal);
     }
-
 
     Animation::Animation(long ownerID)
     {
@@ -205,7 +127,7 @@ namespace FlatEngine
         return m_animations;
     }
 
-    void Animation::Play(std::string animationName, Uint32 startTime)
+    void Animation::Play(std::string animationName, uint32_t startTime)
     {
         for (AnimationData &animData : m_animations)
         {
@@ -283,7 +205,7 @@ namespace FlatEngine
         return false;
     }
 
-    void Animation::PlayAnimations(Uint32 elapsedTime)
+    void Animation::PlayAnimations(uint32_t elapsedTime)
     {
         for (AnimationData& animData : m_animations)
         {
@@ -294,7 +216,7 @@ namespace FlatEngine
         }
     }
 
-    void Animation::PlayAnimation(std::string animationName, Uint32 elapsedTime)
+    void Animation::PlayAnimation(std::string animationName, uint32_t elapsedTime)
     {
         for (AnimationData& animData : m_animations)
         {

@@ -1,6 +1,7 @@
 #include "Logger.h"
 #include "tools/Numbers.h"
 
+#include <algorithm>
 #include <cmath>
 #include <random>
 
@@ -137,6 +138,11 @@ namespace FlatEngine
             return fmod(number, modWith);
         }
 
+        float Clamp(float value, float min, float max)
+        {
+            return std::clamp(value, min, max);
+        }
+
         float Sqrt(float of)
         {
             return std::sqrt(of);
@@ -151,37 +157,39 @@ namespace FlatEngine
             return degrees / 57.29578f;
         }
         
-        float Cos(float radians)
-        {
-            return std::cos(radians);
-        }
-        float Sin(float radians)
-        {
-            return std::sin(radians);
-        }        
-        float ACos(float radians)
-        {
-            return std::acos(radians);
-        }
-        float ASin(float radians)
-        {
-            return std::asin(radians);
-        }
-        float CosD(float degrees)
+        // (degrees)
+        float Cos(float degrees)
         {
             return std::cos(DegreesToRadians(degrees));
         }        
-        float SinD(float degrees)
+        float Sin(float degrees)
         {
             return std::sin(DegreesToRadians(degrees));
         }
-        float ACosD(float degrees)
+        float ACos(float degrees)
         {
-            return std::acos(DegreesToRadians(degrees));
+            return RadiansToDegrees(std::acos(DegreesToRadians(degrees)));
         }        
-        float ASinD(float degrees)
+        float ASin(float degrees)
         {
-            return std::asin(DegreesToRadians(degrees));
+            return RadiansToDegrees(std::asin(DegreesToRadians(degrees)));
+        }
+        // radians
+        float CosR(float radians)
+        {
+            return std::cos(radians);
+        }
+        float SinR(float radians)
+        {
+            return std::sin(radians);
+        }        
+        float ACosR(float radians)
+        {
+            return std::acos(radians);
+        }
+        float ASinR(float radians)
+        {
+            return std::asin(radians);
         }
 
         float Abs(float value)

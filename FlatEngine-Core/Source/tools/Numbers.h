@@ -17,8 +17,19 @@ namespace FlatEngine
         extern int Fmod(int number, int modWith);
         extern double Fmod(double number, double modWith);
 
+        extern float Sqrt(float of);
+
         extern float RadiansToDegrees(float radians);
         extern float DegreesToRadians(float degrees);
+
+        extern float Cos(float radians);
+        extern float Sin(float radians);
+        extern float ACos(float radians);
+        extern float ASin(float radians);
+        extern float CosD(float degrees);
+        extern float SinD(float degrees);
+        extern float ACosD(float degrees);
+        extern float ASinD(float degrees);
 
         extern float Abs(float value);
         extern double Abs(double value);

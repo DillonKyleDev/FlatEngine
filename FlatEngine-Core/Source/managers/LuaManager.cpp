@@ -182,12 +182,12 @@ namespace FlatEngine
 				}
 				return instanceData;
 			};
-			lua["GetScriptParam"] = [](std::string paramName, long ID, std::optional<std::string> scriptName)
+			lua["GetScriptParam"] = [](std::string paramName, std::optional<long> ID, std::optional<std::string> scriptName)
 			{
 				LuaParameter parameter = LuaParameter();
 				std::string defaultScriptName = lua["calling_script_name"].get_or<std::string>("Script (Lua)");
 				// std::string truncatedName = defaultScriptName.substr(0, defaultScriptName.size() - 6);
-				GameObject* thisObject = SceneManager::loadedScene.GetObjectByID(ID);
+				GameObject* thisObject = SceneManager::loadedScene.GetObjectByID(ID.value_or(lua["my_id"]));
 				ScriptData* scriptData = nullptr;
 				std::string objectName = "<OBJECT NOT VALID>";
 

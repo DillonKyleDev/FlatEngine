@@ -38,8 +38,5 @@ namespace FlatEngine
 		float x;
 		float y;
 		float z;
-
-	private:
 	};
 }
-

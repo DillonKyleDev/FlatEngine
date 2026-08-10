@@ -13,6 +13,7 @@ end
 function Start()
      -- required to access instance data
      local data = GetInstanceData("Alpha", my_id)
+     Log("Hello")
 end
 
 function Update()

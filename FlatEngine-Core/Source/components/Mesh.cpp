@@ -456,7 +456,7 @@ namespace FlatEngine
 		glm::mat4 meshScale = transform->GetScaleMatrix();
 		glm::mat4 meshRotation = transform->GetRotationMatrix();		
 		glm::vec4 lookDir = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? primaryCamera->GetLookDirectionNoRoll() : primaryCamera->GetLookDirection();
-		glm::vec4 up = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 0.0f); //primaryCamera->GetUpDirection();
+		glm::vec4 up = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 0.0f); //primaryCamera->GetUpDirection(); not created yet
 
 		glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
 		glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);

@@ -1,6 +1,7 @@
 #include "Logger.h"
 #include "tools/Numbers.h"
 
+#include <cmath>
 #include <random>
 
 
@@ -136,14 +137,51 @@ namespace FlatEngine
             return fmod(number, modWith);
         }
 
+        float Sqrt(float of)
+        {
+            return std::sqrt(of);
+        }
+
         float RadiansToDegrees(float radians)
         {
             return radians * 57.29578f;
         }
-
         float DegreesToRadians(float degrees)
         {
             return degrees / 57.29578f;
+        }
+        
+        float Cos(float radians)
+        {
+            return std::cos(radians);
+        }
+        float Sin(float radians)
+        {
+            return std::sin(radians);
+        }        
+        float ACos(float radians)
+        {
+            return std::acos(radians);
+        }
+        float ASin(float radians)
+        {
+            return std::asin(radians);
+        }
+        float CosD(float degrees)
+        {
+            return std::cos(DegreesToRadians(degrees));
+        }        
+        float SinD(float degrees)
+        {
+            return std::sin(DegreesToRadians(degrees));
+        }
+        float ACosD(float degrees)
+        {
+            return std::acos(DegreesToRadians(degrees));
+        }        
+        float ASinD(float degrees)
+        {
+            return std::asin(DegreesToRadians(degrees));
         }
 
         float Abs(float value)

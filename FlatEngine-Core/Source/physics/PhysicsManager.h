@@ -39,9 +39,9 @@ namespace FlatEngine
 			void DestroyShape(FL::Shape* shape);
 			void RecreateShape(FL::Shape* shape);
 
-			void CreateJoint(FL::Body2D* bodyA, FL::Body2D* bodyB, FL::Joint* joint);
-			void DestroyJoint(b2JointId jointID);
-			void RecreateJoint();
+			void CreateJoint(FL::Joint* joint, FL::Body2D* bodyA = nullptr, FL::Body2D* bodyB = nullptr);
+			void DestroyJoint(FL::Joint* joint);
+			void RecreateJoint(FL::Joint* joint);
 
 		private:
 			void HandleCollisions();

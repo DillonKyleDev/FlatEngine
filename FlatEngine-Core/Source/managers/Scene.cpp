@@ -285,7 +285,7 @@ namespace FlatEngine
 			{
 				if (joint->HasValidBodies())
 				{
-					joint->CreateJoint();
+					PhysicsManager::physics2D.CreateJoint(joint);
 				}
 			}
 		}

@@ -11,10 +11,10 @@ namespace FlatEngine
 {
 	Shape::Shape(long ownerID, ShapeType shapeType)
 	{		
+		m_ownerID = ownerID;
 		type = shapeType;
 		m_shapeID = b2_nullShapeId;
 		m_chainID = b2_nullChainId;
-		m_ownerID = ownerID;
 		b_enableContactEvents = true;
 		b_enableSensorEvents = true;
 		b_isSensor = false;
@@ -36,7 +36,7 @@ namespace FlatEngine
 	json Shape::GetData()
 	{
 		json jsonData = {
-			{ "type", (int)type },
+			{ "shapeType", (int)type },
 			{ "b_enableContactEvents", b_enableContactEvents },
 			{ "b_enableSensorEvents", b_enableSensorEvents },
 			{ "b_isSensor", b_isSensor },
@@ -54,7 +54,7 @@ namespace FlatEngine
 
 	void Shape::PutData(json jsonData, std::string objectName)
 	{
-		type = (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "type", objectName));
+		type = (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "shapeType", objectName));
 		b_enableContactEvents = JsonHelper::CheckJsonBool(jsonData, "b_enableContactEvents", objectName);
 		b_enableSensorEvents = JsonHelper::CheckJsonBool(jsonData, "b_enableSensorEvents", objectName);
 		b_isSensor = JsonHelper::CheckJsonBool(jsonData, "b_isSensor", objectName);				
@@ -66,13 +66,14 @@ namespace FlatEngine
 		
 		if (JsonHelper::JsonContains(jsonData, "shapeData", objectName))
 		{
+			json shapeJson = jsonData.at("shapeData");
 			switch (type)
 			{
-				case ShapeType_Box: { BoxShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-				case ShapeType_Circle: { CircleShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
-				case ShapeType_Polygon: { PolygonShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
-				case ShapeType_Capsule: { CapsuleShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
-				case ShapeType_Chain: { ChainShapeData shape; shape.PutData(jsonData.at("shapeData"), objectName); shapeData = shape; break; }
+				case ShapeType_Box:     { BoxShapeData shape;     shape.PutData(shapeJson, objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
+				case ShapeType_Circle:  { CircleShapeData shape;  shape.PutData(shapeJson, objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
+				case ShapeType_Polygon: { PolygonShapeData shape; shape.PutData(shapeJson, objectName); shapeData = shape; break; }
+				case ShapeType_Capsule: { CapsuleShapeData shape; shape.PutData(shapeJson, objectName); shapeData = shape; break; }
+				case ShapeType_Chain:   { ChainShapeData shape;   shape.PutData(shapeJson, objectName); shapeData = shape; break; }
 				default: break;
 			}
 		}

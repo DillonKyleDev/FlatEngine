@@ -23,7 +23,7 @@
 #include "managers/Settings.h"
 #include "managers/TileSetManager.h"
 #include "Modals.h"
-#include "physics/joints/Joint.h"
+#include "physics/Joint.h"
 #include "physics/PhysicsManager.h"
 #include "physics/Shape.h"
 #include "render/VulkanManager.h"
@@ -37,6 +37,7 @@
 #include "tools/Vector2.h"
 #include <X11/Xlib.h>
 #include <cstdint>
+#include <id.h>
 #include <string>
 
 namespace FL = FlatEngine;
@@ -1402,190 +1403,103 @@ namespace FlatGui
 			}
 		}
 
-		void RenderDistanceJointProps(FL::DistanceJoint* joint)
-		{
-			long ID = joint->GetJointID();
-			FL::DistanceJoint::DistanceJointProps jointProps = joint->GetJointProps();
-			float dampingRatio = jointProps.dampingRatio;
-			bool b_enableLimit = jointProps.b_enableLimit;
-			bool b_enableMotor = jointProps.b_enableMotor;
-			bool b_enableSpring = jointProps.b_enableSpring;
-			float hertz = jointProps.hertz;
-			float minLength = jointProps.minLength;
-			float maxLength = jointProps.maxLength;
-			float length = jointProps.length;
-			float maxMotorForce = jointProps.maxMotorForce;
-			float motorSpeed = jointProps.motorSpeed;
+		void RenderDistanceJointProps(auto&& jData, std::string ID)
+		{						
+			float dampingRatio = jData.dampingRatio;
+			bool b_enableLimit = jData.b_enableLimit;
+			bool b_enableMotor = jData.b_enableMotor;
+			bool b_enableSpring = jData.b_enableSpring;
+			float hertz = jData.hertz;
+			float minLength = jData.minLength;
+			float maxLength = jData.maxLength;
+			float length = jData.length;
+			float maxMotorForce = jData.maxMotorForce;
+			float motorSpeed = jData.motorSpeed;
 
-			if (FL::GuiCore::RenderCheckbox("Enable Spring##" + std::to_string(ID), b_enableSpring))
+			if (FL::GuiCore::RenderFloatTable("##DistanceJointLength" + ID, "Length", length, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetLength(length);
+			if (FL::GuiCore::RenderFloatTable("##DistanceJointMinLength" + ID, "Min Length", length, FL::Vector2(), 0, "noEditTableRowFieldBg", false, 0.1f, 0, FLT_MAX)) jData.SetLengthRange(minLength, maxLength);
+			if (FL::GuiCore::RenderFloatTable("##DistanceJointMaxLength" + ID, "Max Length", length, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetLengthRange(minLength, maxLength);				
+			if (FL::GuiCore::RenderBoolTable("#Enable Spring" + ID, "Spring Enabled", b_enableSpring, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableSpring(b_enableSpring);						
+			if (jData.b_enableSpring)
 			{
-				joint->SetEnableSpring(b_enableSpring);
+				if (FL::GuiCore::RenderFloatTable("##DampingRatio" + ID, "Spring Damping Ratio", dampingRatio, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringDampingRatio(dampingRatio);		
+				if (FL::GuiCore::RenderFloatTable("##SpringHertz" + ID, "Spring Hertz", hertz, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringHertz(hertz);	
 			}
-			if (FL::GuiCore::RenderCheckbox("Enable Motor##" + std::to_string(ID), b_enableMotor))
+			if (FL::GuiCore::RenderBoolTable("Enable Motor##" + ID, "Motor Enabled", b_enableMotor, FL::Vector2(), 0, "noEditTableRowFieldBg", true)) jData.SetEnableMotor(b_enableMotor);			
+			if (jData.b_enableMotor)
 			{
-				joint->SetEnableMotor(b_enableMotor);
+				if (FL::GuiCore::RenderFloatTable("##MotorSpeed" + ID, "Motor Speed", motorSpeed, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMotorSpeed(motorSpeed);			
+				if (FL::GuiCore::RenderFloatTable("##MaxMotorForce" + ID, "Max Motor Force", maxMotorForce, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMaxMotorForce(maxMotorForce);		
 			}
-			if (FL::GuiCore::RenderCheckbox("Enable Limit##" + std::to_string(ID), b_enableLimit))
-			{
-				joint->SetEnableLimit(b_enableLimit);			
-			}
-
-			if (FL::GuiCore::PushTable("##DistanceJointProps" + std::to_string(ID), 2))
-			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##Length" + std::to_string(ID), "Length", length, 0.1f, 0, FLT_MAX))
-				{
-					joint->SetLength(length);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##MinLength" + std::to_string(ID), "Min Length", minLength, 0.1f, 0, FLT_MAX))
-				{
-					joint->SetLengthRange(minLength, maxLength);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##MaxLength" + std::to_string(ID), "Max Length", maxLength, 0.1f, 0, FLT_MAX))
-				{
-					joint->SetLengthRange(minLength, maxLength);
-				}
-
-				// Spring
-				if (b_enableSpring)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##DampingRatio" + std::to_string(ID), "Spring Damping Ratio", dampingRatio, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetSpringDampingRatio(dampingRatio);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##SpringHertz" + std::to_string(ID), "Spring Hertz", hertz, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetSpringHertz(hertz);
-					}
-				}
-				// Motor
-				if (b_enableMotor)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##MotorSpeed" + std::to_string(ID), "Motor Speed", motorSpeed, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetMotorSpeed(motorSpeed);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##MaxMotorForce" + std::to_string(ID), "Max Motor Force", maxMotorForce, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetMaxMotorForce(maxMotorForce);
-					}
-				}
-				FL::GuiCore::PopTable();
-			}
+			if (FL::GuiCore::RenderBoolTable("Enable Limit##" + ID, "Enable Limit", b_enableLimit, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableLimit(b_enableLimit);
 
 			FL::GuiCore::MoveScreenCursor(0, 3.0f);
 		}
 
-		void RenderPrismaticJointProps(FL::PrismaticJoint* joint)
-		{
-			long ID = joint->GetJointID();
-			FL::PrismaticJoint::PrismaticJointProps jointProps = joint->GetJointProps();
-			float dampingRatio = jointProps.dampingRatio;
-			bool b_enableLimit = jointProps.b_enableLimit;
-			bool b_enableMotor = jointProps.b_enableMotor;
-			bool b_enableSpring = jointProps.b_enableSpring;
-			float hertz = jointProps.hertz;
-			FL::Vector2 localAxisA = jointProps.localAxisA;
-			float lowerTranslation = jointProps.lowerTranslation;
-			float upperTranslation = jointProps.upperTranslation;
-			float maxMotorForce = jointProps.maxMotorForce;
-			float motorSpeed = jointProps.motorSpeed;
-			float targetTranslation = jointProps.targetTranslation;
+		void RenderPrismaticJointProps(auto&& jData, std::string ID)
+		{			
+			float dampingRatio = jData.dampingRatio;
+			bool b_enableLimit = jData.b_enableLimit;
+			bool b_enableMotor = jData.b_enableMotor;
+			bool b_enableSpring = jData.b_enableSpring;
+			float hertz = jData.hertz;
+			FL::Vector2 localAxisA = jData.localAxisA;
+			float lowerTranslation = jData.lowerTranslation;
+			float upperTranslation = jData.upperTranslation;
+			float maxMotorForce = jData.maxMotorForce;
+			float motorSpeed = jData.motorSpeed;
+			float targetTranslation = jData.targetTranslation;
 
-
-			if (FL::GuiCore::RenderCheckbox("Enable Spring##" + std::to_string(ID), b_enableSpring))
+			if (FL::GuiCore::RenderFloatTable("##LowerTranslation" + ID, "Lower Translation", lowerTranslation, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetTranslationRange(lowerTranslation, upperTranslation);		
+			if (FL::GuiCore::RenderFloatTable("##UpperTranslation" + ID, "Upper Translation", upperTranslation, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetTranslationRange(lowerTranslation, upperTranslation);		
+			// if (FL::GuiCore::RenderVector2Table("##TranslationTarget" + ID, "Translation Target", localAxisA, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), true, 0.1f, -FLT_MAX, FLT_MAX)) jData.Ax(localAxisA);	
+			// if (FL::GuiCore::RenderVector2Table("##LocalAxisA" + ID, "Local Axis A", localAxisA, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetLocalAxisA(localAxisA);	
+			if (FL::GuiCore::RenderBoolTable("#Enable Spring" + ID, "Spring Enabled", b_enableSpring, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableSpring(b_enableSpring);						
+			if (jData.b_enableSpring)
 			{
-				joint->SetEnableSpring(b_enableSpring);
+				if (FL::GuiCore::RenderFloatTable("##DampingRatio" + ID, "Spring Damping Ratio", dampingRatio, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringDampingRatio(dampingRatio);		
+				if (FL::GuiCore::RenderFloatTable("##SpringHertz" + ID, "Spring Hertz", hertz, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringHertz(hertz);	
 			}
-			if (FL::GuiCore::RenderCheckbox("Enable Motor##" + std::to_string(ID), b_enableMotor))
+			if (FL::GuiCore::RenderBoolTable("Enable Motor##" + ID, "Motor Enabled", b_enableMotor, FL::Vector2(), 0, "noEditTableRowFieldBg", true)) jData.SetEnableMotor(b_enableMotor);			
+			if (jData.b_enableMotor)
 			{
-				joint->SetEnableMotor(b_enableMotor);
+				if (FL::GuiCore::RenderFloatTable("##MotorSpeed" + ID, "Motor Speed", motorSpeed, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMotorSpeed(motorSpeed);			
+				if (FL::GuiCore::RenderFloatTable("##MaxMotorForce" + ID, "Max Motor Force", maxMotorForce, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMaxMotorForce(maxMotorForce);		
 			}
-			if (FL::GuiCore::RenderCheckbox("Enable Limit##" + std::to_string(ID), b_enableLimit))
-			{
-				joint->SetEnableLimit(b_enableLimit);
-			}
-
-			if (FL::GuiCore::PushTable("##DistanceJointProps" + std::to_string(ID), 2))
-			{
-				// if (b_enableLimits) <-- Probably
-				if (FL::GuiCore::RenderFloatDragTableRow("##LowerTranslation" + std::to_string(ID), "Lower Translation", lowerTranslation, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					joint->SetTranslationRange(lowerTranslation, upperTranslation);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##UpperTranslation" + std::to_string(ID), "Upper Translation", upperTranslation, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					joint->SetTranslationRange(lowerTranslation, upperTranslation);
-				}
-				//if (FL::GuiCore::RenderFloatDragTableRow("##TranslationTarget" + ID, "Local Axis X", localAxisA.x, 0.1f, -FLT_MAX, FLT_MAX))
-				//{				
-				//	//joint->SetLocalAxisA(localAxisA);
-				//}
-				//if (FL::GuiCore::RenderFloatDragTableRow("##LocalAxisAY" + ID, "Local Axis Y", localAxisA.y, 0.1f, -FLT_MAX, FLT_MAX))
-				//{
-				//	//joint->SetLocalAxisA(localAxisA);
-				//}
-
-				// Spring
-				if (b_enableSpring)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##DampingRatio" + std::to_string(ID), "Spring Damping Ratio", dampingRatio, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetSpringDampingRatio(dampingRatio);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##SpringHertz" + std::to_string(ID), "Spring Hertz", hertz, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetSpringHertz(hertz);
-					}
-				}
-				// Motor
-				if (b_enableMotor)
-				{
-					if (FL::GuiCore::RenderFloatDragTableRow("##MotorSpeed" + std::to_string(ID), "Motor Speed", motorSpeed, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetMotorSpeed(motorSpeed);
-					}
-					if (FL::GuiCore::RenderFloatDragTableRow("##MaxMotorForce" + std::to_string(ID), "Max Motor Force", maxMotorForce, 0.1f, 0, FLT_MAX))
-					{
-						joint->SetMaxMotorForce(maxMotorForce);
-					}
-				}
-				FL::GuiCore::PopTable();
-			}
+			if (FL::GuiCore::RenderBoolTable("Enable Limit##" + ID, "Enable Limit", b_enableLimit, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableLimit(b_enableLimit);
 
 			FL::GuiCore::MoveScreenCursor(0, 3.0f);
 		}
 
-		void RenderRevoluteJointProps(FL::RevoluteJoint* joint)
+		void RenderRevoluteJointProps(auto&& jData, std::string ID)
 		{
-
 		}
 
-		void RenderMouseJointProps(FL::MouseJoint* joint)
-		{
-
-		}
-
-		void RenderWeldJointProps(FL::WeldJoint* joint)
-		{
-
-		}
-
-		void RenderMotorJointProps(FL::MotorJoint* joint)
-		{
-
-		}
-
-		void RenderWheelJointProps(FL::WheelJoint* joint)
-		{
-
-		}
-
-		void RenderJointComponentProps(FL::Joint* joint, long& jointToDelete)
+		void RenderMouseJointProps(auto&& jData, std::string ID)
 		{		
-			long jointID = joint->GetJointID();		
-			FL::Joint::JointType jointType = joint->GetJointType();
-			std::string jointTypeString = joint->GetJointString();
-			std::string ID = jointTypeString + " ID: " + std::to_string(jointID);
+		}
+
+		void RenderWeldJointProps(auto&& jData, std::string ID)
+		{
+		}
+
+		void RenderMotorJointProps(auto&& jData, std::string ID)
+		{
+
+		}
+
+		void RenderWheelJointProps(auto&& jData, std::string ID)
+		{
+		}
+
+		void RenderJointComponentProps(FL::Joint* joint, FL::Joint* jointToDelete)
+		{		
+			long ownerID = joint->GetOwnerID();
+			b2JointId jointID = joint->GetJointID();		
+			FL::JointType jointType = joint->GetJointType();
+			std::string jointTypeString = FL::JointTypeStrings[(int)jointType];
+			std::string ID = "(index: " + std::to_string(joint->GetJointID().index1) + " world: " + std::to_string(joint->GetJointID().world0) + " gen: " + std::to_string(joint->GetJointID().generation);
+			
 			FL::Body2D* bodyA = joint->GetBodyA();
 			FL::Body2D* bodyB = joint->GetBodyB();	
 			bool b_collideConnected = joint->CollideConnected();
@@ -1599,10 +1513,6 @@ namespace FlatGui
 			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
 
-			// Border around each joint
-			auto shapeWindowPos = ImGui::GetWindowPos();
-			auto shapeWindowSize = ImGui::GetWindowSize();
-
 			FL::GuiCore::RenderSectionHeader(ID);
 			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);
 			FL::GuiCore::MoveScreenCursor(0, -3);
@@ -1611,25 +1521,14 @@ namespace FlatGui
 
 			if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash")))
 			{
-				jointToDelete = jointID;
+				jointToDelete = joint;
 			}
-
-			FL::GuiCore::MoveScreenCursor(0, 3);
 
 			int droppedObjectID = -1;		
-			std::string bodyAName = "";
-			std::string bodyBName = "";
+			std::string bodyAName = bodyA != nullptr ? bodyA->GetOwningObject()->GetName() : "";
+			std::string bodyBName = bodyB != nullptr ? bodyB->GetOwningObject()->GetName() : "";
 
-			if (bodyA != nullptr)
-			{
-				bodyAName = bodyA->GetOwningObject()->GetName();
-			}
-			if (bodyB != nullptr)
-			{
-				bodyBName = bodyB->GetOwningObject()->GetName();
-			}
-
-			FL::GuiCore::MoveScreenCursor(0, 3.0f);
+			FL::GuiCore::MoveScreenCursor(0, 6.0f);
 
 			if (FL::GuiCore::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
 			{
@@ -1646,53 +1545,37 @@ namespace FlatGui
 				}
 			}
 
-			if (FL::GuiCore::PushTable("##JointProps" + ID, 2))
-			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##AnchorAX" + ID, "Anchor A x-pos", anchorA.x, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					joint->SetAnchorA(anchorA);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##AnchorAY" + ID, "Anchor A y-pos", anchorA.y, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					joint->SetAnchorA(anchorA);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##AnchorBX" + ID, "Anchor B x-pos", anchorB.x, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					joint->SetAnchorB(anchorB);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##AnchorBY" + ID, "Anchor B y-pos", anchorB.y, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					joint->SetAnchorB(anchorB);
-				}
-				FL::GuiCore::PopTable();
-			}
+			if (FL::GuiCore::RenderVector2Table("#AnchorA" + ID, "Anchor A", anchorA)) joint->SetAnchorA(anchorA);
+			if (FL::GuiCore::RenderVector2Table("#AnchorB" + ID, "Anchor B", anchorB)) joint->SetAnchorB(anchorB);
 
-			switch (jointType)
+			std::visit([joint, ID](auto&& jData) -> void
 			{
-			case FL::Joint::JT_Distance:
-				RenderDistanceJointProps(static_cast<FL::DistanceJoint*>(joint));
-				break;
-			case FL::Joint::JT_Prismatic:
-				RenderPrismaticJointProps(static_cast<FL::PrismaticJoint*>(joint));
-				break;
-			case FL::Joint::JT_Revolute:
-				RenderRevoluteJointProps(static_cast<FL::RevoluteJoint*>(joint));
-				break;
-			case FL::Joint::JT_Mouse:
-				RenderMouseJointProps(static_cast<FL::MouseJoint*>(joint));
-				break;
-			case FL::Joint::JT_Wheel:
-				RenderWheelJointProps(static_cast<FL::WheelJoint*>(joint));
-				break;
-			case FL::Joint::JT_Weld:
-				RenderWeldJointProps(static_cast<FL::WeldJoint*>(joint));
-				break;
-			case FL::Joint::JT_Motor:
-				RenderMotorJointProps(static_cast<FL::MotorJoint*>(joint));
-				break;
-			default:
-				break;
-			}
+				using T = std::decay_t<decltype(jData)>;
+				if constexpr (std::is_same_v<T, FL::DistanceJointData>)
+				{
+					RenderDistanceJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::RevoluteJointData>)
+				{
+					RenderRevoluteJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::PrismaticJointData>)
+				{
+					RenderPrismaticJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::MouseJointData>)
+				{
+					RenderMouseJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::WeldJointData>)
+				{
+					RenderWeldJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::WheelJointData>)
+				{
+					RenderWheelJointProps(jData, ID);
+				}
+			}, joint->jointData);		
 
 			ImGui::EndChild();
 		}
@@ -1706,55 +1589,14 @@ namespace FlatGui
 			if (ImGui::BeginPopupContextItem("##AddJoint", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
-
-				if (ImGui::MenuItem("Distance Joint"))
-				{				
-					jointMaker->AddDistanceJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Prismatic Joint"))
+				for (int i = 1; i < FL::JointType_Size; i++)
 				{
-					jointMaker->AddPrismaticJoint();
-					ImGui::CloseCurrentPopup();
+					if (ImGui::MenuItem(FL::JointTypeStrings[i].c_str()))
+					{				
+						jointMaker->AddJoint((FL::JointType)i);
+						ImGui::CloseCurrentPopup();
+					}
 				}
-
-				if (ImGui::MenuItem("Revolute Joint"))
-				{
-					jointMaker->AddRevoluteJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Mouse Joint"))
-				{
-					jointMaker->AddMouseJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Wheel Joint"))
-				{
-					jointMaker->AddWheelJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Motor Joint"))
-				{
-					jointMaker->AddMotorJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Wheel Joint"))
-				{
-					jointMaker->AddWheelJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Weld Joint"))
-				{
-					jointMaker->AddWeldJoint();
-					ImGui::CloseCurrentPopup();
-				}
-
 				FL::GuiCore::PopMenuStyles();
 				ImGui::EndMenu();
 			}
@@ -1762,12 +1604,11 @@ namespace FlatGui
 			if (jointMaker->GetJoints().size() > 0)
 			{
 				FL::GuiCore::MoveScreenCursor(0, 3);
-				ImGui::Text("%s", "Joints");
+				ImGui::Text("Joints");
 				FL::GuiCore::MoveScreenCursor(0, 2);
 				ImGui::Separator();
 				FL::GuiCore::MoveScreenCursor(0, -3);
 
-				// For scrolling shapes section with background
 				std::string childID = "Joints_" + std::to_string(ownerID);
 				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("jointsScrollingBg"));
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 5));
@@ -1775,11 +1616,7 @@ namespace FlatGui
 				ImGui::PopStyleVar();
 				ImGui::PopStyleColor();
 
-				// Border around components section
-				auto wPos = ImGui::GetWindowPos();
-				auto wSize = ImGui::GetWindowSize();
-				long jointToDelete = -1;			
-
+				FL::Joint* jointToDelete = nullptr;			
 				std::vector<FL::Joint*> joints = jointMaker->GetJoints();
 
 				for (int i = 0; i < joints.size(); i++)
@@ -1792,21 +1629,13 @@ namespace FlatGui
 					}
 				}
 
-				if (jointToDelete != -1)
+				if (jointToDelete != nullptr)
 				{
 					jointMaker->RemoveJoint(jointToDelete);
 				}
 
-
 				ImGui::EndChild();
 			}
-
-			//if (FL::GuiCore::PushTable("##JointMakerProps" + std::to_string(ID), 2))
-			//{
-			//	
-
-			//	FL::GuiCore::PopTable();
-			//}
 		}
 
 		void RenderTileMapComponent(FL::TileMap* tileMap)

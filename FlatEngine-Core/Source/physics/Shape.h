@@ -6,15 +6,28 @@
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
 
-#include <id.h>
-#include <math_functions.h>
 #include <string>
 #include <variant>
 
 
 namespace FlatEngine
 {
-	class Body2D;
+	enum ShapeType {
+		ShapeType_None,
+		ShapeType_Box,
+		ShapeType_Circle,
+		ShapeType_Capsule,
+		ShapeType_Polygon,
+		ShapeType_Chain
+	};
+	const std::vector<std::string> ShapeTypeStrings = {
+		"None",
+		"Box",
+		"Circle",
+		"Capsule",
+		"Polygon",
+		"Chain"
+	};
 
 	struct BoxShapeData {
 		b2ShapeId shapeID;
@@ -74,7 +87,6 @@ namespace FlatEngine
 			PhysicsManager::physics2D.RecreateShape(static_cast<Shape*>(b2Shape_GetUserData(shapeID)));		
 		}
 	};
-
 	struct CircleShapeData {
 		b2ShapeId shapeID;
 		Vector2 offset = Vector2();
@@ -120,7 +132,6 @@ namespace FlatEngine
 			PhysicsManager::physics2D.RecreateShape(static_cast<Shape*>(b2Shape_GetUserData(shapeID)));	
 		}
 	};
-
 	struct CapsuleShapeData {
 		b2ShapeId shapeID;
 		Vector2 offset = Vector2();
@@ -194,7 +205,6 @@ namespace FlatEngine
 			PhysicsManager::physics2D.RecreateShape(static_cast<Shape*>(b2Shape_GetUserData(shapeID)));		
 		}
 	};
-
 	struct PolygonShapeData {
 		b2ShapeId shapeID;
 		float cornerRadius = 0.0f;
@@ -249,7 +259,6 @@ namespace FlatEngine
 			}
 		}
 	};
-
 	struct ChainShapeData {
 		b2ChainId chainID;
 		b2ShapeId shapeID;
@@ -297,23 +306,6 @@ namespace FlatEngine
 		}
 	};
 
-	enum ShapeType {
-		ShapeType_None,
-		ShapeType_Box,
-		ShapeType_Circle,
-		ShapeType_Capsule,
-		ShapeType_Polygon,
-		ShapeType_Chain
-	};
-	const std::vector<std::string> ShapeTypeStrings = {
-		"None",
-		"Box",
-		"Circle",
-		"Capsule",
-		"Polygon",
-		"Chain"
-	};
-
 	class Shape
 	{
 	public:
@@ -327,7 +319,6 @@ namespace FlatEngine
 		const b2ChainId GetChainID();
 		const long GetOwnerID();
 		const b2BodyId Getb2BodyID();
-
 		void SetIsSensor(bool b_isSensor);
 		void SetEnableSensorEvents(bool b_enableSensorEvents);
 		void SetEnableContactEvents(bool b_enableContactEvents);

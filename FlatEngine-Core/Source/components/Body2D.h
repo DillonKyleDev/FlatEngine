@@ -92,7 +92,7 @@ namespace FlatEngine
 
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
-		std::list<DistanceJoint*> m_distanceJoints;
+		std::list<Joint*> m_distanceJoints;
 
 		FL::Vector2 position = FL::Vector2();	
 		b2Rot rotation = b2MakeRot(0);

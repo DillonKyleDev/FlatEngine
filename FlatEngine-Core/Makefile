@@ -104,7 +104,6 @@ GENERATED += $(OBJDIR)/CharacterController.o
 GENERATED += $(OBJDIR)/Component.o
 GENERATED += $(OBJDIR)/Controls.o
 GENERATED += $(OBJDIR)/DeviceManager.o
-GENERATED += $(OBJDIR)/DistanceJoint.o
 GENERATED += $(OBJDIR)/Easing.o
 GENERATED += $(OBJDIR)/EntryPoint.o
 GENERATED += $(OBJDIR)/FileHelper.o
@@ -127,19 +126,15 @@ GENERATED += $(OBJDIR)/Material.o
 GENERATED += $(OBJDIR)/Matrix.o
 GENERATED += $(OBJDIR)/Mesh.o
 GENERATED += $(OBJDIR)/Model.o
-GENERATED += $(OBJDIR)/MotorJoint.o
-GENERATED += $(OBJDIR)/MouseJoint.o
 GENERATED += $(OBJDIR)/Numbers.o
 GENERATED += $(OBJDIR)/PhysicsManager.o
 GENERATED += $(OBJDIR)/PipelineManager.o
 GENERATED += $(OBJDIR)/PrefabManager.o
-GENERATED += $(OBJDIR)/PrismaticJoint.o
 GENERATED += $(OBJDIR)/Profiler.o
 GENERATED += $(OBJDIR)/ProjectManager.o
 GENERATED += $(OBJDIR)/Quaternion.o
 GENERATED += $(OBJDIR)/RenderPass.o
 GENERATED += $(OBJDIR)/RenderWindow.o
-GENERATED += $(OBJDIR)/RevoluteJoint.o
 GENERATED += $(OBJDIR)/Scene.o
 GENERATED += $(OBJDIR)/SceneManager.o
 GENERATED += $(OBJDIR)/SceneView.o
@@ -161,8 +156,6 @@ GENERATED += $(OBJDIR)/Vector3.o
 GENERATED += $(OBJDIR)/Vector4.o
 GENERATED += $(OBJDIR)/ViewportManager.o
 GENERATED += $(OBJDIR)/VulkanManager.o
-GENERATED += $(OBJDIR)/WeldJoint.o
-GENERATED += $(OBJDIR)/WheelJoint.o
 GENERATED += $(OBJDIR)/binary_to_compressed_c.o
 GENERATED += $(OBJDIR)/imgui.o
 GENERATED += $(OBJDIR)/imgui_demo.o
@@ -192,7 +185,6 @@ OBJECTS += $(OBJDIR)/CharacterController.o
 OBJECTS += $(OBJDIR)/Component.o
 OBJECTS += $(OBJDIR)/Controls.o
 OBJECTS += $(OBJDIR)/DeviceManager.o
-OBJECTS += $(OBJDIR)/DistanceJoint.o
 OBJECTS += $(OBJDIR)/Easing.o
 OBJECTS += $(OBJDIR)/EntryPoint.o
 OBJECTS += $(OBJDIR)/FileHelper.o
@@ -215,19 +207,15 @@ OBJECTS += $(OBJDIR)/Material.o
 OBJECTS += $(OBJDIR)/Matrix.o
 OBJECTS += $(OBJDIR)/Mesh.o
 OBJECTS += $(OBJDIR)/Model.o
-OBJECTS += $(OBJDIR)/MotorJoint.o
-OBJECTS += $(OBJDIR)/MouseJoint.o
 OBJECTS += $(OBJDIR)/Numbers.o
 OBJECTS += $(OBJDIR)/PhysicsManager.o
 OBJECTS += $(OBJDIR)/PipelineManager.o
 OBJECTS += $(OBJDIR)/PrefabManager.o
-OBJECTS += $(OBJDIR)/PrismaticJoint.o
 OBJECTS += $(OBJDIR)/Profiler.o
 OBJECTS += $(OBJDIR)/ProjectManager.o
 OBJECTS += $(OBJDIR)/Quaternion.o
 OBJECTS += $(OBJDIR)/RenderPass.o
 OBJECTS += $(OBJDIR)/RenderWindow.o
-OBJECTS += $(OBJDIR)/RevoluteJoint.o
 OBJECTS += $(OBJDIR)/Scene.o
 OBJECTS += $(OBJDIR)/SceneManager.o
 OBJECTS += $(OBJDIR)/SceneView.o
@@ -249,8 +237,6 @@ OBJECTS += $(OBJDIR)/Vector3.o
 OBJECTS += $(OBJDIR)/Vector4.o
 OBJECTS += $(OBJDIR)/ViewportManager.o
 OBJECTS += $(OBJDIR)/VulkanManager.o
-OBJECTS += $(OBJDIR)/WeldJoint.o
-OBJECTS += $(OBJDIR)/WheelJoint.o
 OBJECTS += $(OBJDIR)/binary_to_compressed_c.o
 OBJECTS += $(OBJDIR)/imgui.o
 OBJECTS += $(OBJDIR)/imgui_demo.o
@@ -459,34 +445,13 @@ $(OBJDIR)/Settings.o: Source/managers/Settings.cpp
 $(OBJDIR)/TileSetManager.o: Source/managers/TileSetManager.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Joint.o: Source/physics/Joint.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/PhysicsManager.o: Source/physics/PhysicsManager.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Shape.o: Source/physics/Shape.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/DistanceJoint.o: Source/physics/joints/DistanceJoint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/Joint.o: Source/physics/joints/Joint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/MotorJoint.o: Source/physics/joints/MotorJoint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/MouseJoint.o: Source/physics/joints/MouseJoint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/PrismaticJoint.o: Source/physics/joints/PrismaticJoint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/RevoluteJoint.o: Source/physics/joints/RevoluteJoint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/WeldJoint.o: Source/physics/joints/WeldJoint.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/WheelJoint.o: Source/physics/joints/WheelJoint.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Allocator.o: Source/render/Allocator.cpp

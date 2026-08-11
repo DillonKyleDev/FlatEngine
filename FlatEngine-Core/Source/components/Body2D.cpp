@@ -2,8 +2,7 @@
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
 #include "physics/Shape.h"
-#include "physics/joints/DistanceJoint.h"
-#include "physics/joints/Joint.h"
+#include "physics/Joint.h"
 #include "managers/LuaManager.h"
 #include "physics/PhysicsManager.h"
 #include "render/SceneView.h"
@@ -97,11 +96,11 @@ namespace FlatEngine
 
 				switch (shape.GetType())
 				{
-					case ShapeType_Box:	boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break;
-					case ShapeType_Circle: circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); break;
+					case ShapeType_Box:	    boxes.push_back(shape);    PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break;
+					case ShapeType_Circle:  circles.push_back(shape);  PhysicsManager::physics2D.CreateShape(&circles.back(), this); break;
 					case ShapeType_Capsule: capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break;
 					case ShapeType_Polygon:	polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break;
-					case ShapeType_Chain: chains.push_back(shape); PhysicsManager::physics2D.CreateShape(&chains.back(), this); break;
+					case ShapeType_Chain:   chains.push_back(shape);   PhysicsManager::physics2D.CreateShape(&chains.back(), this); break;
 					default: break;
 				}
 			}
@@ -295,11 +294,11 @@ namespace FlatEngine
 		Shape shape = Shape(GetOwnerID(), type);
 		switch (type)
 		{
-			case ShapeType_Box: { BoxShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateQuadObject()); boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break; }
-			case ShapeType_Circle: { CircleShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateCircleObject()); circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); break; }
+			case ShapeType_Box:     { BoxShapeData shapeData;     shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateQuadObject()); boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break; }
+			case ShapeType_Circle:  { CircleShapeData shapeData;  shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateCircleObject()); circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); break; }
 			case ShapeType_Capsule: { CapsuleShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break; }
 			case ShapeType_Polygon: { PolygonShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes = CreateCapsuleRenderObjects(); polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break; }			
-			case ShapeType_Chain: { ChainShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); chains.push_back(shape); break; PhysicsManager::physics2D.CreateShape(&chains.back(), this); }
+			case ShapeType_Chain:   { ChainShapeData shapeData;   shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); chains.push_back(shape); PhysicsManager::physics2D.CreateShape(&chains.back(), this); break; }
 			default: break;
 		}
 	}
@@ -588,7 +587,7 @@ namespace FlatEngine
 	{
 		switch (joint->GetJointType())
 		{
-			case Joint::JT_Distance: m_distanceJoints.push_back(static_cast<DistanceJoint*>(joint));
+			case JointType_Distance: m_distanceJoints.push_back(joint);
 			default: break;
 		}
 	}

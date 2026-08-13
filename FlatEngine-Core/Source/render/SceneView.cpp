@@ -69,7 +69,11 @@ namespace FlatEngine
 		}
 		std::vector<SceneRenderObject> CreateCapsuleObject()
 		{
-			std::vector<SceneRenderObject> capsuleShapes = { CreateCircleObject(), CreateCircleObject(), CreateLineObject(), CreateLineObject(), CreateLineObject(), CreateLineObject() };			
+			std::vector<SceneRenderObject> capsuleShapes = { CreateCircleObject(), CreateCircleObject() };			
+			for (int i = 0; i < 6; i++)
+			{
+				capsuleShapes.push_back(CreateLineObject());
+			}
 			return capsuleShapes;
 		}
 		std::vector<SceneRenderObject> CreatePolygonObject()

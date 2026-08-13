@@ -1428,7 +1428,7 @@ namespace FlatGui
 
 			FL::Body2D* bodyA = joint->GetBodyA();
 			FL::Body2D* bodyB = joint->GetBodyB();	
-			bool b_collideConnected = joint->CollideConnected();
+			bool b_collideConnected = joint->DoesCollideConnected();
 			FL::Vector2 anchorA = joint->GetAnchorA();
 			FL::Vector2 anchorB = joint->GetAnchorB();
 
@@ -1463,6 +1463,7 @@ namespace FlatGui
 				}
 			}
 
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##CollideConnected", "Collide connected"), b_collideConnected)) joint->SetCollideConnected(b_collideConnected);
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("#AnchorA" + ID, "Anchor A"), anchorA)) joint->SetAnchorA(anchorA);
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("#AnchorB" + ID, "Anchor B"), anchorB)) joint->SetAnchorB(anchorB);
 
@@ -2160,24 +2161,19 @@ namespace FlatGui
 		bool b_changed = false;
 		bool b_hasTag = tagList->HasTag(fieldName);
 		bool b_collidesTag = tagList->CollidesTag(fieldName);
-		std::string hasTagID = "##" + fieldName + "CheckboxHasTagID";
-		std::string collidesTagID = "##" + fieldName + "CheckboxCollideTagID";
-
+		std::string hasTagID = "Has##" + fieldName + "CheckboxHasTagID";
+		std::string collidesTagID = "Collides##" + fieldName + "CheckboxCollideTagID";
+	
 		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0);
-		FL::GuiCore::MoveScreenCursor(0, 2);
-		ImGui::Text("%s", fieldName.c_str());
-
-		ImGui::TableSetColumnIndex(1);
-		FL::GuiCore::MoveScreenCursor(0, 2);
+		ImGui::TableSetColumnIndex(0);		
+		ImGui::Text(" %s", fieldName.c_str());			
+		ImGui::TableSetColumnIndex(1);				
 		if (FL::GuiCore::RenderCheckbox(hasTagID.c_str(), b_hasTag))
 		{
 			tagList->ToggleTag(fieldName);
 			b_changed = true;
 		}
-
-		ImGui::TableSetColumnIndex(2);
-		FL::GuiCore::MoveScreenCursor(0, 2);
+		ImGui::TableSetColumnIndex(2);		
 		if (FL::GuiCore::RenderCheckbox(collidesTagID.c_str(), b_collidesTag))
 		{
 			tagList->ToggleCollides(fieldName);
@@ -2233,10 +2229,7 @@ namespace FlatGui
 				FL::GuiCore::PushMenuStyles();
 				if (ImGui::BeginPopupContextItem("TagsPopup", ImGuiPopupFlags_MouseButtonLeft))
 				{
-					std::vector<std::string> values = { "Tag", "Has", "Collides" };
-					FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("TagsTableHeaders", ""), values);
-
-					if (FL::GuiCore::PushTable("TagsTable", 3, FL::GuiCore::resizeableTableFlags))
+					if (FL::GuiCore::PushTable("TagsTable", 3))
 					{
 						for (std::string tag : FL::Assets::assetManager.GetTags())
 						{
@@ -2245,7 +2238,7 @@ namespace FlatGui
 						}
 						FL::GuiCore::PopTable();
 					}
-					ImGui::EndPopup();
+					ImGui::EndPopup();					
 				}
 				FL::GuiCore::PopMenuStyles();
 

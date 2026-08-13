@@ -1331,6 +1331,24 @@ namespace FlatEngine
                             }
                         }
                     }
+                    for (Joint* joint : body2D.GetJoints())
+                    {
+                        for (SceneView::SceneRenderObject& renderShape : joint->renderShapes)                        
+                        {                 
+                            std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
+                            if (renderShape.mesh.Initialized() && material != nullptr)
+                            {                                                  
+                                if (renderShape.mesh.IsActive())
+                                {                                    
+                                    m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                                    renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &renderShape.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
+                                    m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                    m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                    m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Render the Mesh but using the fl_empty material

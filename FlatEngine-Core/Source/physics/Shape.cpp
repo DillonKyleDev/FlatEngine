@@ -47,7 +47,6 @@ namespace FlatEngine
 			{ "tangentSpeed", tangentSpeed },
 			{ "rollingResistance", rollingResistance }	
 		};
-
 		shapeJson["shapeData"] = std::visit([](auto&& sData) { return sData.GetData(); }, shapeData);
 
 		return shapeJson;
@@ -61,13 +60,14 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case ShapeType_Box:     { shapeData = BoxShapeData();     std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-			case ShapeType_Circle:  { shapeData = CircleShapeData();  std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes.push_back(SceneView::CreateCircleObject());  break; }
-			case ShapeType_Capsule: { shapeData = CapsuleShapeData(); std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes = SceneView::CreateCapsuleObject(); break; }
-			case ShapeType_Polygon: { shapeData = PolygonShapeData(); std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes = SceneView::CreatePolygonObject(); break; }				
-			case ShapeType_Chain:   { shapeData = ChainShapeData();   std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes = SceneView::CreateChainObject(); break; }
+			case ShapeType_Box:     { shapeData = BoxShapeData();     renderShapes.push_back(SceneView::CreateQuadObject()); break; }
+			case ShapeType_Circle:  { shapeData = CircleShapeData();  renderShapes.push_back(SceneView::CreateCircleObject());  break; }
+			case ShapeType_Capsule: { shapeData = CapsuleShapeData(); renderShapes = SceneView::CreateCapsuleObject(); break; }
+			case ShapeType_Polygon: { shapeData = PolygonShapeData(); renderShapes = SceneView::CreatePolygonObject(); break; }				
+			case ShapeType_Chain:   { shapeData = ChainShapeData();   renderShapes = SceneView::CreateChainObject(); break; }
 			default: break;
 		}
+		std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData);
 
 		if (shapeJson.empty())
 			return;

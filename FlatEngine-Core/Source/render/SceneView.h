@@ -38,7 +38,7 @@ namespace FlatEngine
         };
 
         struct SceneRenderObject {
-            long ID;
+            long ID = -1;
             Transform transform = Transform();
             Mesh mesh = Mesh();
 

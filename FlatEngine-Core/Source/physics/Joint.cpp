@@ -36,6 +36,24 @@ namespace FlatEngine
 
 	void Joint::PutData(json jointJson, std::string name)
 	{
+		json jointDataJson = json::object();
+		if (!jointJson.empty() && JsonHelper::JsonContains(jointJson, "jointData", name))		
+			jointDataJson = jointJson.at("jointData");
+
+		switch (type)
+		{
+			case JointType_Distance:  { jointData = DistanceJointData();  break; }
+			case JointType_Revolute:  { jointData = PrismaticJointData(); break; }
+			case JointType_Prismatic: { jointData = RevoluteJointData();  break; }
+			case JointType_Mouse:     { jointData = MouseJointData();     break; }
+			case JointType_Weld:      { jointData = WheelJointData();     break; }
+			case JointType_Wheel:     { jointData = MotorJointData();     break; }
+			case JointType_Motor:     { jointData = WeldJointData();      break; }
+			default: break;
+		}
+		renderShapes.push_back(SceneView::CreateLineObject());
+		std::visit([jointDataJson, name](auto&& jData) { jData.PutData(jointDataJson, name); }, jointData);
+
 		if (jointJson.empty())
 			return;
 
@@ -45,23 +63,7 @@ namespace FlatEngine
 		anchorA.x = JsonHelper::CheckJsonFloat(jointJson, "anchorAX", name);
 		anchorA.y = JsonHelper::CheckJsonFloat(jointJson, "anchorAY", name);
 		anchorB.x = JsonHelper::CheckJsonFloat(jointJson, "anchorBX", name);
-		anchorB.y = JsonHelper::CheckJsonFloat(jointJson, "anchorAY", name);
-
-		if (JsonHelper::JsonContains(jointJson, "jointData", name))
-		{
-			json jointDataJson = jointJson.at("jointData");
-			switch (type)
-			{
-				case JointType_Distance:  { DistanceJointData joint;  joint.PutData(jointDataJson, name); jointData = joint; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-				case JointType_Revolute:  { PrismaticJointData joint; joint.PutData(jointDataJson, name); jointData = joint; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
-				case JointType_Prismatic: { RevoluteJointData joint;  joint.PutData(jointDataJson, name); jointData = joint; break; }
-				case JointType_Mouse:     { MouseJointData joint;     joint.PutData(jointDataJson, name); jointData = joint; break; }
-				case JointType_Weld:      { WheelJointData joint;     joint.PutData(jointDataJson, name); jointData = joint; break; }
-				case JointType_Wheel:     { MotorJointData joint;     joint.PutData(jointDataJson, name); jointData = joint; break; }
-				case JointType_Motor:     { WeldJointData joint;      joint.PutData(jointDataJson, name); jointData = joint; break; }
-				default: break;
-			}
-		}
+		anchorB.y = JsonHelper::CheckJsonFloat(jointJson, "anchorBY", name);
 	}
 
 	const long Joint::GetID()
@@ -82,6 +84,7 @@ namespace FlatEngine
 	void Joint::SetJointID(b2JointId jointID)
 	{
 		m_jointID = jointID;
+		std::visit([jointID](auto&& jData) { jData.jointID = jointID; }, jointData);
 	}
 
 	b2JointId Joint::GetJointID()
@@ -131,21 +134,26 @@ namespace FlatEngine
 		return (bodyAID != -1 && bodyBID != -1);
 	}
 
-	void Joint::SetAnchorA(Vector2 anchorA)
+	void Joint::SetAnchorA(Vector2 setAanchorA)
 	{
-		anchorA = anchorA;
+		anchorA = setAanchorA;
 		PhysicsManager::physics2D.RecreateJoint(this);
 	}
 
-	void Joint::SetAnchorB(Vector2 anchorB)
+	void Joint::SetAnchorB(Vector2 setAnchorB)
 	{
-		anchorB = anchorB;
+		anchorB = setAnchorB;
 		PhysicsManager::physics2D.RecreateJoint(this);
 	}
 
-	bool Joint::CollideConnected()
+	bool Joint::DoesCollideConnected()
 	{
-		return b_collideConnected;
+		return b_collideConnected;		
+	}
+
+	void Joint::SetCollideConnected(bool b_setCollideConnected)
+	{
+		b_collideConnected = b_setCollideConnected;
 		PhysicsManager::physics2D.RecreateJoint(this);
 	}
 

@@ -454,7 +454,7 @@ namespace FlatEngine
 			{
 				Vector2 p0 = Vector2(ImGui::GetCursorScreenPos().x - 1, ImGui::GetCursorScreenPos().y);			
 				Vector2 p1 = Vector2(p0.x, p0.y + 21);
-				ImGui::GetForegroundDrawList()->AddLine(p0, p1, Assets::assetManager.GetColor32("tableLabelVerticalSeparator"), 1.0f);				
+				ImGui::GetWindowDrawList()->AddLine(p0, p1, Assets::assetManager.GetColor32("tableLabelVerticalSeparator"), 1.0f);				
 			}
 		}
 
@@ -954,12 +954,12 @@ namespace FlatEngine
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
 
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";				
-			if (FL::GuiCore::PushTable(tableProps.ID, 1, flags))
+			if (FL::GuiCore::PushTable(tableProps.ID, values.size(), flags))
 			{			
+				ImGui::TableNextRow();	
 				ImGui::PushStyleColor(ImGuiCol_Text, Assets::assetManager.GetColor("noEditTableText"));				
 				for (int i = 0; i < values.size(); i++)
 				{					
-					ImGui::TableNextRow();	
 					ImGui::TableSetColumnIndex(i);
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(Assets::assetManager.GetColor(valueColor)));
 					MoveScreenCursor(5, 0);

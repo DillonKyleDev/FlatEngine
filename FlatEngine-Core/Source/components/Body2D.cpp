@@ -11,6 +11,7 @@
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include "Types.h"
+#include <math_functions.h>
 
 
 namespace FlatEngine
@@ -121,6 +122,45 @@ namespace FlatEngine
 			}
 		}
     }
+
+	void Body2D::AddShape(ShapeType type, json componentJson, std::string name)
+	{
+		Shape shape = Shape(GetOwnerID(), type);
+		shape.PutData(componentJson, name);
+
+		switch (type)
+		{
+			case ShapeType_Box:     { m_boxes.push_back(shape);    PhysicsManager::physics2D.CreateShape(&m_boxes.back(), this); break; }
+			case ShapeType_Circle:  { m_circles.push_back(shape);  PhysicsManager::physics2D.CreateShape(&m_circles.back(), this); break; }
+			case ShapeType_Capsule: { m_capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&m_capsules.back(), this); break; }
+			case ShapeType_Polygon: { m_polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&m_polygons.back(), this); break; }			
+			case ShapeType_Chain:   { m_chains.push_back(shape);   PhysicsManager::physics2D.CreateShape(&m_chains.back(), this); break; }
+			default: break;
+		}
+	}
+
+	void Body2D::AddJoint(JointType type, json componentJson, std::string name)
+	{
+		Joint joint = Joint(GetOwnerID(), m_freedJointIDs.size() ? m_freedJointIDs.back() : m_currentJointID, type);
+		if (m_freedJointIDs.size())
+			m_freedJointIDs.pop_back();
+		else
+		 	m_currentJointID++;
+
+		joint.PutData(componentJson, name);
+
+		switch (type)
+		{
+			case JointType_Distance:  { m_distanceJoints.push_back(joint);  PhysicsManager::physics2D.CreateJoint(&m_distanceJoints.back()); break; }
+			case JointType_Prismatic: { m_prismaticJoints.push_back(joint); PhysicsManager::physics2D.CreateJoint(&m_prismaticJoints.back()); break; }
+			case JointType_Revolute:  { m_revoluteJoints.push_back(joint);  PhysicsManager::physics2D.CreateJoint(&m_revoluteJoints.back()); break; }
+			case JointType_Mouse: 	  { m_mouseJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_mouseJoints.back()); break; }			
+			case JointType_Wheel: 	  { m_wheelJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_wheelJoints.back()); break; }
+			case JointType_Motor:     { m_motorJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_motorJoints.back()); break; }
+			case JointType_Weld:      { m_weldJoints.push_back(joint);      PhysicsManager::physics2D.CreateJoint(&m_weldJoints.back()); break; }
+			default: break;
+		}		
+	}
 
 	void Body2D::Cleanup()
 	{
@@ -281,6 +321,11 @@ namespace FlatEngine
 			return;
 
 		Transform* ownerTransform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());		
+		
+		if (ownerTransform == nullptr)
+			return;
+
+		Vector3 ownerPos = ownerTransform->GetPosition();
 
 		for (Shape* shape : GetShapes())
 		{
@@ -291,42 +336,39 @@ namespace FlatEngine
 			std::string activeString = IsActive() ? "Active" : "Inactive";
 			std::string postfix = colliderString + activeString;
 
-			std::visit([this, shape, ownerTransform, postfix](auto&& sData)
+			std::visit([this, shape, ownerPos, postfix](auto&& sData)
 			{
 				using T = std::decay_t<decltype(sData)>;
 
 				if constexpr (std::is_same_v<T, BoxShapeData>)
 				{	
-					Transform renderTransform;
-					Vector3 ownerPos = ownerTransform->GetPosition();					
+					Transform renderTransform;									
 					renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
 					renderTransform.SetScale(Vector3(sData.dimensions.x, sData.dimensions.y, 1));
 					shape->renderShapes[0].transform = renderTransform;
 				}
 				else if constexpr (std::is_same_v<T, CircleShapeData>)
 				{
-					Transform renderTransform;
-					Vector3 ownerPos = ownerTransform->GetPosition();	
+					Transform renderTransform;						
 					renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
 					renderTransform.SetScale(Vector3(sData.radius, sData.radius, 1));
 					shape->renderShapes[0].transform = renderTransform;
 				}
 				else if constexpr (std::is_same_v<T, CapsuleShapeData>)
 				{
-					if (shape->renderShapes.size() != 6)
+					if (shape->renderShapes.size() != 8)
 					{
 						Logger::log.Err("Body2D::UpdateRenderShapes() : GameObject ID:{} Body2D shape->renderShapes does not contain enough render SceneRenderObjects to draw Capsule.", GetOwnerID());
 						return;
 					}
-				
-					float rotation = Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));
+									
 					float center1Value = ((sData.length / 2) - sData.radius) * -1;
 					float center2Value = (sData.length / 2) - sData.radius;
 					b2Vec2 offset = b2Vec2(sData.offset.x, sData.offset.y);
-					b2Vec2 center1 = b2Vec2(sData.b_horizontal ? center1Value : 0, sData.b_horizontal ? 0 : center1Value);
-					b2Vec2 center2 = b2Vec2(sData.b_horizontal ? center2Value : 0, sData.b_horizontal ? 0 : center2Value);				
-					Vector2 center1World = Vector2(b2Body_GetWorldPoint(shape->Getb2BodyID(), offset + center1));
-					Vector2 center2World = Vector2(b2Body_GetWorldPoint(shape->Getb2BodyID(), offset + center2));
+					Vector2 center1 = b2Vec2(sData.b_horizontal ? center1Value : 0, sData.b_horizontal ? 0 : center1Value);
+					Vector2 center2 = b2Vec2(sData.b_horizontal ? center2Value : 0, sData.b_horizontal ? 0 : center2Value);				
+					Vector2 center1World = Vector2(b2Body_GetWorldPoint(m_bodyID, offset + b2Vec2(center1.x, center1.y)));
+					Vector2 center2World = Vector2(b2Body_GetWorldPoint(m_bodyID, offset + b2Vec2(center2.x, center2.y)));
 					Vector2 difference = center2World - center1World;
 					Vector2 diffN = Vector2::Normalize(difference);
 					Vector2 diffNR = diffN * sData.radius;
@@ -334,70 +376,90 @@ namespace FlatEngine
 					Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
 					
 					// circles
-					shape->renderShapes[0].transform.SetPosition(Vector3(center1World, ownerTransform->GetPosition().z));
+					shape->renderShapes[0].transform.SetPosition(Vector3(center1World, ownerPos.z));
 					shape->renderShapes[0].transform.SetScale(Vector3(sData.radius, sData.radius, 1));
-					shape->renderShapes[1].transform.SetPosition(Vector3(center2World, ownerTransform->GetPosition().z));
+					shape->renderShapes[1].transform.SetPosition(Vector3(center2World, ownerPos.z));
 					shape->renderShapes[1].transform.SetScale(Vector3(sData.radius, sData.radius, 1));
-					
+					// Lines
+					shape->renderShapes[2].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World - diffNR, ownerPos.z), Vector3(center1World + diffNR, ownerPos.z));				
+					shape->renderShapes[3].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center2World - diffNR, ownerPos.z), Vector3(center2World + diffNR, ownerPos.z));				
+					shape->renderShapes[4].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World - diffPerp, ownerPos.z), Vector3(center1World + diffPerp, ownerPos.z));				
+					shape->renderShapes[5].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center2World - diffPerp, ownerPos.z), Vector3(center2World + diffPerp, ownerPos.z));				
+					shape->renderShapes[6].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World + diffPerp, ownerPos.z), Vector3(center1World + diffPerp + difference, ownerPos.z));												
+					shape->renderShapes[7].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World + flippedDiffPerp, ownerPos.z), Vector3(center1World + flippedDiffPerp + difference, ownerPos.z));									
+
 					std::string shapeString = "capsule";
 					Vector4 color = Assets::assetManager.GetColor(shapeString + postfix);
 					Vector4 colorLight = Assets::assetManager.GetColor(shapeString + postfix + "Light");
 
-					shape->renderShapes[0].mesh.SetUBOVec4("color", color); // circle1
-					shape->renderShapes[1].mesh.SetUBOVec4("color", color); // circle2
-					shape->renderShapes[2].mesh.SetUBOVec4("color", color); // side1
-					shape->renderShapes[3].mesh.SetUBOVec4("color", color); // side2
-					shape->renderShapes[4].mesh.SetUBOVec4("color", color); // top1
-					shape->renderShapes[5].mesh.SetUBOVec4("color", color); // top2
-
-					// FL::DrawCircle(center1, radiusScreen, colorLight, drawList, 2.0f);
-					// FL::DrawCircle(center1, radiusScreen, color, drawList);
-					// FL::DrawCircle(center2, radiusScreen, colorLight, drawList, 2.0f);
-					// FL::DrawCircle(center2, radiusScreen, color, drawList);
-
-					// FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, 2.0f, drawList);
-					// FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, 2.0f, drawList);
-					// FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, 2.0f, drawList);
-					// FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, 2.0f, drawList);
-
-					// // Sides
-					// FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, colorLight, 2.0f, drawList);
-					// FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, 1.0f, drawList);
-
-					// FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, colorLight, 2.0f, drawList);
-					// FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, 1.0f, drawList);
+					shape->renderShapes[0].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[1].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[2].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[3].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[4].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[5].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[6].mesh.SetUBOVec4("color", color);
+					shape->renderShapes[7].mesh.SetUBOVec4("color", color);		
 				}
 				else if constexpr (std::is_same_v<T, PolygonShapeData>)
 				{
-
 				}
 				else if constexpr (std::is_same_v<T, ChainShapeData>)
 				{
-
 				}
 			}, shape->shapeData);
+		}
+
+		for (Joint* joint : GetJoints())
+		{
+			if (joint->renderShapes.size() == 0)
+				return;
+			
+			std::string postfix = IsActive() ? "Active" : "Inactive";			
+
+			// Common to all Joints
+			std::visit([this, joint, ownerPos, postfix](auto&& jData) 
+			{
+				if (joint->GetBodyB() == nullptr)
+					return;
+				
+				Vector3 bodyAWorld = Vector3(b2Body_GetWorldPoint(m_bodyID, b2Vec2(joint->anchorA.x, joint->anchorA.y)), ownerPos.z);
+				Vector3 bodyBWorld = Vector3(b2Body_GetWorldPoint(joint->GetBodyB()->GetBodyID(), b2Vec2(joint->anchorB.x, joint->anchorB.y)), ownerPos.z);
+				joint->renderShapes[0].transform = SceneView::GetLineTransformForStartEndPos(bodyAWorld, bodyBWorld);
+			}, joint->jointData);
+
+			// std::visit([this, joint, ownerPos, postfix](auto&& jData)
+			// {
+			// 	using T = std::decay_t<decltype(jData)>;
+
+			// 	if constexpr (std::is_same_v<T, DistanceJointData>)
+			// 	{	
+			// 	}
+			// 	else if constexpr (std::is_same_v<T, RevoluteJointData>)
+			// 	{
+			// 	}
+			// 	else if constexpr (std::is_same_v<T, PrismaticJointData>)
+			// 	{		
+			// 	}
+			// 	else if constexpr (std::is_same_v<T, MouseJointData>)
+			// 	{
+			// 	}
+			// 	else if constexpr (std::is_same_v<T, WeldJointData>)
+			// 	{
+			// 	}
+			// 	else if constexpr (std::is_same_v<T, MotorJointData>)
+			// 	{
+			// 	}
+			// 	else if constexpr (std::is_same_v<T, WheelJointData>)
+			// 	{
+			// 	}
+			// }, joint->jointData);
 		}
 	}
 
 	std::vector<SceneView::SceneRenderObject> CreateCapsuleRenderObjects()
 	{
 		return std::vector<SceneView::SceneRenderObject>();
-	}
-
-	void Body2D::AddShape(ShapeType type, json componentJson, std::string name)
-	{
-		Shape shape = Shape(GetOwnerID(), type);
-		shape.PutData(componentJson, name);
-
-		switch (type)
-		{
-			case ShapeType_Box:     { m_boxes.push_back(shape);    PhysicsManager::physics2D.CreateShape(&m_boxes.back(), this); break; }
-			case ShapeType_Circle:  { m_circles.push_back(shape);  PhysicsManager::physics2D.CreateShape(&m_circles.back(), this); break; }
-			case ShapeType_Capsule: { m_capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&m_capsules.back(), this); break; }
-			case ShapeType_Polygon: { m_polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&m_polygons.back(), this); break; }			
-			case ShapeType_Chain:   { m_chains.push_back(shape);   PhysicsManager::physics2D.CreateShape(&m_chains.back(), this); break; }
-			default: break;
-		}
 	}
 
 	void Body2D::SetPosition(Vector2 newPosition)
@@ -500,14 +562,6 @@ namespace FlatEngine
 		// b2Rot targetRotation = b2MakeRot(B2_PI);
 		// b2Transform target = {targetPosition, targetRotation};
 		// b2Body_SetTargetTransform(m_bodyID, target, timeStep);
-	}
-
-	void Body2D::RecreateShapes()
-	{
-		for (Shape* shape : GetShapes())
-		{
-			PhysicsManager::physics2D.RecreateShape(shape);			
-		}
 	}
 
 	void Body2D::ApplyForce(Vector2 force, Vector2 worldPoint)
@@ -673,29 +727,6 @@ namespace FlatEngine
 		{
 			m_chains.erase(std::next(m_chains.begin(), toDelete));
 		}
-	}
-
-	void Body2D::AddJoint(JointType type, json componentJson, std::string name)
-	{
-		Joint joint = Joint(GetOwnerID(), m_freedJointIDs.size() ? m_freedJointIDs.back() : m_currentJointID, type);
-		if (m_freedJointIDs.size())
-			m_freedJointIDs.pop_back();
-		else
-		 	m_currentJointID++;
-
-		joint.PutData(componentJson, name);
-
-		switch (type)
-		{
-			case JointType_Distance:  { joint.jointData = DistanceJointData();  joint.renderShapes.push_back(SceneView::CreateQuadObject());   m_distanceJoints.push_back(joint);  PhysicsManager::physics2D.CreateJoint(&m_distanceJoints.back()); break; }
-			case JointType_Prismatic: { joint.jointData = PrismaticJointData(); joint.renderShapes.push_back(SceneView::CreateCircleObject()); m_prismaticJoints.push_back(joint); PhysicsManager::physics2D.CreateJoint(&m_prismaticJoints.back()); break; }
-			case JointType_Revolute:  { joint.jointData = RevoluteJointData();  joint.renderShapes.push_back(SceneView::CreateLineObject());   m_revoluteJoints.push_back(joint);  PhysicsManager::physics2D.CreateJoint(&m_revoluteJoints.back()); break; }
-			case JointType_Mouse: 	  { joint.jointData = MouseJointData();     joint.renderShapes.push_back(SceneView::CreateLineObject());   m_mouseJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_mouseJoints.back()); break; }			
-			case JointType_Wheel: 	  { joint.jointData = WheelJointData();     joint.renderShapes.push_back(SceneView::CreateLineObject());   m_wheelJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_wheelJoints.back()); break; }
-			case JointType_Motor:     { joint.jointData = MotorJointData();     joint.renderShapes.push_back(SceneView::CreateLineObject());   m_motorJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_motorJoints.back()); break; }
-			case JointType_Weld:      { joint.jointData = WeldJointData();      joint.renderShapes.push_back(SceneView::CreateLineObject());   m_weldJoints.push_back(joint);      PhysicsManager::physics2D.CreateJoint(&m_weldJoints.back()); break; }
-			default: break;
-		}		
 	}
 
 	std::vector<Joint*> Body2D::GetJoints()

@@ -52,15 +52,15 @@ namespace FlatEngine
 		bool b_enableLimit = false;
 		bool b_enableMotor = true;
 		bool b_enableSpring = false;			
-		float minLength = 3.0f;
-		float maxLength = 5.0f;
+		float minLength = 0.1f;
+		float maxLength = 100.0f;
 		float length = 4.0f;
 		float maxMotorForce = 2.0f;
 		float motorSpeed = 10.0f;
 		
 		json GetData()
 		{
-			json jsonData = {			
+			json jointData = {			
 				{ "dampingRatio", dampingRatio },
 				{ "b_enableLimit", b_enableLimit },
 				{ "b_enableMotor", b_enableMotor },
@@ -73,27 +73,30 @@ namespace FlatEngine
 				{ "motorSpeed", motorSpeed }
 			};
 			
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			b_enableLimit = JsonHelper::CheckJsonBool(jsonData, "b_enableLimit", name);
-			b_enableMotor = JsonHelper::CheckJsonBool(jsonData, "b_enableMotor", name);
-			b_enableSpring = JsonHelper::CheckJsonBool(jsonData, "b_enableSpring", name);
-			dampingRatio = JsonHelper::CheckJsonFloat(jsonData, "dampingRatio", name);
-			hertz = JsonHelper::CheckJsonFloat(jsonData, "hertz", name);
-			minLength = JsonHelper::CheckJsonFloat(jsonData, "minLength", name);
-			maxLength = JsonHelper::CheckJsonFloat(jsonData, "maxLength", name);		
-			length = JsonHelper::CheckJsonFloat(jsonData, "length", name);
-			maxMotorForce = JsonHelper::CheckJsonFloat(jsonData, "maxMotorForce", name);
-			motorSpeed = JsonHelper::CheckJsonFloat(jsonData, "motorSpeed", name);
+			if (jointData.empty())
+				return;
+
+			b_enableLimit = JsonHelper::CheckJsonBool(jointData, "b_enableLimit", name);
+			b_enableMotor = JsonHelper::CheckJsonBool(jointData, "b_enableMotor", name);
+			b_enableSpring = JsonHelper::CheckJsonBool(jointData, "b_enableSpring", name);
+			dampingRatio = JsonHelper::CheckJsonFloat(jointData, "dampingRatio", name);
+			hertz = JsonHelper::CheckJsonFloat(jointData, "hertz", name);
+			minLength = JsonHelper::CheckJsonFloat(jointData, "minLength", name);
+			maxLength = JsonHelper::CheckJsonFloat(jointData, "maxLength", name);		
+			length = JsonHelper::CheckJsonFloat(jointData, "length", name);
+			maxMotorForce = JsonHelper::CheckJsonFloat(jointData, "maxMotorForce", name);
+			motorSpeed = JsonHelper::CheckJsonFloat(jointData, "motorSpeed", name);
 		}
 
-		void SetLength(float length)
+		void SetLength(float setLength)
 		{
-			if (length > 0)
+			if (setLength > 0)
 			{
-				length = length;
+				length = setLength;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -114,12 +117,12 @@ namespace FlatEngine
 			}
 		}
 
-		void SetLengthRange(float minLength, float maxLength)
+		void SetLengthRange(float setMinLength, float setMaxLength)
 		{
-			if (minLength >= 0 && maxLength >= minLength)
+			if (setMinLength >= 0 && setMaxLength >= setMinLength)
 			{
-				minLength = minLength;
-				maxLength = maxLength;
+				minLength = setMinLength;
+				maxLength = setMaxLength;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -128,9 +131,9 @@ namespace FlatEngine
 			}
 		}
 
-		void SetEnableSpring(bool b_enableSpring)
+		void SetEnableSpring(bool b_setEnableSpring)
 		{
-			b_enableSpring = b_enableSpring;
+			b_enableSpring = b_setEnableSpring;
 
 			if (b2Joint_IsValid(jointID))
 			{
@@ -188,9 +191,9 @@ namespace FlatEngine
 			}
 		}
 
-		void SetEnableMotor(bool b_enableMotor)
+		void SetEnableMotor(bool b_setEnableMotor)
 		{
-			b_enableMotor = b_enableMotor;
+			b_enableMotor = b_setEnableMotor;
 
 			if (b2Joint_IsValid(jointID))
 			{
@@ -198,11 +201,11 @@ namespace FlatEngine
 			}
 		}
 
-		void SetMotorSpeed(float motorSpeed)
+		void SetMotorSpeed(float setMotorSpeed)
 		{
-			if (motorSpeed >= 0)
+			if (setMotorSpeed >= 0)
 			{
-				motorSpeed = motorSpeed;
+				motorSpeed = setMotorSpeed;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -223,11 +226,11 @@ namespace FlatEngine
 			}		
 		}
 
-		void SetMaxMotorForce(float maxMotorForce)
+		void SetMaxMotorForce(float setMaxMotorForce)
 		{
-			if (maxMotorForce >= 0)
+			if (setMaxMotorForce >= 0)
 			{
-				maxMotorForce = maxMotorForce;
+				maxMotorForce = setMaxMotorForce;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -248,9 +251,9 @@ namespace FlatEngine
 			}
 		}
 
-		void SetEnableLimit(bool b_enableLimit)
+		void SetEnableLimit(bool b_setEnableLimit)
 		{
-			b_enableLimit = b_enableLimit;
+			b_enableLimit = b_setEnableLimit;
 
 			if (b2Joint_IsValid(jointID))
 			{
@@ -275,7 +278,7 @@ namespace FlatEngine
 
 		json GetData()
 		{
-			json jsonData = {
+			json jointData = {
 				{ "angleBetween", angleBetween },
 				{ "angularDampingRatio", angularDampingRatio },
 				{ "angularHertz", angularHertz },
@@ -291,21 +294,23 @@ namespace FlatEngine
 				{ "relativeTransformPosY", relativeTransformPos.y }
 			};
 
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			angleBetween = JsonHelper::CheckJsonBool(jsonData, "angleBetween", name);
-			angularDampingRatio = JsonHelper::CheckJsonBool(jsonData, "angularDampingRatio", name);
-			angularHertz = JsonHelper::CheckJsonBool(jsonData, "angularHertz", name);
-			angularVelocity = JsonHelper::CheckJsonFloat(jsonData, "angularVelocity", name);
-			linearDampingRatio = JsonHelper::CheckJsonFloat(jsonData, "linearDampingRatio", name);
-			linearHertz = JsonHelper::CheckJsonFloat(jsonData, "linearHertz", name);
-			//linearVelocity = JsonHelper::CheckJsonFloat(jsonData, "linearVelocity", name);
-			maxSpringForce = JsonHelper::CheckJsonFloat(jsonData, "maxSpringForce", name);
-			maxVelocityForce = JsonHelper::CheckJsonFloat(jsonData, "maxVelocityForce", name);
-			maxVelocityTorque = JsonHelper::CheckJsonFloat(jsonData, "maxVelocityTorque", name);
-			relativeTransformPos = Vector2(JsonHelper::CheckJsonFloat(jsonData, "relativeTransformPosX", name), JsonHelper::CheckJsonFloat(jsonData, "relativeTransformPosY", name));	
+			if (jointData.empty())
+				return;
+
+			angleBetween = JsonHelper::CheckJsonBool(jointData, "angleBetween", name);
+			angularDampingRatio = JsonHelper::CheckJsonBool(jointData, "angularDampingRatio", name);
+			angularHertz = JsonHelper::CheckJsonBool(jointData, "angularHertz", name);
+			angularVelocity = JsonHelper::CheckJsonFloat(jointData, "angularVelocity", name);
+			linearDampingRatio = JsonHelper::CheckJsonFloat(jointData, "linearDampingRatio", name);
+			linearHertz = JsonHelper::CheckJsonFloat(jointData, "linearHertz", name);			
+			maxSpringForce = JsonHelper::CheckJsonFloat(jointData, "maxSpringForce", name);
+			maxVelocityForce = JsonHelper::CheckJsonFloat(jointData, "maxVelocityForce", name);
+			maxVelocityTorque = JsonHelper::CheckJsonFloat(jointData, "maxVelocityTorque", name);
+			relativeTransformPos = Vector2(JsonHelper::CheckJsonFloat(jointData, "relativeTransformPosX", name), JsonHelper::CheckJsonFloat(jointData, "relativeTransformPosY", name));	
 		}
 	};
 	struct MouseJointData {
@@ -316,19 +321,22 @@ namespace FlatEngine
 
 		json GetData()
 		{
-			json jsonData = {
+			json jointData = {
 				{ "dampingRatio", dampingRatio },
 				{ "hertz", hertz },
 				{ "maxForce", maxForce }
 			};
 
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			dampingRatio = JsonHelper::CheckJsonFloat(jsonData, "dampingRatio", name);
-			hertz = JsonHelper::CheckJsonFloat(jsonData, "hertz", name);
-			maxForce = JsonHelper::CheckJsonFloat(jsonData, "maxForce", name);
+			if (jointData.empty())
+				return;
+
+			dampingRatio = JsonHelper::CheckJsonFloat(jointData, "dampingRatio", name);
+			hertz = JsonHelper::CheckJsonFloat(jointData, "hertz", name);
+			maxForce = JsonHelper::CheckJsonFloat(jointData, "maxForce", name);
 		}
 	};
 	struct PrismaticJointData {
@@ -348,7 +356,7 @@ namespace FlatEngine
 
 		json GetData()
 		{
-			json jsonData = {
+			json jointData = {
 				{ "dampingRatio", dampingRatio },
 				{ "b_enableLimit", b_enableLimit },
 				{ "b_enableMotor", b_enableMotor },
@@ -364,21 +372,24 @@ namespace FlatEngine
 				{ "localAxisAY", localAxisA.y }			
 			};
 
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			b_enableLimit = JsonHelper::CheckJsonBool(jsonData, "b_enableLimit", name);
-			b_enableMotor = JsonHelper::CheckJsonBool(jsonData, "b_enableMotor", name);
-			b_enableSpring = JsonHelper::CheckJsonBool(jsonData, "b_enableSpring", name);
-			dampingRatio = JsonHelper::CheckJsonFloat(jsonData, "dampingRatio", name);
-			hertz = JsonHelper::CheckJsonFloat(jsonData, "hertz", name);
-			localAxisA = Vector2(JsonHelper::CheckJsonFloat(jsonData, "localAxisAX", name), JsonHelper::CheckJsonFloat(jsonData, "localAxisAY", name));
-			lowerTranslation = JsonHelper::CheckJsonFloat(jsonData, "lowerTranslation", name);
-			upperTranslation = JsonHelper::CheckJsonFloat(jsonData, "upperTranslation", name);
-			targetTranslation = JsonHelper::CheckJsonFloat(jsonData, "targetTranslation", name);
-			maxMotorForce = JsonHelper::CheckJsonFloat(jsonData, "maxMotorForce", name);
-			motorSpeed = JsonHelper::CheckJsonFloat(jsonData, "motorSpeed", name);
+			if (jointData.empty())
+				return;
+
+			b_enableLimit = JsonHelper::CheckJsonBool(jointData, "b_enableLimit", name);
+			b_enableMotor = JsonHelper::CheckJsonBool(jointData, "b_enableMotor", name);
+			b_enableSpring = JsonHelper::CheckJsonBool(jointData, "b_enableSpring", name);
+			dampingRatio = JsonHelper::CheckJsonFloat(jointData, "dampingRatio", name);
+			hertz = JsonHelper::CheckJsonFloat(jointData, "hertz", name);
+			localAxisA = Vector2(JsonHelper::CheckJsonFloat(jointData, "localAxisAX", name), JsonHelper::CheckJsonFloat(jointData, "localAxisAY", name));
+			lowerTranslation = JsonHelper::CheckJsonFloat(jointData, "lowerTranslation", name);
+			upperTranslation = JsonHelper::CheckJsonFloat(jointData, "upperTranslation", name);
+			targetTranslation = JsonHelper::CheckJsonFloat(jointData, "targetTranslation", name);
+			maxMotorForce = JsonHelper::CheckJsonFloat(jointData, "maxMotorForce", name);
+			motorSpeed = JsonHelper::CheckJsonFloat(jointData, "motorSpeed", name);
 		}
 
 		void SetReferenceAngle(float length)
@@ -402,12 +413,12 @@ namespace FlatEngine
 		}
 
 		// Translation upper and lower tied to b_enableLimit
-		void SetTranslationRange(float lowerTranslation, float upperTranslation)
+		void SetTranslationRange(float setLowerTranslation, float setUpperTranslation)
 		{
 			if (true) // some constraint on translation range todo)
 			{
-				lowerTranslation = lowerTranslation;
-				upperTranslation = upperTranslation;
+				lowerTranslation = setLowerTranslation;
+				upperTranslation = setUpperTranslation;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -420,9 +431,9 @@ namespace FlatEngine
 			}
 		}
 
-		void SetEnableSpring(bool b_enableSpring)
+		void SetEnableSpring(bool b_setEnableSpring)
 		{
-			b_enableSpring = b_enableSpring;
+			b_enableSpring = b_setEnableSpring;
 
 			if (b2Joint_IsValid(jointID))
 			{
@@ -492,9 +503,9 @@ namespace FlatEngine
 			}
 		}
 
-		void SetEnableMotor(bool b_enableMotor)
+		void SetEnableMotor(bool b_setEnableMotor)
 		{
-			b_enableMotor = b_enableMotor;
+			b_enableMotor = b_setEnableMotor;
 
 			if (b2Joint_IsValid(jointID))
 			{
@@ -506,11 +517,11 @@ namespace FlatEngine
 			}
 		}
 
-		void SetMotorSpeed(float motorSpeed)
+		void SetMotorSpeed(float setMotorSpeed)
 		{
-			if (motorSpeed >= 0)
+			if (setMotorSpeed >= 0)
 			{
-				motorSpeed = motorSpeed;
+				motorSpeed = setMotorSpeed;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -535,11 +546,11 @@ namespace FlatEngine
 			}
 		}
 
-		void SetMaxMotorForce(float maxMotorForce)
+		void SetMaxMotorForce(float setMaxMotorForce)
 		{
-			if (maxMotorForce >= 0)
+			if (setMaxMotorForce >= 0)
 			{
-				maxMotorForce = maxMotorForce;
+				maxMotorForce = setMaxMotorForce;
 
 				if (b2Joint_IsValid(jointID))
 				{
@@ -564,9 +575,9 @@ namespace FlatEngine
 			}
 		}
 
-		void SetEnableLimit(bool b_enableLimit)
+		void SetEnableLimit(bool b_setEnableLimit)
 		{
-			b_enableLimit = b_enableLimit;
+			b_enableLimit = b_setEnableLimit;
 
 			if (b2Joint_IsValid(jointID))
 			{
@@ -595,7 +606,7 @@ namespace FlatEngine
 
 		json GetData()
 		{
-			json jsonData = {
+			json jointData = {
 				{ "dampingRatio", dampingRatio },
 				{ "b_enableLimit", b_enableLimit },
 				{ "b_enableMotor", b_enableMotor },
@@ -610,22 +621,25 @@ namespace FlatEngine
 				{ "targetAngle", targetAngle }
 			};
 
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			b_enableLimit = JsonHelper::CheckJsonBool(jsonData, "b_enableLimit", name);
-			b_enableMotor = JsonHelper::CheckJsonBool(jsonData, "b_enableMotor", name);
-			b_enableSpring = JsonHelper::CheckJsonBool(jsonData, "b_enableSpring", name);
-			dampingRatio = JsonHelper::CheckJsonFloat(jsonData, "dampingRatio", name);
-			hertz = JsonHelper::CheckJsonFloat(jsonData, "hertz", name);
-			drawSize = JsonHelper::CheckJsonFloat(jsonData, "drawSize", name);
-			lowerAngle = JsonHelper::CheckJsonFloat(jsonData, "lowerAngle", name);
-			upperAngle = JsonHelper::CheckJsonFloat(jsonData, "upperAngle", name);
-			maxMotorTorque = JsonHelper::CheckJsonFloat(jsonData, "maxMotorForce", name);
-			motorSpeed = JsonHelper::CheckJsonFloat(jsonData, "motorSpeed", name);
-			referenceAngle = JsonHelper::CheckJsonFloat(jsonData, "referenceAngle", name);
-			targetAngle = JsonHelper::CheckJsonFloat(jsonData, "targetAngle", name);	
+			if (jointData.empty())
+				return;
+
+			b_enableLimit = JsonHelper::CheckJsonBool(jointData, "b_enableLimit", name);
+			b_enableMotor = JsonHelper::CheckJsonBool(jointData, "b_enableMotor", name);
+			b_enableSpring = JsonHelper::CheckJsonBool(jointData, "b_enableSpring", name);
+			dampingRatio = JsonHelper::CheckJsonFloat(jointData, "dampingRatio", name);
+			hertz = JsonHelper::CheckJsonFloat(jointData, "hertz", name);
+			drawSize = JsonHelper::CheckJsonFloat(jointData, "drawSize", name);
+			lowerAngle = JsonHelper::CheckJsonFloat(jointData, "lowerAngle", name);
+			upperAngle = JsonHelper::CheckJsonFloat(jointData, "upperAngle", name);
+			maxMotorTorque = JsonHelper::CheckJsonFloat(jointData, "maxMotorForce", name);
+			motorSpeed = JsonHelper::CheckJsonFloat(jointData, "motorSpeed", name);
+			referenceAngle = JsonHelper::CheckJsonFloat(jointData, "referenceAngle", name);
+			targetAngle = JsonHelper::CheckJsonFloat(jointData, "targetAngle", name);	
 		}
 	};
 	struct WeldJointData {
@@ -638,7 +652,7 @@ namespace FlatEngine
 
 		json GetData()
 		{
-			json jsonData = {
+			json jointData = {
 				{ "angularDampingRatio", angularDampingRatio },
 				{ "angularHertz", angularHertz },
 				{ "linearDampingRatio", linearDampingRatio },
@@ -646,15 +660,18 @@ namespace FlatEngine
 				{ "referenceAngle", referenceAngle }
 			};
 
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			angularDampingRatio = JsonHelper::CheckJsonBool(jsonData, "angularDampingRatio", name);
-			angularHertz = JsonHelper::CheckJsonBool(jsonData, "angularHertz", name);
-			linearDampingRatio = JsonHelper::CheckJsonBool(jsonData, "linearDampingRatio", name);
-			linearHertz = JsonHelper::CheckJsonFloat(jsonData, "linearHertz", name);
-			referenceAngle = JsonHelper::CheckJsonFloat(jsonData, "referenceAngle", name);
+			if (jointData.empty())
+				return;
+
+			angularDampingRatio = JsonHelper::CheckJsonBool(jointData, "angularDampingRatio", name);
+			angularHertz = JsonHelper::CheckJsonBool(jointData, "angularHertz", name);
+			linearDampingRatio = JsonHelper::CheckJsonBool(jointData, "linearDampingRatio", name);
+			linearHertz = JsonHelper::CheckJsonFloat(jointData, "linearHertz", name);
+			referenceAngle = JsonHelper::CheckJsonFloat(jointData, "referenceAngle", name);
 		}
 	};
 	struct WheelJointData {
@@ -672,7 +689,7 @@ namespace FlatEngine
 
 		json GetData()
 		{
-			json jsonData = {
+			json jointData = {
 				{ "dampingRatio", dampingRatio },
 				{ "b_enableLimit", b_enableLimit },
 				{ "b_enableMotor", b_enableMotor },
@@ -686,20 +703,23 @@ namespace FlatEngine
 				{ "motorSpeed", motorSpeed }			
 			};
 
-			return jsonData;
+			return jointData;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json jointData, std::string name)
 		{
-			b_enableLimit = JsonHelper::CheckJsonBool(jsonData, "b_enableLimit", name);
-			b_enableMotor = JsonHelper::CheckJsonBool(jsonData, "b_enableMotor", name);
-			b_enableSpring = JsonHelper::CheckJsonBool(jsonData, "b_enableSpring", name);
-			dampingRatio = JsonHelper::CheckJsonFloat(jsonData, "dampingRatio", name);
-			hertz = JsonHelper::CheckJsonFloat(jsonData, "hertz", name);
-			localAxisA = Vector2(JsonHelper::CheckJsonFloat(jsonData, "localAxisAX", name), JsonHelper::CheckJsonFloat(jsonData, "localAxisAY", name));
-			lowerTranslation = JsonHelper::CheckJsonFloat(jsonData, "lowerTranslation", name);
-			upperTranslation = JsonHelper::CheckJsonFloat(jsonData, "upperTranslation", name);
-			maxMotorTorque = JsonHelper::CheckJsonFloat(jsonData, "maxMotorForce", name);
-			motorSpeed = JsonHelper::CheckJsonFloat(jsonData, "motorSpeed", name);
+			if (jointData.empty())
+				return;
+
+			b_enableLimit = JsonHelper::CheckJsonBool(jointData, "b_enableLimit", name);
+			b_enableMotor = JsonHelper::CheckJsonBool(jointData, "b_enableMotor", name);
+			b_enableSpring = JsonHelper::CheckJsonBool(jointData, "b_enableSpring", name);
+			dampingRatio = JsonHelper::CheckJsonFloat(jointData, "dampingRatio", name);
+			hertz = JsonHelper::CheckJsonFloat(jointData, "hertz", name);
+			localAxisA = Vector2(JsonHelper::CheckJsonFloat(jointData, "localAxisAX", name), JsonHelper::CheckJsonFloat(jointData, "localAxisAY", name));
+			lowerTranslation = JsonHelper::CheckJsonFloat(jointData, "lowerTranslation", name);
+			upperTranslation = JsonHelper::CheckJsonFloat(jointData, "upperTranslation", name);
+			maxMotorTorque = JsonHelper::CheckJsonFloat(jointData, "maxMotorForce", name);
+			motorSpeed = JsonHelper::CheckJsonFloat(jointData, "motorSpeed", name);
 		}
 	};
 
@@ -710,7 +730,7 @@ namespace FlatEngine
 	public:
 		Joint(long ownerID, long myID, JointType type = JointType_None);
 		json GetData();
-		void PutData(json jsonData, std::string name);
+		void PutData(json jointData, std::string name);
 		const long GetID();
 		void SetOwnerID(long ownerID);
 		long GetOwnerID();
@@ -722,7 +742,8 @@ namespace FlatEngine
 		Body2D* GetBodyA();
 		Body2D* GetBodyB();		
 		bool HasValidBodies();
-		bool CollideConnected();
+		bool DoesCollideConnected();
+		void SetCollideConnected(bool b_collideConnected);
 		Vector2 GetAnchorA();
 		Vector2 GetAnchorB();
 		void SetAnchorA(Vector2 anchorA);

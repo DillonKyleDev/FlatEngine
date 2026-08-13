@@ -17,6 +17,7 @@
 #include "tools/FileHelper.h"
 
 #include "imgui.h"
+#include "tools/Vector3.h"
 #include <cstdint>
 
 namespace FL = FlatEngine;
@@ -398,7 +399,13 @@ namespace FlatGui
 						FL::SceneView::ToggleOrthographic();
 						FL::Settings::settings.SaveSettings();
 					}
-					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");		
+					if (ImGui::MenuItem(" Reset View"))
+					{
+						FL::SceneView::sceneViewCameraTransform.SetRotation(FL::Vector3(0,180,0));
+						FL::Settings::settings.SaveSettings();
+					}
+					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");						
 					if (ImGui::BeginMenu(" Pixels/Grid Square"))
 					{					
 						int gridStep = (int)FL::SceneView::sceneViewCamera.gridStep;

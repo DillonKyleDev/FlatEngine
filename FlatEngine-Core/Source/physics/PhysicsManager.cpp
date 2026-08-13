@@ -253,8 +253,7 @@ namespace FlatEngine
 
 					if (parentBody != nullptr)	
 					{	
-						b2ShapeId id = b2CreateCircleShape(bodyID, &shapeDef, &shape->circle);
-						// Logger::log.Debug("Circle: index: {}, world: {}, generation: {}", id.index1, id.world0, id.generation);
+						b2ShapeId id = b2CreateCircleShape(bodyID, &shapeDef, &shape->circle);						
 						shape->SetShapeID(id);	
 					}
 				}
@@ -350,7 +349,16 @@ namespace FlatEngine
 		{
 			DestroyBody(parentBody->GetBodyID());
 			CreateBody(parentBody);
-			parentBody->RecreateShapes();			
+
+			for (Shape* shape : parentBody->GetShapes())
+			{
+				RecreateShape(shape);			
+			}
+
+			for (Joint* joint : parentBody->GetJoints())
+			{
+				RecreateJoint(joint);			
+			}
 		}
 
 		void Physics2D::DestroyShape(Shape* shape)
@@ -385,8 +393,7 @@ namespace FlatEngine
 				return;
 
 			DestroyJoint(joint);
-
-			b2JointId jointID = b2_nullJointId;
+			
 			b2JointDef jointDef;
 			jointDef.userData = joint;
 			jointDef.bodyIdA = bodyA->GetBodyID();
@@ -417,7 +424,7 @@ namespace FlatEngine
 					distanceJointDef.maxLength = jData.maxLength;
 					distanceJointDef.motorSpeed = jData.motorSpeed;
 					distanceJointDef.maxMotorForce = jData.maxMotorForce;
-					joint->m_jointID = b2CreateDistanceJoint(this->m_worldID, &distanceJointDef);
+					joint->SetJointID(b2CreateDistanceJoint(this->m_worldID, &distanceJointDef));
 				}
 				else if constexpr (std::is_same_v<T, RevoluteJointData>)
 				{
@@ -434,7 +441,7 @@ namespace FlatEngine
 					revoluteJointDef.maxMotorTorque = jData.maxMotorTorque;
 					revoluteJointDef.motorSpeed = jData.motorSpeed;
 					revoluteJointDef.targetAngle = jData.targetAngle;			
-					joint->m_jointID = b2CreateRevoluteJoint(this->m_worldID, &revoluteJointDef);					
+					joint->SetJointID(b2CreateRevoluteJoint(this->m_worldID, &revoluteJointDef));					
 				}
 				else if constexpr (std::is_same_v<T, PrismaticJointData>)
 				{
@@ -451,7 +458,7 @@ namespace FlatEngine
 					prismaticJointDef.targetTranslation = jData.targetTranslation;
 					prismaticJointDef.motorSpeed = jData.motorSpeed;
 					prismaticJointDef.maxMotorForce = jData.maxMotorForce;
-					joint->m_jointID = b2CreatePrismaticJoint(this->m_worldID, &prismaticJointDef);
+					joint->SetJointID(b2CreatePrismaticJoint(this->m_worldID, &prismaticJointDef));
 				}
 				else if constexpr (std::is_same_v<T, MouseJointData>)
 				{
@@ -461,7 +468,7 @@ namespace FlatEngine
 					mouseJointDef.maxForce = jData.maxForce;						
 					mouseJointDef.dampingRatio = jData.dampingRatio;
 					mouseJointDef.hertz = jData.hertz;			
-					joint->m_jointID = b2CreateMouseJoint(this->m_worldID, &mouseJointDef);
+					joint->SetJointID(b2CreateMouseJoint(this->m_worldID, &mouseJointDef));
 				}
 				else if constexpr (std::is_same_v<T, WeldJointData>)
 				{
@@ -471,7 +478,7 @@ namespace FlatEngine
 					weldJointDef.angularHertz = jData.angularHertz;
 					weldJointDef.linearDampingRatio = jData.linearDampingRatio;
 					weldJointDef.linearHertz = jData.linearHertz;
-					joint->m_jointID = b2CreateWeldJoint(this->m_worldID, &weldJointDef);
+					joint->SetJointID(b2CreateWeldJoint(this->m_worldID, &weldJointDef));
 				}
 				else if constexpr (std::is_same_v<T, MotorJointData>)
 				{
@@ -489,7 +496,7 @@ namespace FlatEngine
 					motorJointDef.maxVelocityTorque = jData.maxVelocityTorque;
 					motorJointDef.relativeTransform.p = Vector2::GetB2Vec2(jData.relativeTransformPos);
 					motorJointDef.relativeTransform.q = b2MakeRot(jData.angleBetween);
-					joint->m_jointID = b2CreateMotorJoint(this->m_worldID, &motorJointDef);
+					joint->SetJointID(b2CreateMotorJoint(this->m_worldID, &motorJointDef));
 				}
 				else if constexpr (std::is_same_v<T, WheelJointData>)
 				{
@@ -504,7 +511,7 @@ namespace FlatEngine
 					wheelJointDef.upperTranslation = jData.upperTranslation;
 					wheelJointDef.maxMotorTorque = jData.maxMotorTorque;
 					wheelJointDef.motorSpeed = jData.motorSpeed;
-					joint->m_jointID = b2CreateWheelJoint(this->m_worldID, &wheelJointDef);
+					joint->SetJointID(b2CreateWheelJoint(this->m_worldID, &wheelJointDef));
 				}
 			}, joint->jointData);
 		}
@@ -514,7 +521,7 @@ namespace FlatEngine
 			if (joint != nullptr && b2Joint_IsValid(joint->m_jointID))
 			{
 				b2DestroyJoint(joint->m_jointID);
-				joint->m_jointID = b2_nullJointId;
+				joint->SetJointID(b2_nullJointId);
 			}
 		}
 

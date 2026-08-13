@@ -53,7 +53,6 @@ namespace FlatEngine
         std::vector<Joint*> GetJoints();        
         void RemoveJoint(long jointID);
 		void UpdateRenderShapes();
-		void RecreateShapes();
 
 		void SetBodyID(b2BodyId bodyID);
 		void SetBodyType(b2BodyType type);

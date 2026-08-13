@@ -29,10 +29,7 @@ namespace FlatEngine
 
 	json Sprite::GetData(bool b_IDOverride)
 	{
-		json jsonData = { 
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = { 
 			{ "path", m_path },
 			{ "xScale", m_scale.x },
 			{ "yScale", m_scale.y },
@@ -45,12 +42,16 @@ namespace FlatEngine
 			{ "tintColorW", m_tintColor.w },
 			{ "renderOrder", m_renderOrder }			
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 		
-		return jsonData;
+		return componentJson;
 	}
 
 	void Sprite::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 
 		std::string pivotPoint = "Center";
@@ -95,7 +96,7 @@ namespace FlatEngine
 				m_textureHeight = meshTextures.at(0).GetHeight();
 
 				// Set pivot point to the center of the texture by default
-				m_offset = { (float)m_textureWidth / 2, (float)m_textureHeight / 2 };
+				m_offset = Vector2((float)m_textureWidth / 2, (float)m_textureHeight / 2);
 				m_pivotOffset = m_offset;				
 			}
 			else

@@ -8,7 +8,6 @@
 #include "components/Canvas.h"
 #include "components/CharacterController.h"
 #include "components/Component.h"
-#include "components/JointMaker.h"
 #include "components/Light.h"
 #include "components/Mesh.h"
 #include "components/Script.h"
@@ -51,8 +50,7 @@ namespace FlatEngine
 
 		void OnPrefabInstantiated();
 		void SortSceneObjects();
-		std::vector<GameObject*> GetSortedHierarchyObjects();
-		void CreateJoints();
+		std::vector<GameObject*> GetSortedHierarchyObjects();		
 
 		std::vector<Script*> GetScripts(long ownerID);
 		// Raw member variables
@@ -104,8 +102,7 @@ namespace FlatEngine
 		UMapVector<Button> m_Buttons;
 		UMapVector<Camera> m_Cameras;
 		UMapVector<Canvas> m_Canvases;
-		UMapVector<CharacterController> m_CharacterControllers;
-		UMapVector<JointMaker> m_JointMakers;
+		UMapVector<CharacterController> m_CharacterControllers;		
 		UMapVector<Light> m_Lights;
 		UMapVector<Mesh> m_Meshes;
 		std::map<std::string, std::vector<Mesh>> m_MeshesByMaterial;

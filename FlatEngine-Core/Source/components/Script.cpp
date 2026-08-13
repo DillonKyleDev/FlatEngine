@@ -19,11 +19,7 @@ namespace FlatEngine
 
 	json Script::GetData(bool b_IDOverride)
 	{
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() }			
-		};
+		json componentJson = Component::GetData(b_IDOverride);
 
 		json scripts = json::array();
 
@@ -44,13 +40,16 @@ namespace FlatEngine
 			scripts.push_back(scriptDataJson);
 		}
 
-		jsonData.push_back({ "scripts", scripts });
+		componentJson.push_back({ "scripts", scripts });
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void Script::PutData(json componentJson, std::string objectName)
 	{		
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 		
 		if (!componentJson.contains("scripts"))

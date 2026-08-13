@@ -20,6 +20,7 @@ namespace FlatEngine
         Quaternion rot = Quaternion::EulerToQuaternion(eulerRotation);
         
         Vector3 rotFinal = Quaternion::QuaternionToEuler(Quaternion::Slerp(lastRot, rot, Easing::GetT(rotationInterpType, percentDone)));
+        rotFinal.z = 0;
         Vector3 posFinal = lastPos + (animData->startingPos + position - lastPos) * Easing::GetT(positionInterpType, percentDone);
         Vector3 scaleFinal = lastScale + (scale - lastScale) * Easing::GetT(scaleInterpType, percentDone);
 
@@ -52,18 +53,19 @@ namespace FlatEngine
             animationData.push_back(animationJson);
         }
 
-        json jsonData = {
-            { "type", (int)GetType() },            
-            { "b_isCollapsed", IsCollapsed() },
-            { "b_isActive", IsActive() },
+        json componentJson = {
             { "animationData", animationData }
         };
+        componentJson.update(Component::GetData(b_IDOverride));
 
-        return jsonData;
+        return componentJson;
     }
 
     void Animation::PutData(json componentJson, std::string objectName)
 	{
+        if (componentJson.empty())		
+			return;		
+        
         Component::PutData(componentJson, objectName);
 
         if (JsonHelper::JsonContains(componentJson, "animationData", objectName))

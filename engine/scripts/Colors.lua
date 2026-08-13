@@ -278,7 +278,7 @@ F_Colors = {
 	tableCellDark = Vector4:new(0.19, 0.19, 0.21, 1.0),
 	tableBorderStrong = Vector4:new(0.35, 0.35, 0.38, 1.0),
 	tableBorderLight = Vector4:new(0.3, 0.3, 0.33, 1.0),
-	tableLabelVerticalSeparator = Vector4:new(0.6, 0.6, 0.6, 1.0),
+	tableLabelVerticalSeparator = Vector4:new(1.0, 1.0, 1.0, 0.2),
 	fileExplorerTableRowBg = Vector4:new(0.18, 0.18, 0.208, 1.0),
 	fileExplorerTableRowBgAlt = Vector4:new(0.2, 0.2, 0.23, 1.0),
 	-- Trees

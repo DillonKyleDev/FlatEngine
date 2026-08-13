@@ -18,7 +18,8 @@ namespace FlatEngine
 		ShapeType_Circle,
 		ShapeType_Capsule,
 		ShapeType_Polygon,
-		ShapeType_Chain
+		ShapeType_Chain,
+		ShapeType_Size
 	};
 	const std::vector<std::string> ShapeTypeStrings = {
 		"None",
@@ -28,6 +29,15 @@ namespace FlatEngine
 		"Polygon",
 		"Chain"
 	};
+	const std::unordered_map<std::string, ShapeType> ShapeTypeFromString = {
+		{ "None",    ShapeType_None },
+		{ "Box",     ShapeType_Box },
+		{ "Circle",  ShapeType_Circle },
+		{ "Capsule", ShapeType_Capsule },
+		{ "Polygon", ShapeType_Polygon },
+		{ "Chain",   ShapeType_Chain },
+		{ "Size",    ShapeType_Size }
+	};
 
 	struct BoxShapeData {
 		b2ShapeId shapeID;
@@ -36,10 +46,9 @@ namespace FlatEngine
 		Vector2 dimensions = Vector2(1.0f, 1.0f);
 		float cornerRadius = 0.0f;
 
-		BoxShapeData(b2ShapeId ID = b2_nullShapeId) { shapeID = ID; }
 		json GetData() 
 		{
-			json jsonData = {
+			json shapeDataJson = {
 				{ "xOffset", offset.x },
 				{ "yOffset", offset.y },
 				{ "rotationOffsetCos", rotationOffset.c },
@@ -48,16 +57,19 @@ namespace FlatEngine
 				{ "height", dimensions.y },
 				{ "cornerRadius", cornerRadius }		
 			};
-			return jsonData;
+			return shapeDataJson;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json shapeDataJson, std::string name)
 		{
-			offset = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xOffset", name), JsonHelper::CheckJsonFloat(jsonData, "yOffset", name));
-			rotationOffset.c = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetCos", name);
-			rotationOffset.s = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetSin", name);
-			dimensions.x = JsonHelper::CheckJsonFloat(jsonData, "width", name);
-			dimensions.y = JsonHelper::CheckJsonFloat(jsonData, "height", name);
-			cornerRadius = JsonHelper::CheckJsonFloat(jsonData, "cornerRadius", name);
+			if (shapeDataJson.empty())
+				return;
+
+			offset = Vector2(JsonHelper::CheckJsonFloat(shapeDataJson, "xOffset", name), JsonHelper::CheckJsonFloat(shapeDataJson, "yOffset", name));
+			rotationOffset.c = JsonHelper::CheckJsonFloat(shapeDataJson, "rotationOffsetCos", name);
+			rotationOffset.s = JsonHelper::CheckJsonFloat(shapeDataJson, "rotationOffsetSin", name);
+			dimensions.x = JsonHelper::CheckJsonFloat(shapeDataJson, "width", name);
+			dimensions.y = JsonHelper::CheckJsonFloat(shapeDataJson, "height", name);
+			cornerRadius = JsonHelper::CheckJsonFloat(shapeDataJson, "cornerRadius", name);
 		}
 
 		void SetDimensions(Vector2 newDimensions)
@@ -93,24 +105,26 @@ namespace FlatEngine
 		b2Rot rotationOffset = b2MakeRot(0);
 		float radius = 1.0f;
 
-		CircleShapeData(b2ShapeId ID = b2_nullShapeId) { shapeID = ID; }
 		json GetData() 
 		{
-			json jsonData = {
+			json shapeDataJson = {
 				{ "xOffset", offset.x },
 				{ "yOffset", offset.y },
 				{ "rotationOffsetCos", rotationOffset.c },
 				{ "rotationOffsetSin", rotationOffset.s },
 				{ "radius", radius }		
 			};
-			return jsonData;
+			return shapeDataJson;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json shapeDataJson, std::string name)
 		{
-			offset = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xOffset", name), JsonHelper::CheckJsonFloat(jsonData, "yOffset", name));
-			rotationOffset.c = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetCos", name);
-			rotationOffset.s = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetSin", name);
-			radius = JsonHelper::CheckJsonFloat(jsonData, "radius", name);
+			if (shapeDataJson.empty())
+				return;
+
+			offset = Vector2(JsonHelper::CheckJsonFloat(shapeDataJson, "xOffset", name), JsonHelper::CheckJsonFloat(shapeDataJson, "yOffset", name));
+			rotationOffset.c = JsonHelper::CheckJsonFloat(shapeDataJson, "rotationOffsetCos", name);
+			rotationOffset.s = JsonHelper::CheckJsonFloat(shapeDataJson, "rotationOffsetSin", name);
+			radius = JsonHelper::CheckJsonFloat(shapeDataJson, "radius", name);
 		}
 
 		void SetRadius(float newRadius)
@@ -140,10 +154,9 @@ namespace FlatEngine
 		float length = 4.0f;
 		float radius = 1.0f;
 
-		CapsuleShapeData(b2ShapeId ID = b2_nullShapeId) { shapeID = ID; }
 		json GetData() 
 		{
-			json jsonData = {
+			json shapeDataJson = {
 				{ "xOffset", offset.x },
 				{ "yOffset", offset.y },
 				{ "rotationOffsetCos", rotationOffset.c },
@@ -152,16 +165,19 @@ namespace FlatEngine
 				{ "length", length },
 				{ "radius", radius }		
 			};
-			return jsonData;
+			return shapeDataJson;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json shapeDataJson, std::string name)
 		{
-			offset = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xOffset", name), JsonHelper::CheckJsonFloat(jsonData, "yOffset", name));
-			rotationOffset.c = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetCos", name);
-			rotationOffset.s = JsonHelper::CheckJsonFloat(jsonData, "rotationOffsetSin", name);
-			b_horizontal = JsonHelper::CheckJsonBool(jsonData, "b_horizontal", name);
-			length = JsonHelper::CheckJsonFloat(jsonData, "length", name);
-			radius = JsonHelper::CheckJsonFloat(jsonData, "radius", name);
+			if (shapeDataJson.empty())
+				return;
+
+			offset = Vector2(JsonHelper::CheckJsonFloat(shapeDataJson, "xOffset", name), JsonHelper::CheckJsonFloat(shapeDataJson, "yOffset", name));
+			rotationOffset.c = JsonHelper::CheckJsonFloat(shapeDataJson, "rotationOffsetCos", name);
+			rotationOffset.s = JsonHelper::CheckJsonFloat(shapeDataJson, "rotationOffsetSin", name);
+			b_horizontal = JsonHelper::CheckJsonBool(shapeDataJson, "b_horizontal", name);
+			length = JsonHelper::CheckJsonFloat(shapeDataJson, "length", name);
+			radius = JsonHelper::CheckJsonFloat(shapeDataJson, "radius", name);
 		}
 
 		void SetLength(float newLength)
@@ -212,7 +228,6 @@ namespace FlatEngine
 		bool b_showPoints;
 		bool b_editingPoints;
 
-		PolygonShapeData(b2ShapeId ID = b2_nullShapeId) { shapeID = ID; }
 		json GetData() 
 		{
 			json pointArray = json::array();
@@ -225,19 +240,22 @@ namespace FlatEngine
 				pointArray.push_back(pointData);
 			}
 
-			json jsonData = {
+			json shapeDataJson = {
 				{ "points", pointArray },
 				{ "cornerRadius", cornerRadius }		
 			};
-			return jsonData;
+			return shapeDataJson;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json shapeDataJson, std::string name)
 		{
-			for (int i = 0; i < jsonData.at("points").size(); i++)
+			if (shapeDataJson.empty())
+				return;
+
+			for (int i = 0; i < shapeDataJson.at("points").size(); i++)
 			{
 				try
 				{
-					json pointsJson = jsonData.at("points").at(i);
+					json pointsJson = shapeDataJson.at("points").at(i);
 					Vector2 point = Vector2(JsonHelper::CheckJsonFloat(pointsJson, "xPos", name), JsonHelper::CheckJsonFloat(pointsJson, "yPos", name));
 					points.push_back(point);
 				}
@@ -247,7 +265,7 @@ namespace FlatEngine
 				}
 			}
 
-			cornerRadius = JsonHelper::CheckJsonLong(jsonData, "cornerRadius", name);
+			cornerRadius = JsonHelper::CheckJsonLong(shapeDataJson, "cornerRadius", name);
 		}
 
 		void SetCornerRadius(float newCornerRadius)
@@ -267,7 +285,6 @@ namespace FlatEngine
 		bool b_showPoints;
 		bool b_editingPoints;	
 		
-		ChainShapeData(b2ChainId ID = b2_nullChainId, b2ShapeId shapeID = b2_nullShapeId) { chainID = ID; }
 		json GetData() 
 		{
 			json pointArray = json::array();
@@ -280,19 +297,22 @@ namespace FlatEngine
 				pointArray.push_back(pointData);
 			}
 
-			json jsonData = {
+			json shapeDataJson = {
 				{ "points", pointArray },				
 				{ "b_isLoop", b_isLoop }					
 			};
-			return jsonData;
+			return shapeDataJson;
 		}
-		void PutData(json jsonData, std::string name)
+		void PutData(json shapeDataJson, std::string name)
 		{
-			for (int i = 0; i < jsonData.at("points").size(); i++)
+			if (shapeDataJson.empty())
+				return;
+			
+			for (int i = 0; i < shapeDataJson.at("points").size(); i++)
 			{
 				try
 				{
-					json pointsJson = jsonData.at("points").at(i);
+					json pointsJson = shapeDataJson.at("points").at(i);
 					Vector2 point = Vector2(JsonHelper::CheckJsonFloat(pointsJson, "xPos", name), JsonHelper::CheckJsonFloat(pointsJson, "yPos", name));
 					points.push_back(point);
 				}
@@ -302,16 +322,16 @@ namespace FlatEngine
 				}
 			}
 
-			b_isLoop = JsonHelper::CheckJsonBool(jsonData, "b_isLoop", name);			
+			b_isLoop = JsonHelper::CheckJsonBool(shapeDataJson, "b_isLoop", name);			
 		}
 	};
 
 	class Shape
 	{
 	public:
-		Shape(long ownerID, ShapeType type = ShapeType_None);	
+		Shape(long ownerID, ShapeType type);	
 		json GetData();
-		void PutData(json jsonData, std::string name);
+		void PutData(json shapeDataJson, std::string name);
 		ShapeType GetType();		
 		void SetShapeID(b2ShapeId shapeID);
 		void SetChainID(b2ChainId chainID);

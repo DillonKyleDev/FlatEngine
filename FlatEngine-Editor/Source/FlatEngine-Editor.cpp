@@ -7,7 +7,6 @@
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
 #include "tools/FileHelper.h"
-#include "tools/Logger.h"
 #include "tools/Profiler.h"
 #include "tools/Time.h"
 

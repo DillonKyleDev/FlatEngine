@@ -10,9 +10,10 @@
 #include "Modals.h"
 
 #include "imgui.h"
-
+#include "render/SceneView.h"
 
 namespace FL = FlatEngine;
+
 
 namespace FlatGui 
 {
@@ -50,47 +51,13 @@ namespace FlatGui
 		}
 
 
-		// Go to next row and column
 		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);		
+		if (FL::GuiCore::RenderImageButton("VisibleID" + std::to_string(currentObject.GetID()), FL::Assets::assetManager.GetTexture(currentObject.IsActive() ? "show" : "hide"), FL::Vector2(16), 0, FL::Vector2(4), "transparent", "transparent")) currentObject.SetActive(!currentObject.IsActive());
 
-		// Draw visibility eye icon
-		ImGui::TableSetColumnIndex(0);
-		std::string visibleID = "VisibleID" + std::to_string(currentObject.GetID());
-
-		float extraIndent = 0;
-		if (indent > 0)
-		{
-			extraIndent = 6;
-		}
-		float indentMultiplier = indent / 15;
-
-		// Moves the cursor to account for the visible icon
-		// ImGui::SetCursorPosX(ImGui::GetCursorPosX() - indent - (extraIndent * indentMultiplier));
-		// indent += 15;
-
-		// Show Visible/Invisible Icons
-		if (currentObject.IsActive())
-		{
-			if (FL::GuiCore::RenderImageButton(visibleID.c_str(), FL::Assets::assetManager.GetTexture("show"), FL::Vector2(16), 0, FL::Vector2(4), "transparent", "transparent"))
-			{
-				currentObject.SetActive(false);
-			}
-		}
-		else
-		{
-			if (FL::GuiCore::RenderImageButton(visibleID.c_str(), FL::Assets::assetManager.GetTexture("hide"), FL::Vector2(16), 0, FL::Vector2(4), "transparent", "transparent"))
-			{
-				currentObject.SetActive(true);
-			}
-		}
-
-		// Render actual gameObject
 		ImGui::TableSetColumnIndex(1);
-
 		static int index = 0;
-
-		std::string id = "##SwapDropSourceBefore" + std::to_string(currentObject.GetID()) + std::to_string(index);
-		index++;
+		std::string id = "##SwapDropSourceBefore" + std::to_string(currentObject.GetID());
 		FL::Vector2 cursorPos = FL::Vector2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 3);
 		FL::Vector2 availSpace = ImGui::GetContentRegionAvail();
 		FL::Vector2 size = FL::Vector2(availSpace.x + 30 - cursorPos.x, 6);
@@ -100,7 +67,7 @@ namespace FlatGui
 		}
 		
 		ImGui::PushStyleColor(ImGuiCol_DragDropTarget, FL::Assets::assetManager.GetColor("dropTarget"));
-		FL::GuiCore::RenderInvisibleButton(id.c_str(), cursorPos, size);
+		FL::GuiCore::RenderInvisibleButton(id.c_str(), cursorPos, size, true);
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(FL::GuiCore::hierarchyTarget.c_str()))
@@ -108,16 +75,13 @@ namespace FlatGui
 				IM_ASSERT(payload->DataSize == sizeof(int));
 				long ID = *(const long*)payload->Data;
 
-				// Save Dropped Object
 				FL::GameObject* dropped = FL::SceneManager::loadedScene.GetObjectByID(ID);
-				// Remove dropped object from its previous parents children
 				if (dropped->GetParentID() != -1)
 				{
 					FL::GameObject *parent = FL::SceneManager::loadedScene.GetObjectByID(dropped->GetParentID());
 					parentToUnparent = dropped->GetParentID();
 					childToRemove = dropped->GetID();
 				}
-				// Set parent ID of dropped object to -1
 				dropped->SetParentID(-1);
 			}
 			ImGui::EndDragDropTarget();
@@ -129,11 +93,10 @@ namespace FlatGui
 		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, FL::Assets::assetManager.GetColor("transparent"));
 		ImGui::PushStyleColor(ImGuiCol_HeaderActive, FL::Assets::assetManager.GetColor("transparent"));
 
-		// Indent for the FL::GameObject name
+		// Indent for the GameObject name
 		if (currentObject.GetParentID() != -1)
 		{
 			ImGui::SetCursorScreenPos(FL::Vector2(ImGui::GetCursorPos().x + indent, ImGui::GetCursorScreenPos().y));
-			// Set table cell bg color for child object		
 			FL::Vector4 childNodeColor = FL::Assets::assetManager.GetColor("hierarchyChildObject");
 			childNodeColor.w *= 0.03f * indent; // Gets darker the deeper the child object is nested in the hierarchy
 			ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(childNodeColor));
@@ -148,7 +111,7 @@ namespace FlatGui
 				leafExpandedTracker.emplace(currentObject.GetID(), false);
 			}
 
-			ImGui::SetNextItemOpen(leafExpandedTracker.at(currentObject.GetID()));
+			ImGui::SetNextItemOpen(leafExpandedTracker.at(currentObject.GetID()));			
 			b_nodeOpen = ImGui::TreeNodeEx(std::to_string(currentObject.GetID()).c_str(), nodeFlags, "%s", charName);
 			leafExpandedTracker.at(currentObject.GetID()) = b_nodeOpen;
 		}
@@ -162,7 +125,6 @@ namespace FlatGui
 			}
 		}
 
-		// Don't change the background color of the tree node, change the background of the table row because it will fill the entire rect
 		if (b_objectFocused)
 		{
 			ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, FL::Assets::assetManager.GetColor32("treeSelectableSelected"));
@@ -180,32 +142,18 @@ namespace FlatGui
 		ImGui::PopStyleColor();
 		ImGui::PopStyleColor();
 
-
-			// Get Scene View Dimensions from its ImGui window
-			//FL::Vector2 sceneViewDimensions;
-			//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
-			//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, FL::Vector2(0, 0));
-			//FL::PushWindowStyles();
-			//ImGui::Begin("Scene View", 0, 16 | 8);
-			//sceneViewDimensions = FL::Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
-			//ImGui::End();
-			//FL::PopWindowStyles();
-			//ImGui::PopStyleVar();
-			//ImGui::PopStyleVar();
-
-
-		//// Control click a Hierarchy item to focus on it in the Scene View
-		//if (ImGui::GetIO().KeyCtrl && ImGui::IsItemClicked())
-		//{
-		//	FL::Transform* transform = currentObject.GetTransform();
-		//	FL::Vector2 position = transform->GetAbsolutePosition();
-		//	FG_sceneViewScrolling = FL::Vector2(position.x * -FG_sceneViewGridStep.x + (sceneViewDimensions.x / 2), position.y * FG_sceneViewGridStep.y + (sceneViewDimensions.y / 2));
-		//}
+		// Control click a Hierarchy item to focus on it in the Scene View
+		if (ImGui::GetIO().KeyCtrl && ImGui::IsItemClicked())
+		{
+			FL::Transform* transform = currentObject.Get<FL::Transform>();
+			FL::Vector3 position = transform->GetAbsolutePosition();
+			FL::SceneView::sceneViewCameraTransform.LookAt(position);			
+		}
 
 		// Hold Alt key and hover object in Hierarchy for ToolTip with information about that FL::GameObject
 		if (ImGui::IsItemHovered() && ImGui::GetIO().KeyAlt)
 		{	
-			FL::GuiCore::BeginToolTip("FL::GameObject Data");
+			FL::GuiCore::BeginToolTip("GameObject Data");
 			FL::GuiCore::MoveScreenCursor(0, 3);
 			FL::GuiCore::RenderSeparator(3, 3);
 			FL::GuiCore::MoveScreenCursor(0, 3);
@@ -270,22 +218,22 @@ namespace FlatGui
 				queuedForDelete = currentObject.GetID();
 				ImGui::CloseCurrentPopup();
 			}			
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
-			if (ImGui::MenuItem(" Lock in view"))
-			{
-				// if (FG_b_sceneViewLockedOnObject && FG_sceneViewLockedObjectID == currentObject.GetID())
-				// {
-				// 	FG_b_sceneViewLockedOnObject = false;
-				// 	FG_sceneViewLockedObjectID = currentObject.GetID();
-				// }
-				// else if (!FG_b_sceneViewLockedOnObject)
-				// {
-				// 	FG_sceneViewLockedObjectID = currentObject.GetID();
-				// 	FG_b_sceneViewLockedOnObject = true;
-				// }
+			// FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
+			// if (ImGui::MenuItem(" Lock in view"))
+			// {
+			// 	// if (FG_b_sceneViewLockedOnObject && FG_sceneViewLockedObjectID == currentObject.GetID())
+			// 	// {
+			// 	// 	FG_b_sceneViewLockedOnObject = false;
+			// 	// 	FG_sceneViewLockedObjectID = currentObject.GetID();
+			// 	// }
+			// 	// else if (!FG_b_sceneViewLockedOnObject)
+			// 	// {
+			// 	// 	FG_sceneViewLockedObjectID = currentObject.GetID();
+			// 	// 	FG_b_sceneViewLockedOnObject = true;
+			// 	// }
 
-				ImGui::CloseCurrentPopup();
-			}
+			// 	ImGui::CloseCurrentPopup();
+			// }
 			ImGui::EndPopup();
 		}
 		FL::GuiCore::PopMenuStyles();
@@ -468,32 +416,17 @@ namespace FlatGui
 					ImGui::TableSetupColumn("##ISPREFAB", ImGuiTableColumnFlags_WidthFixed, isPrefabIconColumnWidth);
 					ImGui::TableNextRow();
 					// {
-
-					// Visible/Invisible all gameObjects at once
-					ImGui::TableSetColumnIndex(0);
-					if (b_allAreVisible)
-					{						
-						if (FL::GuiCore::RenderImageButton("##SetAllInvisible", FL::Assets::assetManager.GetTexture("show"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
+					
+					ImGui::TableSetColumnIndex(0);		
+					if (FL::GuiCore::RenderImageButton("##SetAllVisible", FL::Assets::assetManager.GetTexture(b_allAreVisible ? "show" : "hide"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
+					{
+						for (FL::GameObject& sceneObject : sceneObjects)
 						{
-							for (FL::GameObject& sceneObject : sceneObjects)
-							{
-								sceneObject.SetActive(false);
-							}
+							sceneObject.SetActive(!b_allAreVisible);
+						}
 
-							b_allAreVisible = false;
-						}
-					}
-					else
-					{						
-						if (FL::GuiCore::RenderImageButton("##SetAllVisible", FL::Assets::assetManager.GetTexture("hide"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
-						{
-							for (FL::GameObject& sceneObject : sceneObjects)
-							{
-								sceneObject.SetActive(true);
-							}
-							b_allAreVisible = true;
-						}
-					}
+						b_allAreVisible = !b_allAreVisible;
+					}					
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("logText"));

@@ -116,7 +116,6 @@ GENERATED += $(OBJDIR)/GuiCore.o
 GENERATED += $(OBJDIR)/Helper.o
 GENERATED += $(OBJDIR)/ImGuiManager.o
 GENERATED += $(OBJDIR)/Joint.o
-GENERATED += $(OBJDIR)/JointMaker.o
 GENERATED += $(OBJDIR)/JsonHelper.o
 GENERATED += $(OBJDIR)/Light.o
 GENERATED += $(OBJDIR)/Line.o
@@ -197,7 +196,6 @@ OBJECTS += $(OBJDIR)/GuiCore.o
 OBJECTS += $(OBJDIR)/Helper.o
 OBJECTS += $(OBJDIR)/ImGuiManager.o
 OBJECTS += $(OBJDIR)/Joint.o
-OBJECTS += $(OBJDIR)/JointMaker.o
 OBJECTS += $(OBJDIR)/JsonHelper.o
 OBJECTS += $(OBJDIR)/Light.o
 OBJECTS += $(OBJDIR)/Line.o
@@ -386,9 +384,6 @@ $(OBJDIR)/CharacterController.o: Source/components/CharacterController.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Component.o: Source/components/Component.cpp
-	@echo "$(notdir $<)"
-	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
-$(OBJDIR)/JointMaker.o: Source/components/JointMaker.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Light.o: Source/components/Light.cpp

@@ -80,7 +80,11 @@ namespace FlatEngine
         extern SceneRenderObject CreateLineObject();
         extern SceneRenderObject CreateQuadObject();
         extern SceneRenderObject CreateCircleObject();
+        extern std::vector<SceneRenderObject> CreateCapsuleObject();
+		extern std::vector<SceneRenderObject> CreatePolygonObject();
+		extern std::vector<SceneRenderObject> CreateChainObject();
         extern void ClearDebugDrawObjects();
+        extern Transform GetLineTransformForStartEndPos(Vector3 startPos, Vector3 endPos);
         extern void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color = "debugDraw");
         extern void DebugDrawQuad(Vector3 position, Vector2 scale = Vector2(1), std::string color = "debugDraw", Vector3 rotation = Vector3());
         extern void DebugDrawCircle(Vector3 position, float radius, std::string color = "debugDraw", Vector3 rotation = Vector3());

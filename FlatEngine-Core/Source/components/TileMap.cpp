@@ -79,10 +79,7 @@ namespace FlatEngine
 			collisionAreaData.push_back(colAreaData);
 		}
 
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = {
 			{ "width", m_width },
 			{ "height", m_height },
 			{ "tileWidth", m_tileWidth },
@@ -91,12 +88,16 @@ namespace FlatEngine
 			{ "tiles", tileData },
 			{ "collisionAreas", collisionAreaData }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void TileMap::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 
 		SetWidth(JsonHelper::CheckJsonInt(componentJson, "width", objectName));

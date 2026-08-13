@@ -19,10 +19,7 @@ namespace FlatEngine
 
 		void SetPrimaryCamera(bool b_isPrimary);
 		bool IsPrimary();
-		glm::vec4 GetLookDirection();
-		glm::vec4 GetLookDirectionNoRoll();		
-		void AddOrthoVerticalViewAngle(float toAdd);		
-		void AddVerticalViewAngle(float toAdd);
+		glm::mat4 GetProjection();
 		void Follow();
 		void AddVelocity(Vector3 velocity);
 		Vector3& GetVelocity();
@@ -33,12 +30,8 @@ namespace FlatEngine
 		float nearClippingDistance;
 		float farClippingDistance;
 		float perspectiveAngle;
-		float horizontalViewAngle;
-		float verticalViewAngle;
 		bool b_orthographic;		
 		uint32_t gridStep;
-		float orthoHorizontalViewAngle;
-		float orthoVerticalViewAngle;
 		bool b_shouldFollow;
 		long toFollowID;
 		float followSmoothing;

@@ -93,10 +93,7 @@ namespace FlatEngine
                 SceneView::SetGridHorizontal(JsonHelper::CheckJsonBool(settings, "b_gridHorizontal", name));
                 // Scene View Camera
                 SceneView::sceneViewCameraTransform.SetPosition(FL::Vector3(JsonHelper::CheckJsonFloat(settings, "sceneCameraPosX", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosY", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosZ", name)));
-                SceneView::sceneViewCamera.orthoHorizontalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraOrthoHorizontalViewAngle", name);
-                SceneView::sceneViewCamera.orthoVerticalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraOrthoVerticalViewAngle", name);
-                SceneView::sceneViewCamera.horizontalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraHorizontalViewAngle", name);
-                SceneView::sceneViewCamera.verticalViewAngle = JsonHelper::CheckJsonFloat(settings, "sceneCameraVerticalViewAngle", name);
+                SceneView::sceneViewCameraTransform.SetRotation(FL::Vector3(JsonHelper::CheckJsonFloat(settings, "sceneCameraRotX", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraRotY", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraRotZ", name)));
                 SceneView::sceneViewCamera.orthoNearClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewOrthoNearClippingDistance", name);
                 SceneView::sceneViewCamera.orthoFarClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewOrthoFarClippingDistance", name);
                 SceneView::sceneViewCamera.nearClippingDistance = JsonHelper::CheckJsonFloat(settings, "sceneViewNearClippingDistance", name);
@@ -124,6 +121,7 @@ namespace FlatEngine
             file_obj.open(m_path, std::ios::app);
                         
             Vector3 sceneViewPos = SceneView::sceneViewCameraTransform.GetPosition();
+            Vector3 sceneViewRot = SceneView::sceneViewCameraTransform.GetRotation();
 
             json settings = json::object({
                 { "path",                               m_path },
@@ -160,10 +158,9 @@ namespace FlatEngine
                 { "sceneCameraPosX",                    sceneViewPos.x },
                 { "sceneCameraPosY",                    sceneViewPos.y },
                 { "sceneCameraPosZ",                    sceneViewPos.z },
-                { "sceneCameraOrthoHorizontalViewAngle",SceneView::sceneViewCamera.orthoHorizontalViewAngle },
-                { "sceneCameraOrthoVerticalViewAngle",  SceneView::sceneViewCamera.orthoVerticalViewAngle },
-                { "sceneCameraHorizontalViewAngle",     SceneView::sceneViewCamera.horizontalViewAngle },
-                { "sceneCameraVerticalViewAngle",       SceneView::sceneViewCamera.verticalViewAngle },
+                { "sceneCameraRotX",                    sceneViewRot.x },
+                { "sceneCameraRotY",                    sceneViewRot.y },
+                { "sceneCameraRotZ",                    sceneViewRot.z },
                 { "sceneViewOrthoNearClippingDistance", SceneView::sceneViewCamera.orthoNearClippingDistance },
                 { "sceneViewOrthoFarClippingDistance",  SceneView::sceneViewCamera.orthoFarClippingDistance },
                 { "sceneViewNearClippingDistance",      SceneView::sceneViewCamera.nearClippingDistance },

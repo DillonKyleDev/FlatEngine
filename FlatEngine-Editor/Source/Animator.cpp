@@ -10,6 +10,7 @@
 #include "render/RenderWindow.h"
 #include "tools/Logger.h"
 #include "tools/Vector2.h"
+#include "tools/Vector3.h"
 #include "tools/Vector4.h"
 
 #include "imgui.h"
@@ -687,7 +688,7 @@ namespace FlatGui
 							}
 						}
 
-						FL::GuiCore::RenderLuaParamtersTable("##EventPropLuaParams", "Event Property Parameters", event->eventParamContainer);
+						FL::GuiCore::RenderLuaParametersTable("##EventPropLuaParams", "Event Property Parameters", event->eventParamContainer);
 					}
 					else if (Animator::selectedKeyframe->type == FL::PropertyType_Transform)
 					{
@@ -702,12 +703,10 @@ namespace FlatGui
 						FL::GuiCore::RenderCheckbox("SCALE##b_scaleAnimated", transformProp->b_scaleAnimated);
 						FL::GuiCore::RenderSeparator(5, 5);						
 
-						float labelWidth = 68;
-						std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
-						FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
-						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "POSITION", transformProp->position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
-						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "ROTATION", transformProp->eulerRotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false);
-						FL::GuiCore::RenderVector3Table("##TransformComponentTable", "SCALE",    transformProp->scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors);
+						float labelWidth = 68;					
+						FL::GuiCore::RenderVector3Table(FL::GuiCore::TableProps("##TransformComponentTable", "Position", FL::Vector2(), labelWidth), transformProp->position);
+						FL::GuiCore::RenderVector3Table(FL::GuiCore::TableProps("##TransformComponentTable", "Rotation", FL::Vector2(), labelWidth), transformProp->eulerRotation);
+						FL::GuiCore::RenderVector3Table(FL::GuiCore::TableProps("##TransformComponentTable", "Scale", FL::Vector2(), labelWidth),    transformProp->scale);
 
 						FL::GuiCore::RenderSeparator(5, 5);
 						static int current_transform_interp = 0;

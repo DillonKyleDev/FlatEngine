@@ -26,6 +26,8 @@ namespace FlatEngine
 
         extern float childPadding;
 
+        extern bool b_currentTableLight;
+
         // Drag/Drop IDs
         extern std::string fileExplorerTarget;
         extern std::string hierarchyTarget;	
@@ -69,29 +71,54 @@ namespace FlatEngine
         extern void PopTableStyles();
         extern bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = tableFlags, Vector2 outerSize = Vector2(0), std::vector<float> widths = std::vector<float>());
         extern bool RenderFloatDragTableRow(std::string ID, std::string fieldName, float& value, float increment, float min, float max, std::string labelColor = "", std::string valueColor = "");
-        extern bool RenderIntSliderTableRow(std::string ID, std::string fieldName, int& value, int increment, int min, int max, std::string color = "");
-        extern bool RenderTagListTableRow(std::string ID, std::string fieldName, TagList* tagList);
+        extern bool RenderIntSliderTableRow(std::string ID, std::string fieldName, int& value, int increment, int min, int max, std::string color = "");        
         extern bool RenderIntDragTableRow(std::string ID, std::string fieldName, int& value, float speed, int min, int max);
         extern bool RenderCheckboxTableRow(std::string ID, std::string fieldName, bool& _value);
         extern void RenderSelectableTableRow(std::string ID, std::string fieldName, std::vector<std::string> options, int& currentOption);
-        extern bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles = false);
-        extern void RenderTextTableRow(std::string ID, std::string fieldName, std::string value, std::string value2 = "");
+        extern bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles = false);        
         extern void PopTable();
 
-        extern void RenderLabelTable(std::string ID, std::string label, int width, bool b_light = true, std::string bgColor = "noEditTableRowValueBg", ImGuiTableFlags flags = ImGuiTableFlags_RowBg);
-        extern bool RenderStringTable(std::string ID, std::string label, std::string& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderInt32Table(std::string ID, std::string label, int& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderInt64Table(std::string ID, std::string label, long& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);        
-        extern bool RenderFloatTable(std::string ID, std::string label, float& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, float increment = 0.001f, float min = -FLT_MAX, float max = FLT_MAX, bool b_vertSeperator = true);
-        extern bool RenderDoubleTable(std::string ID, std::string label, double& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern bool RenderVector2Table(std::string ID, std::string label, Vector2& vec2, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, float increment = 0.01f, float min = -FLT_MAX, float max = FLT_MAX, bool b_vertSeperator = false);
-        extern bool RenderVector3Table(std::string ID, std::string label, Vector3& vec3, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, float increment = 0.01f, float min = -FLT_MAX, float max = FLT_MAX, bool b_vertSeperator = false);
-        extern bool RenderVector4Table(std::string ID, std::string label, Vector4& vec4, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", std::vector<std::string> valueLabelColors = std::vector<std::string>(), bool b_light = true, float increment = 0.01f, float min = -FLT_MAX, float max = FLT_MAX, bool b_vertSeperator = false);
-        extern bool RenderBoolTable(std::string ID, std::string label, bool& value, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        extern void RenderTextTable(std::string ID, std::string fieldName, std::string value, int labelWidth = 0, bool b_light = true);
-        extern bool RenderComboTable(std::string ID, std::string label, std::string displayedValue, std::vector<std::string> options, int& currentOption, Vector2 tableSize = Vector2(), int labelWidth = 0, std::string labelColor = "noEditTableRowFieldBg", bool b_light = true, bool b_vertSeperator = true);
-        
-        extern void RenderLuaParamtersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);
+        struct TableProps {
+            std::string ID;
+            std::string label;
+            Vector2 tableSize = Vector2();
+            int labelWidth = 0;
+            std::string labelColor;
+            std::string valueColor;
+            std::vector<std::string> valueLabelColors = std::vector<std::string>();            
+            float increment;
+            float min;
+            float max;
+            bool b_light = true;
+            bool b_lightSet = false;
+            bool b_vertSeperator = true;
+            ImGuiTableFlags flags = ImGuiTableFlags_RowBg;         
+
+            TableProps(std::string setID, std::string setLabel, Vector2 tableWidth = Vector2(), float setIncrement = 0.1f, float setMin = -FLT_MAX, float setMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
+            {
+                ID = setID;
+                label = setLabel;
+                increment = setIncrement;
+                min = setMin;
+                max = setMax;
+                labelColor = setLabelColor;
+                valueColor = setValueColor;
+                labelWidth = setLableWidth;
+            }
+        };
+        extern void RenderLabelTable(TableProps tableProps);
+        extern bool RenderStringTable(TableProps tableProps, std::string& value);
+        extern bool RenderInt32Table(TableProps tableProps, int& value);
+        extern bool RenderInt64Table(TableProps tableProps, long& value);        
+        extern bool RenderFloatTable(TableProps tableProps, float& value);
+        extern bool RenderDoubleTable(TableProps tableProps, double& value);
+        extern bool RenderVector2Table(TableProps tableProps, Vector2& vec2);
+        extern bool RenderVector3Table(TableProps tableProps, Vector3& vec3);
+        extern bool RenderVector4Table(TableProps tableProps, Vector4& vec4);
+        extern bool RenderBoolTable(TableProps tableProps, bool& value);
+        extern void RenderTextTable(TableProps tableProps, std::vector<std::string> values);
+        extern bool RenderComboTable(TableProps tableProps, std::string displayedValue, std::vector<std::string> options, int& currentOption);
+        extern void RenderLuaParametersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);
 
         extern bool RenderInput(std::string ID, std::string label, std::string& value, bool b_canOpenFiles = false, float inputWidth = -1, ImGuiInputTextFlags flags = 0);
         extern bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string tooltip = "", float inputWidth = -1);

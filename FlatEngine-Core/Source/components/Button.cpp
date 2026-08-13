@@ -41,10 +41,7 @@ namespace FlatEngine
 
 	json Button::GetData(bool b_IDOverride)
 	{
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = {
 			{ "activeWidth", m_activeWidth },
 			{ "activeHeight", m_activeHeight },
 			{ "activeOffsetX", m_activeOffset.x },
@@ -54,18 +51,22 @@ namespace FlatEngine
 			{ "b_luaFunction", m_b_luaFunction },
 			{ "b_cppFunction", m_b_cppFunction },
 			{ "b_leftClick", m_b_leftClick },
-			{ "b_rightClick", m_b_rightClick },
+			{ "b_rightClick", m_b_rightClick }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 
 		json parameters = m_functionParams.GetData();
 		
-		jsonData.push_back({ "functionParameters", parameters });
+		componentJson.push_back({ "functionParameters", parameters });
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void Button::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson == json::object())		
+			return;	
+		
         Component::PutData(componentJson, objectName);	
 
 		LuaManager::LuaParameter parameter;

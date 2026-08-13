@@ -18,20 +18,21 @@ namespace FlatEngine
 
 	json CharacterController::GetData(bool b_IDOverride)
 	{
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },			
+		json componentJson = {	
 			{ "maxAcceleration", m_maxAcceleration },
 			{ "maxSpeed", m_maxSpeed },
 			{ "airControl", m_airControl }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void CharacterController::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 
 		SetMaxAcceleration(JsonHelper::CheckJsonFloat(componentJson, "maxAcceleration", objectName));

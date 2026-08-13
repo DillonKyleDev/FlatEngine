@@ -10,6 +10,18 @@
 namespace FlatEngine
 {    
     template<class T>
+    T GetTypeFromString(std::unordered_map<std::string, T> map, std::string typeString)
+    {
+        auto it = map.find(typeString);
+        if (it == map.end())
+        {
+            Logger::log.Err("Unknown component type: {}", typeString);
+            return (T)0;
+        }
+        return it->second;
+    }
+
+    template<class T>
     struct UMapVector {
 
             UMapVector(std::function<void(T&)> cleanup = nullptr)

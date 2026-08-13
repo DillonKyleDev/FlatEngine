@@ -22,6 +22,9 @@ namespace FlatEngine
 		void SetPosition(Vector3 position);
 		void SetScale(Vector3 scale);
 		void SetRotation(Vector3 rotation);
+		void AddXRotation(float rotation);
+		void AddYRotation(float rotation);
+		void AddZRotation(float rotation);
 		Vector3 GetPosition();
 		Vector3 GetPositionOrigin();
 		Vector3 GetCleanPosition();
@@ -32,6 +35,7 @@ namespace FlatEngine
 		Vector3 GetRotation();		
 		glm::mat4 GetRotationMatrix();		
 		glm::mat4 GetScaleMatrix();
+		glm::vec4 GetLookDirection();
 		void LookAt(Vector3 lookAt);
 		void Move(Vector3 moveBy);
 

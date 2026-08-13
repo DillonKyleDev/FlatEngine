@@ -3,11 +3,14 @@
 #include "managers/SceneManager.h"
 #include "physics/Shape.h"
 #include "physics/Joint.h"
+#include "managers/Assets.h"
 #include "managers/LuaManager.h"
 #include "physics/PhysicsManager.h"
 #include "render/SceneView.h"
 #include "tools/Numbers.h"
+#include "tools/Vector2.h"
 #include "tools/Vector3.h"
+#include "Types.h"
 
 
 namespace FlatEngine
@@ -17,6 +20,7 @@ namespace FlatEngine
 		SetOwnerID(ownerID);
 		SetType(ComponentType_Body2D);
 
+		m_currentJointID = 0;
 		m_bodyID = b2BodyId();
 		type = b2_dynamicBody;
 		rotation = b2MakeRot(0);
@@ -48,10 +52,14 @@ namespace FlatEngine
 			shapesArray.push_back(shape->GetData());
 		}
 
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json joints = json::array();
+
+		for (Joint* joint : GetJoints())
+		{
+			joints.push_back(joint->GetData());
+		}
+
+		json componentJson = {
 			{ "bodyType", (int)type },
 			{ "b_lockedRotation", b_lockedRotation },
 			{ "b_lockedXAxis", b_lockedXAxis },
@@ -59,53 +67,85 @@ namespace FlatEngine
 			{ "gravityScale", gravityScale },
 			{ "linearDamping", linearDamping },
 			{ "angularDamping", angularDamping },
-			{ "shapes", shapesArray }
+			{ "shapes", shapesArray },
+			{ "joints", joints }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 		
-		return jsonData;
+		return componentJson;
 	}
 
-	void Body2D::PutData(json jsonData, std::string objectName)
+	void Body2D::PutData(json componentJson, std::string objectName)
 	{
-        Component::PutData(jsonData, objectName);
+		if (componentJson.empty())
+		{	
+			PhysicsManager::physics2D.CreateBody(this);
+			return;
+		}
 
-		type = (b2BodyType)JsonHelper::CheckJsonInt(jsonData, "bodyType", objectName);
-		b_lockedRotation = JsonHelper::CheckJsonBool(jsonData, "b_lockedRotation", objectName);
-		b_lockedXAxis = JsonHelper::CheckJsonBool(jsonData, "b_lockedXAxis", objectName);
-		b_lockedYAxis = JsonHelper::CheckJsonBool(jsonData, "b_lockedYAxis", objectName);
-		gravityScale = JsonHelper::CheckJsonFloat(jsonData, "gravityScale", objectName);
-		linearDamping = JsonHelper::CheckJsonFloat(jsonData, "linearDamping", objectName);
-		angularDamping = JsonHelper::CheckJsonFloat(jsonData, "angularDamping", objectName);
+        Component::PutData(componentJson, objectName);
+
+		type = (b2BodyType)JsonHelper::CheckJsonInt(componentJson, "bodyType", objectName);
+		b_lockedRotation = JsonHelper::CheckJsonBool(componentJson, "b_lockedRotation", objectName);
+		b_lockedXAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedXAxis", objectName);
+		b_lockedYAxis = JsonHelper::CheckJsonBool(componentJson, "b_lockedYAxis", objectName);
+		gravityScale = JsonHelper::CheckJsonFloat(componentJson, "gravityScale", objectName);
+		linearDamping = JsonHelper::CheckJsonFloat(componentJson, "linearDamping", objectName);
+		angularDamping = JsonHelper::CheckJsonFloat(componentJson, "angularDamping", objectName);
 
 		Transform* transform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());
 		Vector3 pos = transform->GetCleanPosition(); 
 		Vector3 rot = transform->GetCleanRotation();
 		position = Vector2(pos.x, pos.y);		
-		rotation = b2MakeRot(rot.z);
+		rotation = b2MakeRot(Numbers::DegreesToRadians(rot.z));
 
 		PhysicsManager::physics2D.CreateBody(this);
 		
-		if (JsonHelper::JsonContains(jsonData, "shapes", objectName))
+		if (JsonHelper::JsonContains(componentJson, "shapes", objectName))
 		{
-			for (int i = 0; i < jsonData.at("shapes").size(); i++)
+			for (int i = 0; i < componentJson.at("shapes").size(); i++)
 			{
-				json shapeJson = jsonData.at("shapes").at(i);
-				ShapeType shapeType = (JsonHelper::CheckJsonInt(jsonData, "type", objectName)) != -1 ? (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "type", objectName)) : ShapeType_None;				
-				Shape shape = Shape(GetOwnerID(), shapeType);
-				shape.PutData(shapeJson, objectName);
-
-				switch (shape.GetType())
-				{
-					case ShapeType_Box:	    boxes.push_back(shape);    PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break;
-					case ShapeType_Circle:  circles.push_back(shape);  PhysicsManager::physics2D.CreateShape(&circles.back(), this); break;
-					case ShapeType_Capsule: capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break;
-					case ShapeType_Polygon:	polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break;
-					case ShapeType_Chain:   chains.push_back(shape);   PhysicsManager::physics2D.CreateShape(&chains.back(), this); break;
-					default: break;
-				}
+				json shapeJson = componentJson.at("shapes").at(i);
+				ShapeType shapeType = GetTypeFromString<ShapeType>(ShapeTypeFromString, JsonHelper::CheckJsonString(shapeJson, "shapeType", objectName));
+				AddShape(shapeType, shapeJson, objectName);
 			}
 		}			
+
+		if (JsonHelper::JsonContains(componentJson, "joints", objectName))
+		{		
+			for (int i = 0; i < componentJson.at("joints").size(); i++)
+			{
+				json jointJson = componentJson.at("joints").at(i);
+				JointType jointType = GetTypeFromString<JointType>(JointTypeFromString, JsonHelper::CheckJsonString(jointJson, "jointType", objectName));
+				AddJoint(jointType, jointJson, objectName);
+			}
+		}
     }
+
+	void Body2D::Cleanup()
+	{
+		m_boxes.clear();
+		m_circles.clear();
+		m_polygons.clear();
+		m_capsules.clear();
+		m_chains.clear();
+
+		for (Joint* joint : GetJoints())
+		{
+			PhysicsManager::physics2D.DestroyJoint(joint);
+		}
+
+		m_distanceJoints.clear();
+        m_prismaticJoints.clear();
+        m_revoluteJoints.clear();
+        m_mouseJoints.clear();
+        m_wheelJoints.clear();
+        m_motorJoints.clear();
+        m_weldJoints.clear();  
+
+		PhysicsManager::physics2D.DestroyBody(m_bodyID);
+		m_bodyID = b2_nullBodyId;
+	}
 
 	void Body2D::SetActive(bool b_isActive)
 	{
@@ -127,16 +167,25 @@ namespace FlatEngine
 	// Conversions from local to world space
 	Vector2 Body2D::ConvertWorldToLocalPoint(Vector2 worldPoint)
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return Vector2();
+
 		return b2Body_GetLocalPoint(m_bodyID, b2Vec2(worldPoint.x, worldPoint.y));
 	}
 
 	Vector2 Body2D::ConvertLocalToWorldPoint(Vector2 localPoint)
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return Vector2();
+
 		return b2Body_GetWorldPoint(m_bodyID, b2Vec2(localPoint.x, localPoint.y));
 	}
 
 	Vector2 Body2D::ConvertWorldToLocalVector(Vector2 worldVector)
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return Vector2();
+
 		return b2Body_GetLocalVector(m_bodyID, b2Vec2(worldVector.x, worldVector.y));
 	}
 
@@ -237,8 +286,12 @@ namespace FlatEngine
 		{
 			if (shape->renderShapes.size() == 0)
 				return;
+			
+			std::string colliderString = shape->b_isSensor ? "sensor" : "Collider";
+			std::string activeString = IsActive() ? "Active" : "Inactive";
+			std::string postfix = colliderString + activeString;
 
-			std::visit([this, shape, ownerTransform](auto&& sData)
+			std::visit([this, shape, ownerTransform, postfix](auto&& sData)
 			{
 				using T = std::decay_t<decltype(sData)>;
 
@@ -260,25 +313,67 @@ namespace FlatEngine
 				}
 				else if constexpr (std::is_same_v<T, CapsuleShapeData>)
 				{
-					// shape->renderShapes[0].transform = ComposeTransform(ownerTransform, sData.point1);
-					// shape->renderShapes[1].transform = ComposeTransform(ownerTransform, sData.point2);
-					// shape->renderShapes[2].transform = ComposeCapsuleBodyTransform(ownerTransform, sData.point1,sData.point2);
+					if (shape->renderShapes.size() != 6)
+					{
+						Logger::log.Err("Body2D::UpdateRenderShapes() : GameObject ID:{} Body2D shape->renderShapes does not contain enough render SceneRenderObjects to draw Capsule.", GetOwnerID());
+						return;
+					}
+				
+					float rotation = Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));
+					float center1Value = ((sData.length / 2) - sData.radius) * -1;
+					float center2Value = (sData.length / 2) - sData.radius;
+					b2Vec2 offset = b2Vec2(sData.offset.x, sData.offset.y);
+					b2Vec2 center1 = b2Vec2(sData.b_horizontal ? center1Value : 0, sData.b_horizontal ? 0 : center1Value);
+					b2Vec2 center2 = b2Vec2(sData.b_horizontal ? center2Value : 0, sData.b_horizontal ? 0 : center2Value);				
+					Vector2 center1World = Vector2(b2Body_GetWorldPoint(shape->Getb2BodyID(), offset + center1));
+					Vector2 center2World = Vector2(b2Body_GetWorldPoint(shape->Getb2BodyID(), offset + center2));
+					Vector2 difference = center2World - center1World;
+					Vector2 diffN = Vector2::Normalize(difference);
+					Vector2 diffNR = diffN * sData.radius;
+					Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
+					Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
+					
+					// circles
+					shape->renderShapes[0].transform.SetPosition(Vector3(center1World, ownerTransform->GetPosition().z));
+					shape->renderShapes[0].transform.SetScale(Vector3(sData.radius, sData.radius, 1));
+					shape->renderShapes[1].transform.SetPosition(Vector3(center2World, ownerTransform->GetPosition().z));
+					shape->renderShapes[1].transform.SetScale(Vector3(sData.radius, sData.radius, 1));
+					
+					std::string shapeString = "capsule";
+					Vector4 color = Assets::assetManager.GetColor(shapeString + postfix);
+					Vector4 colorLight = Assets::assetManager.GetColor(shapeString + postfix + "Light");
+
+					shape->renderShapes[0].mesh.SetUBOVec4("color", color); // circle1
+					shape->renderShapes[1].mesh.SetUBOVec4("color", color); // circle2
+					shape->renderShapes[2].mesh.SetUBOVec4("color", color); // side1
+					shape->renderShapes[3].mesh.SetUBOVec4("color", color); // side2
+					shape->renderShapes[4].mesh.SetUBOVec4("color", color); // top1
+					shape->renderShapes[5].mesh.SetUBOVec4("color", color); // top2
+
+					// FL::DrawCircle(center1, radiusScreen, colorLight, drawList, 2.0f);
+					// FL::DrawCircle(center1, radiusScreen, color, drawList);
+					// FL::DrawCircle(center2, radiusScreen, colorLight, drawList, 2.0f);
+					// FL::DrawCircle(center2, radiusScreen, color, drawList);
+
+					// FL::DrawLine(center1 - diffNR, center1 + diffNR, colorLight, 2.0f, drawList);
+					// FL::DrawLine(center2 - diffNR, center2 + diffNR, colorLight, 2.0f, drawList);
+					// FL::DrawLine(center1 - diffPerp, center1 + diffPerp, colorLight, 2.0f, drawList);
+					// FL::DrawLine(center2 - diffPerp, center2 + diffPerp, colorLight, 2.0f, drawList);
+
+					// // Sides
+					// FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, colorLight, 2.0f, drawList);
+					// FL::DrawLine(center1 + diffPerp, center1 + diffPerp + difference, color, 1.0f, drawList);
+
+					// FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, colorLight, 2.0f, drawList);
+					// FL::DrawLine(center1 + flippedDiffPerp, center1 + flippedDiffPerp + difference, color, 1.0f, drawList);
 				}
 				else if constexpr (std::is_same_v<T, PolygonShapeData>)
 				{
-					// for (size_t i = 0; i < sData.vertices.size(); i++)
-					// {
-					// 	size_t next = (i + 1) % sData.vertices.size();
-					// 	shape->renderShapes[i].transform = ComposeSegmentTransform(bodyTransform, sData.vertices[i], sData.vertices[next]);
-					// }
+
 				}
 				else if constexpr (std::is_same_v<T, ChainShapeData>)
 				{
-					// for (size_t i = 0; i < sData.vertices.size(); i++)
-					// {
-					// 	size_t next = (i + 1) % sData.vertices.size();
-					// 	shape->renderShapes[i].transform = ComposeSegmentTransform(bodyTransform, sData.vertices[i], sData.vertices[next]);
-					// }
+
 				}
 			}, shape->shapeData);
 		}
@@ -289,16 +384,18 @@ namespace FlatEngine
 		return std::vector<SceneView::SceneRenderObject>();
 	}
 
-	void Body2D::AddShape(ShapeType type)
+	void Body2D::AddShape(ShapeType type, json componentJson, std::string name)
 	{
 		Shape shape = Shape(GetOwnerID(), type);
+		shape.PutData(componentJson, name);
+
 		switch (type)
 		{
-			case ShapeType_Box:     { BoxShapeData shapeData;     shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateQuadObject()); boxes.push_back(shape); PhysicsManager::physics2D.CreateShape(&boxes.back(), this); break; }
-			case ShapeType_Circle:  { CircleShapeData shapeData;  shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateCircleObject()); circles.push_back(shape); PhysicsManager::physics2D.CreateShape(&circles.back(), this); break; }
-			case ShapeType_Capsule: { CapsuleShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&capsules.back(), this); break; }
-			case ShapeType_Polygon: { PolygonShapeData shapeData; shape.shapeData = shapeData; shape.renderShapes = CreateCapsuleRenderObjects(); polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&polygons.back(), this); break; }			
-			case ShapeType_Chain:   { ChainShapeData shapeData;   shape.shapeData = shapeData; shape.renderShapes.push_back(SceneView::CreateLineObject()); chains.push_back(shape); PhysicsManager::physics2D.CreateShape(&chains.back(), this); break; }
+			case ShapeType_Box:     { m_boxes.push_back(shape);    PhysicsManager::physics2D.CreateShape(&m_boxes.back(), this); break; }
+			case ShapeType_Circle:  { m_circles.push_back(shape);  PhysicsManager::physics2D.CreateShape(&m_circles.back(), this); break; }
+			case ShapeType_Capsule: { m_capsules.push_back(shape); PhysicsManager::physics2D.CreateShape(&m_capsules.back(), this); break; }
+			case ShapeType_Polygon: { m_polygons.push_back(shape); PhysicsManager::physics2D.CreateShape(&m_polygons.back(), this); break; }			
+			case ShapeType_Chain:   { m_chains.push_back(shape);   PhysicsManager::physics2D.CreateShape(&m_chains.back(), this); break; }
 			default: break;
 		}
 	}
@@ -312,6 +409,9 @@ namespace FlatEngine
 
 	Vector2 Body2D::GetPosition()
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return Vector2();
+
 		b2Vec2 b2Position = b2Body_GetPosition(m_bodyID);		
 		return Vector2(b2Position.x, b2Position.y);
 	}
@@ -331,6 +431,9 @@ namespace FlatEngine
 	// Returns rotation in degrees between -180 and 180
 	float Body2D::GetRotation()
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return 0;
+
 		b2Rot bodyRotation = b2Body_GetRotation(m_bodyID);
 		float rotation = Numbers::RadiansToDegrees(b2Rot_GetAngle(bodyRotation));
 
@@ -339,6 +442,9 @@ namespace FlatEngine
 
 	b2Rot Body2D::GetB2Rotation()
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return b2Rot(0);
+
 		return b2Body_GetRotation(m_bodyID);
 	}
 
@@ -447,6 +553,9 @@ namespace FlatEngine
 
 	float Body2D::GetAngularVelocity()
 	{
+		if (!b2Body_IsValid(m_bodyID))
+			return 0;
+
 		return b2Body_GetAngularVelocity(m_bodyID);
 	}
 
@@ -459,23 +568,23 @@ namespace FlatEngine
 	{
 		std::vector<Shape*> shapes = std::vector<Shape*>();
 		
-		for (Shape& shape : boxes)
+		for (Shape& shape : m_boxes)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Shape& shape : circles)
+		for (Shape& shape : m_circles)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Shape& shape : capsules)
+		for (Shape& shape : m_capsules)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Shape& shape : polygons)
+		for (Shape& shape : m_polygons)
 		{
 			shapes.push_back(&shape);
 		}
-		for (Shape& shape : chains)
+		for (Shape& shape : m_chains)
 		{
 			shapes.push_back(&shape);
 		}
@@ -488,7 +597,7 @@ namespace FlatEngine
 		int toDelete = -1;
 		int counter = 0;
 
-		for (Shape& shape : boxes)
+		for (Shape& shape : m_boxes)
 		{
 			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
@@ -499,10 +608,10 @@ namespace FlatEngine
 		}
 		if (toDelete != -1)
 		{
-			boxes.erase(std::next(boxes.begin(), toDelete));
+			m_boxes.erase(std::next(m_boxes.begin(), toDelete));
 			toDelete = -1;
 		}
-		for (Shape& shape : circles)
+		for (Shape& shape : m_circles)
 		{
 			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
@@ -513,10 +622,10 @@ namespace FlatEngine
 		}
 		if (toDelete != -1)
 		{
-			circles.erase(std::next(circles.begin(), toDelete));
+			m_circles.erase(std::next(m_circles.begin(), toDelete));
 			toDelete = -1;
 		}
-		for (Shape& shape : polygons)
+		for (Shape& shape : m_polygons)
 		{
 			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
@@ -527,10 +636,10 @@ namespace FlatEngine
 		}
 		if (toDelete != -1)
 		{
-			polygons.erase(std::next(polygons.begin(), toDelete));
+			m_polygons.erase(std::next(m_polygons.begin(), toDelete));
 			toDelete = -1;
 		}
-		for (Shape& shape : capsules)
+		for (Shape& shape : m_capsules)
 		{
 			if (shape.GetShapeID().index1 == shapeID.index1)
 			{
@@ -541,7 +650,7 @@ namespace FlatEngine
 		}
 		if (toDelete != -1)
 		{
-			capsules.erase(std::next(capsules.begin(), toDelete));
+			m_capsules.erase(std::next(m_capsules.begin(), toDelete));
 			toDelete = -1;
 		}
 	}
@@ -551,7 +660,7 @@ namespace FlatEngine
 		int toDelete = -1;
 		int shapeCounter = 0;
 
-		for (Shape& shape : chains)
+		for (Shape& shape : m_chains)
 		{
 			if (shape.GetChainID().index1 == chainID.index1)
 			{
@@ -562,33 +671,135 @@ namespace FlatEngine
 		}
 		if (toDelete != -1)
 		{
-			chains.erase(std::next(chains.begin(), toDelete));
+			m_chains.erase(std::next(m_chains.begin(), toDelete));
 		}
 	}
 
-	void Body2D::Cleanup()
+	void Body2D::AddJoint(JointType type, json componentJson, std::string name)
 	{
-		// for (Shape* shape : GetShapes())
-		// {
-		// 	PhysicsManager::physics2D.DestroyShape(shape);
-		// }
+		Joint joint = Joint(GetOwnerID(), m_freedJointIDs.size() ? m_freedJointIDs.back() : m_currentJointID, type);
+		if (m_freedJointIDs.size())
+			m_freedJointIDs.pop_back();
+		else
+		 	m_currentJointID++;
 
-		boxes.clear();
-		circles.clear();
-		polygons.clear();
-		capsules.clear();
-		chains.clear();
+		joint.PutData(componentJson, name);
 
-		PhysicsManager::physics2D.DestroyBody(m_bodyID);
-		m_bodyID = b2_nullBodyId;
+		switch (type)
+		{
+			case JointType_Distance:  { joint.jointData = DistanceJointData();  joint.renderShapes.push_back(SceneView::CreateQuadObject());   m_distanceJoints.push_back(joint);  PhysicsManager::physics2D.CreateJoint(&m_distanceJoints.back()); break; }
+			case JointType_Prismatic: { joint.jointData = PrismaticJointData(); joint.renderShapes.push_back(SceneView::CreateCircleObject()); m_prismaticJoints.push_back(joint); PhysicsManager::physics2D.CreateJoint(&m_prismaticJoints.back()); break; }
+			case JointType_Revolute:  { joint.jointData = RevoluteJointData();  joint.renderShapes.push_back(SceneView::CreateLineObject());   m_revoluteJoints.push_back(joint);  PhysicsManager::physics2D.CreateJoint(&m_revoluteJoints.back()); break; }
+			case JointType_Mouse: 	  { joint.jointData = MouseJointData();     joint.renderShapes.push_back(SceneView::CreateLineObject());   m_mouseJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_mouseJoints.back()); break; }			
+			case JointType_Wheel: 	  { joint.jointData = WheelJointData();     joint.renderShapes.push_back(SceneView::CreateLineObject());   m_wheelJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_wheelJoints.back()); break; }
+			case JointType_Motor:     { joint.jointData = MotorJointData();     joint.renderShapes.push_back(SceneView::CreateLineObject());   m_motorJoints.push_back(joint);     PhysicsManager::physics2D.CreateJoint(&m_motorJoints.back()); break; }
+			case JointType_Weld:      { joint.jointData = WeldJointData();      joint.renderShapes.push_back(SceneView::CreateLineObject());   m_weldJoints.push_back(joint);      PhysicsManager::physics2D.CreateJoint(&m_weldJoints.back()); break; }
+			default: break;
+		}		
 	}
 
-	void Body2D::AddJoint(Joint* joint)
+	std::vector<Joint*> Body2D::GetJoints()
 	{
-		switch (joint->GetJointType())
+		std::vector<Joint*> joints = std::vector<Joint*>();
+
+		for (Joint& joint : m_distanceJoints)
 		{
-			case JointType_Distance: m_distanceJoints.push_back(joint);
-			default: break;
+			joints.push_back(&joint);
+		}
+		for (Joint& joint : m_prismaticJoints)
+		{
+			joints.push_back(&joint);
+		}
+		for (Joint& joint : m_revoluteJoints)
+		{
+			joints.push_back(&joint);
+		}
+		for (Joint& joint : m_mouseJoints)
+		{
+			joints.push_back(&joint);
+		}
+		for (Joint& joint : m_wheelJoints)
+		{
+			joints.push_back(&joint);
+		}
+		for (Joint& joint : m_motorJoints)
+		{
+			joints.push_back(&joint);
+		}
+		for (Joint& joint : m_weldJoints)
+		{
+			joints.push_back(&joint);
+		}
+
+		return joints;
+	}
+
+	void Body2D::RemoveJoint(long jointID)
+	{
+		for (std::list<Joint>::iterator jointIter = m_distanceJoints.begin(); jointIter != m_distanceJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::physics2D.DestroyJoint(&(*jointIter));
+				m_distanceJoints.erase(jointIter);
+				m_freedJointIDs.push_back(jointID);
+				return;
+			}
+		}
+
+		for (std::list<Joint>::iterator jointIter = m_prismaticJoints.begin(); jointIter != m_prismaticJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::physics2D.DestroyJoint(&(*jointIter));
+				m_prismaticJoints.erase(jointIter);
+				m_freedJointIDs.push_back(jointID);
+				return;
+			}
+		}
+
+		for (std::list<Joint>::iterator jointIter = m_revoluteJoints.begin(); jointIter != m_revoluteJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::physics2D.DestroyJoint(&(*jointIter));
+				m_revoluteJoints.erase(jointIter);
+				m_freedJointIDs.push_back(jointID);
+				return;
+			}
+		}
+
+		for (std::list<Joint>::iterator jointIter = m_weldJoints.begin(); jointIter != m_weldJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::physics2D.DestroyJoint(&(*jointIter));
+				m_weldJoints.erase(jointIter);
+				m_freedJointIDs.push_back(jointID);
+				return;
+			}
+		}
+
+		for (std::list<Joint>::iterator jointIter = m_motorJoints.begin(); jointIter != m_motorJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::physics2D.DestroyJoint(&(*jointIter));
+				m_motorJoints.erase(jointIter);
+				m_freedJointIDs.push_back(jointID);
+				return;
+			}
+		}
+
+		for (std::list<Joint>::iterator jointIter = m_wheelJoints.begin(); jointIter != m_wheelJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::physics2D.DestroyJoint(&(*jointIter));
+				m_wheelJoints.erase(jointIter);
+				m_freedJointIDs.push_back(jointID);
+				return;
+			}
 		}
 	}
 }

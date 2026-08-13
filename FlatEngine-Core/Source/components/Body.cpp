@@ -12,14 +12,7 @@ namespace FlatEngine
 	{
 		SetOwnerID(ownerID);
 		SetType(ComponentType_Body);
-
 		m_bodyID = b2BodyId();
-		// m_bodyProps = PhysicsManager::BodyProps();		
-		// m_boxes = std::list<Box>();
-		// m_circles = std::list<Circle>();
-		// m_capsules = std::list<Capsule>();
-		// m_polygons = std::list<Polygon>();
-		// m_chains = std::list<Chain>();
 		// Contacts
 		m_beginContactCallback = nullptr;
 		m_b_beginContactCallbackSet = false;
@@ -30,8 +23,6 @@ namespace FlatEngine
 		m_b_beginSensorTouchCallbackSet = false;
 		m_endSensorTouchCallback = nullptr;
 		m_b_endSensorTouchCallbackSet = false;
-
-		m_distanceJoints = std::list<DistanceJoint*>();
 	}
 }
 
@@ -44,11 +35,7 @@ namespace FlatEngine
 // 			shapesArray.push_back(shape->GetShapeData());
 // 		}
 
-// 		json jsonData = {
-// 			{ "type", (int)GetType() },
-// 			{ "id", b_IDOverride ? -1 : GetID() },
-// 			{ "b_isCollapsed", IsCollapsed() },
-// 			{ "b_isActive", IsActive() },
+// 		json componentJson = {
 // 			{ "bodyType", (int)m_bodyProps.type },
 // 			{ "b_lockedRotation", m_bodyProps.b_lockedRotation },
 // 			{ "b_lockedXAxis", m_bodyProps.b_lockedXAxis },
@@ -58,8 +45,9 @@ namespace FlatEngine
 // 			{ "angularDamping", m_bodyProps.angularDamping },
 // 			{ "shapes", shapesArray }
 // 		};
+		// componentJson.update(Component::GetData(b_IDOverride));
 		
-// 		return jsonData;
+// 		return componentJson;
 // 	}
 
 
@@ -115,6 +103,8 @@ namespace FlatEngine
 
 // 	void Body::PutData(json componentJson, std::string objectName)
 // 	{
+// if (componentJson.empty())		
+// 			return;	
 //         Component::PutData(componentJson, objectName);
 
 // 		PhysicsManager::BodyProps bodyProps;

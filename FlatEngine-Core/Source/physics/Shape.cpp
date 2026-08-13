@@ -5,6 +5,7 @@
 #include "physics/PhysicsManager.h"
 #include "physics/Shape.h"
 #include "tools/JsonHelper.h"
+#include <box2d.h>
 
 
 namespace FlatEngine
@@ -35,8 +36,8 @@ namespace FlatEngine
 
 	json Shape::GetData()
 	{
-		json jsonData = {
-			{ "shapeType", (int)type },
+		json shapeJson = {
+			{ "shapeType", ShapeTypeStrings[(int)type] },
 			{ "b_enableContactEvents", b_enableContactEvents },
 			{ "b_enableSensorEvents", b_enableSensorEvents },
 			{ "b_isSensor", b_isSensor },
@@ -47,41 +48,44 @@ namespace FlatEngine
 			{ "rollingResistance", rollingResistance }	
 		};
 
-		jsonData["shapeData"] = std::visit([](auto&& sData) { return sData.GetData(); }, shapeData);
+		shapeJson["shapeData"] = std::visit([](auto&& sData) { return sData.GetData(); }, shapeData);
 
-		return jsonData;
+		return shapeJson;
 	}
 
-	void Shape::PutData(json jsonData, std::string objectName)
+	void Shape::PutData(json shapeJson, std::string name)
 	{
-		type = (ShapeType)(JsonHelper::CheckJsonInt(jsonData, "shapeType", objectName));
-		b_enableContactEvents = JsonHelper::CheckJsonBool(jsonData, "b_enableContactEvents", objectName);
-		b_enableSensorEvents = JsonHelper::CheckJsonBool(jsonData, "b_enableSensorEvents", objectName);
-		b_isSensor = JsonHelper::CheckJsonBool(jsonData, "b_isSensor", objectName);				
-		restitution = JsonHelper::CheckJsonFloat(jsonData, "restitution", objectName);
-		density = JsonHelper::CheckJsonFloat(jsonData, "density", objectName);
-		friction = JsonHelper::CheckJsonFloat(jsonData, "friction", objectName);
-		tangentSpeed = JsonHelper::CheckJsonFloat(jsonData, "tangentSpeed", objectName);
-		rollingResistance = JsonHelper::CheckJsonFloat(jsonData, "rollingResistance", objectName);
-		
-		if (JsonHelper::JsonContains(jsonData, "shapeData", objectName))
+		json shapeDataJson = json::object();
+		if (!shapeJson.empty() && JsonHelper::JsonContains(shapeJson, "shapeData", name))		
+			shapeDataJson = shapeJson.at("shapeData");
+
+		switch (type)
 		{
-			json shapeJson = jsonData.at("shapeData");
-			switch (type)
-			{
-				case ShapeType_Box:     { BoxShapeData shape;     shape.PutData(shapeJson, objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-				case ShapeType_Circle:  { CircleShapeData shape;  shape.PutData(shapeJson, objectName); shapeData = shape; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
-				case ShapeType_Polygon: { PolygonShapeData shape; shape.PutData(shapeJson, objectName); shapeData = shape; break; }
-				case ShapeType_Capsule: { CapsuleShapeData shape; shape.PutData(shapeJson, objectName); shapeData = shape; break; }
-				case ShapeType_Chain:   { ChainShapeData shape;   shape.PutData(shapeJson, objectName); shapeData = shape; break; }
-				default: break;
-			}
+			case ShapeType_Box:     { shapeData = BoxShapeData();     std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes.push_back(SceneView::CreateQuadObject()); break; }
+			case ShapeType_Circle:  { shapeData = CircleShapeData();  std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes.push_back(SceneView::CreateCircleObject());  break; }
+			case ShapeType_Capsule: { shapeData = CapsuleShapeData(); std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes = SceneView::CreateCapsuleObject(); break; }
+			case ShapeType_Polygon: { shapeData = PolygonShapeData(); std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes = SceneView::CreatePolygonObject(); break; }				
+			case ShapeType_Chain:   { shapeData = ChainShapeData();   std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData); renderShapes = SceneView::CreateChainObject(); break; }
+			default: break;
 		}
+
+		if (shapeJson.empty())
+			return;
+
+		b_enableContactEvents = JsonHelper::CheckJsonBool(shapeJson, "b_enableContactEvents", name);
+		b_enableSensorEvents = JsonHelper::CheckJsonBool(shapeJson, "b_enableSensorEvents", name);
+		b_isSensor = JsonHelper::CheckJsonBool(shapeJson, "b_isSensor", name);				
+		restitution = JsonHelper::CheckJsonFloat(shapeJson, "restitution", name);
+		density = JsonHelper::CheckJsonFloat(shapeJson, "density", name);
+		friction = JsonHelper::CheckJsonFloat(shapeJson, "friction", name);
+		tangentSpeed = JsonHelper::CheckJsonFloat(shapeJson, "tangentSpeed", name);
+		rollingResistance = JsonHelper::CheckJsonFloat(shapeJson, "rollingResistance", name);
 	}	
 
 	void Shape::SetShapeID(b2ShapeId shapeID)
 	{
 		m_shapeID = shapeID;
+		std::visit([shapeID](auto&& sData) { sData.shapeID = shapeID; }, shapeData);
 	}
 
 	const b2ShapeId Shape::GetShapeID()
@@ -164,6 +168,9 @@ namespace FlatEngine
 
 	bool Shape::PointInShape(Vector2 point)
 	{
+		if (!b2Shape_IsValid(m_shapeID))
+			return false;
+
 		switch (type)
 		{
 		case ShapeType::ShapeType_Box:
@@ -193,6 +200,9 @@ namespace FlatEngine
 
 	b2CastOutput Shape::CastRayAt(b2RayCastInput* rayCastInput)
 	{
+		if (!b2Shape_IsValid(m_shapeID))
+			return b2CastOutput();
+
 		switch (type)
 		{
 		case ShapeType::ShapeType_Box:
@@ -226,6 +236,9 @@ namespace FlatEngine
 
 	b2CastOutput Shape::CastShapeAt(b2ShapeCastInput* shapeCastInput)
 	{
+		if (!b2Shape_IsValid(m_shapeID))
+			return b2CastOutput();
+		
 		switch (type)
 		{
 		case ShapeType::ShapeType_Box:

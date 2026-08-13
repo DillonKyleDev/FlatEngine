@@ -90,4 +90,11 @@ F_Textures = {
 	zoomIn = "../engine/images/icons/zoom_in.png",
 	zoomOut = "../engine/images/icons/zoom_out.png",
 	search = "../engine/images/icons/search.png",
+	-- Components
+	Transform = "../engine/images/icons/components/transform.png",
+	Animation = "../engine/images/icons/components/animation.png",
+	Light = "../engine/images/icons/components/light.png",
+	Mesh = "../engine/images/icons/components/mesh2.png",
+	Body2D = "../engine/images/icons/components/body2d.png",
+	Audio = "../engine/images/icons/components/audio.png",
 }

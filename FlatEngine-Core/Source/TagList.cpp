@@ -80,6 +80,9 @@ namespace FlatEngine
 	
 	void TagList::PutData(json taglistJson, std::string objectName)
 	{		
+		if (taglistJson == json::object())
+			return;
+
 		if (JsonHelper::JsonContains(taglistJson, "tags", objectName))
 		{
 			json tagsJson = taglistJson["tags"];

@@ -2,6 +2,7 @@
 #include "tools/JsonHelper.h"
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 
@@ -17,8 +18,7 @@ namespace FlatEngine
 		ComponentType_Button,
 		ComponentType_Camera,
 		ComponentType_Canvas,
-		ComponentType_CharacterController,
-		ComponentType_JointMaker,
+		ComponentType_CharacterController,		
 		ComponentType_Light,
 		ComponentType_Mesh,
 		ComponentType_Script,
@@ -27,7 +27,6 @@ namespace FlatEngine
 		ComponentType_TileMap,
 		ComponentType_Size,
 	};
-
     const std::vector<std::string> ComponentTypeStrings =
     {
 		"None",
@@ -39,14 +38,32 @@ namespace FlatEngine
 		"Button",
 		"Camera",
 		"Canvas",
-		"CharacterController",
-		"JointMaker",
+		"CharacterController",		
 		"Light",
 		"Mesh",
 		"Script",
 		"Sprite",
 		"Text",
 		"TileMap"
+	};
+	const std::unordered_map<std::string, ComponentType> ComponentTypeFromString = {
+		{ "None",                ComponentType_None },
+		{ "Transform",           ComponentType_Transform },
+		{ "Animation",           ComponentType_Animation },
+		{ "Audio",               ComponentType_Audio },
+		{ "Body",                ComponentType_Body },
+		{ "Body2D",              ComponentType_Body2D },
+		{ "Button",              ComponentType_Button },
+		{ "Camera",              ComponentType_Camera },
+		{ "Canvas",              ComponentType_Canvas },
+		{ "CharacterController", ComponentType_CharacterController },
+		{ "Light",               ComponentType_Light },
+		{ "Mesh",                ComponentType_Mesh },
+		{ "Script",              ComponentType_Script },
+		{ "Sprite",              ComponentType_Sprite },
+		{ "Text",                ComponentType_Text },
+		{ "TileMap",             ComponentType_TileMap },
+		{ "Size",                ComponentType_Size }
 	};
 
 	class GameObject;
@@ -55,11 +72,20 @@ namespace FlatEngine
 	{
 	public:
 		Component();		
-		virtual json GetData(bool b_IDOverride = false) { return "{}"; };
+		virtual json GetData(bool b_IDOverride = false) 
+		{ 
+			json componentJson = {
+				{ "componentType", GetTypeString() },    				
+				{ "b_isCollapsed", m_b_isCollapsed },
+				{ "b_isActive", m_b_isActive }
+			};
+
+			return componentJson;
+		};
 		virtual void PutData(json componentJson, std::string objectName) 
 		{
 			m_b_isActive = JsonHelper::CheckJsonBool(componentJson, "b_isActive", objectName);
-			m_b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName);
+			m_b_isCollapsed = JsonHelper::CheckJsonBool(componentJson, "b_isCollapsed", objectName);			
 		};
 
 		void SetType(ComponentType type);

@@ -34,10 +34,7 @@ namespace FlatEngine
 
 	json Text::GetData(bool b_IDOverride)
 	{
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = {
 			{ "fontPath", m_fontPath },
 			{ "text", m_text },
 			{ "fontSize", m_fontSize },
@@ -48,14 +45,18 @@ namespace FlatEngine
 			{ "tintColorW", m_tintColor.w },
 			{ "xOffset", m_offset.x },
 			{ "yOffset", m_offset.y },
-			{ "renderOrder", m_renderOrder },
+			{ "renderOrder", m_renderOrder }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 		
-		return jsonData;
+		return componentJson;
 	}
 
 	void Text::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 
 		std::string fontPath = JsonHelper::CheckJsonString(componentJson, "fontPath", objectName);

@@ -131,8 +131,7 @@ namespace FlatEngine
 					objectPtr->PutData(objectJson);														
 				}
 
-				loadedScene.SortSceneObjects();
-				loadedScene.CreateJoints();
+				loadedScene.SortSceneObjects();				
 				F_Application->OnLoadScene(pointToPath);
 			}
 

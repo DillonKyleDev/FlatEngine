@@ -10,6 +10,7 @@
 #include "managers/PrefabManager.h"
 #include "managers/ProjectManager.h"
 #include "Modals.h"
+#include "physics/Shape.h"
 #include "render/SceneView.h"
 #include "render/VulkanManager.h"
 #include "TagList.h"
@@ -230,7 +231,61 @@ namespace FlatGui
 					for (int i = 1; i < FL::ComponentType_Size; i++)
 					{						
 						std::string componentTypeString = " " + FL::ComponentTypeStrings[i];
-						if (ImGui::MenuItem(componentTypeString.c_str()))
+						if ((FL::ComponentType)i == FL::ComponentType_Body2D)
+						{
+							if (ImGui::BeginMenu(" Body2D"))
+							{
+								if (ImGui::MenuItem(" Empty"))
+								{
+									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+									newObject->Add<FL::Body2D>();
+									newObject->SetName("Body2D");
+									FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
+								}
+								if (ImGui::MenuItem(" Box"))
+								{
+									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+									FL::Body2D* body = newObject->Add<FL::Body2D>();
+									body->AddShape(FL::ShapeType_Box);
+									newObject->SetName("BoxBody2D");
+									FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
+								}
+								if (ImGui::MenuItem(" Circle"))
+								{
+									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+									FL::Body2D* body = newObject->Add<FL::Body2D>();
+									body->AddShape(FL::ShapeType_Circle);
+									newObject->SetName("CircleBody2D");
+									FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
+								}
+								if (ImGui::MenuItem(" Capsule"))
+								{
+									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+									FL::Body2D* body = newObject->Add<FL::Body2D>();
+									body->AddShape(FL::ShapeType_Capsule);
+									newObject->SetName("CapsuleBody2D");
+									FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
+								}
+								if (ImGui::MenuItem(" Polygon"))
+								{
+									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+									FL::Body2D* body = newObject->Add<FL::Body2D>();
+									body->AddShape(FL::ShapeType_Polygon);
+									newObject->SetName("PolygonBody2D");
+									FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
+								}
+								if (ImGui::MenuItem(" Chain"))
+								{
+									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+									FL::Body2D* body = newObject->Add<FL::Body2D>();
+									body->AddShape(FL::ShapeType_Chain);
+									newObject->SetName("ChainBody2D");
+									FL::ProjectManager::loadedProject.focusedGameObjectID = newObject->GetID();
+								}
+								ImGui::EndMenu();
+							}
+						}
+						else if (ImGui::MenuItem(componentTypeString.c_str()))
 						{
 							FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);						 
 							newObject->AddComponent((FL::ComponentType)i);
@@ -241,63 +296,6 @@ namespace FlatGui
 						if (i < FL::ComponentType_Size - 1)
 							FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					}
-					// if (ImGui::BeginMenu("Body"))
-					// {
-						// if (ImGui::MenuItem("Empty Body"))
-						// {
-						// 	long newObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1);
-						// 	FL::GameObject* newObject = FL::SceneManager::loadedScene.GetObjectByID(newObjectID);
-						// 	newObject->Add<FL::Body>();
-						// 	newObject->SetName("Body(" + std::to_string(newObjectID) + ")");
-						// 	FL::ProjectManager::loadedProject.SetFocusedGameObjectID(newObjectID);
-						// }
-						// if (ImGui::MenuItem("Box Body"))
-						// {
-						// 	long newObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1);
-						// 	FL::GameObject* newObject = FL::SceneManager::loadedScene.GetObjectByID(newObjectID);
-						// 	FL::Body* body = newObject->Add<FL::Body>();
-						// 	body->AddBox();
-						// 	newObject->SetName("BoxBody(" + std::to_string(newObjectID) + ")");
-						// 	FL::ProjectManager::loadedProject.SetFocusedGameObjectID(newObjectID);
-						// }
-						// if (ImGui::MenuItem("Circle Body"))
-						// {
-						// 	long newObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1);
-						// 	FL::GameObject* newObject = FL::SceneManager::loadedScene.GetObjectByID(newObjectID);
-						// 	Body* body = newObject->Add<Body>();
-						// 	body->AddCircle();
-						// 	newObject->SetName("CircleBody(" + std::to_string(newObjectID) + ")");
-						// 	FL::ProjectManager::loadedProject.SetFocusedGameObjectID(newObjectID);
-						// }
-						// if (ImGui::MenuItem("Capsule Body"))
-						// {
-						// 	long newObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1);
-						// 	GameObject* newObject = FL::SceneManager::loadedScene.GetObjectByID(newObjectID);
-						// 	Body* body = newObject->Add<Body>();
-						// 	body->AddCapsule();
-						// 	newObject->SetName("CapsuleBody(" + std::to_string(newObjectID) + ")");
-						// 	FL::ProjectManager::loadedProject.SetFocusedGameObjectID(newObjectID);
-						// }
-						// if (ImGui::MenuItem("Polygon Body"))
-						// {
-						// 	long newObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1);
-						// 	GameObject* newObject = FL::SceneManager::loadedScene.GetObjectByID(newObjectID);
-						// 	Body* body = newObject->Add<Body>();
-						// 	body->AddPolygon();
-						// 	newObject->SetName("PolygonBody(" + std::to_string(newObjectID) + ")");
-						// 	FL::ProjectManager::loadedProject.SetFocusedGameObjectID(newObjectID);
-						// }
-						// if (ImGui::MenuItem("Chain Body"))
-						// {
-						// 	long newObjectID = FL::SceneManager::loadedScene.CreateGameObject(-1);
-						// 	GameObject* newObject = FL::SceneManager::loadedScene.GetObjectByID(newObjectID);
-						// 	Body* body = newObject->Add<Body>();
-						// 	body->AddChain();
-						// 	newObject->SetName("ChainBody(" + std::to_string(newObjectID) + ")");
-						// 	FL::ProjectManager::loadedProject.SetFocusedGameObjectID(newObjectID);
-						// }
-					// 	ImGui::EndMenu();
-					// }
 					ImGui::EndMenu();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
@@ -400,13 +398,6 @@ namespace FlatGui
 						FL::SceneView::ToggleOrthographic();
 						FL::Settings::settings.SaveSettings();
 					}
-					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");		
-					if (ImGui::MenuItem(" Reset Ortho View"))
-					{						
-						FL::SceneView::sceneViewCamera.orthoHorizontalViewAngle = 180;
-						FL::SceneView::sceneViewCamera.orthoVerticalViewAngle = 0;
-						FL::Settings::settings.SaveSettings();
-					}	
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");							
 					if (ImGui::BeginMenu(" Pixels/Grid Square"))
 					{					
@@ -421,14 +412,14 @@ namespace FlatGui
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					if (ImGui::BeginMenu(" Near Clip (Ortho)"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoNearClippingDistance, 0.1f, -1000, 1000))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoNearClippingDistance, 0.1f, -20000, 20000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					if (ImGui::BeginMenu(" Far Clip (Ortho)"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoFarClippingDistance, 0.1f, -1000, 1000))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClipOrtho", 100.0f, FL::SceneView::sceneViewCamera.orthoFarClippingDistance, 0.1f, -20000, 20000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
@@ -442,14 +433,14 @@ namespace FlatGui
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					if (ImGui::BeginMenu(" Near Clip (Per)"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClip", 100.0f, FL::SceneView::sceneViewCamera.nearClippingDistance, 0.1f, -1000, 1000))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraNearClip", 100.0f, FL::SceneView::sceneViewCamera.nearClippingDistance, 0.1f, -20000, 20000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}
 					FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 					if (ImGui::BeginMenu(" Far Clip (Per)"))
 					{					
-						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClip", 100.0f, FL::SceneView::sceneViewCamera.farClippingDistance, 0.1f, -1000, 1000))
+						if (FL::GuiCore::RenderDragFloat("##SceneViewCameraFarClip", 100.0f, FL::SceneView::sceneViewCamera.farClippingDistance, 0.1f, -20000, 20000))
 							FL::Settings::settings.SaveSettings();	
 						ImGui::EndMenu();
 					}

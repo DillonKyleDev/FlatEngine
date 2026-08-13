@@ -19,29 +19,34 @@ namespace FlatEngine
     // (degrees) Quaternion rotation to Euler xyz-axis Vector3
     Vector3 Quaternion::QuaternionToEuler(const Quaternion& q)
     {
-        float w = q.s, x = q.x, y = q.y, z = q.z;
+        float w = q.s;
+        float x = q.x;
+        float y = q.y;
+        float z = q.z;
 
-        float r02 = 2.0f*(x*z + w*y);
+        float r10 = 2.0f*(x*y + w*z);
+        float r11 = 1.0f - 2.0f*(x*x + z*z);
         float r12 = 2.0f*(y*z - w*x);
+        float r02 = 2.0f*(x*z + w*y);
         float r22 = 1.0f - 2.0f*(x*x + y*y);
-        float r01 = 2.0f*(x*y - w*z);
-        float r00 = 1.0f - 2.0f*(y*y + z*z);
 
-        float sinY = Numbers::Clamp(r02, -1.0f, 1.0f);
+        float sinX = Numbers::Clamp(-r12, -1.0f, 1.0f);
 
         float angleX, angleY, angleZ;
 
-        if (std::abs(sinY) > 0.9999f)
+        if (std::abs(sinX) > 0.9999f)
         {
-            angleY = std::asin(sinY);
+            // Gimbal lock: Y and Z become coupled. Pick Z = 0 arbitrarily and
+            // solve the single remaining degree of freedom into Y.
+            angleX = std::asin(sinX);
             angleZ = 0.0f;
-            angleX = std::atan2(2.0f*(x*y + w*z), 1.0f - 2.0f*(x*x + z*z));
+            angleY = std::atan2(2.0f*(x*z - w*y), 1.0f - 2.0f*(y*y + z*z));
         }
         else
         {
-            angleY = std::asin(sinY);
-            angleX = std::atan2(-r12, r22);
-            angleZ = std::atan2(-r01, r00);
+            angleX = std::asin(sinX);
+            angleZ = std::atan2(r10, r11);
+            angleY = std::atan2(r02, r22);
         }
 
         return Vector3(
@@ -103,7 +108,7 @@ namespace FlatEngine
         Quaternion qy = Quaternion(Numbers::Cos(eulerRotations.y / 2), Vector3(0, Numbers::Sin(eulerRotations.y / 2), 0));
         Quaternion qz = Quaternion(Numbers::Cos(eulerRotations.z / 2), Vector3(0, 0, Numbers::Sin(eulerRotations.z / 2)));
 
-        Quaternion q = qx * qy * qz;
+        Quaternion q = qy * qx * qz;
         q.Normalize();
 
         s = q.s;

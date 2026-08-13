@@ -1181,7 +1181,7 @@ namespace FlatEngine
                             if (renderObject.mesh.IsActive())
                             {                                    
                                 m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
+                                renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &renderObject.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                                 m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
                                 m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
                                 m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
@@ -1199,7 +1199,7 @@ namespace FlatEngine
                         if (renderObject.mesh.IsActive())
                         {                                    
                             m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                            renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderObject.transform);
+                            renderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &renderObject.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                             m_renderToTextureSceneViewRenderPass.BindIndexed(renderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
                             m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
                             m_renderToTextureSceneViewRenderPass.DrawIndexed(renderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
@@ -1214,7 +1214,7 @@ namespace FlatEngine
                     if (SceneView::transformGizmoRenderObject.mesh.IsActive())
                     {                                    
                         m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(transformGizmoMaterial->GetGraphicsPipeline());
-                        SceneView::transformGizmoRenderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &SceneView::transformGizmoRenderObject.transform);
+                        SceneView::transformGizmoRenderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &SceneView::transformGizmoRenderObject.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                         m_renderToTextureSceneViewRenderPass.BindIndexed(SceneView::transformGizmoRenderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
                         m_renderToTextureSceneViewRenderPass.BindDescriptorSets(SceneView::transformGizmoRenderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], transformGizmoMaterial, ViewportType::ViewportType_SceneView);
                         m_renderToTextureSceneViewRenderPass.DrawIndexed(SceneView::transformGizmoRenderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
@@ -1228,7 +1228,7 @@ namespace FlatEngine
                     if (SceneView::orientationGizmoRenderObject.mesh.IsActive())
                     {                                    
                         m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(orientationGizmoMaterial->GetGraphicsPipeline());
-                        SceneView::orientationGizmoRenderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &SceneView::orientationGizmoRenderObject.transform);
+                        SceneView::orientationGizmoRenderObject.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &SceneView::orientationGizmoRenderObject.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                         m_renderToTextureSceneViewRenderPass.BindIndexed(SceneView::orientationGizmoRenderObject.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
                         m_renderToTextureSceneViewRenderPass.BindDescriptorSets(SceneView::orientationGizmoRenderObject.mesh.GetSceneViewDescriptorSets()[currentFrame], orientationGizmoMaterial, ViewportType::ViewportType_SceneView);
                         m_renderToTextureSceneViewRenderPass.DrawIndexed(SceneView::orientationGizmoRenderObject.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
@@ -1244,7 +1244,7 @@ namespace FlatEngine
                         if (poolRenderObject.object->mesh.IsActive())
                         {                                    
                             m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                            poolRenderObject.object->mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &poolRenderObject.object->transform);
+                            poolRenderObject.object->mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &poolRenderObject.object->transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                             m_renderToTextureSceneViewRenderPass.BindIndexed(poolRenderObject.object->mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
                             m_renderToTextureSceneViewRenderPass.BindDescriptorSets(poolRenderObject.object->mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
                             m_renderToTextureSceneViewRenderPass.DrawIndexed(poolRenderObject.object->mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
@@ -1296,7 +1296,7 @@ namespace FlatEngine
 
                             if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
                             {
-                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic());
+                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneManager::loadedScene.Get<Transform>(mesh->GetOwnerID()), &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                                 m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh->GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
                                 m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       
                             }
@@ -1323,7 +1323,7 @@ namespace FlatEngine
                                 if (renderShape.mesh.IsActive())
                                 {                                    
                                     m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
-                                    renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic(), &renderShape.transform);
+                                    renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &renderShape.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                                     m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
                                     m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
                                     m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
@@ -1340,7 +1340,7 @@ namespace FlatEngine
 
                     for (Mesh* mesh : meshesMissingTextures)
                     {
-                        mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneView::IsOrthoGraphic());
+                        mesh->UpdateUniformBuffer(ViewportType::ViewportType_SceneView, SceneManager::loadedScene.Get<Transform>(mesh->GetOwnerID()), &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
                         m_renderToTextureSceneViewRenderPass.BindIndexed(mesh->GetModel());
                         m_renderToTextureSceneViewRenderPass.BindDescriptorSets(mesh->GetEmptySceneViewDescriptorSets()[currentFrame], GetMaterial("fl_empty"), ViewportType::ViewportType_SceneView);
                         m_renderToTextureSceneViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable   
@@ -1378,10 +1378,11 @@ namespace FlatEngine
                             }
 
                             m_renderToTextureGameViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
-
+                            Camera* primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();
+                            
                             if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
                             {
-                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneView::IsOrthoGraphic());
+                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneManager::loadedScene.Get<Transform>(mesh->GetOwnerID()), primaryCamera, SceneManager::loadedScene.Get<Transform>(primaryCamera->GetOwnerID()));
                                 m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
                                 m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetGameViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_GameView);
                                 m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       
@@ -1398,10 +1399,11 @@ namespace FlatEngine
                 if (meshesMissingTextures.size())
                 {
                     m_renderToTextureGameViewRenderPass.RecordCommandBuffer(GetMaterial("fl_empty")->GetGraphicsPipeline());
+                    Camera* primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();
 
                     for (Mesh* mesh : meshesMissingTextures)
-                    {
-                        mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneView::IsOrthoGraphic());
+                    {                        
+                        mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneManager::loadedScene.Get<Transform>(mesh->GetOwnerID()), primaryCamera, SceneManager::loadedScene.Get<Transform>(primaryCamera->GetOwnerID()));
                         m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
                         m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetEmptyGameViewDescriptorSets()[currentFrame], GetMaterial("fl_empty"), ViewportType::ViewportType_GameView);
                         m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_gameViewTexture's m_images member variable   

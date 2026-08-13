@@ -426,6 +426,7 @@ namespace FlatEngine
 				"z", &Quaternion::z,
 				"EulerToQuaternion", &Quaternion::EulerToQuaternion,
 				"QuaternionToEuler", &Quaternion::QuaternionToEuler,
+				"CreateRotation", &Quaternion::CreateRotation,
 				"Inverse", &Quaternion::Inverse,
 				"Times", &Quaternion::operator*
 			);
@@ -482,6 +483,9 @@ namespace FlatEngine
 				"GetPosition", &Transform::GetPosition,
 				"GetAbsolutePosition", &Transform::GetAbsolutePosition,
 				"GetRotation", &Transform::GetRotation,
+				"AddXRotation", &Transform::AddXRotation,
+				"AddYRotation", &Transform::AddYRotation,
+				"AddZRotation", &Transform::AddZRotation,
 				"SetScale", &Transform::SetScale,
 				"GetScale", &Transform::GetScale,
 				"GetAbsoluteScale", &Transform::GetAbsoluteScale,

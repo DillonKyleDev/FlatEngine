@@ -12,6 +12,7 @@
 namespace FlatEngine
 {	
 	class Transform;
+	class Camera;
 
 	class Mesh : public Component
 	{
@@ -42,7 +43,7 @@ namespace FlatEngine
 		std::vector<VkDescriptorSet>& GetGameViewDescriptorSets();
 		std::vector<VkDescriptorSet>& GetEmptySceneViewDescriptorSets();
 		std::vector<VkDescriptorSet>& GetEmptyGameViewDescriptorSets();
-		void UpdateUniformBuffer(ViewportType viewportType, bool b_orthographic, Transform* transform = nullptr);
+		void UpdateUniformBuffer(ViewportType viewportType, Transform* transform, Camera* camera, Transform* cameraTransform);
 		std::vector<VkBuffer>& GetSceneViewUniformBuffers();
 		std::vector<VkBuffer>& GetGameViewUniformBuffers();		
 		std::map<std::string, glm::vec4>& GetUBOVec4s();

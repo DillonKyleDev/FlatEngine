@@ -26,18 +26,19 @@ namespace FlatEngine
             soundData.push_back(soundJson);
         }
 
-        json jsonData = {
-            { "type", (int)GetType() },
-            { "b_isCollapsed", IsCollapsed() },
-            { "b_isActive", IsActive() },
+        json componentJson = {
             { "soundData", soundData }
         };
+        componentJson.update(Component::GetData(b_IDOverride));
 
-        return jsonData;
+        return componentJson;
     }
 
     void Audio::PutData(json componentJson, std::string objectName)
 	{
+        if (componentJson.empty())		
+			return;		
+
         Component::PutData(componentJson, objectName);
 
         if (JsonHelper::JsonContains(componentJson, "soundData", objectName))

@@ -1,10 +1,12 @@
 #pragma once
 #include "GameObject.h"
 #include "components/Component.h"
+#include "physics/Joint.h"
 #include "physics/PhysicsManager.h"
 #include "physics/Shape.h"
 #include "tools/Vector2.h"
 
+#include <id.h>
 #include <list>
 #include <vector>
 
@@ -42,15 +44,18 @@ namespace FlatEngine
 		void SetOnSensorEndTouch(void (*endSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID));
 		void OnSensorEndTouch(b2ShapeId myID, b2ShapeId touchedID);
 	
-		void UpdateRenderShapes();
-		void RecreateShapes();
-
-		void SetBodyID(b2BodyId bodyID);
-		void AddShape(ShapeType type);
+		void AddShape(ShapeType type, json jsonData = json::object(), std::string name = "");
 		const b2BodyId GetBodyID();
 		std::vector<Shape*> GetShapes();		
 		void RemoveShape(b2ShapeId shapeID);
 		void RemoveChain(b2ChainId chainID);
+		void AddJoint(JointType type, json jsonData = json::object(), std::string name = "");
+        std::vector<Joint*> GetJoints();        
+        void RemoveJoint(long jointID);
+		void UpdateRenderShapes();
+		void RecreateShapes();
+
+		void SetBodyID(b2BodyId bodyID);
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);
 		Vector2 GetPosition();
@@ -64,7 +69,6 @@ namespace FlatEngine
 		void SetGravityScale(float gravityScale);
 		void SetLinearDamping(float linearDamping);	
 		void SetAngularDamping(float angularDamping);
-
 		void ApplyForce(Vector2 force, Vector2 worldPoint);
 		void ApplyLinearInpulse(Vector2 impulse, Vector2 worldPoint);
 		void ApplyForceToCenter(Vector2 force);
@@ -74,8 +78,6 @@ namespace FlatEngine
 		Vector2 GetLinearVelocity();
 		float GetAngularVelocity();
 
-		void AddJoint(Joint* joint);
-
 		b2BodyType type = b2_dynamicBody;
 		bool b_lockedRotation = false;
 		bool b_lockedXAxis = false;
@@ -83,19 +85,27 @@ namespace FlatEngine
 		float gravityScale = 1.0f;
 		float linearDamping = 0.0f;
 		float angularDamping = 0.0f;
-		
-		std::list<Shape> boxes;
-		std::list<Shape> circles;
-		std::list<Shape> capsules;
-		std::list<Shape> polygons;
-		std::list<Shape> chains;
 
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
-		std::list<Joint*> m_distanceJoints;
-
 		FL::Vector2 position = FL::Vector2();	
 		b2Rot rotation = b2MakeRot(0);
+		long m_currentJointID;
+		std::vector<long> m_freedJointIDs;
+
+		std::list<Shape> m_boxes;
+		std::list<Shape> m_circles;
+		std::list<Shape> m_capsules;
+		std::list<Shape> m_polygons;
+		std::list<Shape> m_chains;
+
+		std::list<Joint> m_distanceJoints;
+        std::list<Joint> m_prismaticJoints;
+        std::list<Joint> m_revoluteJoints;
+        std::list<Joint> m_mouseJoints;
+        std::list<Joint> m_wheelJoints;
+        std::list<Joint> m_motorJoints;
+        std::list<Joint> m_weldJoints;  
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

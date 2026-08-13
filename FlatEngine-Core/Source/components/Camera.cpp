@@ -18,12 +18,8 @@ namespace FlatEngine
 		b_shouldFollow = false;
 		toFollowID = -1;
 		followSmoothing = 0.1f;
-		horizontalViewAngle = 0.0f;
-		verticalViewAngle = 0.0f;
 		b_orthographic = true;		
 		gridStep = 20;
-		orthoHorizontalViewAngle = 180.0;
-		orthoVerticalViewAngle = 0.0;		
 		m_b_isPrimaryCamera = false;		
 		m_lookDirection = Vector3(0.0f, 0.0f, 1.0f);
 		
@@ -34,10 +30,7 @@ namespace FlatEngine
 
 	json Camera::GetData(bool b_IDOverride)
 	{
-		json jsonData = {
-			{ "type", (int)GetType()},
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = {
 			{ "gridStep", gridStep },
 			{ "b_orthographic", b_orthographic },
 			{ "b_isPrimaryCamera", m_b_isPrimaryCamera },
@@ -46,16 +39,18 @@ namespace FlatEngine
 			{ "following", toFollowID },
 			{ "perspectiveAngle", perspectiveAngle },
 			{ "nearClippingDistance", nearClippingDistance },
-			{ "farClippingDistance", farClippingDistance },
-			{ "horizontalViewAngle", horizontalViewAngle },
-			{ "verticalViewAngle", verticalViewAngle }			
+			{ "farClippingDistance", farClippingDistance }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void Camera::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 		
 		bool b_isPrimaryCamera = JsonHelper::CheckJsonBool(componentJson, "b_isPrimaryCamera", objectName);		
@@ -65,8 +60,6 @@ namespace FlatEngine
 		perspectiveAngle = JsonHelper::CheckJsonFloat(componentJson, "perspectiveAngle", objectName);
 		nearClippingDistance = JsonHelper::CheckJsonFloat(componentJson, "nearClippingDistance", objectName);
 		farClippingDistance = JsonHelper::CheckJsonFloat(componentJson, "farClippingDistance", objectName);
-		horizontalViewAngle = JsonHelper::CheckJsonFloat(componentJson, "horizontalViewAngle", objectName);
-		verticalViewAngle = JsonHelper::CheckJsonFloat(componentJson, "verticalViewAngle", objectName);
 		b_shouldFollow = JsonHelper::CheckJsonBool(componentJson, "b_follow", objectName);
 		followSmoothing = JsonHelper::CheckJsonFloat(componentJson, "followSmoothing", objectName);
 		toFollowID = JsonHelper::CheckJsonLong(componentJson, "following", objectName);
@@ -99,62 +92,25 @@ namespace FlatEngine
 		//}
 	}
 
-	glm::vec4 Camera::GetLookDirection()
+	glm::mat4 Camera::GetProjection()
 	{
-		Vector3 rotation = SceneManager::loadedScene.GetObjectByID(GetOwnerID())->Get<Transform>()->GetRotation();
-		glm::mat4 rollCameraMatrix         = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 horCameraRotationMatrix  = glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4 rotationMatrix;
+		glm::mat4 projection;			
+		float aspectRatio = 16.0f / 9.0f;
 
-		if (rotation.x != 0) // prevent unnecessary matrix multiplication if possible
-			rotationMatrix = rollCameraMatrix * vertCameraRotationMatrix * horCameraRotationMatrix;
-		else
-			rotationMatrix = vertCameraRotationMatrix * horCameraRotationMatrix;
-
-		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f); // default looking in the z direction;
-	}
-
-	// Meant for the Scene View Camera because it does not exist in the Scene objects pool and would crash with above function
-	glm::vec4 Camera::GetLookDirectionNoRoll()
-	{
-		glm::mat4 horCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? orthoHorizontalViewAngle : horizontalViewAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 vertCameraRotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(b_orthographic ? orthoVerticalViewAngle : verticalViewAngle), glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 rotationMatrix = horCameraRotationMatrix * vertCameraRotationMatrix;
-
-		return rotationMatrix * glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
-	}
-
-	void Camera::AddOrthoVerticalViewAngle(float toAdd)
-	{
-		if (orthoVerticalViewAngle + toAdd >= 90)
-		{
-			orthoVerticalViewAngle = 89.99f;
-		}
-		else if (orthoVerticalViewAngle + toAdd <= -90)
-		{
-			orthoVerticalViewAngle = -89.99f;
+		if (b_orthographic)
+		{    		
+			float halfWidth  = SceneView::finalImageSize.x / gridStep / 2.0f;
+			float halfHeight = SceneView::finalImageSize.y / gridStep / 2.0f;
+			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, orthoNearClippingDistance, orthoFarClippingDistance);			
+			projection[1][1] *= -1;
 		}
 		else
 		{
-			orthoVerticalViewAngle += toAdd;
+			projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, nearClippingDistance, farClippingDistance);
+			projection[1][1] *= -1;
 		}
-	}
 
-	void Camera::AddVerticalViewAngle(float toAdd)
-	{
-		if (verticalViewAngle + toAdd >= 90)
-		{
-			verticalViewAngle = 89.99f;
-		}
-		else if (verticalViewAngle + toAdd <= -90)
-		{
-			verticalViewAngle = -89.99f;
-		}
-		else
-		{
-			verticalViewAngle += toAdd;
-		}
+		return projection;
 	}
 
 	void Camera::AddVelocity(Vector3 velocity)

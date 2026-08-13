@@ -2,7 +2,6 @@
 #include "components/Animation.h"
 #include "components/Body.h"
 #include "components/Component.h"
-#include "components/JointMaker.h"
 #include "components/Script.h"
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
@@ -47,12 +46,6 @@ namespace FlatEngine
 			body.Cleanup();
 		}
 		m_Bodies2D.Clear();		
-
-		for (JointMaker& jointMaker : m_JointMakers.GetAll())
-		{
-			jointMaker.Cleanup();
-		}
-		m_JointMakers.Clear();
 	}
 
 	GameObject* Scene::AddSceneObject(GameObject sceneObject)
@@ -136,7 +129,7 @@ namespace FlatEngine
 	GameObject* Scene::CreateGameObject(long parentID, long myID)
 	{
 		GameObject* newObjectPtr = CreateEmptyGameObject(parentID, myID);
-		newObjectPtr->Add<Transform>(myID);
+		newObjectPtr->Add<Transform>();
 
 		return newObjectPtr;
 	}
@@ -277,20 +270,6 @@ namespace FlatEngine
 		return m_sortedHierarchyObjects;
 	}
 
-	void Scene::CreateJoints()
-	{
-		for (JointMaker& jointMaker : m_JointMakers.GetAll())
-		{
-			for (Joint* joint : jointMaker.GetJoints())
-			{
-				if (joint->HasValidBodies())
-				{
-					PhysicsManager::physics2D.CreateJoint(joint);
-				}
-			}
-		}
-	}
-
 	template<> UMapVector<Animation>&           Scene::GetContainer<Animation>()  		   { return m_Animations; }
 	template<> UMapVector<Audio>&      			Scene::GetContainer<Audio>()      		   { return m_Audios; }
 	template<> UMapVector<Body>&       			Scene::GetContainer<Body>()       		   { return m_Bodies; }
@@ -298,8 +277,7 @@ namespace FlatEngine
 	template<> UMapVector<Button>&     			Scene::GetContainer<Button>() 	 		   { return m_Buttons; }
 	template<> UMapVector<Camera>&     			Scene::GetContainer<Camera>() 			   { return m_Cameras; }
 	template<> UMapVector<Canvas>&     			Scene::GetContainer<Canvas>() 	 		   { return m_Canvases; }
-	template<> UMapVector<CharacterController>& Scene::GetContainer<CharacterController>() { return m_CharacterControllers; }
-	template<> UMapVector<JointMaker>& 			Scene::GetContainer<JointMaker>()		   { return m_JointMakers; }
+	template<> UMapVector<CharacterController>& Scene::GetContainer<CharacterController>() { return m_CharacterControllers; }	
 	template<> UMapVector<Light>&      			Scene::GetContainer<Light>()      		   { return m_Lights; }
 	template<> UMapVector<Mesh>&       			Scene::GetContainer<Mesh>() 			   { return m_Meshes; }
 	template<> UMapVector<Script>&     			Scene::GetContainer<Script>()    		   { return m_Scripts; }
@@ -324,8 +302,7 @@ namespace FlatEngine
 			case ComponentType_Button:     			return Add<Button>(ownerID);
 			case ComponentType_Camera:     			return Add<Camera>(ownerID);
 			case ComponentType_Canvas:     			return Add<Canvas>(ownerID);
-			case ComponentType_CharacterController: return Add<CharacterController>(ownerID);
-			case ComponentType_JointMaker: 			return Add<JointMaker>(ownerID);
+			case ComponentType_CharacterController: return Add<CharacterController>(ownerID);			
 			case ComponentType_Light:      			return Add<Light>(ownerID);
 			case ComponentType_Mesh:       			return Add<Mesh>(ownerID);
 			case ComponentType_Script:     			return Add<Script>(ownerID);
@@ -383,8 +360,7 @@ namespace FlatEngine
 			case ComponentType_Button:     			Remove<Button>(ownerID); break;
 			case ComponentType_Camera:     			Remove<Camera>(ownerID); break;
 			case ComponentType_Canvas:     			Remove<Canvas>(ownerID); break;
-			case ComponentType_CharacterController: Remove<CharacterController>(ownerID); break;
-			case ComponentType_JointMaker: 			Remove<JointMaker>(ownerID); break;
+			case ComponentType_CharacterController: Remove<CharacterController>(ownerID); break;			
 			case ComponentType_Light:      			Remove<Light>(ownerID); break;
 			case ComponentType_Mesh:       			Remove<Mesh>(ownerID); break;
 			case ComponentType_Script:     			Remove<Script>(ownerID); break;

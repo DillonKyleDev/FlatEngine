@@ -24,7 +24,6 @@ namespace FlatEngine
 		JointType_Wheel,
 		JointType_Size
 	};
-
 	const std::vector<std::string> JointTypeStrings {
 		"None",
 		"Distance",
@@ -34,6 +33,16 @@ namespace FlatEngine
 		"Weld",
 		"Motor",
 		"Wheel"
+	};
+	const std::unordered_map<std::string, JointType> JointTypeFromString = {
+		{ "Distance",  JointType_Distance },
+		{ "Revolute",  JointType_Revolute },
+		{ "Prismatic", JointType_Prismatic },
+		{ "Weld",      JointType_Weld },
+		{ "Wheel",     JointType_Wheel },
+		{ "Motor",     JointType_Motor },
+		{ "Mouse",     JointType_Mouse },
+		{ "Size",     JointType_Size }
 	};
 
 	struct DistanceJointData {
@@ -699,9 +708,10 @@ namespace FlatEngine
 		friend PhysicsManager::Physics2D;
 
 	public:
-		Joint(long ownerID, JointType type = JointType_None);
+		Joint(long ownerID, long myID, JointType type = JointType_None);
 		json GetData();
 		void PutData(json jsonData, std::string name);
+		const long GetID();
 		void SetOwnerID(long ownerID);
 		long GetOwnerID();
 		void SetBodyAID(long bodyAID);
@@ -731,6 +741,7 @@ namespace FlatEngine
 		Vector2 anchorB = Vector2();
 
 	private:
+		long m_ID;
 		b2JointId m_jointID;
 		long m_ownerID;
 	};

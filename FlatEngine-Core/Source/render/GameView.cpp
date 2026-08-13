@@ -51,6 +51,9 @@ namespace FlatEngine
 				flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize;
 			}
 
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2());
+
 			if (FL::GuiCore::BeginWindow("Game View", b_show, flags, "black"))
 			{			
 				static bool opt_enable_context_menu = true;
@@ -102,6 +105,8 @@ namespace FlatEngine
 				// Render GameObjects in game view
 				//RenderGameViewObjects(canvasP0, canvasSize);				
 			}	
+
+			ImGui::PopStyleVar(2);
 
 			FL::GuiCore::EndWindow(); // Game View
 		}

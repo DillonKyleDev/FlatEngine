@@ -70,8 +70,10 @@ namespace FlatGui
 			ImGui::BeginChild(componentID.c_str(), FL::Vector2(0, 0), FL::GuiCore::autoResizeChildFlags);		
 			// {
 								
-				// Component Name									
-				FL::GuiCore::RenderSectionHeader(componentType, 4, 0, "componentSectionHeaderBg", "componentSectionHeaderSeparator");				
+				// Component Name													
+				FL::GuiCore::RenderSectionHeader("  " + componentType, 4, 0, "componentSectionHeaderBg", "componentSectionHeaderSeparator");				
+				FL::GuiCore::MoveScreenCursor(2, -19);
+				ImGui::Image(FL::Assets::assetManager.GetTexture(FL::ComponentTypeStrings[component->GetType()]), FL::Vector2(16));
 
 				if (component->GetType() == FL::ComponentType_Transform)
 				{
@@ -138,7 +140,7 @@ namespace FlatGui
 
 			if (component->IsCollapsed())
 			{
-				FL::GuiCore::MoveScreenCursor(0, -5);
+				FL::GuiCore::MoveScreenCursor(0, -3);
 			}
 			else 
 			{
@@ -151,23 +153,22 @@ namespace FlatGui
 			FL::Vector3 position = transform->GetPosition();
 			FL::Vector3 rotation = transform->GetRotation();
 			FL::Vector3 scale = transform->GetScale();
-
-			float labelWidth = 68;
+			
 			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
 			FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
+			FL::GuiCore::TableProps positionProps = FL::GuiCore::TableProps("##TransformComponentTable", "Position", tableSize);
+			positionProps.labelWidth = 68;
+			positionProps.valueLabelColors = valueColors;
+			FL::GuiCore::TableProps rotationProps = FL::GuiCore::TableProps("##TransformComponentTable", "Rotation", tableSize);
+			rotationProps.labelWidth = 68;
+			rotationProps.valueLabelColors = valueColors;
+			FL::GuiCore::TableProps scaleProps = FL::GuiCore::TableProps("##TransformComponentTable", "Scale", tableSize);
+			scaleProps.labelWidth = 68;
+			scaleProps.valueLabelColors = valueColors;
 
-			if (FL::GuiCore::RenderVector3Table("##TransformComponentTable", "Position", position, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors))
-			{
-				transform->SetPosition(position);
-			}			
-			if (FL::GuiCore::RenderVector3Table("##TransformComponentTable", "Rotation", rotation, tableSize, labelWidth, "noEditTableRowFieldBg", valueColors, false))
-			{
-				transform->SetRotation(rotation);
-			}			
-			if (FL::GuiCore::RenderVector3Table("##TransformComponentTable", "Scale",    scale,    tableSize, labelWidth, "noEditTableRowFieldBg", valueColors))
-			{
-				transform->SetScale(scale);
-			}
+			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);		
+			if (FL::GuiCore::RenderVector3Table(rotationProps, rotation)) transform->SetRotation(rotation);			
+			if (FL::GuiCore::RenderVector3Table(scaleProps, scale)) transform->SetScale(scale);
 		}
 
 		bool RenderPivotSelectionButtons(std::string componentType, FL::Pivot& pivot)
@@ -314,10 +315,10 @@ namespace FlatGui
 				if (FL::GuiCore::RenderIntDragTableRow("##renderOrder" + std::to_string(ownerID), "Render Order", renderOrder, 1, 0, (int)FL::VulkanManager::maxSpriteLayers))
 				{
 					sprite->SetRenderOrder(renderOrder);
-				}
-				FL::GuiCore::RenderTextTableRow("##textureWidth" + std::to_string(ownerID), "Texture width", textureWidthString);
-				FL::GuiCore::RenderTextTableRow("##textureHeight" + std::to_string(ownerID), "Texture height", textureHeightString);
+				}				
 				FL::GuiCore::PopTable();
+				FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureWidth" + std::to_string(ownerID), "Texture width"), {textureWidthString});
+				FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});
 			}
 
 			FL::GuiCore::RenderSeparator(3, 3);
@@ -361,19 +362,16 @@ namespace FlatGui
 				camera->toFollowID = -1;
 			}
 			
-			if (FL::GuiCore::PushTable("##CameraProperties" + std::to_string(ownerID), 2))
-			{
-				FL::GuiCore::RenderFloatDragTableRow("##orthonearClip" + std::to_string(ownerID), "Near Clip (Ortho)", camera->orthoNearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
-				FL::GuiCore::RenderFloatDragTableRow("##orthofarClip" + std::to_string(ownerID), "Far Clip (Ortho)", camera->orthoFarClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
-				FL::GuiCore::RenderFloatDragTableRow("##nearClip" + std::to_string(ownerID), "Near Clip", camera->nearClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
-				FL::GuiCore::RenderFloatDragTableRow("##farClip" + std::to_string(ownerID), "Far Clip", camera->farClippingDistance, 0.1f, -FLT_MAX, FLT_MAX);
-				FL::GuiCore::RenderFloatDragTableRow("##perspectiveAngle" + std::to_string(ownerID), "Perspective Angle", camera->perspectiveAngle, 0.1f, -180.0, 180);
-				FL::GuiCore::RenderFloatDragTableRow("##cameraFollowSmoothing" + std::to_string(ownerID), "Follow smoothing", camera->followSmoothing, 0.01f, 0, 1);	
-				int gridStep = (int)camera->gridStep;			
-				if (FL::GuiCore::RenderIntDragTableRow("##gridStep" + std::to_string(ownerID), "Pixels/Grid Square", gridStep, 1, FL::SceneView::minGridStep, FL::SceneView::maxGridStep)) { if (gridStep > 0) camera->gridStep = (uint32_t)gridStep;}
-				FL::GuiCore::PopTable();
-			}
-			FL::GuiCore::RenderBoolTable("##Orthographic" + std::to_string(ownerID), "Orthographic", camera->b_orthographic);
+
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##orthonearClip" + std::to_string(ownerID), "Near Clip (Ortho)"), camera->orthoNearClippingDistance);
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##orthofarClip" + std::to_string(ownerID), "Far Clip (Ortho)"), camera->orthoFarClippingDistance);
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##nearClip" + std::to_string(ownerID), "Near Clip"), camera->nearClippingDistance);				
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##farClip" + std::to_string(ownerID), "Far Clip"), camera->farClippingDistance);								
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##perspectiveAngle" + std::to_string(ownerID), "Perspective Angle", FL::Vector2(), 0.1f, -180.0, 180), camera->perspectiveAngle);																
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##cameraFollowSmoothing" + std::to_string(ownerID), "Follow smoothing", FL::Vector2(), 0.01f, 0, 1), camera->followSmoothing);									
+			int gridStep = (int)camera->gridStep;			
+			if (FL::GuiCore::RenderInt32Table(FL::GuiCore::TableProps("##gridStep" + std::to_string(ownerID), "Pixels/Grid Square", FL::Vector2(), 1, FL::SceneView::minGridStep, FL::SceneView::maxGridStep), gridStep)) { if (gridStep > 0) camera->gridStep = (uint32_t)gridStep;}							
+			FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##Orthographic" + std::to_string(ownerID), "Orthographic"), camera->b_orthographic);
 
 			FL::GuiCore::RenderSeparator(3, 3);
 
@@ -462,7 +460,7 @@ namespace FlatGui
 
 				if (currentScript < allScriptNames.size() && currentScript != 0)
 				{					
-					FL::GuiCore::RenderLuaParamtersTable(std::to_string(scriptCounter), scriptData.name + " Parameters", scriptData.scriptParamContainer);
+					FL::GuiCore::RenderLuaParametersTable(std::to_string(scriptCounter), scriptData.name + " Parameters", scriptData.scriptParamContainer);
 				}
 
 				scriptCounter++;
@@ -1021,10 +1019,11 @@ namespace FlatGui
 
 			FL::GuiCore::RenderSeparator(3, 3);
 
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textWidth" + std::to_string(ownerID), "Text width"), { std::to_string(textureWidth) });
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textHeight" + std::to_string(ownerID), "Text height"), { std::to_string(textureHeight) });
+
 			if (FL::GuiCore::PushTable("##TextProperties" + std::to_string(ownerID), 2))
-			{
-				FL::GuiCore::RenderTextTableRow("##textWidth" + std::to_string(ownerID), "Text width", std::to_string(textureWidth));
-				FL::GuiCore::RenderTextTableRow("##textHeight" + std::to_string(ownerID), "Text height", std::to_string(textureHeight));
+			{				
 				if (FL::GuiCore::RenderIntDragTableRow("##textFontSize" + std::to_string(ownerID), "Font size", fontSize, 1, 0, 1000))
 				{
 					text->SetFontSize(fontSize);
@@ -1095,8 +1094,7 @@ namespace FlatGui
 				if (FL::GuiCore::RenderFloatDragTableRow("##AirControlDrag" + std::to_string(ownerID), "Air Control", airControl, 0.01f, 0.0f, 1000.0f))
 				{
 					characterController->SetAirControl(airControl);
-				}
-				FL::GuiCore::RenderTextTableRow("##IsMoving" + std::to_string(ownerID), "Is Moving", isMovingString);
+				}				
 				// if (FL::GuiCore::RenderFloatDragTableRow("##CharacterControllerShapeRadius" + std::to_string(ownerID), "Radius", radius, 0.01f, 0.01f, FLT_MAX))
 				// {
 				// 	capsule.SetRadius(radius);
@@ -1111,6 +1109,7 @@ namespace FlatGui
 				// }
 				FL::GuiCore::PopTable();
 			}
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##IsMoving" + std::to_string(ownerID), "Is Moving"), { isMovingString });
 
 			// b_changed |= FL::GuiCore::RenderCheckbox(" Horizontal", shapeProps.b_horizontal);
 
@@ -1118,6 +1117,7 @@ namespace FlatGui
 			// 	capsule.RecreateShape();	
 		}
 		
+		// Shapes
 		bool RenderBoxProps(auto&& sData)
 		{
 			b2ShapeId shapeID = sData.shapeID;
@@ -1125,12 +1125,13 @@ namespace FlatGui
 			bool b_changed = false;
 			bool b_light = true;
 						
-			b_changed |= FL::GuiCore::RenderFloatTable("##ShapeCornerRadius" + ID, "Corner Radius", sData.cornerRadius, FL::Vector2(), 0, "noEditTableRowFieldBg", b_light, 0.001f, 0.0f, FLT_MAX);
-			b_changed |= FL::GuiCore::RenderVector2Table("##BoxDimensions" + ID, "Dimensions", sData.dimensions, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), !b_light, 0.001f, 0.0f, FLT_MAX);			
-			b_changed |= FL::GuiCore::RenderVector2Table("##PositionOffset" + ID, "Pos. Offset", sData.offset);
+			
+			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeCornerRadius" + ID, "Corner Radius", FL::Vector2(), 0.01f, 0.0f), sData.cornerRadius);
+			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##BoxDimensions" + ID, "Dimensions", FL::Vector2(), 0.01f, 0.0f), sData.dimensions);			
+			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 			
 			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
-			if (FL::GuiCore::RenderFloatTable("##RotationOffset" + ID, "Rotation Offset", rotationOffset, FL::Vector2(), 0, "noEditTableRowFieldBg", !b_light)) sData.SetRotationOffset(rotationOffset);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);
 			FL::GuiCore::RenderSeparator(4,0);
 
 			return b_changed;	
@@ -1143,8 +1144,8 @@ namespace FlatGui
 			bool b_changed = false;
 			bool b_light = true;
 									
-			b_changed |= FL::GuiCore::RenderFloatTable("##ShapeRadius" + ID, "Radius", sData.radius, FL::Vector2(), 0, "noEditTableRowFieldBg", b_light, 0.001f, 0.001f, FLT_MAX);
-			b_changed |= FL::GuiCore::RenderVector2Table("##PositionOffset" + ID, "Pos. Offset", sData.offset, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), !b_light);
+			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeRadius" + ID, "Radius", FL::Vector2(), 0.001f, 0.001f), sData.radius);
+			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 
 			FL::GuiCore::RenderSeparator(4,0);
 
@@ -1161,12 +1162,12 @@ namespace FlatGui
 			bool b_changed = false;
 			bool b_light = true;
 						
-			if (FL::GuiCore::RenderFloatTable("##CapsuleLength" + ID, "Length", capsuleLength, FL::Vector2(), 0, "noEditTableRowFieldBg", b_light, 0.001f, 0.001f, FLT_MAX)) sData.SetLength(capsuleLength);
-			if (FL::GuiCore::RenderFloatTable("##Radii" + ID, "Radii", radius, FL::Vector2(), 0, "noEditTableRowFieldBg", !b_light, 0.001f, 0.001f, FLT_MAX)) sData.SetRadius(radius);
-			b_changed |= FL::GuiCore::RenderBoolTable("##HorizontalCapsule_" + ID, "Horizontal", sData.b_horizontal);
-			FL::GuiCore::RenderVector2Table("##PositionOffset" + ID, "Pos. Offset", sData.offset, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), !b_light);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##CapsuleLength" + ID, "Length", FL::Vector2(), 0.001f, 0.001f), capsuleLength)) sData.SetLength(capsuleLength);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##Radii" + ID, "Radii", FL::Vector2(), 0.001f, 0.001f), radius)) sData.SetRadius(radius);
+			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##HorizontalCapsule_" + ID, "Horizontal"), sData.b_horizontal);
+			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
-			if (FL::GuiCore::RenderFloatTable("##RotationOffset" + ID, "Rotation Offset", rotationOffset)) sData.SetRotationOffset(rotationOffset);					
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);					
 			FL::GuiCore::RenderSeparator(4,0);
 
 			return b_changed;
@@ -1181,7 +1182,7 @@ namespace FlatGui
 			bool b_changed = false;
 			bool b_light = true;
 						
-			b_changed |= FL::GuiCore::RenderFloatTable("##ShapeCornerRadius" + ID, "Corner Radius", sData.cornerRadius, FL::Vector2(), 0, "noEditTableRowFieldBg", b_light, 0.01f, 0.0f, FLT_MAX);
+			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeCornerRadius" + ID, "Corner Radius", FL::Vector2(), 0.01f, 0.0f), sData.cornerRadius);
 			FL::GuiCore::RenderSeparator(4,3);
 
 			if (!sData.b_editingPoints)
@@ -1204,12 +1205,10 @@ namespace FlatGui
 			FL::GuiCore::RenderCheckbox(" Show points##Polygon_" + ID, sData.b_showPoints);
 			if (sData.b_showPoints)
 			{
-				FL::GuiCore::RenderSeparator(3,0);
-				bool b_pointLight = false;
+				FL::GuiCore::RenderSeparator(3,0);				
 				for (int i = 0; i < pointCount; i++)
 				{
-					b_changed |= FL::GuiCore::RenderVector2Table("##ShapePointPos" + ID + std::to_string(i), "Index " + std::to_string(i) + " Pos", sData.points[i], FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), b_pointLight);
-					b_pointLight = !b_pointLight;
+					b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##ShapePointPos" + ID + std::to_string(i), "Index " + std::to_string(i) + " Pos"), sData.points[i]);					
 				}
 			}
 
@@ -1225,7 +1224,7 @@ namespace FlatGui
 			bool b_changed = false;		
 			bool b_light = true;
 
-			b_changed |= FL::GuiCore::RenderBoolTable("##LoopEndpoints" + ID, "Loop endpoints", sData.b_isLoop, FL::Vector2(), 0, "noEditTableRowFieldBg", !b_light);
+			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LoopEndpoints" + ID, "Loop endpoints"), sData.b_isLoop);
 			FL::GuiCore::RenderSeparator(4,3);			
 
 			if (!sData.b_editingPoints)
@@ -1253,7 +1252,7 @@ namespace FlatGui
 				bool b_pointLight = true;
 				for (int i = 0; i < (int)sData.points.size(); i++)
 				{
-					b_changed |= FL::GuiCore::RenderVector2Table("##ShapePointXPos" + ID + std::to_string(i), "Index " + std::to_string(i) + " Pos", sData.points[i], FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), b_pointLight);
+					b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##ShapePointXPos" + ID + std::to_string(i), "Index " + std::to_string(i) + " Pos"), sData.points[i]);
 					b_pointLight = !b_pointLight;
 				}
 			}			
@@ -1270,9 +1269,9 @@ namespace FlatGui
 			FL::ShapeType shapeType = shape->GetType();		
 			std::string ID = "";
 			if (shapeType != FL::ShapeType::ShapeType_Chain)			
-				ID = " (index:" + std::to_string(shapeID.index1) + " gen:" + std::to_string(shapeID.generation) + " world:" + std::to_string(shapeID.world0) + ")";			
+				ID = " (index:" + std::to_string(shapeID.index1) + " world:" + std::to_string(shapeID.world0) + ")";			
 			else			
-				ID = " (index:" + std::to_string(chainID.index1) + " gen:" + std::to_string(chainID.generation) + " world:" + std::to_string(chainID.world0) + ")";			
+				ID = " (index:" + std::to_string(chainID.index1) + " world:" + std::to_string(chainID.world0) + ")";			
 			std::string shapeString = FL::ShapeTypeStrings[(int)shapeType] + ID;		
 
 			FL::GuiCore::RenderSectionHeader(shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
@@ -1289,14 +1288,14 @@ namespace FlatGui
 			FL::GuiCore::MoveScreenCursor(0, -3);
 			bool b_changed = false;
 			
-			b_changed |= FL::GuiCore::RenderFloatTable("##" + shapeString + "Density" + ID, "Density", shape->density, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.001f, 0.001f, FLT_MAX);
-			b_changed |= FL::GuiCore::RenderFloatTable("##" + shapeString + "Friction" + ID, "Friction", shape->friction, FL::Vector2(), 0, "noEditTableRowFieldBg", false, 0.001f, 0.0f, FLT_MAX);
-			b_changed |= FL::GuiCore::RenderFloatTable("##" + shapeString + "Restitution" + ID, "Restitution", shape->restitution, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.001f, 0.0f, FLT_MAX);
-			b_changed |= FL::GuiCore::RenderBoolTable("##EnableSensorEvents" + ID, "Enable Sensor Events", shape->b_enableSensorEvents, FL::Vector2(), 0, "noEditTableRowFieldBg", false);
-			b_changed |= FL::GuiCore::RenderBoolTable("##EnableContactEvents" + ID, "Enable Contact Events", shape->b_enableContactEvents);
-			b_changed |= FL::GuiCore::RenderBoolTable("##ShapeIsSensor" + ID, "Is Sensor", shape->b_isSensor, FL::Vector2(), 0, "noEditTableRowFieldBg", false);
-			if (FL::GuiCore::RenderFloatTable("##ChainTangentSpeed" + ID, "Tangent Speed", shape->tangentSpeed, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.01f, 0.0f, FLT_MAX)) shape->SetTangentSpeed(shape->tangentSpeed);
-			if (FL::GuiCore::RenderFloatTable("##ChainRollingResistance" + ID, "Rolling Resistance", shape->rollingResistance, FL::Vector2(), 0, "noEditTableRowFieldBg", false, 0.01f, 0.0f, FLT_MAX)) shape->SetRollingResistance(shape->rollingResistance);
+			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Density" + ID, "Density", FL::Vector2(), 0.001f, 0.001f), shape->density);
+			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Friction" + ID, "Friction", FL::Vector2(), 0.001f, 0.001f), shape->friction);
+			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Restitution" + ID, "Restitution", FL::Vector2(), 0.001f, 0.001f), shape->restitution);
+			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##EnableSensorEvents" + ID, "Enable Sensor Events"), shape->b_enableSensorEvents);
+			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##EnableContactEvents" + ID, "Enable Contact Events"), shape->b_enableContactEvents);
+			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##ShapeIsSensor" + ID, "Is Sensor"), shape->b_isSensor);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ChainTangentSpeed" + ID, "Tangent Speed", FL::Vector2(), 0.01f, 0.0f), shape->tangentSpeed)) shape->SetTangentSpeed(shape->tangentSpeed);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ChainRollingResistance" + ID, "Rolling Resistance", FL::Vector2(), 0.01f, 0.0f), shape->rollingResistance)) shape->SetRollingResistance(shape->rollingResistance);
 			
 			if (b_changed)			
 				FL::PhysicsManager::physics2D.RecreateShape(shape);	
@@ -1329,6 +1328,174 @@ namespace FlatGui
 			FL::GuiCore::MoveScreenCursor(0, 3);
 		}
 
+		// Joints
+		void RenderDistanceJointProps(auto&& jData, std::string ID)
+		{						
+			float dampingRatio = jData.dampingRatio;
+			bool b_enableLimit = jData.b_enableLimit;
+			bool b_enableMotor = jData.b_enableMotor;
+			bool b_enableSpring = jData.b_enableSpring;
+			float hertz = jData.hertz;
+			float minLength = jData.minLength;
+			float maxLength = jData.maxLength;
+			float length = jData.length;
+			float maxMotorForce = jData.maxMotorForce;
+			float motorSpeed = jData.motorSpeed;
+
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointLength" + ID, "Length", FL::Vector2(), 0.1f, 0.1f), length)) jData.SetLength(length);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointMinLength" + ID, "Min Length", FL::Vector2(), 0.1f, 0.1f), minLength)) jData.SetLengthRange(minLength, maxLength);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointMaxLength" + ID, "Max Length", FL::Vector2(), 0.1f, 0.1f), maxLength)) jData.SetLengthRange(minLength, maxLength);				
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("#Enable Spring" + ID, "Spring Enabled"), b_enableSpring)) jData.SetEnableSpring(b_enableSpring);						
+			if (jData.b_enableSpring)
+			{
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DampingRatio" + ID, "Spring Damping Ratio", FL::Vector2(), 0.1f, 0), dampingRatio)) jData.SetSpringDampingRatio(dampingRatio);		
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##SpringHertz" + ID, "Spring Hertz", FL::Vector2(), 0.1f, 0.1f), hertz)) jData.SetSpringHertz(hertz);	
+			}
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Motor##" + ID, "Motor Enabled"), b_enableMotor)) jData.SetEnableMotor(b_enableMotor);			
+			if (jData.b_enableMotor)
+			{
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MotorSpeed" + ID, "Motor Speed", FL::Vector2(), 0.1f, 0.1f), motorSpeed)) jData.SetMotorSpeed(motorSpeed);			
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MaxMotorForce" + ID, "Max Motor Force", FL::Vector2(), 0.1f, 0.1f), maxMotorForce)) jData.SetMaxMotorForce(maxMotorForce);		
+			}
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Limit##" + ID, "Enable Limit"), b_enableLimit)) jData.SetEnableLimit(b_enableLimit);
+
+			FL::GuiCore::MoveScreenCursor(0, 3.0f);
+		}
+
+		void RenderPrismaticJointProps(auto&& jData, std::string ID)
+		{			
+			float dampingRatio = jData.dampingRatio;
+			bool b_enableLimit = jData.b_enableLimit;
+			bool b_enableMotor = jData.b_enableMotor;
+			bool b_enableSpring = jData.b_enableSpring;
+			float hertz = jData.hertz;
+			FL::Vector2 localAxisA = jData.localAxisA;
+			float lowerTranslation = jData.lowerTranslation;
+			float upperTranslation = jData.upperTranslation;
+			float maxMotorForce = jData.maxMotorForce;
+			float motorSpeed = jData.motorSpeed;
+			float targetTranslation = jData.targetTranslation;
+
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##LowerTranslation" + ID, "Lower Translation"), lowerTranslation)) jData.SetTranslationRange(lowerTranslation, upperTranslation);		
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##UpperTranslation" + ID, "Upper Translation"), upperTranslation)) jData.SetTranslationRange(lowerTranslation, upperTranslation);		
+			// if (FL::GuiCore::RenderVector2Table("##TranslationTarget" + ID, "Translation Target", localAxisA, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), true, 0.1f, -FLT_MAX, FLT_MAX)) jData.Ax(localAxisA);	
+			// if (FL::GuiCore::RenderVector2Table("##LocalAxisA" + ID, "Local Axis A", localAxisA, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetLocalAxisA(localAxisA);	
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("#Enable Spring" + ID, "Spring Enabled"), b_enableSpring)) jData.SetEnableSpring(b_enableSpring);						
+			if (jData.b_enableSpring)
+			{
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DampingRatio" + ID, "Spring Damping Ratio", FL::Vector2(), 0.1f, 0), dampingRatio)) jData.SetSpringDampingRatio(dampingRatio);		
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##SpringHertz" + ID, "Spring Hertz", FL::Vector2(), 0.1f, 0), hertz)) jData.SetSpringHertz(hertz);	
+			}
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Motor##" + ID, "Motor Enabled"), b_enableMotor)) jData.SetEnableMotor(b_enableMotor);			
+			if (jData.b_enableMotor)
+			{
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MotorSpeed" + ID, "Motor Speed", FL::Vector2(), 0.1f, 0), motorSpeed)) jData.SetMotorSpeed(motorSpeed);			
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MaxMotorForce" + ID, "Max Motor Force", FL::Vector2(), 0.1f, 0), maxMotorForce)) jData.SetMaxMotorForce(maxMotorForce);		
+			}
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Limit##" + ID, "Enable Limit"), b_enableLimit)) jData.SetEnableLimit(b_enableLimit);
+
+			FL::GuiCore::MoveScreenCursor(0, 3.0f);
+		}
+
+		void RenderRevoluteJointProps(auto&& jData, std::string ID)
+		{
+		}
+
+		void RenderMouseJointProps(auto&& jData, std::string ID)
+		{		
+		}
+
+		void RenderWeldJointProps(auto&& jData, std::string ID)
+		{
+		}
+
+		void RenderMotorJointProps(auto&& jData, std::string ID)
+		{
+		}
+
+		void RenderWheelJointProps(auto&& jData, std::string ID)
+		{
+		}
+
+		void RenderJointComponentProps(FL::Joint* joint, long& jointIDToDelete)
+		{		
+			long jointID = joint->GetID();
+			long ownerID = joint->GetOwnerID();				
+			FL::JointType jointType = joint->GetJointType();
+			std::string jointTypeString = FL::JointTypeStrings[(int)jointType];
+			std::string ID = " (id:" + std::to_string(jointID) + " index:" + std::to_string(joint->GetJointID().index1) + " world:" + std::to_string(joint->GetJointID().world0) + ")";
+			std::string jointString = FL::JointTypeStrings[(int)jointType] + ID;
+
+			FL::Body2D* bodyA = joint->GetBodyA();
+			FL::Body2D* bodyB = joint->GetBodyB();	
+			bool b_collideConnected = joint->CollideConnected();
+			FL::Vector2 anchorA = joint->GetAnchorA();
+			FL::Vector2 anchorB = joint->GetAnchorB();
+
+			FL::GuiCore::RenderSectionHeader(jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);			
+
+			std::string trashcanID = "##trashIcon-" + ID;
+			FL::GuiCore::MoveScreenCursor(0,-19);
+			if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash")))
+			{
+				jointIDToDelete = jointID;
+			}
+
+			int droppedObjectID = -1;		
+			std::string bodyAName = bodyA != nullptr ? bodyA->GetOwningObject()->GetName() : "";
+			std::string bodyBName = bodyB != nullptr ? bodyB->GetOwningObject()->GetName() : "";
+
+			FL::GuiCore::MoveScreenCursor(0, 6.0f);
+
+			if (FL::GuiCore::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
+			{
+				if (droppedObjectID >= 0)
+				{
+					joint->SetBodyAID(droppedObjectID);
+				}
+			}
+			if (FL::GuiCore::DropInput("##InputBodyB" + ID, "BodyB", bodyBName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
+			{
+				if (droppedObjectID >= 0)
+				{
+					joint->SetBodyBID(droppedObjectID);
+				}
+			}
+
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("#AnchorA" + ID, "Anchor A"), anchorA)) joint->SetAnchorA(anchorA);
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("#AnchorB" + ID, "Anchor B"), anchorB)) joint->SetAnchorB(anchorB);
+
+			std::visit([joint, ID](auto&& jData) -> void
+			{
+				using T = std::decay_t<decltype(jData)>;
+				if constexpr (std::is_same_v<T, FL::DistanceJointData>)
+				{
+					RenderDistanceJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::RevoluteJointData>)
+				{
+					RenderRevoluteJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::PrismaticJointData>)
+				{
+					RenderPrismaticJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::MouseJointData>)
+				{
+					RenderMouseJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::WeldJointData>)
+				{
+					RenderWeldJointProps(jData, ID);
+				}
+				else if constexpr (std::is_same_v<T, FL::WheelJointData>)
+				{
+					RenderWheelJointProps(jData, ID);
+				}
+			}, joint->jointData);	
+		}
+
 		void RenderBody2DComponent(FL::Body2D* body)
 		{		
 			long ownerID = body->GetOwnerID();
@@ -1339,16 +1506,16 @@ namespace FlatGui
 			std::string comboID = "##BoxBodyTypeCombo";
 			bool b_light = true;
 
-			if (FL::GuiCore::RenderComboTable(comboID, "Body Type", types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
-			if (FL::GuiCore::RenderFloatTable("##BodyGravityScale" + std::to_string(ownerID), "Gravity Scale", body->gravityScale, FL::Vector2(), 0, "noEditTableRowFieldBg", !b_light)) body->SetGravityScale(body->gravityScale);	
-			if (FL::GuiCore::RenderFloatTable("##BodyLinearDamping" + std::to_string(ownerID), "Linear Damp", body->linearDamping, FL::Vector2(), 0, "noEditTableRowFieldBg", b_light, 0.01f, 0.0f, FLT_MAX)) body->SetLinearDamping(body->linearDamping);
-			if (FL::GuiCore::RenderFloatTable("##BodyAngularDamping" + std::to_string(ownerID), "Angular Damp", body->angularDamping, FL::Vector2(), 0, "noEditTableRowFieldBg", !b_light, 0.01f, 0.0f, FLT_MAX)) body->SetAngularDamping(body->angularDamping);			
-			if (FL::GuiCore::RenderBoolTable("##LockRotation" + std::to_string(ownerID), "Lock Rotation", body->b_lockedRotation)) body->SetLockedRotation(body->b_lockedRotation);
-			if (FL::GuiCore::RenderBoolTable("##LockX-Axis" + std::to_string(ownerID), "Lock X-Axis", body->b_lockedXAxis, FL::Vector2(), 0, "noEditTableRowFieldBg", !b_light)) body->SetLockedXAxis(body->b_lockedXAxis);
-			if (FL::GuiCore::RenderBoolTable("##LockY-Axis" + std::to_string(ownerID), "Lock X-Axis", body->b_lockedYAxis)) body->SetLockedYAxis(body->b_lockedYAxis);
-			FL::GuiCore::RenderTextTable("##VelocityX" + std::to_string(ownerID), "X Vel.", std::to_string(linearVelocity.x), 0, !b_light);								
-			FL::GuiCore::RenderTextTable("##VelocityY" + std::to_string(ownerID), "Y Vel.", std::to_string(linearVelocity.y), 0, b_light);			
-			FL::GuiCore::RenderTextTable("##AngularVelocity" + std::to_string(ownerID), "Angular Vel.", std::to_string(angularVelocity), 0, !b_light);						
+			if (FL::GuiCore::RenderComboTable(FL::GuiCore::TableProps(comboID, "Body Type"), types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyGravityScale" + std::to_string(ownerID), "Gravity Scale"), body->gravityScale)) body->SetGravityScale(body->gravityScale);	
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyLinearDamping" + std::to_string(ownerID), "Linear Damp", FL::Vector2(), 0.01f, 0.0f), body->linearDamping)) body->SetLinearDamping(body->linearDamping);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyAngularDamping" + std::to_string(ownerID), "Angular Damp", FL::Vector2(), 0.01f, 0.0f), body->angularDamping)) body->SetAngularDamping(body->angularDamping);			
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockRotation" + std::to_string(ownerID), "Lock Rotation"), body->b_lockedRotation)) body->SetLockedRotation(body->b_lockedRotation);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockX-Axis" + std::to_string(ownerID), "Lock X-Axis"), body->b_lockedXAxis)) body->SetLockedXAxis(body->b_lockedXAxis);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockY-Axis" + std::to_string(ownerID), "Lock X-Axis"), body->b_lockedYAxis)) body->SetLockedYAxis(body->b_lockedYAxis);
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityX" + std::to_string(ownerID), "X Vel."), { std::to_string(linearVelocity.x) });								
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityY" + std::to_string(ownerID), "Y Vel."), { std::to_string(linearVelocity.y) });			
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##AngularVelocity" + std::to_string(ownerID), "Angular Vel."), { std::to_string(angularVelocity) });						
 			FL::GuiCore::RenderSeparator(4, 3);		
 
 			if (body->GetShapes().size() == 0)
@@ -1360,7 +1527,6 @@ namespace FlatGui
 			if (ImGui::BeginPopupContextItem("##AddShape", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
-
 				for (int i = 1; i < FL::ShapeTypeStrings.size(); i++)
 				{
 					if (ImGui::MenuItem(FL::ShapeTypeStrings[i].c_str()))
@@ -1369,7 +1535,6 @@ namespace FlatGui
 						ImGui::CloseCurrentPopup();
 					}
 				}		
-
 				FL::GuiCore::PopMenuStyles();
 				ImGui::EndMenu();
 			}
@@ -1401,189 +1566,6 @@ namespace FlatGui
 					body->RemoveChain(chainToDelete);
 				}
 			}
-		}
-
-		void RenderDistanceJointProps(auto&& jData, std::string ID)
-		{						
-			float dampingRatio = jData.dampingRatio;
-			bool b_enableLimit = jData.b_enableLimit;
-			bool b_enableMotor = jData.b_enableMotor;
-			bool b_enableSpring = jData.b_enableSpring;
-			float hertz = jData.hertz;
-			float minLength = jData.minLength;
-			float maxLength = jData.maxLength;
-			float length = jData.length;
-			float maxMotorForce = jData.maxMotorForce;
-			float motorSpeed = jData.motorSpeed;
-
-			if (FL::GuiCore::RenderFloatTable("##DistanceJointLength" + ID, "Length", length, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetLength(length);
-			if (FL::GuiCore::RenderFloatTable("##DistanceJointMinLength" + ID, "Min Length", length, FL::Vector2(), 0, "noEditTableRowFieldBg", false, 0.1f, 0, FLT_MAX)) jData.SetLengthRange(minLength, maxLength);
-			if (FL::GuiCore::RenderFloatTable("##DistanceJointMaxLength" + ID, "Max Length", length, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetLengthRange(minLength, maxLength);				
-			if (FL::GuiCore::RenderBoolTable("#Enable Spring" + ID, "Spring Enabled", b_enableSpring, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableSpring(b_enableSpring);						
-			if (jData.b_enableSpring)
-			{
-				if (FL::GuiCore::RenderFloatTable("##DampingRatio" + ID, "Spring Damping Ratio", dampingRatio, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringDampingRatio(dampingRatio);		
-				if (FL::GuiCore::RenderFloatTable("##SpringHertz" + ID, "Spring Hertz", hertz, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringHertz(hertz);	
-			}
-			if (FL::GuiCore::RenderBoolTable("Enable Motor##" + ID, "Motor Enabled", b_enableMotor, FL::Vector2(), 0, "noEditTableRowFieldBg", true)) jData.SetEnableMotor(b_enableMotor);			
-			if (jData.b_enableMotor)
-			{
-				if (FL::GuiCore::RenderFloatTable("##MotorSpeed" + ID, "Motor Speed", motorSpeed, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMotorSpeed(motorSpeed);			
-				if (FL::GuiCore::RenderFloatTable("##MaxMotorForce" + ID, "Max Motor Force", maxMotorForce, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMaxMotorForce(maxMotorForce);		
-			}
-			if (FL::GuiCore::RenderBoolTable("Enable Limit##" + ID, "Enable Limit", b_enableLimit, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableLimit(b_enableLimit);
-
-			FL::GuiCore::MoveScreenCursor(0, 3.0f);
-		}
-
-		void RenderPrismaticJointProps(auto&& jData, std::string ID)
-		{			
-			float dampingRatio = jData.dampingRatio;
-			bool b_enableLimit = jData.b_enableLimit;
-			bool b_enableMotor = jData.b_enableMotor;
-			bool b_enableSpring = jData.b_enableSpring;
-			float hertz = jData.hertz;
-			FL::Vector2 localAxisA = jData.localAxisA;
-			float lowerTranslation = jData.lowerTranslation;
-			float upperTranslation = jData.upperTranslation;
-			float maxMotorForce = jData.maxMotorForce;
-			float motorSpeed = jData.motorSpeed;
-			float targetTranslation = jData.targetTranslation;
-
-			if (FL::GuiCore::RenderFloatTable("##LowerTranslation" + ID, "Lower Translation", lowerTranslation, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetTranslationRange(lowerTranslation, upperTranslation);		
-			if (FL::GuiCore::RenderFloatTable("##UpperTranslation" + ID, "Upper Translation", upperTranslation, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetTranslationRange(lowerTranslation, upperTranslation);		
-			// if (FL::GuiCore::RenderVector2Table("##TranslationTarget" + ID, "Translation Target", localAxisA, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), true, 0.1f, -FLT_MAX, FLT_MAX)) jData.Ax(localAxisA);	
-			// if (FL::GuiCore::RenderVector2Table("##LocalAxisA" + ID, "Local Axis A", localAxisA, FL::Vector2(), 0, "noEditTableRowFieldBg", std::vector<std::string>(), true, 0.1f, -FLT_MAX, FLT_MAX)) jData.SetLocalAxisA(localAxisA);	
-			if (FL::GuiCore::RenderBoolTable("#Enable Spring" + ID, "Spring Enabled", b_enableSpring, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableSpring(b_enableSpring);						
-			if (jData.b_enableSpring)
-			{
-				if (FL::GuiCore::RenderFloatTable("##DampingRatio" + ID, "Spring Damping Ratio", dampingRatio, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringDampingRatio(dampingRatio);		
-				if (FL::GuiCore::RenderFloatTable("##SpringHertz" + ID, "Spring Hertz", hertz, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0, FLT_MAX)) jData.SetSpringHertz(hertz);	
-			}
-			if (FL::GuiCore::RenderBoolTable("Enable Motor##" + ID, "Motor Enabled", b_enableMotor, FL::Vector2(), 0, "noEditTableRowFieldBg", true)) jData.SetEnableMotor(b_enableMotor);			
-			if (jData.b_enableMotor)
-			{
-				if (FL::GuiCore::RenderFloatTable("##MotorSpeed" + ID, "Motor Speed", motorSpeed, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMotorSpeed(motorSpeed);			
-				if (FL::GuiCore::RenderFloatTable("##MaxMotorForce" + ID, "Max Motor Force", maxMotorForce, FL::Vector2(), 0, "noEditTableRowFieldBg", true, 0.1f, 0.1f, FLT_MAX)) jData.SetMaxMotorForce(maxMotorForce);		
-			}
-			if (FL::GuiCore::RenderBoolTable("Enable Limit##" + ID, "Enable Limit", b_enableLimit, FL::Vector2(), 0, "noEditTableRowFieldBg", false)) jData.SetEnableLimit(b_enableLimit);
-
-			FL::GuiCore::MoveScreenCursor(0, 3.0f);
-		}
-
-		void RenderRevoluteJointProps(auto&& jData, std::string ID)
-		{
-		}
-
-		void RenderMouseJointProps(auto&& jData, std::string ID)
-		{		
-		}
-
-		void RenderWeldJointProps(auto&& jData, std::string ID)
-		{
-		}
-
-		void RenderMotorJointProps(auto&& jData, std::string ID)
-		{
-
-		}
-
-		void RenderWheelJointProps(auto&& jData, std::string ID)
-		{
-		}
-
-		void RenderJointComponentProps(FL::Joint* joint, FL::Joint* jointToDelete)
-		{		
-			long ownerID = joint->GetOwnerID();
-			b2JointId jointID = joint->GetJointID();		
-			FL::JointType jointType = joint->GetJointType();
-			std::string jointTypeString = FL::JointTypeStrings[(int)jointType];
-			std::string ID = "(index: " + std::to_string(joint->GetJointID().index1) + " world: " + std::to_string(joint->GetJointID().world0) + " gen: " + std::to_string(joint->GetJointID().generation);
-			
-			FL::Body2D* bodyA = joint->GetBodyA();
-			FL::Body2D* bodyB = joint->GetBodyB();	
-			bool b_collideConnected = joint->CollideConnected();
-			FL::Vector2 anchorA = joint->GetAnchorA();
-			FL::Vector2 anchorB = joint->GetAnchorB();
-
-			std::string childID = "Joint_" + ID;
-			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("jointBg"));
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(5, 3));
-			ImGui::BeginChild(childID.c_str(), FL::Vector2(0, 0), ImGuiChildFlags_AlwaysUseWindowPadding | ImGuiChildFlags_AutoResizeY | ImGuiChildFlags_AlwaysAutoResize);
-			ImGui::PopStyleVar();
-			ImGui::PopStyleColor();
-
-			FL::GuiCore::RenderSectionHeader(ID);
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);
-			FL::GuiCore::MoveScreenCursor(0, -3);
-
-			std::string trashcanID = "##trashIcon-" + ID;
-
-			if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash")))
-			{
-				jointToDelete = joint;
-			}
-
-			int droppedObjectID = -1;		
-			std::string bodyAName = bodyA != nullptr ? bodyA->GetOwningObject()->GetName() : "";
-			std::string bodyBName = bodyB != nullptr ? bodyB->GetOwningObject()->GetName() : "";
-
-			FL::GuiCore::MoveScreenCursor(0, 6.0f);
-
-			if (FL::GuiCore::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
-			{
-				if (droppedObjectID >= 0)
-				{
-					joint->SetBodyAID(droppedObjectID);
-				}
-			}
-			if (FL::GuiCore::DropInput("##InputBodyB" + ID, "BodyB", bodyBName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
-			{
-				if (droppedObjectID >= 0)
-				{
-					joint->SetBodyBID(droppedObjectID);
-				}
-			}
-
-			if (FL::GuiCore::RenderVector2Table("#AnchorA" + ID, "Anchor A", anchorA)) joint->SetAnchorA(anchorA);
-			if (FL::GuiCore::RenderVector2Table("#AnchorB" + ID, "Anchor B", anchorB)) joint->SetAnchorB(anchorB);
-
-			std::visit([joint, ID](auto&& jData) -> void
-			{
-				using T = std::decay_t<decltype(jData)>;
-				if constexpr (std::is_same_v<T, FL::DistanceJointData>)
-				{
-					RenderDistanceJointProps(jData, ID);
-				}
-				else if constexpr (std::is_same_v<T, FL::RevoluteJointData>)
-				{
-					RenderRevoluteJointProps(jData, ID);
-				}
-				else if constexpr (std::is_same_v<T, FL::PrismaticJointData>)
-				{
-					RenderPrismaticJointProps(jData, ID);
-				}
-				else if constexpr (std::is_same_v<T, FL::MouseJointData>)
-				{
-					RenderMouseJointProps(jData, ID);
-				}
-				else if constexpr (std::is_same_v<T, FL::WeldJointData>)
-				{
-					RenderWeldJointProps(jData, ID);
-				}
-				else if constexpr (std::is_same_v<T, FL::WheelJointData>)
-				{
-					RenderWheelJointProps(jData, ID);
-				}
-			}, joint->jointData);		
-
-			ImGui::EndChild();
-		}
-
-		void RenderJointMakerComponent(FL::JointMaker* jointMaker)
-		{
-			long ownerID = jointMaker->GetOwnerID();			
-			std::vector<FL::Joint*> joints = jointMaker->GetJoints();
 
 			FL::GuiCore::RenderButton("Add Joint", FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
 			if (ImGui::BeginPopupContextItem("##AddJoint", ImGuiPopupFlags_MouseButtonLeft))
@@ -1593,7 +1575,7 @@ namespace FlatGui
 				{
 					if (ImGui::MenuItem(FL::JointTypeStrings[i].c_str()))
 					{				
-						jointMaker->AddJoint((FL::JointType)i);
+						body->AddJoint((FL::JointType)i);
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -1601,27 +1583,15 @@ namespace FlatGui
 				ImGui::EndMenu();
 			}
 
-			if (jointMaker->GetJoints().size() > 0)
+			if (body->GetJoints().size() > 0)
 			{
-				FL::GuiCore::MoveScreenCursor(0, 3);
-				ImGui::Text("Joints");
-				FL::GuiCore::MoveScreenCursor(0, 2);
-				ImGui::Separator();
-				FL::GuiCore::MoveScreenCursor(0, -3);
-
-				std::string childID = "Joints_" + std::to_string(ownerID);
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("jointsScrollingBg"));
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 5));
-				ImGui::BeginChild(childID.c_str(),FL::Vector2(0, 300), FL::GuiCore::childFlags);
-				ImGui::PopStyleVar();
-				ImGui::PopStyleColor();
-
-				FL::Joint* jointToDelete = nullptr;			
-				std::vector<FL::Joint*> joints = jointMaker->GetJoints();
+				long jointIDToDelete = -1;			
+				std::vector<FL::Joint*> joints = body->GetJoints();
 
 				for (int i = 0; i < joints.size(); i++)
 				{
-					RenderJointComponentProps(joints[i], jointToDelete);
+					FL::GuiCore::MoveScreenCursor(0,5);
+					RenderJointComponentProps(joints[i], jointIDToDelete);
 
 					if (i != joints.size() - 1)
 					{
@@ -1629,12 +1599,8 @@ namespace FlatGui
 					}
 				}
 
-				if (jointToDelete != nullptr)
-				{
-					jointMaker->RemoveJoint(jointToDelete);
-				}
-
-				ImGui::EndChild();
+				if (jointIDToDelete != -1)
+					body->RemoveJoint(jointIDToDelete);
 			}
 		}
 
@@ -2131,7 +2097,7 @@ namespace FlatGui
 					{
 						glm::vec4 glmVec4 = uboVec4s.at(vec4Name);
 						FL::Vector4 uboVec4 = FL::Vector4(glmVec4.x, glmVec4.y, glmVec4.z, glmVec4.w);
-						if (FL::GuiCore::RenderVector4Table("##MaterialVec4UBO" + std::to_string(ownerID), vec4Name, uboVec4)) uboVec4s.at(vec4Name) = glm::vec4(uboVec4.x, uboVec4.y, uboVec4.z, uboVec4.w);
+						if (FL::GuiCore::RenderVector4Table(FL::GuiCore::TableProps("##MaterialVec4UBO" + std::to_string(ownerID), vec4Name), uboVec4)) uboVec4s.at(vec4Name) = glm::vec4(uboVec4.x, uboVec4.y, uboVec4.z, uboVec4.w);
 					}
 					else
 					{
@@ -2189,10 +2155,47 @@ namespace FlatGui
 		}
 	}
 
+	bool RenderTagListTable(std::string ID, std::string fieldName, FL::TagList* tagList)
+	{
+		bool b_changed = false;
+		bool b_hasTag = tagList->HasTag(fieldName);
+		bool b_collidesTag = tagList->CollidesTag(fieldName);
+		std::string hasTagID = "##" + fieldName + "CheckboxHasTagID";
+		std::string collidesTagID = "##" + fieldName + "CheckboxCollideTagID";
+
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		FL::GuiCore::MoveScreenCursor(0, 2);
+		ImGui::Text("%s", fieldName.c_str());
+
+		ImGui::TableSetColumnIndex(1);
+		FL::GuiCore::MoveScreenCursor(0, 2);
+		if (FL::GuiCore::RenderCheckbox(hasTagID.c_str(), b_hasTag))
+		{
+			tagList->ToggleTag(fieldName);
+			b_changed = true;
+		}
+
+		ImGui::TableSetColumnIndex(2);
+		FL::GuiCore::MoveScreenCursor(0, 2);
+		if (FL::GuiCore::RenderCheckbox(collidesTagID.c_str(), b_collidesTag))
+		{
+			tagList->ToggleCollides(fieldName);
+			b_changed = true;
+		}
+
+		ImGui::PushID(ID.c_str());
+		ImGui::PopID();
+
+		return b_changed;
+	}
+
 	void RenderInspector(bool& b_show)
 	{
 		if (!b_show)
 			return;
+
+		FL::GuiCore::b_currentTableLight = true;
 				
 		if (FL::GuiCore::BeginWindow("Inspector", b_show))
 		{
@@ -2230,17 +2233,16 @@ namespace FlatGui
 				FL::GuiCore::PushMenuStyles();
 				if (ImGui::BeginPopupContextItem("TagsPopup", ImGuiPopupFlags_MouseButtonLeft))
 				{
-					std::string labels[2] = { "Is", "Collides" };
-					if (FL::GuiCore::PushTable("TagsTable", 3, FL::GuiCore::resizeableTableFlags,FL::Vector2(-1)))
-					{
-						FL::GuiCore::RenderTextTableRow("TagsTableHeaders", "Tag", "Has", "Collides");
+					std::vector<std::string> values = { "Tag", "Has", "Collides" };
+					FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("TagsTableHeaders", ""), values);
 
+					if (FL::GuiCore::PushTable("TagsTable", 3, FL::GuiCore::resizeableTableFlags))
+					{
 						for (std::string tag : FL::Assets::assetManager.GetTags())
 						{
 							std::string tableRowId = tag + "TagCheckboxTableRow";
-							FL::GuiCore::RenderTagListTableRow(tableRowId.c_str(), tag, &tagList);
+							RenderTagListTable(tableRowId.c_str(), tag, &tagList);
 						}
-
 						FL::GuiCore::PopTable();
 					}
 					ImGui::EndPopup();
@@ -2334,13 +2336,12 @@ namespace FlatGui
 									{											
 										case FL::ComponentType_Animation:           Inspector::RenderAnimationComponent(static_cast<FL::Animation*>(component)); break;
 										case FL::ComponentType_Audio:			    Inspector::RenderAudioComponent(static_cast<FL::Audio*>(component)); break;
-										// case FL::ComponentType_Body: 			    Inspector::RenderBodyComponent(static_cast<FL::Body2D*>(component)); break;
+										// case FL::ComponentType_Body: 			    Inspector::RenderBodyComponent(static_cast<FL::Body*>(component)); break;
 										case FL::ComponentType_Body2D: 			    Inspector::RenderBody2DComponent(static_cast<FL::Body2D*>(component)); break;
 										case FL::ComponentType_Button: 			    Inspector::RenderButtonComponent(static_cast<FL::Button*>(component)); break;
 										case FL::ComponentType_Camera:			    Inspector::RenderCameraComponent(static_cast<FL::Camera*>(component)); break;
 										case FL::ComponentType_Canvas:			    Inspector::RenderCanvasComponent(static_cast<FL::Canvas*>(component)); break;
-										case FL::ComponentType_CharacterController: Inspector::RenderCharacterControllerComponent(static_cast<FL::CharacterController*>(component)); break;
-										case FL::ComponentType_JointMaker:		    Inspector::RenderJointMakerComponent(static_cast<FL::JointMaker*>(component)); break;
+										case FL::ComponentType_CharacterController: Inspector::RenderCharacterControllerComponent(static_cast<FL::CharacterController*>(component)); break;										
 										case FL::ComponentType_Light:			    Inspector::RenderLightComponent(static_cast<FL::Light*>(component)); break;
 										case FL::ComponentType_Mesh:			    Inspector::RenderMeshComponent(static_cast<FL::Mesh*>(component)); break;
 										case FL::ComponentType_Script:			    Inspector::RenderScriptComponent(static_cast<FL::Script*>(component)); break;

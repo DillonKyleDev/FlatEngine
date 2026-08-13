@@ -13,13 +13,13 @@
 #include "managers/Settings.h"
 #include "managers/ProjectManager.h"
 #include "SceneView.h"
-#include "tools/Numbers.h"
 #include "tools/Pool.h"
 #include "tools/Time.h"
 #include "tools/Vector2.h"
 
 #include <cmath>
 #include "imgui.h"
+#include "tools/Vector3.h"
 
 namespace FL = FlatEngine;
 
@@ -66,6 +66,21 @@ namespace FlatEngine
 			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
 			object.mesh.CreateResources();
 			return object;
+		}
+		std::vector<SceneRenderObject> CreateCapsuleObject()
+		{
+			std::vector<SceneRenderObject> capsuleShapes = { CreateCircleObject(), CreateCircleObject(), CreateLineObject(), CreateLineObject(), CreateLineObject(), CreateLineObject() };			
+			return capsuleShapes;
+		}
+		std::vector<SceneRenderObject> CreatePolygonObject()
+		{
+			std::vector<SceneRenderObject> polygonShapes = { CreateLineObject(), CreateLineObject(), CreateLineObject() };			
+			return polygonShapes;
+		}
+		std::vector<SceneRenderObject> CreateChainObject()
+		{
+			std::vector<SceneRenderObject> chainShapes = { CreateLineObject(), CreateLineObject(), CreateLineObject(), CreateLineObject() };			
+			return chainShapes;
 		}
 
 		void CleanupPoolObject(SceneRenderObject& object)
@@ -214,6 +229,25 @@ namespace FlatEngine
 			}			
 		}
 
+		void AddSceneCameraRotation(Vector2 mouseDelta)
+		{
+			Vector3 rotation = sceneViewCameraTransform.GetRotation();
+			sceneViewCameraTransform.AddYRotation(-mouseDelta.x * 0.25f);			
+			
+			if (rotation.x + mouseDelta.y * 0.25f >= 90)
+			{
+				sceneViewCameraTransform.SetRotation(Vector3(89.99f, rotation.y, rotation.z));
+			}
+			else if (rotation.x + mouseDelta.y * 0.25f <= -90)
+			{
+				sceneViewCameraTransform.SetRotation(Vector3(-89.99f, rotation.y, rotation.z));
+			}
+			else
+			{
+				sceneViewCameraTransform.AddXRotation(mouseDelta.y * 0.25f);
+			}
+		}
+
 		void AddSceneViewMouseControls(Vector2 startPos, Vector2 size)
 		{
 			std::string buttonID = "##SceneViewMouseControls";				
@@ -263,12 +297,11 @@ namespace FlatEngine
 						}
 						else 
 						{						
-							sceneViewCamera.horizontalViewAngle += -rightMouseDelta.x * 0.25f;
-							sceneViewCamera.AddVerticalViewAngle(rightMouseDelta.y * 0.25f);							
+							AddSceneCameraRotation(rightMouseDelta);
 
 							Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
-							glm::vec4 lookDir = sceneViewCamera.GetLookDirectionNoRoll();
-							Vector2 xzPlane = Vector2(lookDir.x, lookDir.z);
+							glm::vec4 lookDir = sceneViewCameraTransform.GetLookDirection();
+							Vector2 xzPlane = Vector2(lookDir.x, lookDir.z);							
 							Vector2 leftDir = Vector2::Rotate(xzPlane, -90);
 							Vector2 rightDir = Vector2::Rotate(xzPlane, 90);
 							
@@ -304,8 +337,7 @@ namespace FlatEngine
 
 						if (IsOrthoGraphic())
 						{
-							sceneViewCamera.orthoHorizontalViewAngle += -leftMouseDelta.x * 0.01f;
-							sceneViewCamera.AddOrthoVerticalViewAngle(leftMouseDelta.y * 0.01f);
+							AddSceneCameraRotation(leftMouseDelta);
 						}
 					}									
 				}
@@ -362,9 +394,14 @@ namespace FlatEngine
 
 		void PositionTransformGizmo()
         {
-			if (ProjectManager::loadedProject.focusedGameObjectID != -1)
+			long focusedID = ProjectManager::loadedProject.focusedGameObjectID;
+			if (focusedID != -1)
 			{
-				Vector3 position = SceneManager::loadedScene.GetObjectByID(ProjectManager::loadedProject.focusedGameObjectID)->Get<Transform>()->GetPosition();
+				Transform* focusedTransform = SceneManager::loadedScene.Get<Transform>(focusedID);
+				if (focusedTransform == nullptr)
+					return;
+
+				Vector3 position = focusedTransform->GetPosition();
 				transformGizmoRenderObject.mesh.SetActive(true);
 				transformGizmoRenderObject.transform.SetPosition(position);
 			}
@@ -372,9 +409,6 @@ namespace FlatEngine
 			{
 				transformGizmoRenderObject.mesh.SetActive(false);
 			}		
-
-			// AddDebugDrawObject(DebugSceneObjectType_Quad, Transform());
-			// AddDebugDrawObject(DebugSceneObjectType_Circle, Transform());
         }
 
 		void ClearDebugDrawObjects()
@@ -590,15 +624,20 @@ namespace FlatEngine
 			ref->transform.PutData(transform.GetData(), "Scene Camera Gizmo");
 			return ref->ID;
 		}
-		
-		void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color)
+
+		Transform GetLineTransformForStartEndPos(Vector3 startPos, Vector3 endPos)
 		{
 			Transform transform;
 			Vector3 direction = endPos - startPos;
+			transform.SetPosition(startPos);
 			transform.SetScale(Vector3(direction.GetMagnitude()));
-			Vector3 normDirection = Vector3::Normalize(direction);
-			transform.SetRotation(Vector3(0, Numbers::RadiansToDegrees(std::atan2(normDirection.z, normDirection.x)), Numbers::RadiansToDegrees(std::asin(std::clamp(normDirection.y, -1.0f, 1.0f)))));
-			AddDebugDrawObject(DebugSceneObjectType_Line, transform, color);
+			transform.SetRotation(Vector3::DirectionToRotation(direction));
+
+			return transform;
+		}
+		void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color)
+		{
+			AddDebugDrawObject(DebugSceneObjectType_Line, GetLineTransformForStartEndPos(startPos, endPos), color);
 		}
 
 		void DebugDrawQuad(Vector3 position, Vector2 scale, std::string color, Vector3 rotation)

@@ -20,21 +20,22 @@ namespace FlatEngine
 
 	json Canvas::GetData(bool b_IDOverride)
 	{
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = {
 			{ "width", m_width },
 			{ "height", m_height },
 			{ "layerNumber", m_layerNumber },
-			{ "b_blocksLayers", m_b_blocksLayers },
+			{ "b_blocksLayers", m_b_blocksLayers }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void Canvas::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 
 		SetDimensions(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName));

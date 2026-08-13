@@ -5,6 +5,8 @@ namespace FlatEngine
 {
     namespace Numbers
     {
+        constexpr float PI = 3.14159265358979323846f;
+        
         extern int GetRandInt(int low, int high);
         extern float GetRandFloat(float low, float high);
         extern float Min(float first, float second);
@@ -26,13 +28,15 @@ namespace FlatEngine
 
         extern float Cos(float degrees);
         extern float Sin(float degrees);
-        extern float ACos(float degrees);
-        extern float ASin(float degrees);
+        extern float ACos(float x);
+        extern float ASin(float y);
+        extern float ATan(float x, float y);      
         extern float CosR(float radians);
         extern float SinR(float radians);
-        extern float ACosR(float radians);
-        extern float ASinR(float radians);
-
+        extern float ACosR(float x);
+        extern float ASinR(float y);
+        extern float ATanR(float x, float y);
+        
         extern float Abs(float value);
         extern double Abs(double value);
         extern int Abs(int value);

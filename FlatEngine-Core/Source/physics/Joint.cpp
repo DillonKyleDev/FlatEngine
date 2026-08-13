@@ -6,8 +6,9 @@
 
 namespace FlatEngine
 {
-	Joint::Joint(long ownerID, JointType jointType)
+	Joint::Joint(long ownerID, long myID, JointType jointType)
 	{
+		m_ID = myID;
 		m_jointID = b2_nullJointId;
 		m_ownerID = ownerID;		
 		type = jointType;
@@ -17,8 +18,8 @@ namespace FlatEngine
 
 	json Joint::GetData()
 	{
-		json jsonData = {
-			{ "jointType", (int)type },
+		json jointJson = {
+			{ "jointType", JointTypeStrings[type] },
 			{ "bodyAID", bodyAID },
 			{ "bodyBID", bodyBID },
 			{ "b_collideConnected", b_collideConnected },
@@ -28,37 +29,44 @@ namespace FlatEngine
 			{ "anchorBY", anchorB.y }
 		};
 
-		jsonData["jointData"] = std::visit([](auto&& jData) { return jData.GetData(); }, jointData);
+		jointJson["jointData"] = std::visit([](auto&& jData) { return jData.GetData(); }, jointData);
 
-		return jsonData;
+		return jointJson;
 	}
 
-	void Joint::PutData(json jsonData, std::string name)
+	void Joint::PutData(json jointJson, std::string name)
 	{
-		type = (JointType)JsonHelper::CheckJsonInt(jsonData, "jointType", name);
-		b_collideConnected = JsonHelper::CheckJsonBool(jsonData, "b_collideConnected", name);
-		bodyAID = JsonHelper::CheckJsonLong(jsonData, "bodyAID", name);
-		bodyBID = JsonHelper::CheckJsonLong(jsonData, "bodyBID", name);
-		anchorA.x = JsonHelper::CheckJsonFloat(jsonData, "anchorAX", name);
-		anchorA.y = JsonHelper::CheckJsonFloat(jsonData, "anchorAY", name);
-		anchorB.x = JsonHelper::CheckJsonFloat(jsonData, "anchorBX", name);
-		anchorB.y = JsonHelper::CheckJsonFloat(jsonData, "anchorAY", name);
+		if (jointJson.empty())
+			return;
 
-		if (JsonHelper::JsonContains(jsonData, "jointData", name))
+		b_collideConnected = JsonHelper::CheckJsonBool(jointJson, "b_collideConnected", name);
+		bodyAID = JsonHelper::CheckJsonLong(jointJson, "bodyAID", name);
+		bodyBID = JsonHelper::CheckJsonLong(jointJson, "bodyBID", name);
+		anchorA.x = JsonHelper::CheckJsonFloat(jointJson, "anchorAX", name);
+		anchorA.y = JsonHelper::CheckJsonFloat(jointJson, "anchorAY", name);
+		anchorB.x = JsonHelper::CheckJsonFloat(jointJson, "anchorBX", name);
+		anchorB.y = JsonHelper::CheckJsonFloat(jointJson, "anchorAY", name);
+
+		if (JsonHelper::JsonContains(jointJson, "jointData", name))
 		{
-			json jointJson = jsonData.at("jointData");
+			json jointDataJson = jointJson.at("jointData");
 			switch (type)
 			{
-				case JointType_Distance:  { DistanceJointData joint;  joint.PutData(jointJson, name); jointData = joint; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-				case JointType_Revolute:  { PrismaticJointData joint; joint.PutData(jointJson, name); jointData = joint; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
-				case JointType_Prismatic: { RevoluteJointData joint;  joint.PutData(jointJson, name); jointData = joint; break; }
-				case JointType_Mouse:     { MouseJointData joint;     joint.PutData(jointJson, name); jointData = joint; break; }
-				case JointType_Weld:      { WheelJointData joint;     joint.PutData(jointJson, name); jointData = joint; break; }
-				case JointType_Wheel:     { MotorJointData joint;     joint.PutData(jointJson, name); jointData = joint; break; }
-				case JointType_Motor:     { WeldJointData joint;      joint.PutData(jointJson, name); jointData = joint; break; }
+				case JointType_Distance:  { DistanceJointData joint;  joint.PutData(jointDataJson, name); jointData = joint; renderShapes.push_back(SceneView::CreateQuadObject()); break; }
+				case JointType_Revolute:  { PrismaticJointData joint; joint.PutData(jointDataJson, name); jointData = joint; renderShapes.push_back(SceneView::CreateCircleObject());  break; }
+				case JointType_Prismatic: { RevoluteJointData joint;  joint.PutData(jointDataJson, name); jointData = joint; break; }
+				case JointType_Mouse:     { MouseJointData joint;     joint.PutData(jointDataJson, name); jointData = joint; break; }
+				case JointType_Weld:      { WheelJointData joint;     joint.PutData(jointDataJson, name); jointData = joint; break; }
+				case JointType_Wheel:     { MotorJointData joint;     joint.PutData(jointDataJson, name); jointData = joint; break; }
+				case JointType_Motor:     { WeldJointData joint;      joint.PutData(jointDataJson, name); jointData = joint; break; }
 				default: break;
 			}
 		}
+	}
+
+	const long Joint::GetID()
+	{
+		return m_ID;
 	}
 
 	void Joint::SetOwnerID(long ownerID)
@@ -105,7 +113,7 @@ namespace FlatEngine
 
 	JointType Joint::GetJointType()
 	{
-		return jointType;
+		return type;
 	}
 
 	Body2D* Joint::GetBodyA()
@@ -153,11 +161,17 @@ namespace FlatEngine
 
 	Vector2 Joint::GetConstraintForce()
 	{
+		if (!b2Joint_IsValid(m_jointID))
+			return Vector2();
+
 		return b2Joint_GetConstraintForce(m_jointID);
 	}
 
 	float Joint::GetConstraintTorque()
 	{
+		if (!b2Joint_IsValid(m_jointID))
+			return 0;
+
 		return b2Joint_GetConstraintTorque(m_jointID);
 	}
 }

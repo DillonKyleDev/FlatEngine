@@ -1,12 +1,9 @@
 #include "components/Camera.h"
 #include "components/Transform.h"
 #include "components/Mesh.h"
-#include "GameObject.h"
 #include "managers/Assets.h"
-#include "managers/SceneManager.h"
 #include "render/DeviceManager.h"
 #include "render/RenderWindow.h"
-#include "render/SceneView.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
@@ -75,21 +72,22 @@ namespace FlatEngine
 			modelPath = m_model->GetModelPath();
 		}
 
-		json jsonData = {
-			{ "type", (int)GetType() },
-			{ "b_isCollapsed", IsCollapsed() },
-			{ "b_isActive", IsActive() },
+		json componentJson = {
 			{ "textures", texturesData },
 			{ "materialName", m_materialName },
 			{ "modelPath", modelPath },
 			{ "uboVec4s", uboVec4s }
 		};
+		componentJson.update(Component::GetData(b_IDOverride));
 
-		return jsonData;
+		return componentJson;
 	}
 
 	void Mesh::PutData(json componentJson, std::string objectName)
 	{
+		if (componentJson.empty())		
+			return;	
+		
         Component::PutData(componentJson, objectName);
 
 		std::string materialName = JsonHelper::CheckJsonString(componentJson, "materialName", objectName);
@@ -414,81 +412,20 @@ namespace FlatEngine
 		}
 	}
 
-	void Mesh::UpdateUniformBuffer(ViewportType viewportType, bool b_orthographic, Transform* transform)
+	void Mesh::UpdateUniformBuffer(ViewportType viewportType, Transform* transform, Camera* camera, Transform* cameraTransform)
 	{
-		GameObject* parent = SceneManager::loadedScene.GetObjectByID(GetOwnerID());		
-		Camera* primaryCamera = &SceneView::sceneViewCamera;                        
-		Vector3 cameraPosition = SceneView::sceneViewCameraTransform.GetPosition();
-		std::map<uint32_t, std::string> materialVec4s;
-		Transform empty;
-
-		if (transform == nullptr && parent != nullptr)
-			transform = parent->Get<Transform>();
-		else if (transform == nullptr)
-		 	transform = &empty; // Temporary fix for larger problem
-
-		switch (viewportType)
-		{
-		case ViewportType::ViewportType_SceneView:
-		{
-			materialVec4s = m_sceneViewMaterial->GetUBOVec4Names();
-			break;
-		}
-		case ViewportType::ViewportType_GameView:
-		{
-			primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();
-			if (primaryCamera == nullptr)
-			{
-				primaryCamera = &SceneView::sceneViewCamera;
-				cameraPosition = Vector3();
-			}
-			else if (primaryCamera->GetOwningObject() != nullptr)
-				cameraPosition = primaryCamera->GetOwningObject()->Get<Transform>()->GetPosition();
-			
-			materialVec4s = m_gameViewMaterial->GetUBOVec4Names();
-			break;
-		}
-		default:
-			break;
-		}
-
-		Vector3 meshPosition = transform->GetPosition();
-		glm::mat4 meshScale = transform->GetScaleMatrix();
-		glm::mat4 meshRotation = transform->GetRotationMatrix();		
-		glm::vec4 lookDir = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? primaryCamera->GetLookDirectionNoRoll() : primaryCamera->GetLookDirection();
-		glm::vec4 up = viewportType == ViewportType::ViewportType_SceneView || !primaryCamera->IsPrimary() ? glm::vec4(0.0f, 1.0f, 0.0f, 0.0f) : glm::vec4(0.0f, 1.0f, 0.0f, 0.0f); //primaryCamera->GetUpDirection(); not created yet
-
-		glm::vec4 meshPos = glm::vec4(meshPosition.x, meshPosition.y, meshPosition.z, 0);
-		glm::vec4 viewportCameraPos = glm::vec4(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0);
-		glm::mat4 model = meshRotation * meshScale;
-		glm::vec4 cameraLookDir = glm::vec4(lookDir.x, lookDir.y, lookDir.z, 0);
-		glm::mat4 view = glm::lookAt(cameraPosition.GetGLMVec3(), glm::vec3(cameraPosition.x + cameraLookDir.x, cameraPosition.y + cameraLookDir.y, cameraPosition.z + cameraLookDir.z), glm::vec3(up));
-
-		glm::mat4 projection;			
-		float aspectRatio = 16.0f / 9.0f;
-
-		if (primaryCamera->b_orthographic)
-		{    		
-			float halfWidth  = SceneView::finalImageSize.x / primaryCamera->gridStep / 2.0f;
-			float halfHeight = SceneView::finalImageSize.y / primaryCamera->gridStep / 2.0f;
-			projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, primaryCamera->orthoNearClippingDistance, primaryCamera->orthoFarClippingDistance);			
-			projection[1][1] *= -1;
-		}
-		else
-		{
-			float perspectiveAngle = primaryCamera->perspectiveAngle;
-			projection = glm::perspective(glm::radians(perspectiveAngle), aspectRatio, primaryCamera->nearClippingDistance, primaryCamera->farClippingDistance);
-			projection[1][1] *= -1;
-		}
+		std::map<uint32_t, std::string> materialVec4s = viewportType == ViewportType::ViewportType_SceneView ? m_sceneViewMaterial->GetUBOVec4Names() : m_gameViewMaterial->GetUBOVec4Names();			
+		glm::vec3 cameraPos = cameraTransform->GetPosition().GetGLMVec3();
+		glm::vec3 lookDir = glm::vec3(cameraTransform->GetLookDirection());
+		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);				
 
 		CustomUBO ubo{};
-
 		BaseUBO base{};
-		base.meshPosition = meshPos;
-		base.cameraPosition = viewportCameraPos;
-		base.model = model;
-		base.view = view;
-		base.projection = projection;
+		base.meshPosition = transform->GetPosition().GetGLMVec4();
+		base.cameraPosition = glm::vec4(cameraPos, 0);
+		base.model = transform->GetRotationMatrix() * transform->GetScaleMatrix();
+		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
+		base.projection = camera->GetProjection();
 		ubo.baseUBO = base;
 		
 		int vec4Counter = 0;
@@ -503,16 +440,16 @@ namespace FlatEngine
 
 		switch (viewportType)
 		{
-		case ViewportType::ViewportType_SceneView:
-		{
-			memcpy(m_sceneViewUniformBuffersMapped[VulkanManager::currentFrame], &ubo, sizeof(ubo));
-			break;
-		}
-		case ViewportType::ViewportType_GameView:
-		{
-			memcpy(m_gameViewUniformBuffersMapped[VulkanManager::currentFrame], &ubo, sizeof(ubo));
-			break;
-		}
+			case ViewportType::ViewportType_SceneView:
+			{
+				memcpy(m_sceneViewUniformBuffersMapped[VulkanManager::currentFrame], &ubo, sizeof(ubo));
+				break;
+			}
+			case ViewportType::ViewportType_GameView:
+			{
+				memcpy(m_gameViewUniformBuffersMapped[VulkanManager::currentFrame], &ubo, sizeof(ubo));
+				break;
+			}
 		default:
 			break;
 		}

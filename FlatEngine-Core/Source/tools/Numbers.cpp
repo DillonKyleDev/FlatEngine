@@ -150,11 +150,11 @@ namespace FlatEngine
 
         float RadiansToDegrees(float radians)
         {
-            return radians * 57.29578f;
+            return radians * (180.0f / PI);
         }
         float DegreesToRadians(float degrees)
         {
-            return degrees / 57.29578f;
+            return degrees * (PI / 180.0f);
         }
         
         // (degrees)
@@ -166,13 +166,17 @@ namespace FlatEngine
         {
             return std::sin(DegreesToRadians(degrees));
         }
-        float ACos(float degrees)
+        float ACos(float x)
         {
-            return RadiansToDegrees(std::acos(DegreesToRadians(degrees)));
+            return RadiansToDegrees(std::acos(x));
         }        
-        float ASin(float degrees)
+        float ASin(float y)
+        {            
+            return RadiansToDegrees(std::asin(y));
+        }
+        float ATan(float x, float y)
         {
-            return RadiansToDegrees(std::asin(DegreesToRadians(degrees)));
+            return RadiansToDegrees(std::atan2(x, y));
         }
         // radians
         float CosR(float radians)
@@ -183,13 +187,17 @@ namespace FlatEngine
         {
             return std::sin(radians);
         }        
-        float ACosR(float radians)
+        float ACosR(float x)
         {
-            return std::acos(radians);
+            return std::acos(x);
         }
-        float ASinR(float radians)
+        float ASinR(float y)
         {
-            return std::asin(radians);
+            return std::asin(y);
+        }
+        float ATanR(float x, float y)
+        {
+            return std::atan2(x, y);
         }
 
         float Abs(float value)

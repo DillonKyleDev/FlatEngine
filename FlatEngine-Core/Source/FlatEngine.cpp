@@ -1,3 +1,4 @@
+#include "Application.h"
 #include "FlatEngine.h"
 #include "GuiCore.h"
 #include "managers/Assets.h"
@@ -11,6 +12,7 @@
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
 
+#include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <memory>
 #include <string>
@@ -28,20 +30,21 @@
 
 namespace FlatEngine
 {	
-	std::shared_ptr<Application> F_Application = std::make_shared<Application>();	
-	
-	std::string ROOT_DIR = "";
+	std::shared_ptr<Application> application;	
+	std::string rootDir = "";
+	bool b_closeProgramQueued = false;
+	bool b_loadNewScene = false;
+	std::string sceneToBeLoaded = "";
+	std::vector<SDL_Event> events;
+	Vector2 mouseDelta;
+	Vector2 mousePos;
+	Vector2 lastMousePos;
 
-	bool F_b_closeProgram = false;
-	bool F_b_closeProgramQueued = false;
-	bool F_b_ProjectManagerelected = false;	
-	bool F_b_loadNewScene = false;
-	std::string F_sceneToBeLoaded = "";
 
 	bool Init(int windowWidth, int windowHeight)
 	{
 		bool b_success = true;
-		ROOT_DIR = FileHelper::GetCurrentDir();
+		rootDir = FileHelper::GetCurrentDir();
 
 		SDL_SetHint(SDL_HINT_JOYSTICK_THREAD, "1");
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
@@ -99,9 +102,7 @@ namespace FlatEngine
 						{
 							Mix_AllocateChannels(AudioManager::totalAvailableChannels);
 							Logger::log.Trace("SDL_mixer initialized...\n");
-						}
-
-						// PhysicsManager::physics.Init();						
+						}					
 
 						Assets::assetManager.CollectTags();
 						Assets::assetManager.CollectTextures();
@@ -124,11 +125,9 @@ namespace FlatEngine
 
 	void Cleanup()
 	{
-		// PhysicsManager::physics.Shutdown();
 		PhysicsManager::physics2D.Shutdown();
 		GuiCore::QuitImGui();
 
-		// Clean up old gamepads
 		for (SDL_Joystick* gamepad : Controls::gamepads)
 		{
 			SDL_JoystickClose(gamepad);
@@ -137,43 +136,69 @@ namespace FlatEngine
 
 		Assets::assetManager.FreeFonts();
 
-		//Quit SDL subsystems
 		Mix_Quit();
 		TTF_Quit();
 		IMG_Quit();
 		SDL_Quit();
-	
-		F_b_closeProgram = true;
 	}
 
-	void HandleEngineEvents(SDL_Event event)
+	Vector2 GetMousePosWindow()
 	{
-		// Keyboard Keys Down
-		if (event.type == SDL_KEYDOWN)
-		{
-			// Scene View keybinds
-			if (true)
-			{				
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_DELETE:											
-					break;
-				case SDLK_r:										
-					break;
-				case SDLK_HOME:					
-					break;				
-				case SDLK_SPACE:
-					PauseGameLoop();
-					break;	
+		int globalX, globalY;
+		SDL_GetGlobalMouseState(&globalX, &globalY);
+		int windowX, windowY;
+		SDL_GetWindowPosition(RenderWindow::window.GetWindow(), &windowX, &windowY);
+		int windowWidth, windowHeight;
+		SDL_GetWindowSize(RenderWindow::window.GetWindow(), &windowWidth, &windowHeight);
 
-				default:
-					break;
-				}
-			}
-		}
+		return Vector2(globalX - windowX, globalY - windowY);		
 	}
 
-	void HandleEvents(bool& quit)
+	void CalculateMouseDelta()
+	{
+		mousePos = GetMousePosWindow();	
+		mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);	
+		ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
+
+		if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) || ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+		{
+			int windowWidth, windowHeight;
+			SDL_GetWindowSize(RenderWindow::window.GetWindow(), &windowWidth, &windowHeight);
+
+			if (mousePos.x > windowWidth - 2)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, mousePos.y);
+				lastMousePos = Vector2(0, mousePos.y);
+				mouseDelta.x = 1;
+				return;
+			}
+			else if (mousePos.x < 1)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), windowWidth - 2, mousePos.y);
+				lastMousePos = Vector2(windowWidth, mousePos.y);
+				mouseDelta.x = -1;
+				return;
+			}
+			if (mousePos.y > windowHeight - 1)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), mousePos.x, 1);
+				lastMousePos = Vector2(mousePos.x, 0);
+				mouseDelta.y = 1;
+				return;
+			}
+			else if (mousePos.y < 1)
+			{
+				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), mousePos.x, windowHeight - 1);
+				lastMousePos = Vector2(mousePos.x, windowHeight);
+				mouseDelta.y = 1;
+				return;
+			}			
+		}
+
+		lastMousePos = mousePos;
+	}
+
+	void HandleEvents()
 	{
 		// Unfire all keybinds that were fired in the last frame then clear the saved keys
 		static std::vector<std::string> firedKeys = std::vector<std::string>();
@@ -192,107 +217,55 @@ namespace FlatEngine
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
+			events.push_back(event);
+			
 			ImGui_ImplSDL2_ProcessEvent(&event);
 
 			if (event.type == SDL_QUIT)
 			{
-				quit = true;
+				b_closeProgramQueued = true;
 			}
 			if (event.type == SDL_WINDOWEVENT)
 			{	
 				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED || event.window.event == SDL_WINDOWEVENT_RESIZED)
 				{
-					F_Application->SetWindowResized(true);					
+					application->SetWindowResized(true);					
 				}
 				else if (event.window.event == SDL_WINDOWEVENT_CLOSE)
 				{
 					if (event.window.windowID == SDL_GetWindowID(RenderWindow::window.GetWindow()))
 					{
-						quit = true;
+						b_closeProgramQueued = true;
 					}
 				}
 			}
 
-			HandleEngineEvents(event);
-
-			if (GameLoopStarted())
-			{
-				for (Controls::MappingContext& context : Controls::mappingContexts)
+			// Key press events (should roll this into EngineContext.mpc below)
+			if (event.type == SDL_KEYDOWN)
+			{		
+				switch (event.key.keysym.sym)
 				{
-					HandleContextEvents(context, event, firedKeys);
+				case SDLK_DELETE:											
+					break;
+				case SDLK_r:										
+					break;
+				case SDLK_HOME:					
+					break;				
+				case SDLK_SPACE:
+					FL::application->gameloop->TogglePauseGameLoop();
+					break;	
+				default:
+					break;
 				}
 			}
-			else
-			{
-				Controls::MappingContext* context = Controls::GetMappingContext("EngineContext");
 
-				if (context != nullptr)
-				{
-					HandleContextEvents(*context, event, firedKeys);
-				}
-			}
+			Controls::MappingContext* context = Controls::GetMappingContext("EngineContext");
+			if (context != nullptr)
+			{
+				HandleContextEvents(*context, event, firedKeys);
+			}				
 		}
-	}
 
-	// Game Loop
-	void StartGameLoop()
-	{
-		F_Application->StartGameLoop();
-	}
-
-	void GameLoopUpdate()
-	{
-		F_Application->UpdateGameLoop();
-	}
-
-	void PauseGameLoop()
-	{
-		F_Application->PauseGameLoop();
-	}
-
-	void PauseGame()
-	{
-		F_Application->PauseGame();
-	}
-
-	void StopGameLoop()
-	{
-		F_Application->StopGameLoop();
-	}
-
-	float GetElapsedGameTimeInSec()
-	{
-		return F_Application->GetGameLoop()->TimeElapsedInSec();
-	}
-
-	long GetElapsedGameTimeInMs()
-	{
-		return F_Application->GetGameLoop()->TimeElapsedInMs();
-	}
-
-	bool GameLoopStarted()
-	{
-		return F_Application->GetGameLoop()->IsStarted();
-	}
-
-	bool GameLoopPaused()
-	{
-		return F_Application->GetGameLoop()->IsPaused();
-	}
-
-	long GetFramesCounted()
-	{
-		return F_Application->GetGameLoop()->GetFramesCounted();
-	}
-
-	float GetDeltaTime()
-	{
-		return F_Application->GetGameLoop()->GetDeltaTime();
+		CalculateMouseDelta();
 	}
 }
-
-// ImGui cheat sheet
-// Border around object
-//auto wPos = ImGui::GetWindowPos();
-//auto wSize = ImGui::GetWindowSize();  // This is the size of the current box, perfect for getting the exact dimensions for a border
-//ImGui::GetWindowDrawList()->AddRect({ wPos.x + 2, wPos.y + 2 }, { wPos.x + wSize.x - 2, wPos.y + wSize.y - 2 }, GetColor32("componentBorder"), 2);

@@ -2,7 +2,6 @@
 #include "components/Button.h"
 #include "components/Canvas.h"
 
-#include "SDL.h" // Uint32
 #include <vector>
 
 
@@ -12,29 +11,41 @@ namespace FlatEngine
 	{
 	public:
 		GameLoop();
+		virtual ~GameLoop() = default;
 
-		void Start();
+		virtual void Start();
+		virtual void Stop();
 		void Update();
-		void Stop();
-		void Pause();
-		void Unpause();
+		void PauseGameLoop();
+		void UnpauseGameLoop();
+		void TogglePauseGameLoop();
 		bool IsGamePaused();
 		void PauseGame();
 		void UnpauseGame();
+		void TogglePauseGame();
 		float TimeElapsedInSec();
 		long TimeElapsedInMs();
 		bool IsStarted();
 		bool IsPaused();
-		void AddFrame();
 		float GetDeltaTime();
 		void SetFrameSkipped(bool b_skipped);
 		void SkipFrames(int framesToSkip);
 		bool IsFrameSkipped();
 		int GetFramesToSkip();
 		long GetFramesCounted();
-		void ResetCurrentTime();
+		void AddObjectToDeleteQueue(long objectID);
+		void DeleteObjectsInDeleteQueue();
+		
+		float m_time; // Total time in deltaTime increments
+		float m_pausedTime;
+		float m_activeTime;
+		float m_deltaTime;
+		float m_accumulator;		
+		uint32_t m_currentTime;
 
-		// Component Handling
+	private:
+		void AddFrame();
+		void ResetCurrentTime();
 		void HandleCamera();
 		void ResetCharacterControllers();
 		void HandleButtons();
@@ -44,17 +55,7 @@ namespace FlatEngine
 		Canvas GetFirstUnblockedCanvas();
 		void HandleAnimations();
 		void RunUpdateOnScripts();
-		void AddObjectToDeleteQueue(long objectID);
-		void DeleteObjectsInDeleteQueue();
-		
-		float m_time; // Total time in deltaTime increments
-		float m_pausedTime;
-		float m_activeTime;
-		float m_deltaTime;
-		float m_accumulator;		
-		Uint32 m_currentTime;
 
-	private:
 		bool m_b_started;
 		bool m_b_paused;
 		bool m_b_frameSkipped;

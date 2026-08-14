@@ -1,9 +1,12 @@
+#include "FlatEngine.h"
 #include "components/Animation.h"
 #include "components/CharacterController.h"
 #include "components/Transform.h"
 #include "GameLoop.h"
 #include "GameObject.h"
+#include "managers/Controls.h"
 #include "managers/SceneManager.h"
+#include "managers/Settings.h"
 #include "physics/PhysicsManager.h"
 #include "tools/Time.h"
 
@@ -47,18 +50,112 @@ namespace FlatEngine
 		m_currentTime = Time::Time();
 	}
 
+	void HandleMappingContextEvents()
+	{
+		// Unfire all keybinds that were fired in the last frame then clear the saved keys
+		static std::vector<std::string> firedKeys = std::vector<std::string>();
+		static std::vector<std::string> firedLastFrameKeys = std::vector<std::string>();
+		firedLastFrameKeys = firedKeys;
+
+		for (std::string keybind : firedKeys)
+		{
+			for (Controls::MappingContext& context : Controls::mappingContexts)
+			{
+				context.UnFireEvent(keybind);
+			}
+		}
+		firedKeys.clear();
+
+		for (SDL_Event event : events)
+		{
+			for (Controls::MappingContext& context : Controls::mappingContexts)
+			{
+				HandleContextEvents(context, event, firedKeys);
+			}
+		}
+
+		events.clear();
+	}
+
 	void GameLoop::Update()
 	{
-		AddFrame();
-		m_activeTime = m_time - m_pausedTime;
+		static Uint32 frameStart = FL::Time::Time();
+		static int framesSkipped = 0;	
 
-		SceneView::ClearDebugDrawObjects();	
-		HandleCamera();
-		ResetCharacterControllers();
-		HandleButtons();	
-		RunUpdateOnScripts();
-		HandleAnimations();
-		PhysicsManager::physics2D.Update(GetDeltaTime());
+		if ((m_b_started && !m_b_paused) || (m_b_paused && m_b_frameSkipped))
+		{			
+			int iterations = 0;								
+
+			if (m_b_paused && m_b_frameSkipped)
+			{
+				if (framesSkipped < m_framesToSkip)
+				{
+					framesSkipped++;
+				}
+				else
+				{
+					framesSkipped = 0;
+					m_b_frameSkipped = false;
+				}
+			}			
+
+			float frameTime = (float)(FL::Time::Time() - frameStart) / 1000.0f; // actual deltaTime (in seconds)
+
+			// Only add accumulated time if the GameLoop is not paused or if a frame was skipped while paused, then add a small fixed amount of time
+			if (!m_b_paused)
+			{
+				m_accumulator += frameTime;
+				if (m_accumulator > 0.25f)
+				{
+					m_accumulator = 0.25f; // prevent death spiral
+				}
+			}
+			else if (m_b_frameSkipped)
+			{
+				m_accumulator += m_deltaTime;
+			}
+
+			if (!m_b_paused || m_b_frameSkipped)
+			{				
+				while (m_accumulator >= m_deltaTime)
+				{
+					AddFrame();
+					m_activeTime = m_time - m_pausedTime;
+
+					SceneView::ClearDebugDrawObjects();						
+					HandleMappingContextEvents();
+					HandleCamera();
+					ResetCharacterControllers();
+					HandleButtons();	
+					RunUpdateOnScripts();
+					HandleAnimations();	
+					PhysicsManager::physics2D.Update(GetDeltaTime());
+
+					m_time += m_deltaTime;
+					if (m_accumulator >= m_deltaTime)
+					{
+						m_accumulator -= m_deltaTime;
+					}
+
+					iterations++;
+				}
+			}
+			
+			// Get time it took to get back to GameLoopUpdate()
+			frameStart = FL::Time::Time();
+
+			// Artificially slow GameLoop if frameTime is less than 
+			if (!Settings::settings.b_vsyncEnabled && frameTime < m_deltaTime)
+			{
+				SDL_Delay((Uint32)(m_deltaTime - frameTime) * 1000);
+			}		
+		}
+
+		// If gameloop isn't running, make sure our framestart keeps up with current engine time otherwise it will cause a freeze on initially starting gameloop
+		if (!m_b_started || m_b_paused)
+		{
+			frameStart = FL::Time::Time();
+		}	
 	}
 
 	void GameLoop::Stop()
@@ -69,7 +166,7 @@ namespace FlatEngine
 		m_framesCounted = 0;
 	}
 
-	void GameLoop::Pause()
+	void GameLoop::PauseGameLoop()
 	{		
 		if (m_b_started && !m_b_paused)
 		{
@@ -78,7 +175,7 @@ namespace FlatEngine
 		}
 	}
 
-	void GameLoop::Unpause()
+	void GameLoop::UnpauseGameLoop()
 	{		
 		if (m_b_started && m_b_paused)
 		{
@@ -86,6 +183,14 @@ namespace FlatEngine
 			ResetCurrentTime();
 			m_pausedTime = m_time - m_activeTime;			
 		}
+	}
+
+	void GameLoop::TogglePauseGameLoop()
+	{
+		if (m_b_paused)
+			UnpauseGameLoop();
+		else
+		 	PauseGameLoop();
 	}
 
 	void GameLoop::ResetCurrentTime()
@@ -373,6 +478,18 @@ namespace FlatEngine
 	void GameLoop::UnpauseGame()
 	{
 		m_b_gamePaused = false;
+	}
+
+	void GameLoop::TogglePauseGame()
+	{
+		if (m_b_gamePaused)
+		{
+			m_b_gamePaused = false;
+		}
+		else
+		{
+			m_b_gamePaused = true;
+		}
 	}
 
 	float GameLoop::TimeElapsedInSec()

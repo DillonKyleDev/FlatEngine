@@ -326,6 +326,7 @@ namespace FlatEngine
 			return;
 
 		Vector3 ownerPos = ownerTransform->GetPosition();
+		Vector3 ownerRot = ownerTransform->GetRotation();
 
 		for (Shape* shape : GetShapes())
 		{
@@ -336,7 +337,7 @@ namespace FlatEngine
 			std::string activeString = IsActive() ? "Active" : "Inactive";
 			std::string postfix = colliderString + activeString;
 
-			std::visit([this, shape, ownerPos, postfix](auto&& sData)
+			std::visit([this, shape, ownerPos, ownerRot, postfix](auto&& sData)
 			{
 				using T = std::decay_t<decltype(sData)>;
 
@@ -344,6 +345,7 @@ namespace FlatEngine
 				{	
 					Transform renderTransform;									
 					renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
+					renderTransform.SetRotation(ownerRot);
 					renderTransform.SetScale(Vector3(sData.dimensions.x, sData.dimensions.y, 1));
 					shape->renderShapes[0].transform = renderTransform;
 				}
@@ -356,11 +358,8 @@ namespace FlatEngine
 				}
 				else if constexpr (std::is_same_v<T, CapsuleShapeData>)
 				{
-					if (shape->renderShapes.size() != 8)
-					{
-						Logger::log.Err("Body2D::UpdateRenderShapes() : GameObject ID:{} Body2D shape->renderShapes does not contain enough render SceneRenderObjects to draw Capsule.", GetOwnerID());
-						return;
-					}
+					if (shape->renderShapes.size() != 8)											
+						return;					
 									
 					float center1Value = ((sData.length / 2) - sData.radius) * -1;
 					float center2Value = (sData.length / 2) - sData.radius;
@@ -403,9 +402,70 @@ namespace FlatEngine
 				}
 				else if constexpr (std::is_same_v<T, PolygonShapeData>)
 				{
+					if (shape->renderShapes.size() < sData.points.size())
+					{
+						int diff = sData.points.size() - shape->renderShapes.size();
+						for (int i = 0; i < diff; i++)
+						{
+							shape->renderShapes.push_back(SceneView::CreateLineObject());
+						}
+					}
+
+					for (int p = 0; p < sData.points.size(); p++)
+					{
+						int pNext = p == sData.points.size() - 1 ? 0 : p + 1;
+						b2Vec2 pointStart = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[p].x, sData.points[p].y));
+						Vector3 startPos = Vector3(pointStart, ownerPos.z);
+						b2Vec2 pointEnd = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[pNext].x, sData.points[pNext].y));
+						Vector3 endPos = Vector3(pointEnd, ownerPos.z);
+
+						shape->renderShapes[p].transform = SceneView::GetLineTransformForStartEndPos(startPos, endPos);
+					}
 				}
 				else if constexpr (std::is_same_v<T, ChainShapeData>)
 				{
+					if (shape->renderShapes.size() < sData.points.size())
+					{
+						int diff = sData.points.size() - shape->renderShapes.size();
+						for (int i = 0; i < diff; i++)
+						{
+							shape->renderShapes.push_back(SceneView::CreateLineObject());
+						}
+					}
+
+
+					// Set the shape color for the endpoint lines that are not actual colliders as the orange color when !b_isLoop
+					// shape->renderShapes[0].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[1].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[2].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[3].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[4].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[5].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[6].mesh.SetUBOVec4("color", color);
+					// shape->renderShapes[7].mesh.SetUBOVec4("color", color);	
+					for (int p = 0; p < sData.points.size(); p++)
+					{
+						if (p == sData.points.size() - 1)
+						{
+							if (sData.b_isLoop)
+							{
+								shape->renderShapes[p].mesh.SetActive(true);
+							}
+							else 
+							{
+								shape->renderShapes[p].mesh.SetActive(false);
+								return;
+							}
+						}
+
+						int pNext = p == sData.points.size() - 1 ? 0 : p + 1;
+						b2Vec2 pointStart = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[p].x, sData.points[p].y));
+						Vector3 startPos = Vector3(pointStart, ownerPos.z);
+						b2Vec2 pointEnd = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[pNext].x, sData.points[pNext].y));
+						Vector3 endPos = Vector3(pointEnd, ownerPos.z);
+
+						shape->renderShapes[p].transform = SceneView::GetLineTransformForStartEndPos(startPos, endPos);
+					}
 				}
 			}, shape->shapeData);
 		}

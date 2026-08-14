@@ -1,3 +1,4 @@
+#include "Application.h"
 #include "Types.h"
 #include "components/Transform.h"
 #include "FlatEngine.h"
@@ -5,7 +6,6 @@
 #include "GuiCore.h"
 #include "physics/PhysicsManager.h"
 #include "managers/Scene.h"
-#include "render/RenderWindow.h"
 #include "render/VulkanManager.h"
 #include "managers/Assets.h"
 #include "managers/Controls.h"
@@ -168,31 +168,31 @@ namespace FlatEngine
 
 			std::string ellapsedTimeString =          "time (ms): ---";
 			static Uint32 frameStart = Time::Time();		
-			static long framesCountedAtStart = GetFramesCounted();
+			static long framesCountedAtStart = application->gameloop->GetFramesCounted();
 			static float fps = 60;
 			static float lastFrameFps = 60;
 			static int fpsTrackingCounter = 0;
 			float smoothing = 0.005f; // smaller = more smoothing
 
-			if (GameLoopStarted())
+			if (application->gameloop->IsStarted())
 			{
 				// Slows down the display of fps so it is readable
 				if (fpsTrackingCounter == 5)
 				{
 					Uint32 frameTime = Time::Time() - frameStart;
-					long frames = GetFramesCounted() - framesCountedAtStart;
+					long frames = application->gameloop->GetFramesCounted() - framesCountedAtStart;
 
 					fpsTrackingCounter = 0;
 					float measurement = (float)frames / ((float)frameTime / 1000);
 					fps = (measurement * smoothing) + (lastFrameFps * (1.0f - smoothing));
 					lastFrameFps = measurement;
 
-					framesCountedAtStart = GetFramesCounted();
+					framesCountedAtStart = application->gameloop->GetFramesCounted();
 					frameStart = Time::Time();
 				}
 				fpsTrackingCounter++;
 
-				ellapsedTimeString =          "time (ms): " + std::to_string(GetFramesCounted());
+				ellapsedTimeString =          "time (ms): " + std::to_string(application->gameloop->GetFramesCounted());
 			}
 
 			ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 25));
@@ -201,37 +201,37 @@ namespace FlatEngine
 			ImGui::PopStyleColor();
 		}
 
-		void GetMouseDelta(Vector2& mouseDelta, Vector2 mousePos, Vector2& lastMousePos)
-		{
-			Vector2 extent = Vector2((float)RenderWindow::window.GetExtent().width, (float)RenderWindow::window.GetExtent().height);
-			mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);
-			lastMousePos = mousePos;
+		// void GetMouseDelta(Vector2& mouseDelta, Vector2 mousePos, Vector2& lastMousePos)
+		// {
+		// 	Vector2 extent = Vector2((float)RenderWindow::window.GetExtent().width, (float)RenderWindow::window.GetExtent().height);
+		// 	mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);
+		// 	lastMousePos = mousePos;
 			
-			if (mousePos.x > extent.x - 2)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, (int)mousePos.y);
-				lastMousePos = Vector2(0, mousePos.y);
-				mouseDelta.x = 1;
-			}
-			else if (mousePos.x < 1)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)extent.x - 2, (int)mousePos.y);
-				lastMousePos = Vector2(extent.x - 1, mousePos.y);
-				mouseDelta.x = -1;
-			}
-			if (mousePos.y > extent.y - 1)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, 1);
-				lastMousePos = Vector2(mousePos.x, 0);
-				mouseDelta.y = 1;
-			}
-			else if (mousePos.y < 1)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, (int)extent.y - 1);
-				lastMousePos = Vector2(mousePos.x, extent.y);
-				mouseDelta.y = 1;
-			}			
-		}
+		// 	if (mousePos.x > extent.x - 2)
+		// 	{
+		// 		SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, (int)mousePos.y);
+		// 		lastMousePos = Vector2(0, mousePos.y);
+		// 		mouseDelta.x = 1;
+		// 	}
+		// 	else if (mousePos.x < 1)
+		// 	{
+		// 		SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)extent.x - 2, (int)mousePos.y);
+		// 		lastMousePos = Vector2(extent.x - 1, mousePos.y);
+		// 		mouseDelta.x = -1;
+		// 	}
+		// 	if (mousePos.y > extent.y - 1)
+		// 	{
+		// 		SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, 1);
+		// 		lastMousePos = Vector2(mousePos.x, 0);
+		// 		mouseDelta.y = 1;
+		// 	}
+		// 	else if (mousePos.y < 1)
+		// 	{
+		// 		SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), (int)mousePos.x, (int)extent.y - 1);
+		// 		lastMousePos = Vector2(mousePos.x, extent.y);
+		// 		mouseDelta.y = 1;
+		// 	}			
+		// }
 
 		void AddSceneCameraRotation(Vector2 mouseDelta)
 		{
@@ -261,10 +261,6 @@ namespace FlatEngine
 			bool b_allowOverlap = true; 
 			bool b_weightedScroll = false; 
 			float zoomMultiplier = 2; 
-			Vector2 rightMouseDelta = Vector2();
-			Vector2 leftMouseDelta = Vector2();
-			Vector2 mousePos = ImGui::GetIO().MousePos;
-			static Vector2 lastMousePos = ImGui::GetIO().MousePos;
 
 			if (size.x > 0 && size.y > 0)
 			{
@@ -282,26 +278,22 @@ namespace FlatEngine
 				const float mouse_threshold_for_pan = 0.0f;
 				if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
 				{
-					lastMousePos = mousePos;
-					b_sceneViewRightClicked = true;
 					SDL_ShowCursor(SDL_FALSE);
 				}
 				if (b_isActive)
 				{
 					if (ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
 					{	
-						GetMouseDelta(rightMouseDelta, mousePos, lastMousePos);
-
 						float moveDamping = Settings::settings.sceneViewCameraSpeed * 0.00001f;									
 
 						if (IsOrthoGraphic())
 						{
 							Vector3 cameraPos = sceneViewCameraTransform.GetPosition();
-							sceneViewCameraTransform.SetPosition(Vector3(cameraPos.x - (rightMouseDelta.x / (float)sceneViewCamera.gridStep), cameraPos.y + (rightMouseDelta.y / (float)sceneViewCamera.gridStep), cameraPos.z));			
+							sceneViewCameraTransform.SetPosition(Vector3(cameraPos.x - (mouseDelta.x / (float)sceneViewCamera.gridStep), cameraPos.y + (mouseDelta.y / (float)sceneViewCamera.gridStep), cameraPos.z));			
 						}
 						else 
 						{						
-							AddSceneCameraRotation(rightMouseDelta);
+							AddSceneCameraRotation(mouseDelta);
 
 							Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
 							glm::vec4 lookDir = sceneViewCameraTransform.GetLookDirection();
@@ -337,11 +329,9 @@ namespace FlatEngine
 					}				
 					if (ImGui::IsMouseDragging(ImGuiMouseButton_Left, mouse_threshold_for_pan))
 					{	
-						GetMouseDelta(leftMouseDelta, mousePos, lastMousePos);
-
 						if (IsOrthoGraphic())
 						{
-							AddSceneCameraRotation(leftMouseDelta);
+							AddSceneCameraRotation(mouseDelta);
 						}
 					}									
 				}
@@ -384,7 +374,6 @@ namespace FlatEngine
 				}
 				if (ImGui::IsItemDeactivated())
 				{				
-					b_sceneViewRightClicked = false;
 					SDL_ShowCursor(SDL_TRUE);
 				}
 
@@ -399,20 +388,16 @@ namespace FlatEngine
 		void PositionTransformGizmo()
         {
 			long focusedID = ProjectManager::loadedProject.focusedGameObjectID;
-			if (focusedID != -1)
-			{
-				Transform* focusedTransform = SceneManager::loadedScene.Get<Transform>(focusedID);
-				if (focusedTransform == nullptr)
-					return;
-
-				Vector3 position = focusedTransform->GetPosition();
-				transformGizmoRenderObject.mesh.SetActive(true);
-				transformGizmoRenderObject.transform.SetPosition(position);
-			}
-			else 
+			Transform* focusedTransform = SceneManager::loadedScene.Get<Transform>(focusedID);
+			if (focusedTransform == nullptr)
 			{
 				transformGizmoRenderObject.mesh.SetActive(false);
-			}		
+				return;
+			}
+
+			Vector3 position = focusedTransform->GetPosition();
+			transformGizmoRenderObject.mesh.SetActive(true);
+			transformGizmoRenderObject.transform.SetPosition(position);	
         }
 
 		void ClearDebugDrawObjects()

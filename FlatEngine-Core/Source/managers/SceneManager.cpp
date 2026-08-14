@@ -1,3 +1,4 @@
+#include "Application.h"
 #include "FlatEngine.h"
 #include "managers/AudioManager.h"
 #include "managers/SceneManager.h"
@@ -74,8 +75,8 @@ namespace FlatEngine
 		// Waits until EndImGuiRender() has been called in Application.cpp to load the next scene
 		void QueueLoadScene(std::string scenePath)
 		{
-			F_b_loadNewScene = true;
-			F_sceneToBeLoaded = scenePath;
+			b_loadNewScene = true;
+			sceneToBeLoaded = scenePath;
 		}
 
 		// actualPath is the actual scene path we want to load from, pointTo is the scene path that will be considered the currently loaded scene path. Useful for loading temporary scene copies and not saving the temp scene file location as last scene loaded
@@ -132,7 +133,7 @@ namespace FlatEngine
 				}
 
 				loadedScene.SortSceneObjects();				
-				F_Application->OnLoadScene(pointToPath);
+				application->OnLoadScene(pointToPath);
 			}
 
 			return true;

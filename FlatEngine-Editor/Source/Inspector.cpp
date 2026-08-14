@@ -165,6 +165,7 @@ namespace FlatGui
 			FL::GuiCore::TableProps scaleProps = FL::GuiCore::TableProps("##TransformComponentTable", "Scale", tableSize);
 			scaleProps.labelWidth = 68;
 			scaleProps.valueLabelColors = valueColors;
+			scaleProps.min = 0;
 
 			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);		
 			if (FL::GuiCore::RenderVector3Table(rotationProps, rotation)) transform->SetRotation(rotation);			
@@ -1220,7 +1221,7 @@ namespace FlatGui
 		bool RenderChainProps(auto&& sData)
 		{
 			b2ChainId chainID = sData.chainID;
-			std::string ID = "chain_" + std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);					
+			std::string ID = "chain_" + std::to_string(chainID.index1) + "_" + std::to_string(chainID.world0);				
 			bool b_changed = false;		
 			bool b_light = true;
 
@@ -1295,35 +1296,35 @@ namespace FlatGui
 			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##EnableContactEvents" + ID, "Enable Contact Events"), shape->b_enableContactEvents);
 			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##ShapeIsSensor" + ID, "Is Sensor"), shape->b_isSensor);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ChainTangentSpeed" + ID, "Tangent Speed", FL::Vector2(), 0.01f, 0.0f), shape->tangentSpeed)) shape->SetTangentSpeed(shape->tangentSpeed);
-			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ChainRollingResistance" + ID, "Rolling Resistance", FL::Vector2(), 0.01f, 0.0f), shape->rollingResistance)) shape->SetRollingResistance(shape->rollingResistance);
-			
-			if (b_changed)			
-				FL::PhysicsManager::physics2D.RecreateShape(shape);	
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ChainRollingResistance" + ID, "Rolling Resistance", FL::Vector2(), 0.01f, 0.0f), shape->rollingResistance)) shape->SetRollingResistance(shape->rollingResistance);		
 
-			std::visit([shape](auto&& sData) -> void
+			std::visit([shape, &b_changed](auto&& sData) -> void
 			{
 				using T = std::decay_t<decltype(sData)>;
 				if constexpr (std::is_same_v<T, FL::BoxShapeData>)
 				{
-					if (RenderBoxProps(sData)) FL::PhysicsManager::physics2D.RecreateShape(shape);
+					b_changed |= RenderBoxProps(sData);
 				}
 				else if constexpr (std::is_same_v<T, FL::CircleShapeData>)
 				{
-					if (RenderCircleProps(sData)) FL::PhysicsManager::physics2D.RecreateShape(shape);
+					b_changed |= RenderCircleProps(sData);
 				}
 				else if constexpr (std::is_same_v<T, FL::CapsuleShapeData>)
 				{
-					if (RenderCapsuleProps(sData)) FL::PhysicsManager::physics2D.RecreateShape(shape);
+					b_changed |= RenderCapsuleProps(sData);
 				}
 				else if constexpr (std::is_same_v<T, FL::PolygonShapeData>)
 				{
-					if (RenderPolygonProps(sData)) FL::PhysicsManager::physics2D.RecreateShape(shape);
+					b_changed |= RenderPolygonProps(sData);
 				}
 				else if constexpr (std::is_same_v<T, FL::ChainShapeData>)
 				{
-					if (RenderChainProps(sData)) FL::PhysicsManager::physics2D.RecreateShape(shape);
+					b_changed |= RenderChainProps(sData);
 				}
-			}, shape->shapeData);		
+			}, shape->shapeData);
+			
+			if (b_changed)			
+				FL::PhysicsManager::physics2D.RecreateShape(shape);	
 
 			FL::GuiCore::MoveScreenCursor(0, 3);
 		}
@@ -1343,19 +1344,19 @@ namespace FlatGui
 			float motorSpeed = jData.motorSpeed;
 
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointLength" + ID, "Length", FL::Vector2(), 0.1f, 0.1f), length)) jData.SetLength(length);
-			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointMinLength" + ID, "Min Length", FL::Vector2(), 0.1f, 0.1f), minLength)) jData.SetLengthRange(minLength, maxLength);
-			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointMaxLength" + ID, "Max Length", FL::Vector2(), 0.1f, 0.1f), maxLength)) jData.SetLengthRange(minLength, maxLength);				
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointMinLength" + ID, "Min Length", FL::Vector2(), 0.1f, 0.001f), minLength)) jData.SetLengthRange(minLength, maxLength);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DistanceJointMaxLength" + ID, "Max Length", FL::Vector2(), 0.1f, 0.001f), maxLength)) jData.SetLengthRange(minLength, maxLength);				
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("#Enable Spring" + ID, "Spring Enabled"), b_enableSpring)) jData.SetEnableSpring(b_enableSpring);						
 			if (jData.b_enableSpring)
 			{
-				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DampingRatio" + ID, "Spring Damping Ratio", FL::Vector2(), 0.1f, 0), dampingRatio)) jData.SetSpringDampingRatio(dampingRatio);		
-				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##SpringHertz" + ID, "Spring Hertz", FL::Vector2(), 0.1f, 0.1f), hertz)) jData.SetSpringHertz(hertz);	
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##DampingRatio" + ID, "Spring Damping Ratio", FL::Vector2(), 0.001f, 0), dampingRatio)) jData.SetSpringDampingRatio(dampingRatio);		
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##SpringHertz" + ID, "Spring Hertz", FL::Vector2(), 0.1f, 0.001f), hertz)) jData.SetSpringHertz(hertz);	
 			}
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Motor##" + ID, "Motor Enabled"), b_enableMotor)) jData.SetEnableMotor(b_enableMotor);			
 			if (jData.b_enableMotor)
 			{
-				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MotorSpeed" + ID, "Motor Speed", FL::Vector2(), 0.1f, 0.1f), motorSpeed)) jData.SetMotorSpeed(motorSpeed);			
-				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MaxMotorForce" + ID, "Max Motor Force", FL::Vector2(), 0.1f, 0.1f), maxMotorForce)) jData.SetMaxMotorForce(maxMotorForce);		
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MotorSpeed" + ID, "Motor Speed", FL::Vector2(), 0.1f, 0.001f), motorSpeed)) jData.SetMotorSpeed(motorSpeed);			
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##MaxMotorForce" + ID, "Max Motor Force", FL::Vector2(), 0.1f, 0.001f), maxMotorForce)) jData.SetMaxMotorForce(maxMotorForce);		
 			}
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Limit##" + ID, "Enable Limit"), b_enableLimit)) jData.SetEnableLimit(b_enableLimit);
 

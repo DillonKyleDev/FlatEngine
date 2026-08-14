@@ -590,7 +590,6 @@ namespace FlatEngine
                 AddMappingContext(path);
             }
 
-            // Add FlatEngine context
             AddMappingContext("../engine/mappingContexts/EngineContext.mpc");
         }
 
@@ -606,7 +605,6 @@ namespace FlatEngine
 
             return nullptr;
         }
-
 
         void CreateNewMappingContextFile(std::string fileName, std::string path)
         {
@@ -627,8 +625,6 @@ namespace FlatEngine
             SaveMappingContext(filePath, newContext);
             AddMappingContext(filePath);
         }
-
-
 
         void HandleContextEvents(MappingContext& context, SDL_Event event, std::vector<std::string> &firedKeys)
         {

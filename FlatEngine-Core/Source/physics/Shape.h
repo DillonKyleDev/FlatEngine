@@ -43,7 +43,7 @@ namespace FlatEngine
 		b2ShapeId shapeID;
 		Vector2 offset = Vector2();
 		b2Rot rotationOffset = b2MakeRot(0);
-		Vector2 dimensions = Vector2(1.0f, 1.0f);
+		Vector2 dimensions = Vector2(2.0f, 2.0f);
 		float cornerRadius = 0.0f;
 
 		json GetData() 
@@ -151,8 +151,8 @@ namespace FlatEngine
 		Vector2 offset = Vector2();
 		b2Rot rotationOffset = b2MakeRot(0);
 		bool b_horizontal = false;
-		float length = 4.0f;
-		float radius = 1.0f;
+		float length = 3.0f;
+		float radius = 0.5f;
 
 		json GetData() 
 		{
@@ -224,7 +224,7 @@ namespace FlatEngine
 	struct PolygonShapeData {
 		b2ShapeId shapeID;
 		float cornerRadius = 0.0f;
-		std::vector<Vector2> points = { {3.0f, -2.0f}, {0.0f, 2.0f}, {-3.0f, -2.0f} };
+		std::vector<Vector2> points = { {1.0f, -1.0f}, {0.0f, 0.5f}, {-1.0f, -1.0f} };
 		bool b_showPoints;
 		bool b_editingPoints;
 
@@ -250,6 +250,8 @@ namespace FlatEngine
 		{
 			if (shapeDataJson.empty())
 				return;
+
+			points.clear();
 
 			for (int i = 0; i < shapeDataJson.at("points").size(); i++)
 			{
@@ -281,7 +283,7 @@ namespace FlatEngine
 		b2ChainId chainID;
 		b2ShapeId shapeID;
 		bool b_isLoop = false;
-		std::vector<Vector2> points = { {4.0f, -2.0f}, {4.0f, 0.0f}, {-4.0f, 0.0f}, {-4.0f, -2.0f} };	
+		std::vector<Vector2> points = { {1.0f, -1.0f}, {2.0f, 0.0f}, {-2.0f, 0.0f}, {-1.0f, -1.0f} };	
 		bool b_showPoints;
 		bool b_editingPoints;	
 		
@@ -304,10 +306,12 @@ namespace FlatEngine
 			return shapeDataJson;
 		}
 		void PutData(json shapeDataJson, std::string name)
-		{
+		{		
 			if (shapeDataJson.empty())
 				return;
 			
+			points.clear();
+
 			for (int i = 0; i < shapeDataJson.at("points").size(); i++)
 			{
 				try

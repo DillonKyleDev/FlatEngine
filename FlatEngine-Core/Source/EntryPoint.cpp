@@ -12,18 +12,20 @@ namespace FlatEngine
 		// This loop allows us to restart our application instead of just closing it
 		// while (b_applicationRunning)
 		// {
-			FlatEngine::F_Application = CreateApplication(argc, argv);
+			FlatEngine::application = CreateApplication(argc, argv);
 
 			// Initialize FlatEngine. Start up SDL and create window
-			if (!Init(F_Application->WindowWidth(), F_Application->WindowHeight()))
+			if (!Init(application->GetWindowWidth(), application->GetWindowHeight()))
 			{
 				printf("FlatEngine initialization failed...\n");
 			}
 			else
 			{
-				F_Application->Init();
-				F_Application->Run();
+				application->Init();
+				application->Run();
 			}
+
+			application->Cleanup();
 
 			Cleanup();
 

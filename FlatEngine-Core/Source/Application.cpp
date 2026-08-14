@@ -24,11 +24,11 @@ namespace FlatEngine
 			VulkanManager::vulkan.RecreateSwapChainAndFrameBuffers();
 		}
 
-		if (F_b_loadNewScene)
+		if (b_loadNewScene)
 		{
-			F_b_loadNewScene = false;
-			SceneManager::LoadScene(F_sceneToBeLoaded);
-			F_sceneToBeLoaded = "";
+			b_loadNewScene = false;
+			SceneManager::LoadScene(sceneToBeLoaded);
+			sceneToBeLoaded = "";
 		}
 	}
 }

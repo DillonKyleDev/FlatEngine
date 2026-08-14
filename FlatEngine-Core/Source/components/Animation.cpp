@@ -1,3 +1,4 @@
+#include "Application.h"
 #include "components/Animation.h"
 #include "components/Transform.h"
 #include "FlatEngine.h"
@@ -152,7 +153,7 @@ namespace FlatEngine
                 }
                 else
                 {
-                    animData.startTime = GetElapsedGameTimeInMs();
+                    animData.startTime = application->gameloop->TimeElapsedInMs();
                 }
             }
         }

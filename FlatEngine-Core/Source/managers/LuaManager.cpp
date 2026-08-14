@@ -1,5 +1,5 @@
 
-// #include "components/Body.h"
+#include "Application.h"
 #include "components/Body2D.h"
 #include "components/Button.h"
 #include "components/CharacterController.h"
@@ -292,7 +292,7 @@ namespace FlatEngine
 			};
 			lua["CloseProgram"] = []()
 			{
-				F_b_closeProgramQueued = true;
+				b_closeProgramQueued = true;
 			};
 			lua["DebugDrawLine"] = [](Vector3 startPos, Vector3 endPos, std::optional<std::string> color, std::optional<Vector3> rotation)
 			{
@@ -312,11 +312,11 @@ namespace FlatEngine
 			};
 			lua["GetTime"] = []()
 			{
-				return GetElapsedGameTimeInMs();
+				return application->gameloop->TimeElapsedInMs();
 			};
 			lua["Destroy"] = [](long ID)
 			{
-				F_Application->GetGameLoop()->AddObjectToDeleteQueue(ID);
+				application->gameloop->AddObjectToDeleteQueue(ID);
 			};
 			lua["GetColor"] = [](std::string color)
 			{

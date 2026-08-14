@@ -102,7 +102,7 @@ namespace FlatGui
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 				if (ImGui::MenuItem(" Quit", "Alt+F4"))
 				{
-					FL::F_b_closeProgramQueued = true;
+					FL::b_closeProgramQueued = true;
 				}
 
 				ImGui::EndMenu();

@@ -51,6 +51,7 @@ F_Textures = {
 	-- Misc
 	camera = "../engine/images/icons/camera.png",
 	play = "../engine/images/icons/play.png",
+	restart = "../engine/images/icons/restart.png",
 	pause = "../engine/images/icons/pause.png",
 	stop = "../engine/images/icons/stop.png",
 	nextFrame = "../engine/images/icons/next.png",

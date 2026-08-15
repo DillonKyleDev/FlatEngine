@@ -26,23 +26,23 @@ namespace FlatEngine
 	};
 	const std::vector<std::string> JointType2DStrings {
 		"None",
-		"Distance",
-		"Revolute",
-		"Prismatic",
-		"Mouse",
-		"Weld",
-		"Motor",
-		"Wheel"
+		"Distance2D",
+		"Revolute2D",
+		"Prismatic2D",
+		"Mouse2D",
+		"Weld2D",
+		"Motor2D",
+		"Wheel2D"
 	};
 	const std::unordered_map<std::string, JointType2D> JointType2DFromString = {
-		{ "Distance",  JointType2D_Distance },
-		{ "Revolute",  JointType2D_Revolute },
-		{ "Prismatic", JointType2D_Prismatic },
-		{ "Weld",      JointType2D_Weld },
-		{ "Wheel",     JointType2D_Wheel },
-		{ "Motor",     JointType2D_Motor },
-		{ "Mouse",     JointType2D_Mouse },
-		{ "Size",     JointType2D_Size }
+		{ "Distance2D",  JointType2D_Distance },
+		{ "Revolute2D",  JointType2D_Revolute },
+		{ "Prismatic2D", JointType2D_Prismatic },
+		{ "Weld2D",      JointType2D_Weld },
+		{ "Wheel2D",     JointType2D_Wheel },
+		{ "Motor2D",     JointType2D_Motor },
+		{ "Mouse2D",     JointType2D_Mouse },
+		{ "Size",        JointType2D_Size }
 	};
 
 	struct DistanceJoint2DData {
@@ -301,9 +301,9 @@ namespace FlatEngine
 			if (jointData.empty())
 				return;
 
-			angleBetween = JsonHelper::CheckJsonBool(jointData, "angleBetween", name);
-			angularDampingRatio = JsonHelper::CheckJsonBool(jointData, "angularDampingRatio", name);
-			angularHertz = JsonHelper::CheckJsonBool(jointData, "angularHertz", name);
+			angleBetween = JsonHelper::CheckJsonFloat(jointData, "angleBetween", name);
+			angularDampingRatio = JsonHelper::CheckJsonFloat(jointData, "angularDampingRatio", name);
+			angularHertz = JsonHelper::CheckJsonFloat(jointData, "angularHertz", name);
 			angularVelocity = JsonHelper::CheckJsonFloat(jointData, "angularVelocity", name);
 			linearDampingRatio = JsonHelper::CheckJsonFloat(jointData, "linearDampingRatio", name);
 			linearHertz = JsonHelper::CheckJsonFloat(jointData, "linearHertz", name);			
@@ -667,9 +667,9 @@ namespace FlatEngine
 			if (jointData.empty())
 				return;
 
-			angularDampingRatio = JsonHelper::CheckJsonBool(jointData, "angularDampingRatio", name);
-			angularHertz = JsonHelper::CheckJsonBool(jointData, "angularHertz", name);
-			linearDampingRatio = JsonHelper::CheckJsonBool(jointData, "linearDampingRatio", name);
+			angularDampingRatio = JsonHelper::CheckJsonFloat(jointData, "angularDampingRatio", name);
+			angularHertz = JsonHelper::CheckJsonFloat(jointData, "angularHertz", name);
+			linearDampingRatio = JsonHelper::CheckJsonFloat(jointData, "linearDampingRatio", name);
 			linearHertz = JsonHelper::CheckJsonFloat(jointData, "linearHertz", name);
 			referenceAngle = JsonHelper::CheckJsonFloat(jointData, "referenceAngle", name);
 		}
@@ -736,7 +736,7 @@ namespace FlatEngine
 		long GetOwnerID();
 		void SetBodyAID(long bodyAID);
 		void SetBodyBID(long bodyBID);
-		JointType2D GetJointType();
+		JointType2D GetType();
 		void SetJointID(b2JointId jointID);
 		b2JointId GetJointID();
 		Body2D* GetBodyA();

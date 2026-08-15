@@ -108,16 +108,6 @@ namespace FlatEngine
 				ComponentType type = GetTypeFromString<ComponentType>(ComponentTypeFromString, JsonHelper::CheckJsonString(componentJson, "componentType", m_name));
 				Component* component = AddComponent(type, componentJson);   				
 			}
-
-			// Body2D* body2D = Get<Body2D>();
-			// if (body2D)
-			// {
-			// 	Transform* transform = Get<Transform>();
-			// 	Vector3 pos = transform->GetCleanPosition(); 
-			// 	Vector3 rot = transform->GetCleanRotations();
-			// 	body2D->position = Vector2(pos.x, pos.y);		
-			// 	body2D->rotation = b2MakeRot(rot.z);
-			// }
 		}
 
 		if (JsonHelper::JsonContains(objectJson, "children", m_name))

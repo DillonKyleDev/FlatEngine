@@ -12,12 +12,11 @@ namespace FlatEngine
 
 	class Transform : public Component
 	{
+		
 	public:
 		Transform(long ownerID = -1);
 		json GetData(bool b_IDOverride = false);
-		void PutData(json componentJson, std::string objectName);
-
-		static float ClampRotation(float rotation, float min = -180.0f, float max = 180.0f);				
+		void PutData(json componentJson, std::string objectName);		
 
 		void SetPosition(Vector3 position);
 		void SetScale(Vector3 scale);
@@ -25,10 +24,9 @@ namespace FlatEngine
 		void AddXRotation(float rotation);
 		void AddYRotation(float rotation);
 		void AddZRotation(float rotation);
-		Vector3 GetPosition();
-		Vector3 GetPositionOrigin();
 		Vector3 GetCleanPosition();
 		Vector3 GetCleanRotation();
+		Vector3 GetPosition();
 		Vector3 GetAbsolutePosition();
 		Vector3 GetScale();
 		Vector3 GetAbsoluteScale();

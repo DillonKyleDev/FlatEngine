@@ -421,11 +421,21 @@ namespace FlatEngine
 
 		CustomUBO ubo{};
 		BaseUBO base{};
-		base.meshPosition = transform->GetPosition().GetGLMVec4();
+		base.meshPosition = transform->GetAbsolutePosition().GetGLMVec4();
 		base.cameraPosition = glm::vec4(cameraPos, 0);
 		base.model = transform->GetRotationMatrix() * transform->GetScaleMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
-		base.projection = camera->GetProjection();
+		if (GetOwningObject() != nullptr && GetOwningObject()->GetName() == "UI")
+		{
+			bool b_orthographic = camera->b_orthographic;
+			camera->b_orthographic = true;
+			base.projection = camera->GetProjection();
+			camera->b_orthographic = b_orthographic;
+		}
+		else
+		{
+			base.projection = camera->GetProjection();
+		}
 		ubo.baseUBO = base;
 		
 		int vec4Counter = 0;

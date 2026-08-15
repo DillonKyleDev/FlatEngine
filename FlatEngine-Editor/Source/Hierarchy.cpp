@@ -176,24 +176,25 @@ namespace FlatGui
 				FL::ProjectManager::loadedProject.AddFocusedObjectID(currentObject.GetID());
 				ImGui::CloseCurrentPopup();
 			}		
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+			FL::GuiCore::RenderMenuSeparator();
 			if (FL::GuiCore::MenuItem("Create Child"))
 			{
 				FL::SceneManager::loadedScene.CreateGameObject(currentObject.GetID());								 
 				ImGui::CloseCurrentPopup();
 			}			
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+			
 			if (currentObject.IsPrefab())
 			{
+				FL::GuiCore::RenderMenuSeparator(false);
 				std::string prefabName = "PREFAB: "+ currentObject.GetPrefabName();
-				ImGui::Text("%s", prefabName.c_str());	
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");			
+				FL::GuiCore::MenuItem(prefabName.c_str(), NULL, false, false);				
+				FL::GuiCore::RenderMenuSeparator(false);			
 				if (FL::GuiCore::MenuItem("Save Prefab"))
 				{
 					FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/"+ currentObject.GetPrefabName() + ".prf", &currentObject);
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Unpack prefab"))
 				{
 					currentObject.SetIsPrefab(false);
@@ -201,7 +202,7 @@ namespace FlatGui
 					currentObject.SetPrefabSpawnLocation(FL::Vector3());
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Create New Prefab"))
 				{
 					Modals::b_openPrefabModal = true;
@@ -211,6 +212,7 @@ namespace FlatGui
 			}
 			else
 			{
+				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Create Prefab"))
 				{
 					Modals::b_openPrefabModal = true;
@@ -218,13 +220,13 @@ namespace FlatGui
 					ImGui::CloseCurrentPopup();
 				}
 			}			
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+			FL::GuiCore::RenderMenuSeparator();
 			if (FL::GuiCore::MenuItem("Delete GameObject"))
 			{
 				queuedForDelete = currentObject.GetID();
 				ImGui::CloseCurrentPopup();
 			}			
-			// FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
+			// FL::GuiCore::RenderMenuSeparator(false);
 			// if (FL::GuiCore::MenuItem("Lock in view"))
 			// {
 			// 	// if (FG_b_sceneViewLockedOnObject && FG_sceneViewLockedObjectID == currentObject.GetID())
@@ -360,7 +362,7 @@ namespace FlatGui
 					FL::Settings::settings.SaveSettings();
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
+				FL::GuiCore::RenderMenuSeparator(false);
 				if (FL::GuiCore::MenuItem("Save Scene"))
 				{
 					if (FL::SceneManager::loadedScene.path == "")
@@ -373,19 +375,19 @@ namespace FlatGui
 					}
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Save Project"))
 				{
 					FL::ProjectManager::SaveCurrentProject();
 					ImGui::CloseCurrentPopup();
 				}	
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Save Engine Settings"))
 				{					
 					FL::Settings::settings.SaveSettings();
 					ImGui::CloseCurrentPopup();
 				}	
-				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+				FL::GuiCore::RenderMenuSeparator();
 				ImGui::BeginDisabled(FL::SceneManager::loadedScene.path == "");
 				if (FL::GuiCore::MenuItem("Reload Scene"))
 				{

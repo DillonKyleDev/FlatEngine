@@ -1168,7 +1168,7 @@ namespace FlatGui
 			bool b_light = true;
 						
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeCornerRadius" + ID, "Corner Radius", FL::Vector2(), 0.01f, 0.0f), sData.cornerRadius);
-			FL::GuiCore::RenderSeparator(4,3);
+			FL::GuiCore::RenderSeparator(4,0);
 
 			if (!sData.b_editingPoints)
 			{
@@ -1259,8 +1259,11 @@ namespace FlatGui
 				ID = " (index:" + std::to_string(chainID.index1) + " world:" + std::to_string(chainID.world0) + ")";			
 			std::string shapeString = FL::ShapeType2DStrings[(int)shapeType] + ID;		
 
-			FL::GuiCore::RenderSectionHeader(shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
-			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -22);
+			FL::GuiCore::RenderSectionHeader("  " + shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
+			FL::GuiCore::MoveScreenCursor(2, -22);
+			ImGui::Image(FL::Assets::assetManager.GetTexture(FL::ShapeType2DStrings[shape->GetType()]), FL::Vector2(16));
+
+			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -20);
 			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash")))
 			{
 				shapeToDelete = shapeID;
@@ -1409,13 +1412,16 @@ namespace FlatGui
 		{		
 			long jointID = joint->GetID();
 			long ownerID = joint->GetOwnerID();				
-			FL::JointType2D jointType = joint->GetJointType();
+			FL::JointType2D jointType = joint->GetType();
 			std::string jointTypeString = FL::JointType2DStrings[(int)jointType];
 			std::string ID = " (id:" + std::to_string(jointID) + " index:" + std::to_string(joint->GetJointID().index1) + " world:" + std::to_string(joint->GetJointID().world0) + ")";
 			std::string jointString = FL::JointType2DStrings[(int)jointType] + ID;
 
-			FL::GuiCore::RenderSectionHeader(jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");			
-			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -22);
+			FL::GuiCore::RenderSectionHeader("  " + jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");		
+			FL::GuiCore::MoveScreenCursor(2, -22);
+			ImGui::Image(FL::Assets::assetManager.GetTexture(FL::JointType2DStrings[joint->GetType()]), FL::Vector2(16));
+
+			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -20);
 			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash")))
 			{
 				jointIDToDelete = jointID;
@@ -1522,7 +1528,7 @@ namespace FlatGui
 				FL::GuiCore::PushMenuStyles();
 				for (int i = 1; i < FL::ShapeType2DStrings.size(); i++)
 				{
-					if (ImGui::MenuItem(FL::ShapeType2DStrings[i].c_str()))
+					if (FL::GuiCore::MenuItem(FL::ShapeType2DStrings[i].c_str()))
 					{
 						body->AddShape((FL::ShapeType2D)i);
 						ImGui::CloseCurrentPopup();
@@ -1558,14 +1564,14 @@ namespace FlatGui
 					body->RemoveChain(chainToDelete);
 				}
 			}
-
+			
 			FL::GuiCore::RenderButton("Add Joint", FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
 			if (ImGui::BeginPopupContextItem("##AddJoint", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
 				for (int i = 1; i < FL::JointType2D_Size; i++)
 				{
-					if (ImGui::MenuItem(FL::JointType2DStrings[i].c_str()))
+					if (FL::GuiCore::MenuItem(FL::JointType2DStrings[i].c_str()))
 					{				
 						body->AddJoint((FL::JointType2D)i);
 						ImGui::CloseCurrentPopup();
@@ -2246,7 +2252,7 @@ namespace FlatGui
 			FL::GuiCore::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft)) // <-- use last item id as popup id
 			{
-				if (ImGui::MenuItem(" Delete GameObject"))
+				if (FL::GuiCore::MenuItem(" Delete GameObject"))
 				{						
 					objectQueuedForDeletion = focusedID;								
 					ImGui::CloseCurrentPopup();
@@ -2362,13 +2368,13 @@ namespace FlatGui
 					if (!focusedObject->GetComponent((FL::ComponentType)i))
 					{
 						std::string componentTypeString = " " + FL::ComponentTypeStrings[i];
-						if (ImGui::MenuItem(componentTypeString.c_str()))
+						if (FL::GuiCore::MenuItem(componentTypeString.c_str()))
 						{
 							focusedObject->AddComponent((FL::ComponentType)i);
 							ImGui::CloseCurrentPopup();
 						}
 						if (i < FL::ComponentType_Size - 1)
-							FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+							FL::GuiCore::RenderMenuSeparator();
 					}
 				}					
 				ImGui::EndPopup();

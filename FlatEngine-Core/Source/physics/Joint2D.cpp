@@ -117,7 +117,7 @@ namespace FlatEngine
 		PhysicsManager::gamePhysics2D.RecreateJoint(this);
 	}
 
-	JointType2D Joint2D::GetJointType()
+	JointType2D Joint2D::GetType()
 	{
 		return type;
 	}

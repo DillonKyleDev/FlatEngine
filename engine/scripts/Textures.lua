@@ -101,4 +101,10 @@ F_Textures = {
 	Camera = "../engine/images/icons/components/camera.png",
 	Script = "../engine/images/icons/components/script.png",
 	Sprite = "../engine/images/icons/components/sprite.png",
+	-- Shapes
+	Box2D = "../engine/images/icons/components/box.png",
+	Circle2D = "../engine/images/icons/components/circle.png",
+	Capsule2D = "../engine/images/icons/components/capsule2D.png",
+	Polygon2D = "../engine/images/icons/components/polygon2D.png",
+	Capsule = "../engine/images/icons/components/capsule.png",
 }

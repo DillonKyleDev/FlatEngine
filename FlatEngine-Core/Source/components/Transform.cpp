@@ -48,20 +48,6 @@ namespace FlatEngine
 		SetRotation(Vector3(JsonHelper::CheckJsonFloat(componentJson, "xRotation", objectName), JsonHelper::CheckJsonFloat(componentJson, "yRotation", objectName), JsonHelper::CheckJsonFloat(componentJson, "zRotation", objectName)));										
 	}
 
-	float Transform::ClampRotation(float rotation, float min, float max)
-	{
-		if (rotation < min)
-		{
-			rotation = max - 0.01f;
-		}
-		else if (rotation > max)
-		{
-			rotation = min + 0.01f;
-		}
-
-		return rotation;
-	}
-
 	Vector3 Transform::GetAbsolutePosition()
 	{
 		if (GetOwningObject() != nullptr)
@@ -89,24 +75,6 @@ namespace FlatEngine
 		return Vector3();
 	}
 
-	Vector3 Transform::GetPositionOrigin()
-	{
-		if (GetOwningObject() != nullptr)
-		{
-			GameObject* parent = GetOwningObject();			
-			Vector3 positionOrigin = Vector3();
-
-			if (parent->GetParent() != nullptr)
-			{
-				positionOrigin = parent->GetParent()->Get<Transform>()->GetAbsolutePosition();
-			}
-
-			return positionOrigin;
-		}
-
-		return Vector3();
-	}
-
 	void Transform::SetPosition(Vector3 newPosition)
 	{
 		m_position = newPosition;
@@ -124,6 +92,16 @@ namespace FlatEngine
 		}
 	}
 
+	Vector3 Transform::GetCleanPosition()
+	{
+		return m_position;
+	}
+
+	Vector3 Transform::GetCleanRotation()
+	{
+		return m_rotation;
+	}
+
 	Vector3 Transform::GetPosition()
 	{
 		Body2D* body2D = nullptr;
@@ -139,11 +117,6 @@ namespace FlatEngine
 			m_position.y = body2DPos.y;
 		}
 
-		return m_position;
-	}
-
-	Vector3 Transform::GetCleanPosition()
-	{
 		return m_position;
 	}
 
@@ -205,11 +178,6 @@ namespace FlatEngine
 	void Transform::AddZRotation(float rotation)
 	{
 		m_rotation.z += rotation;
-	}
-
-	Vector3 Transform::GetCleanRotation()
-	{
-		return m_rotation;
 	}
 
 	// positive rotation = counterclockwise when viewed from the positive axis looking toward the origin (standard right-hand rule)

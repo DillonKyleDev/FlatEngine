@@ -23,20 +23,20 @@ namespace FlatEngine
 	};
 	const std::vector<std::string> ShapeType2DStrings = {
 		"None",
-		"Box",
-		"Circle",
-		"Capsule",
-		"Polygon",
-		"Chain"
+		"Box2D",
+		"Circle2D",
+		"Capsule2D",
+		"Polygon2D",
+		"Chain2D"
 	};
 	const std::unordered_map<std::string, ShapeType2D> ShapeType2DFromString = {
-		{ "None",    ShapeType2D_None },
-		{ "Box",     ShapeType2D_Box },
-		{ "Circle",  ShapeType2D_Circle },
-		{ "Capsule", ShapeType2D_Capsule },
-		{ "Polygon", ShapeType2D_Polygon },
-		{ "Chain",   ShapeType2D_Chain },
-		{ "Size",    ShapeType2D_Size }
+		{ "None",      ShapeType2D_None },
+		{ "Box2D",     ShapeType2D_Box },
+		{ "Circle2D",  ShapeType2D_Circle },
+		{ "Capsule2D", ShapeType2D_Capsule },
+		{ "Polygon2D", ShapeType2D_Polygon },
+		{ "Chain2D",   ShapeType2D_Chain },
+		{ "Size",      ShapeType2D_Size }
 	};
 
 	struct BoxShape2DData {
@@ -95,7 +95,7 @@ namespace FlatEngine
 		}
 		void SetRotationOffset(float newRotationOffset)
 		{
-			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(Transform::ClampRotation(newRotationOffset)));	
+			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(newRotationOffset));	
 			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));		
 		}
 	};
@@ -142,7 +142,7 @@ namespace FlatEngine
 		}
 		void SetRotationOffset(float newRotationOffset)
 		{
-			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(Transform::ClampRotation(newRotationOffset)));		
+			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(newRotationOffset));		
 			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));	
 		}
 	};
@@ -217,7 +217,7 @@ namespace FlatEngine
 		}
 		void SetRotationOffset(float newRotationOffset)
 		{
-			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(Transform::ClampRotation(newRotationOffset)));	
+			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(newRotationOffset));	
 			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));		
 		}
 	};

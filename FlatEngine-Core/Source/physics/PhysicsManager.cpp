@@ -3,10 +3,10 @@
 #include "components/Body2D.h"
 #include "GameObject.h"
 #include "components/Transform.h"
-#include "physics/Joint.h"
 #include "managers/SceneManager.h"
 #include "physics/PhysicsManager.h"
-#include "physics/Shape.h"
+#include "physics/Joint2D.h"
+#include "physics/Shape2D.h"
 #include "render/SceneView.h"
 #include "TagList.h"
 #include "tools/Logger.h"
@@ -19,7 +19,7 @@ namespace FlatEngine
 	namespace PhysicsManager
 	{
 		// Physics physics = Physics();
-		Physics2D physics2D = Physics2D();
+		Physics2D gamePhysics2D = Physics2D();
 		// std::vector<std::pair<Collider*, Collider*>> F_ColliderPairs = std::vector<std::pair<Collider*, Collider*>>();
 
 		Physics2D::Physics2D()
@@ -41,9 +41,9 @@ namespace FlatEngine
 			for (Body2D& body : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
 			{
 				body.GetOwningObject()->GetTagList().UpdateBits();
-				if (PhysicsManager::physics2D.CanCollide(tagList, body.GetOwningObject()->GetTagList()))
+				if (PhysicsManager::gamePhysics2D.CanCollide(tagList, body.GetOwningObject()->GetTagList()))
 				{
-					for (Shape* shape : body.GetShapes())
+					for (Shape2D* shape : body.GetShapes())
 					{
 						b2RayCastInput input = { 0 };
 						input.origin = Vector2::GetB2Vec2(initialPos);
@@ -164,7 +164,7 @@ namespace FlatEngine
 
 		Body2D* Physics2D::GetBodyFromShapeID(b2ShapeId shapeID)
 		{
-			Shape* shape = static_cast<Shape*>(b2Shape_GetUserData(shapeID));
+			Shape2D* shape = static_cast<Shape2D*>(b2Shape_GetUserData(shapeID));
 			if (shape != nullptr && b2Shape_IsValid(shape->GetShapeID()))
 			{
 				// Logger::log.Debug("Data found for: index: {}, world: {}, generation: {}", shapeID.index1, shapeID.world0, shapeID.generation);
@@ -200,7 +200,7 @@ namespace FlatEngine
 			parentBody->SetBodyID(bodyID);
 		}
 
-		void Physics2D::CreateShape(Shape* shape, Body2D* parentBody)
+		void Physics2D::CreateShape(Shape2D* shape, Body2D* parentBody)
 		{
 			b2BodyId bodyID = parentBody != nullptr ? parentBody->GetBodyID() : b2_nullBodyId;
 			b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -230,7 +230,7 @@ namespace FlatEngine
 			std::visit([parentBody, bodyID, shapeDef, filter, material, shape](auto&& sData) -> void
 			{
 				using T = std::decay_t<decltype(sData)>;
-				if constexpr (std::is_same_v<T, BoxShapeData>)
+				if constexpr (std::is_same_v<T, BoxShape2DData>)
 				{	
 					b2Rot rotationOffset = sData.rotationOffset;
 					b2Vec2 center = b2Vec2(sData.offset.x, sData.offset.y);
@@ -243,7 +243,7 @@ namespace FlatEngine
 						shape->SetShapeID(id);	
 					}
 				}
-				else if constexpr (std::is_same_v<T, CircleShapeData>)
+				else if constexpr (std::is_same_v<T, CircleShape2DData>)
 				{
 					b2Circle circle;
 					b2Vec2 center = b2Vec2(sData.offset.x, sData.offset.y);
@@ -257,7 +257,7 @@ namespace FlatEngine
 						shape->SetShapeID(id);	
 					}
 				}
-				else if constexpr (std::is_same_v<T, PolygonShapeData>)
+				else if constexpr (std::is_same_v<T, PolygonShape2DData>)
 				{
 					std::vector<b2Vec2> points;
 					float cornerRadius = sData.cornerRadius;
@@ -284,7 +284,7 @@ namespace FlatEngine
 						}
 					}
 				}
-				else if constexpr (std::is_same_v<T, CapsuleShapeData>)
+				else if constexpr (std::is_same_v<T, CapsuleShape2DData>)
 				{
 					b2Capsule capsule;
 					b2Vec2 center = b2Vec2(sData.offset.x, sData.offset.y);
@@ -312,7 +312,7 @@ namespace FlatEngine
 					if (parentBody != nullptr)				
 						shape->SetShapeID(b2CreateCapsuleShape(bodyID, &shapeDef, &shape->capsule));		
 				}
-				else if constexpr (std::is_same_v<T, ChainShapeData>)
+				else if constexpr (std::is_same_v<T, ChainShape2DData>)
 				{
 					b2ChainDef chainDef = b2DefaultChainDef();
 					chainDef.userData = shape;
@@ -350,18 +350,18 @@ namespace FlatEngine
 			DestroyBody(parentBody->GetBodyID());
 			CreateBody(parentBody);
 
-			for (Shape* shape : parentBody->GetShapes())
+			for (Shape2D* shape : parentBody->GetShapes())
 			{
 				RecreateShape(shape);			
 			}
 
-			for (Joint* joint : parentBody->GetJoints())
+			for (Joint2D* joint : parentBody->GetJoints())
 			{
 				RecreateJoint(joint);			
 			}
 		}
 
-		void Physics2D::DestroyShape(Shape* shape)
+		void Physics2D::DestroyShape(Shape2D* shape)
 		{
 			if (b2Shape_IsValid(shape->GetShapeID()))
 			{
@@ -376,13 +376,13 @@ namespace FlatEngine
 			shape->SetChainID(b2_nullChainId);
 		}
 
-		void Physics2D::RecreateShape(Shape* shape)
+		void Physics2D::RecreateShape(Shape2D* shape)
 		{
 			DestroyShape(shape);
 			CreateShape(shape, SceneManager::loadedScene.GetObjectByID(shape->GetOwnerID())->Get<Body2D>());
 		}
 
-		void Physics2D::CreateJoint(Joint* joint, Body2D* bodyA, Body2D* bodyB)
+		void Physics2D::CreateJoint(Joint2D* joint, Body2D* bodyA, Body2D* bodyB)
 		{	
 			if (bodyA == nullptr)
 				bodyA = joint->GetBodyA();
@@ -410,7 +410,7 @@ namespace FlatEngine
 			std::visit([jointDef, joint, this](auto&& jData) -> void
 			{
 				using T = std::decay_t<decltype(jData)>;
-				if constexpr (std::is_same_v<T, DistanceJointData>)
+				if constexpr (std::is_same_v<T, DistanceJoint2DData>)
 				{	
 					b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
 					distanceJointDef.base = jointDef;
@@ -426,7 +426,7 @@ namespace FlatEngine
 					distanceJointDef.maxMotorForce = jData.maxMotorForce;
 					joint->SetJointID(b2CreateDistanceJoint(this->m_worldID, &distanceJointDef));
 				}
-				else if constexpr (std::is_same_v<T, RevoluteJointData>)
+				else if constexpr (std::is_same_v<T, RevoluteJoint2DData>)
 				{
 					b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
 					revoluteJointDef.base = jointDef;
@@ -443,7 +443,7 @@ namespace FlatEngine
 					revoluteJointDef.targetAngle = jData.targetAngle;			
 					joint->SetJointID(b2CreateRevoluteJoint(this->m_worldID, &revoluteJointDef));					
 				}
-				else if constexpr (std::is_same_v<T, PrismaticJointData>)
+				else if constexpr (std::is_same_v<T, PrismaticJoint2DData>)
 				{
 					b2PrismaticJointDef prismaticJointDef = b2DefaultPrismaticJointDef();
 					prismaticJointDef.base = jointDef;
@@ -460,7 +460,7 @@ namespace FlatEngine
 					prismaticJointDef.maxMotorForce = jData.maxMotorForce;
 					joint->SetJointID(b2CreatePrismaticJoint(this->m_worldID, &prismaticJointDef));
 				}
-				else if constexpr (std::is_same_v<T, MouseJointData>)
+				else if constexpr (std::is_same_v<T, MouseJoint2DData>)
 				{
 					b2MouseJointDef mouseJointDef = b2DefaultMouseJointDef();
 					mouseJointDef.base = jointDef;			
@@ -470,7 +470,7 @@ namespace FlatEngine
 					mouseJointDef.hertz = jData.hertz;			
 					joint->SetJointID(b2CreateMouseJoint(this->m_worldID, &mouseJointDef));
 				}
-				else if constexpr (std::is_same_v<T, WeldJointData>)
+				else if constexpr (std::is_same_v<T, WeldJoint2DData>)
 				{
 					b2WeldJointDef weldJointDef = b2DefaultWeldJointDef();
 					weldJointDef.base = jointDef;
@@ -480,7 +480,7 @@ namespace FlatEngine
 					weldJointDef.linearHertz = jData.linearHertz;
 					joint->SetJointID(b2CreateWeldJoint(this->m_worldID, &weldJointDef));
 				}
-				else if constexpr (std::is_same_v<T, MotorJointData>)
+				else if constexpr (std::is_same_v<T, MotorJoint2DData>)
 				{
 					b2MotorJointDef motorJointDef = b2DefaultMotorJointDef();
 					motorJointDef.base = jointDef;
@@ -498,7 +498,7 @@ namespace FlatEngine
 					motorJointDef.relativeTransform.q = b2MakeRot(jData.angleBetween);
 					joint->SetJointID(b2CreateMotorJoint(this->m_worldID, &motorJointDef));
 				}
-				else if constexpr (std::is_same_v<T, WheelJointData>)
+				else if constexpr (std::is_same_v<T, WheelJoint2DData>)
 				{
 					b2WheelJointDef wheelJointDef = b2DefaultWheelJointDef();
 					wheelJointDef.base = jointDef;
@@ -516,7 +516,7 @@ namespace FlatEngine
 			}, joint->jointData);
 		}
 
-		void Physics2D::DestroyJoint(FL::Joint* joint)
+		void Physics2D::DestroyJoint(FL::Joint2D* joint)
 		{
 			if (joint != nullptr && b2Joint_IsValid(joint->m_jointID))
 			{
@@ -525,7 +525,7 @@ namespace FlatEngine
 			}
 		}
 
-		void Physics2D::RecreateJoint(Joint* joint)
+		void Physics2D::RecreateJoint(Joint2D* joint)
 		{
 			DestroyJoint(joint);
 			CreateJoint(joint);

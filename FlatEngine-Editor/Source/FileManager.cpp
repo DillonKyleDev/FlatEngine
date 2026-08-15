@@ -352,25 +352,25 @@ namespace FlatGui
 			FL::GuiCore::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem())
 			{
-				if (ImGui::MenuItem(std::string(" Open " + openIn).c_str()))
+				if (FL::GuiCore::MenuItem(std::string(" Open " + openIn).c_str()))
 				{
 					OpenFileContextually(fs_filepath);
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0);
-				if (ImGui::MenuItem(" Delete"))
+				FL::GuiCore::RenderMenuSeparator();
+				if (FL::GuiCore::MenuItem(" Delete"))
 				{
 					b_openDeleteModal = true;
 					fileToDelete = fs_filepath.string();
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0);
-				if (ImGui::MenuItem(" Copy"))
+				FL::GuiCore::RenderMenuSeparator();
+				if (FL::GuiCore::MenuItem(" Copy"))
 				{
 					ImGui::CloseCurrentPopup();
 				}
-				FL::GuiCore::RenderSeparator(0,0);
-				if (ImGui::MenuItem(" Paste"))
+				FL::GuiCore::RenderMenuSeparator();
+				if (FL::GuiCore::MenuItem(" Paste"))
 				{
 					ImGui::CloseCurrentPopup();
 				}				
@@ -549,7 +549,7 @@ namespace FlatGui
 			FL::GuiCore::BeginResizeWindowChild("Directories Panel", "transparent", 0, FL::Vector2());
 			// {
 		
-				FL::GuiCore::PushMenuStyles();
+				FL::GuiCore::PushTreeStyles();
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2());
 				ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, FL::Assets::assetManager.GetColor32("fileExplorerTableRowBgAlt"));
 				ImGui::PushStyleColor(ImGuiCol_TableRowBg, FL::Assets::assetManager.GetColor32("fileExplorerTableRowBg"));
@@ -587,7 +587,7 @@ namespace FlatGui
 				ImGui::PopStyleColor();
 				ImGui::PopStyleColor();
 				ImGui::PopStyleVar();
-				FL::GuiCore::PopMenuStyles();
+				FL::GuiCore::PopTreeStyles();
 
 			// }
 			FL::GuiCore::EndWindowChild();
@@ -625,37 +625,37 @@ namespace FlatGui
 						{							
 							if (ImGui::BeginMenu(" Add new..."))
 							{
-								if (ImGui::MenuItem(" Lua Script"))
+								if (FL::GuiCore::MenuItem(" Lua Script"))
 								{
 									Modals::b_openLuaModal = true;														
 									ImGui::CloseCurrentPopup();
 								}
-								FL::GuiCore::RenderSeparator(0,0);
-								if (ImGui::MenuItem(" Scene"))
+								FL::GuiCore::RenderMenuSeparator();
+								if (FL::GuiCore::MenuItem(" Scene"))
 								{
 									Modals::b_openSceneModal = true;
 									ImGui::CloseCurrentPopup();
 								}
-								FL::GuiCore::RenderSeparator(0,0);
-								if (ImGui::MenuItem(" Animation"))
+								FL::GuiCore::RenderMenuSeparator();
+								if (FL::GuiCore::MenuItem(" Animation"))
 								{
 									Modals::b_openAnimationModal = true;
 									ImGui::CloseCurrentPopup();
 								}
-								FL::GuiCore::RenderSeparator(0,0);
-								if (ImGui::MenuItem(" Mapping Context"))
+								FL::GuiCore::RenderMenuSeparator();
+								if (FL::GuiCore::MenuItem(" Mapping Context"))
 								{
 									Modals::b_openMappingContextModal = true;
 									ImGui::CloseCurrentPopup();
 								}
-								FL::GuiCore::RenderSeparator(0,0);
-								if (ImGui::MenuItem(" Material"))
+								FL::GuiCore::RenderMenuSeparator();
+								if (FL::GuiCore::MenuItem(" Material"))
 								{
 									Modals::b_openMaterialModal = true;
 									ImGui::CloseCurrentPopup();
 								}
-								FL::GuiCore::RenderSeparator(0,0);
-								if (ImGui::MenuItem(" TileSet"))
+								FL::GuiCore::RenderMenuSeparator();
+								if (FL::GuiCore::MenuItem(" TileSet"))
 								{
 									Modals::b_openTileSetModal = true;
 									ImGui::CloseCurrentPopup();

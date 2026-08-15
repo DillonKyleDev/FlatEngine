@@ -233,7 +233,7 @@ namespace FlatGui
 				if (ImGui::BeginPopupContextItem())
 				{
 					FL::GuiCore::PushMenuStyles();
-					if (ImGui::MenuItem(" Delete"))
+					if (FL::GuiCore::MenuItem("Delete"))
 					{
 						Animator::keyframeQueuedForDelete = keyFrame.get();
 						ImGui::CloseCurrentPopup();
@@ -325,7 +325,7 @@ namespace FlatGui
 					FL::GuiCore::PushMenuStyles();
 					if (ImGui::BeginPopupContextItem("##AnimationHamburgerMenu", ImGuiPopupFlags_MouseButtonLeft))
 					{
-						if (ImGui::MenuItem(" Save Animation"))
+						if (FL::GuiCore::MenuItem("Save Animation"))
 						{
 							if (Animator::loadedAnimation.path != "")
 							{	
@@ -334,7 +334,7 @@ namespace FlatGui
 							ImGui::CloseCurrentPopup();
 						}
 						FL::GuiCore::RenderSeparator(0,0);
-						if (ImGui::MenuItem(" New Animation"))
+						if (FL::GuiCore::MenuItem("New Animation"))
 						{
 							Modals::b_openAnimationModal = true;
 							ImGui::CloseCurrentPopup();
@@ -360,9 +360,9 @@ namespace FlatGui
 							FL::GuiCore::RenderSeparator(3,3);
 
 							static std::string selected_property = "";										
-							FL::GuiCore::RenderSectionHeader("Animation Properties", 5, 5);																										
+							FL::GuiCore::RenderSectionHeader("Animation Properties");																										
 											
-							FL::GuiCore::PushMenuStyles();							
+							FL::GuiCore::PushTreeStyles();							
 							if (ImGui::BeginTable("##AnimationProperties", 1, FL::GuiCore::tableFlags))
 							{
 								ImGui::TableSetupColumn("##PROPERTY", 0, ImGui::GetContentRegionAvail().x + 1);
@@ -389,7 +389,7 @@ namespace FlatGui
 											
 								ImGui::EndTable();
 							}
-							FL::GuiCore::PopMenuStyles();
+							FL::GuiCore::PopTreeStyles();
 						}
 						
 						// Border Animation Timeline
@@ -422,7 +422,7 @@ namespace FlatGui
 				if (nodeClicked != FL::PropertyType_None)
 				{							
 					FL::GuiCore::MoveScreenCursor(20, 5);
-					std::string nodeClickedString = FL::PropertyTypeStrings[(int)nodeClicked] + " keyframes";
+					std::string nodeClickedString = FL::PropertyTypeStrings[(int)nodeClicked] + "keyframes";
 					ImGui::Text("%s", nodeClickedString.c_str());
 
 					ImGui::SameLine(0,0);		
@@ -582,7 +582,7 @@ namespace FlatGui
 				std::string keyFrameProperty = "No keyFrame selected";
 				if (Animator::selectedKeyframe != nullptr)
 				{
-					keyFrameProperty = Animator::selectedKeyframe->name + " Frame";
+					keyFrameProperty = Animator::selectedKeyframe->name + "Frame";
 				}
 
 				if (Animator::selectedKeyframe != nullptr)
@@ -602,7 +602,7 @@ namespace FlatGui
 					FL::GuiCore::PushMenuStyles();
 					if (ImGui::BeginPopupContextItem("##KeyframeEditorHamburgerMenu", ImGuiPopupFlags_MouseButtonLeft))
 					{
-						if (ImGui::MenuItem(" Delete keyframe"))
+						if (FL::GuiCore::MenuItem("Delete keyframe"))
 						{
 							Animator::loadedAnimation.RemoveKeyFrame(Animator::selectedKeyframe);
 							Animator::selectedKeyframe = nullptr;

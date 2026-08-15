@@ -1,5 +1,6 @@
 #include "tools/JsonHelper.h"
 #include "Logger.h"
+#include "tools/FileHelper.h"
 
 #include <fstream>
 
@@ -25,6 +26,10 @@ namespace FlatEngine
                     fileContent.append(line + "\n");
                 }
             }
+            else 
+            {
+                Logger::log.Err("JsonHelper::LoadFileData() : fileObject.good() == false. file contents not read at {}.", filepath);
+            }
             
             fileObject.close();
 
@@ -34,21 +39,27 @@ namespace FlatEngine
             }
             else
             {
-                return nullptr;
+                return json::object();
             }
         }
 
-        void WriteJsonToFile(json jsonData, std::string filePath)
+        void WriteJsonToFile(json jsonData, std::string filepath)
         {
+            if (!FileHelper::DoesFileExist(filepath))
+            {
+                Logger::log.Err("JsonHelper::WriteJsonToFile() : file path {} does not exist.", filepath);
+                return;
+            }
+            
             std::ofstream fileObject;
-            std::ifstream ifstream(filePath);
+            std::ifstream ifstream(filepath);
 
             // Delete old contents of the file
-            fileObject.open(filePath, std::ofstream::out | std::ofstream::trunc);
+            fileObject.open(filepath, std::ofstream::out | std::ofstream::trunc);
             fileObject.close();
 
             // Opening file in append mode
-            fileObject.open(filePath, std::ios::app);            		
+            fileObject.open(filepath, std::ios::app);            		
             fileObject << jsonData.dump(4).c_str() << std::endl;
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "components/Script.h"
 #include "components/Text.h"
+#include "tools/JsonHelper.h"
 
 #include <map>
 #include <string>
@@ -14,15 +15,21 @@ namespace FlatEngine
 		{
 		public:
 			Project();
-	
+			
+			json GetData();
+			void PutData(json projectJson);
 			void SavePersistentScript(std::string path = ""); // path for temp files when starting scene
 			void LoadPersistentScript(std::string path = "");			
 			void SetMusicVolume(int volume);
 			int GetMusicVolume();
 			void SetEffectsVolume(int volume);
-			const int GetEffectsVolume();
+			int GetEffectsVolume();
 			void UpdateSavedTime();
-			const tm GetSavedTime();
+			tm GetSavedTime();
+			void AddFocusedObjectID(long ID);
+			void RemoveFocusedObjectID(long ID);
+			bool IsIDFocused(long ID);
+			void RefocusID(long withID);
 
 			std::string path;
 			std::string persistentScriptPath;
@@ -31,7 +38,8 @@ namespace FlatEngine
 			std::string sceneToLoadAtRuntime;
 			std::string loadedAnimationPath;
 			std::string currentFileDirectory;		
-			long focusedGameObjectID;
+			long lastFocusedID;
+			std::vector<long> focusedGameObjectIDs;
 			bool b_autoSave;
 			Script persistentScript;
 
@@ -52,10 +60,9 @@ namespace FlatEngine
 		extern void CreateNewProject(std::string projectName);
 		extern void CreateProjectDirectory(std::string path);
 		extern void LoadProject(std::string path);
-		extern void SaveProject(Project& project, std::string path);
+		extern void SaveProject(Project* project, std::string path);
 		extern void SaveCurrentProject();			
 		extern void BuildProject();
 		extern void SetProjectLoadedScenePath(std::string scenePath);
-		extern long CreatePersistantGameObject(long parentID = -1, long myID = -1);		
 	}
 }

@@ -23,7 +23,7 @@ namespace FlatGui
 	void AddObjectToHierarchy(FL::GameObject& currentObject, const char* charName, long& node_clicked, long& queuedForDelete, long& parentToUnparent, long& childToRemove, float indent)
 	{
 		ImGuiTreeNodeFlags nodeFlags;		
-		bool b_objectFocused = (FL::ProjectManager::loadedProject.focusedGameObjectID == currentObject.GetID());
+		bool b_objectFocused = FL::ProjectManager::loadedProject.IsIDFocused(currentObject.GetID());
 
 		// If this node is selected, use the nodeFlag_selected to highlight it
 		if (b_objectFocused)
@@ -53,11 +53,11 @@ namespace FlatGui
 
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);		
-		if (FL::GuiCore::RenderImageButton("VisibleID" + std::to_string(currentObject.GetID()), FL::Assets::assetManager.GetTexture(currentObject.IsActive() ? "show" : "hide"), FL::Vector2(16), 0, FL::Vector2(4), "transparent", "transparent")) currentObject.SetActive(!currentObject.IsActive());
+		if (FL::GuiCore::RenderImageButton("VisibleID"+ std::to_string(currentObject.GetID()), FL::Assets::assetManager.GetTexture(currentObject.IsActive() ? "show": "hide"), FL::Vector2(16), 0, FL::Vector2(4), "transparent", "transparent")) currentObject.SetActive(!currentObject.IsActive());
 
 		ImGui::TableSetColumnIndex(1);
 		static int index = 0;
-		std::string id = "##SwapDropSourceBefore" + std::to_string(currentObject.GetID());
+		std::string id = "##SwapDropSourceBefore"+ std::to_string(currentObject.GetID());
 		FL::Vector2 cursorPos = FL::Vector2(ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y - 3);
 		FL::Vector2 availSpace = ImGui::GetContentRegionAvail();
 		FL::Vector2 size = FL::Vector2(availSpace.x + 30 - cursorPos.x, 6);
@@ -171,24 +171,30 @@ namespace FlatGui
 		FL::GuiCore::PushMenuStyles();
 		if (ImGui::BeginPopupContextItem())
 		{
-			if (ImGui::MenuItem(" Create Child"))
+			if (FL::GuiCore::MenuItem("Open In New Inspector"))
+			{				
+				FL::ProjectManager::loadedProject.AddFocusedObjectID(currentObject.GetID());
+				ImGui::CloseCurrentPopup();
+			}		
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+			if (FL::GuiCore::MenuItem("Create Child"))
 			{
-				FL::ProjectManager::loadedProject.focusedGameObjectID = FL::SceneManager::loadedScene.CreateGameObject(currentObject.GetID())->GetID();								 
+				FL::SceneManager::loadedScene.CreateGameObject(currentObject.GetID());								 
 				ImGui::CloseCurrentPopup();
 			}			
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 			if (currentObject.IsPrefab())
 			{
-				std::string prefabName = " PREFAB: " + currentObject.GetPrefabName();
+				std::string prefabName = "PREFAB: "+ currentObject.GetPrefabName();
 				ImGui::Text("%s", prefabName.c_str());	
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");			
-				if (ImGui::MenuItem(" Save Prefab"))
+				if (FL::GuiCore::MenuItem("Save Prefab"))
 				{
-					FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/" + currentObject.GetPrefabName() + ".prf", &currentObject);
+					FL::PrefabManager::CreatePrefab(FL::Assets::assetManager.GetDir("prefabs") + "/"+ currentObject.GetPrefabName() + ".prf", &currentObject);
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-				if (ImGui::MenuItem(" Unpack prefab"))
+				if (FL::GuiCore::MenuItem("Unpack prefab"))
 				{
 					currentObject.SetIsPrefab(false);
 					currentObject.SetPrefabName("");
@@ -196,7 +202,7 @@ namespace FlatGui
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-				if (ImGui::MenuItem(" Create New Prefab"))
+				if (FL::GuiCore::MenuItem("Create New Prefab"))
 				{
 					Modals::b_openPrefabModal = true;
 					Modals::gameObjectToPrefab = currentObject.GetID();
@@ -205,21 +211,21 @@ namespace FlatGui
 			}
 			else
 			{
-				if (ImGui::MenuItem(" Create Prefab"))
+				if (FL::GuiCore::MenuItem("Create Prefab"))
 				{
 					Modals::b_openPrefabModal = true;
 					Modals::gameObjectToPrefab = currentObject.GetID();
 					ImGui::CloseCurrentPopup();
 				}
 			}			
-			FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
-			if (ImGui::MenuItem(" Delete GameObject"))
+			FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+			if (FL::GuiCore::MenuItem("Delete GameObject"))
 			{
 				queuedForDelete = currentObject.GetID();
 				ImGui::CloseCurrentPopup();
 			}			
 			// FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
-			// if (ImGui::MenuItem(" Lock in view"))
+			// if (FL::GuiCore::MenuItem("Lock in view"))
 			// {
 			// 	// if (FG_b_sceneViewLockedOnObject && FG_sceneViewLockedObjectID == currentObject.GetID())
 			// 	// {
@@ -241,7 +247,7 @@ namespace FlatGui
 		if (ImGui::IsItemHovered() && ImGui::IsKeyReleased(ImGuiKey::ImGuiKey_MouseLeft))
 		{
 			node_clicked = currentObject.GetID();
-			FL::ProjectManager::loadedProject.focusedGameObjectID = currentObject.GetID();
+			FL::ProjectManager::loadedProject.RefocusID(currentObject.GetID());
 		}
 
 		// Add As Child Drag and Drop
@@ -279,15 +285,15 @@ namespace FlatGui
 		// Render Prefab Cube if it is a prefab object
 		if (currentObject.IsPrefab())
 		{
-			std::string prefabIDImageButton = "PrefabIDImage" + std::to_string(currentObject.GetID());
-			std::string prefabIDContextMenu = "PrefabIDContext" + std::to_string(currentObject.GetID());
+			std::string prefabIDImageButton = "PrefabIDImage"+ std::to_string(currentObject.GetID());
+			std::string prefabIDContextMenu = "PrefabIDContext"+ std::to_string(currentObject.GetID());
 			ImGui::TableSetColumnIndex(2);
 			ImGui::SetCursorPos(FL::Vector2(ImGui::GetCursorPosX() - 1, ImGui::GetCursorPosY()));
 			FL::GuiCore::RenderImageButton(prefabIDImageButton.c_str(), FL::Assets::assetManager.GetTexture("prefabCube"), FL::Vector2(16), 0, FL::Vector2(4), "buttonBorder", "transparent", "white", "buttonHovered", "buttonActive");
 			FL::GuiCore::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem(prefabIDContextMenu.c_str(), ImGuiPopupFlags_MouseButtonLeft))
 			{
-				if (ImGui::MenuItem(" Unpack prefab"))
+				if (FL::GuiCore::MenuItem("Unpack prefab"))
 				{
 					currentObject.SetIsPrefab(false);
 					currentObject.SetPrefabName("");
@@ -328,7 +334,7 @@ namespace FlatGui
 		if (FL::GuiCore::BeginWindow("Hierarchy", b_show))
 		{			
 			// Render Loaded Scene text and threeDots more menu button
-			std::string loadedSceneString = "Loaded Scene: " + FL::SceneManager::loadedScene.name;
+			std::string loadedSceneString = "Loaded Scene: "+ FL::SceneManager::loadedScene.name;
 
 			FL::GuiCore::MoveScreenCursor(3,4);
 			ImGui::Text("%s", loadedSceneString.c_str());			
@@ -340,7 +346,7 @@ namespace FlatGui
 			FL::GuiCore::PushMenuStyles();
 			if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft))
 			{
-				if (ImGui::MenuItem(" Save All"))
+				if (FL::GuiCore::MenuItem("Save All"))
 				{
 					if (FL::SceneManager::loadedScene.path == "")
 					{						
@@ -355,7 +361,7 @@ namespace FlatGui
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparator");
-				if (ImGui::MenuItem(" Save Scene"))
+				if (FL::GuiCore::MenuItem("Save Scene"))
 				{
 					if (FL::SceneManager::loadedScene.path == "")
 					{
@@ -368,20 +374,20 @@ namespace FlatGui
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-				if (ImGui::MenuItem(" Save Project"))
+				if (FL::GuiCore::MenuItem("Save Project"))
 				{
 					FL::ProjectManager::SaveCurrentProject();
 					ImGui::CloseCurrentPopup();
 				}	
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
-				if (ImGui::MenuItem(" Save Engine Settings"))
+				if (FL::GuiCore::MenuItem("Save Engine Settings"))
 				{					
 					FL::Settings::settings.SaveSettings();
 					ImGui::CloseCurrentPopup();
 				}	
 				FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
 				ImGui::BeginDisabled(FL::SceneManager::loadedScene.path == "");
-				if (ImGui::MenuItem(" Reload Scene"))
+				if (FL::GuiCore::MenuItem("Reload Scene"))
 				{
 					FL::SceneManager::LoadScene(FL::SceneManager::loadedScene.path);
 					ImGui::CloseCurrentPopup();
@@ -418,7 +424,7 @@ namespace FlatGui
 					// {
 					
 					ImGui::TableSetColumnIndex(0);		
-					if (FL::GuiCore::RenderImageButton("##SetAllVisible", FL::Assets::assetManager.GetTexture(b_allAreVisible ? "show" : "hide"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
+					if (FL::GuiCore::RenderImageButton("##SetAllVisible", FL::Assets::assetManager.GetTexture(b_allAreVisible ? "show": "hide"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
 					{
 						for (FL::GameObject& sceneObject : sceneObjects)
 						{
@@ -502,20 +508,23 @@ namespace FlatGui
 			// }
 			FL::GuiCore::EndWindowChild();
 
-			// Delete queued FL::GameObject
+			// Delete queued GameObject
 			if (queuedForDelete != -1)
 			{				
-				long saveFocusedObject = FL::ProjectManager::loadedProject.focusedGameObjectID;
+				// long saveFocusedObject = FL::ProjectManager::loadedProject.focusedGameObjectID;
 
-				// Unfocus focused FL::GameObject first
-				FL::ProjectManager::loadedProject.focusedGameObjectID = -1;
+				// Unfocus focused GameObject first
+				// if (FL::ProjectManager::loadedProject.IsIDFocused(queuedForDelete))
+				FL::ProjectManager::loadedProject.RemoveFocusedObjectID(queuedForDelete);
 				FL::SceneManager::loadedScene.DeleteGameObject(queuedForDelete);
 
-				// If previous focused object still exists, set it to focused object again
-				if (FL::SceneManager::loadedScene.GetObjectByID(saveFocusedObject) != nullptr)
-				{
-					FL::ProjectManager::loadedProject.focusedGameObjectID = saveFocusedObject;
-				}
+				// // If previous focused object still exists, set it to focused object again
+				// if (FL::SceneManager::loadedScene.GetObjectByID(saveFocusedObject) != nullptr)
+				// {
+				// 	FL::ProjectManager::loadedProject.focusedGameObjectID = saveFocusedObject;
+				// }
+
+				queuedForDelete = -1;
 			}
 
 			// Remove queued children

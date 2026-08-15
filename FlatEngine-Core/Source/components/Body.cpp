@@ -10,19 +10,19 @@ namespace FlatEngine
 {
 	Body::Body(long ownerID)
 	{
-		SetOwnerID(ownerID);
-		SetType(ComponentType_Body);
-		m_bodyID = b2BodyId();
-		// Contacts
-		m_beginContactCallback = nullptr;
-		m_b_beginContactCallbackSet = false;
-		m_endContactCallback = nullptr;
-		m_b_endContactCallbackSet = false;
-		// Sensors
-		m_beginSensorTouchCallback = nullptr;
-		m_b_beginSensorTouchCallbackSet = false;
-		m_endSensorTouchCallback = nullptr;
-		m_b_endSensorTouchCallbackSet = false;
+		// SetOwnerID(ownerID);
+		// SetType(ComponentType_Body);
+		// m_bodyID = b2BodyId();
+		// // Contacts
+		// m_beginContactCallback = nullptr;
+		// m_b_beginContactCallbackSet = false;
+		// m_endContactCallback = nullptr;
+		// m_b_endContactCallbackSet = false;
+		// // Sensors
+		// m_beginSensorTouchCallback = nullptr;
+		// m_b_beginSensorTouchCallbackSet = false;
+		// m_endSensorTouchCallback = nullptr;
+		// m_b_endSensorTouchCallbackSet = false;
 	}
 }
 

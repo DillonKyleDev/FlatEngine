@@ -125,7 +125,7 @@ namespace FlatEngine
 
 	void Cleanup()
 	{
-		PhysicsManager::physics2D.Shutdown();
+		PhysicsManager::gamePhysics2D.Shutdown();
 		GuiCore::QuitImGui();
 
 		for (SDL_Joystick* gamepad : Controls::gamepads)

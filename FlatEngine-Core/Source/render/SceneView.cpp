@@ -192,7 +192,7 @@ namespace FlatEngine
 				}
 				fpsTrackingCounter++;
 
-				ellapsedTimeString =          "time (ms): " + std::to_string(application->gameloop->GetFramesCounted());
+				ellapsedTimeString =          "time (ms): " + std::to_string(application->gameloop->TimeElapsedInMs());
 			}
 
 			ImGui::SetCursorScreenPos(Vector2(currentPos.x, currentPos.y + 25));
@@ -387,7 +387,7 @@ namespace FlatEngine
 
 		void PositionTransformGizmo()
         {
-			long focusedID = ProjectManager::loadedProject.focusedGameObjectID;
+			long focusedID = ProjectManager::loadedProject.lastFocusedID;
 			Transform* focusedTransform = SceneManager::loadedScene.Get<Transform>(focusedID);
 			if (focusedTransform == nullptr)
 			{

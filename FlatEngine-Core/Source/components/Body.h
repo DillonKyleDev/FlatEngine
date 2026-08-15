@@ -1,14 +1,13 @@
 #pragma once
 #include "components/Component.h"
-#include "physics/PhysicsManager.h"
+// #include "physics/PhysicsManager.h"
 
-#include <list>
+// #include <list>
 
 
 namespace FlatEngine
 {
-	class Joint;
-	class DistanceJoint;
+	// class Joint;	
 
 	class Body : public Component
 	{
@@ -86,23 +85,23 @@ namespace FlatEngine
 		// void Cleanup();
 
 	private:
-		b2BodyId m_bodyID = b2_nullBodyId;
-		// std::list<Box> m_boxes;
-		// std::list<Circle> m_circles;
-		// std::list<Capsule> m_capsules;
-		// std::list<Polygon> m_polygons;
-		// std::list<Chain> m_chains;
-		std::list<DistanceJoint*> m_distanceJoints;		
+		// b2BodyId m_bodyID = b2_nullBodyId;
+		// // std::list<Box> m_boxes;
+		// // std::list<Circle> m_circles;
+		// // std::list<Capsule> m_capsules;
+		// // std::list<Polygon> m_polygons;
+		// // std::list<Chain> m_chains;
+		// std::list<DistanceJoint*> m_distanceJoints;		
 
-		// Contacts
-		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);
-		bool m_b_beginContactCallbackSet;
-		void (*m_endContactCallback)(b2ShapeId, b2ShapeId);
-		bool m_b_endContactCallbackSet;
-		// Sensors
-		void (*m_beginSensorTouchCallback)(b2ShapeId, b2ShapeId);
-		bool m_b_beginSensorTouchCallbackSet;
-		void (*m_endSensorTouchCallback)(b2ShapeId, b2ShapeId);
-		bool m_b_endSensorTouchCallbackSet;
+		// // Contacts
+		// void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);
+		// bool m_b_beginContactCallbackSet;
+		// void (*m_endContactCallback)(b2ShapeId, b2ShapeId);
+		// bool m_b_endContactCallbackSet;
+		// // Sensors
+		// void (*m_beginSensorTouchCallback)(b2ShapeId, b2ShapeId);
+		// bool m_b_beginSensorTouchCallbackSet;
+		// void (*m_endSensorTouchCallback)(b2ShapeId, b2ShapeId);
+		// bool m_b_endSensorTouchCallbackSet;
 	};
 }

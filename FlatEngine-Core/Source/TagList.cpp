@@ -139,7 +139,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
+			PhysicsManager::gamePhysics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 
@@ -153,7 +153,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
+			PhysicsManager::gamePhysics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 
@@ -179,7 +179,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
+			PhysicsManager::gamePhysics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 
@@ -193,7 +193,7 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(m_ownerID);
 		if (owner != nullptr && owner->Get<Body2D>() != nullptr)
 		{
-			PhysicsManager::physics2D.RecreateBody(owner->Get<Body2D>());
+			PhysicsManager::gamePhysics2D.RecreateBody(owner->Get<Body2D>());
 		}
 	}
 

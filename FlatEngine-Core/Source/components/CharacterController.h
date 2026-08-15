@@ -1,6 +1,6 @@
 #pragma once
 #include "components/Component.h"
-#include "physics/Shape.h"
+#include "physics/Shape2D.h"
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
@@ -16,7 +16,7 @@ namespace FlatEngine
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
-		Shape& GetCapsule();
+		Shape2D& GetCapsule();
 		void Move(Vector2 direction);
 		void MoveToward(Vector2 position);
 		void SetMaxAcceleration(float speed);

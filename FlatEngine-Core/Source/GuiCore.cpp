@@ -41,21 +41,15 @@ namespace FlatEngine
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();			
 			ImGuiIO& io = ImGui::GetIO(); (void)io;
-			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls for imgui ui nav
-			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-			style.WindowPadding = { 5.0f, 5.0f };
-			style.DockingSeparatorSize = 1;
-			style.SeparatorTextAlign = Vector2(0.5f, 0.0f);
-			style.SeparatorTextBorderSize = 1;
+			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+			//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;			
+			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 			//ImGui_ImplSDL2_InitForSDLRenderer(F_Window->GetWindow(), F_Window->GetRenderer());
 			//ImGui_ImplSDLRenderer2_Init(F_Window->GetRenderer());
+
 			SetImGuiVars();
 
 			Logger::log.Trace("ImGui initialized...\n");
@@ -134,7 +128,9 @@ namespace FlatEngine
 			style.TabBarOverlineSize = 1.0f;
 			style.ScrollbarSize = 12.0f;			
 			style.DockingSeparatorSize = 1.0f;
-			style.CellPadding = Vector2(0);
+			style.CellPadding = Vector2(0);						
+			style.SeparatorTextAlign = Vector2(0.5f, 0.0f);
+			style.SeparatorTextBorderSize = 1;
 		}
 
 		void RestartImGui()
@@ -182,20 +178,462 @@ namespace FlatEngine
 			ImGui::SetNextWindowPos({ 0,0 });
 		}
 
-
 		// ImGui Wrappers
 		void MoveScreenCursor(float x, float y)
 		{
+			if (x == 0 && y == 0)
+				return;
+
 			ImGui::SetCursorScreenPos(Vector2(ImGui::GetCursorScreenPos().x + x, ImGui::GetCursorScreenPos().y + y));
+		}
+
+		bool IsRootOfOpenMenuSet()
+		{
+			ImGuiContext& g = *GImGui;
+			ImGuiWindow* window = g.CurrentWindow;
+			if ((g.OpenPopupStack.Size <= g.BeginPopupStack.Size) || (window->Flags & ImGuiWindowFlags_ChildMenu))
+				return false;
+
+			// Initially we used 'upper_popup->OpenParentId == window->IDStack.back()' to differentiate multiple menu sets from each others
+			// (e.g. inside menu bar vs loose menu items) based on parent ID.
+			// This would however prevent the use of e.g. PushID() user code submitting menus.
+			// Previously this worked between popup and a first child menu because the first child menu always had the _ChildWindow flag,
+			// making hovering on parent popup possible while first child menu was focused - but this was generally a bug with other side effects.
+			// Instead we don't treat Popup specifically (in order to consistently support menu features in them), maybe the first child menu of a Popup
+			// doesn't have the _ChildWindow flag, and we rely on this IsRootOfOpenMenuSet() check to allow hovering between root window/popup and first child menu.
+			// In the end, lack of ID check made it so we could no longer differentiate between separate menu sets. To compensate for that, we at least check parent window nav layer.
+			// This fixes the most common case of menu opening on hover when moving between window content and menu bar. Multiple different menu sets in same nav layer would still
+			// open on hover, but that should be a lesser problem, because if such menus are close in proximity in window content then it won't feel weird and if they are far apart
+			// it likely won't be a problem anyone runs into.
+			const ImGuiPopupData* upper_popup = &g.OpenPopupStack[g.BeginPopupStack.Size];
+			if (window->DC.NavLayerCurrent != upper_popup->ParentNavLayer)
+				return false;
+			return upper_popup->Window && (upper_popup->Window->Flags & ImGuiWindowFlags_ChildMenu) && ImGui::IsWindowChildOf(upper_popup->Window, window, true, false);
+		}		
+		bool BeginMenuBar()
+		{
+			ImGuiWindow* window = ImGui::GetCurrentWindow();
+			if (window->SkipItems)
+				return false;
+			if (!(window->Flags & ImGuiWindowFlags_MenuBar))
+				return false;
+
+			IM_ASSERT(!window->DC.MenuBarAppending);
+			ImGui::BeginGroup(); // Backup position on layer 0 // FIXME: Misleading to use a group for that backup/restore
+			ImGui::PushID("##MenuBar");
+
+			// We don't clip with current window clipping rectangle as it is already set to the area below. However we clip with window full rect.
+			// We remove 1 worth of rounding to Max.x to that text in long menus and small windows don't tend to display over the lower-right rounded area, which looks particularly glitchy.
+			const float border_top = ImMax(IM_ROUND(window->WindowBorderSize * 0.5f - window->TitleBarHeight), 0.0f);
+			const float border_half = IM_ROUND(window->WindowBorderSize * 0.5f);
+			ImRect bar_rect = window->MenuBarRect();
+			bar_rect.Max.y += ImGui::GetStyle().CellPadding.y * 2;
+			ImRect clip_rect(ImFloor(bar_rect.Min.x + border_half), ImFloor(bar_rect.Min.y + border_top), ImFloor(ImMax(bar_rect.Min.x, bar_rect.Max.x - ImMax(window->WindowRounding, border_half))), ImFloor(bar_rect.Max.y));
+			clip_rect.ClipWith(window->OuterRectClipped);
+			ImGui::PushClipRect(clip_rect.Min, clip_rect.Max, false);
+
+			// We overwrite CursorMaxPos because BeginGroup sets it to CursorPos (essentially the .EmitItem hack in EndMenuBar() would need something analogous here, maybe a BeginGroupEx() with flags).
+			window->DC.CursorPos = window->DC.CursorMaxPos = ImVec2(bar_rect.Min.x + window->DC.MenuBarOffset.x, bar_rect.Min.y + window->DC.MenuBarOffset.y);
+			window->DC.LayoutType = ImGuiLayoutType_Horizontal;
+			window->DC.IsSameLine = false;
+			window->DC.NavLayerCurrent = ImGuiNavLayer_Menu;
+			window->DC.MenuBarAppending = true;
+			ImGui::AlignTextToFramePadding();
+			return true;
+		}
+		bool BeginMainMenuBar()
+		{
+			ImGuiContext& g = *GImGui;
+			ImGuiViewportP* viewport = (ImGuiViewportP*)(void*)ImGui::GetMainViewport();
+
+			// Notify of viewport change so GetFrameHeight() can be accurate in case of DPI change
+			ImGui::SetCurrentViewport(NULL, viewport);
+			
+			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
+			// For the main menu bar, which cannot be moved, we honor g.Style.DisplaySafeAreaPadding to ensure text can be visible on a TV set.
+			// FIXME: This could be generalized as an opt-in way to clamp window->DC.CursorStartPos to avoid SafeArea?
+			// FIXME: Consider removing support for safe area down the line... it's messy. Nowadays consoles have support for TV calibration in OS settings.
+			g.NextWindowData.MenuBarOffsetMinVal = ImVec2(g.Style.DisplaySafeAreaPadding.x, ImMax(g.Style.DisplaySafeAreaPadding.y - g.Style.FramePadding.y, 0.0f));
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar;
+			float height = ImGui::GetFrameHeight() + cellPadding.y * 2;
+			bool is_open = ImGui::BeginViewportSideBar("##MainMenuBar", viewport, ImGuiDir_Up, height, window_flags);
+			g.NextWindowData.MenuBarOffsetMinVal = ImVec2(0.0f, 0.0f);
+			if (!is_open)
+			{
+				ImGui::End();
+				return false;
+			}
+
+			// Temporarily disable _NoSavedSettings, in the off-chance that tables or child windows submitted within the menu-bar may want to use settings. (#8356)
+			g.CurrentWindow->Flags &= ~ImGuiWindowFlags_NoSavedSettings;
+			BeginMenuBar();
+			return is_open;
+		}
+		void EndMainMenuBar()
+		{
+			ImGuiContext& g = *GImGui;
+			if (!g.CurrentWindow->DC.MenuBarAppending)
+			{
+				IM_ASSERT_USER_ERROR(0, "Calling EndMainMenuBar() not from a menu-bar!"); // Not technically testing that it is the main menu bar
+				return;
+			}
+
+			ImGui::EndMenuBar();
+			g.CurrentWindow->Flags |= ImGuiWindowFlags_NoSavedSettings; // Restore _NoSavedSettings (#8356)
+
+			// When the user has left the menu layer (typically: closed menus through activation of an item), we restore focus to the previous window
+			// FIXME: With this strategy we won't be able to restore a NULL focus.
+			if (g.CurrentWindow == g.NavWindow && g.NavLayer == ImGuiNavLayer_Main && !g.NavAnyRequest && g.ActiveId == 0)
+				ImGui::FocusTopMostWindowUnderOne(g.NavWindow, NULL, NULL, ImGuiFocusRequestFlags_UnlessBelowModal | ImGuiFocusRequestFlags_RestoreFocusedChild);
+
+			ImGui::End();
+		}
+		bool BeginMenuEx(const char* label, const char* icon, bool enabled)
+		{
+			ImGuiWindow* window = ImGui::GetCurrentWindow();
+			if (window->SkipItems)
+				return false;
+
+			ImGuiContext& g = *GImGui;
+			const ImGuiStyle& style = g.Style;
+			const ImGuiID id = window->GetID(label);
+			bool menu_is_open = ImGui::IsPopupOpen(id, ImGuiPopupFlags_None);
+
+			ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
+			label_size.x += cellPadding.x * 2;
+			label_size.y += cellPadding.y * 2;
+
+			// Sub-menus are ChildWindow so that mouse can be hovering across them (otherwise top-most popup menu would steal focus and not allow hovering on parent menu)
+			// The first menu in a hierarchy isn't so hovering doesn't get across (otherwise e.g. resizing borders with ImGuiButtonFlags_FlattenChildren would react), but top-most BeginMenu() will bypass that limitation.
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_ChildMenu | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus;
+			if (window->Flags & ImGuiWindowFlags_ChildMenu)
+				window_flags |= ImGuiWindowFlags_ChildWindow;
+
+			// If a menu with same the ID was already submitted, we will append to it, matching the behavior of Begin().
+			// We are relying on a O(N) search - so O(N log N) over the frame - which seems like the most efficient for the expected small amount of BeginMenu() calls per frame.
+			// If somehow this is ever becoming a problem we can switch to use e.g. ImGuiStorage mapping key to last frame used.
+			if (g.MenusIdSubmittedThisFrame.contains(id))
+			{
+				if (menu_is_open)
+					menu_is_open = ImGui::BeginPopupMenuEx(id, label, window_flags); // menu_is_open can be 'false' when the popup is completely clipped (e.g. zero size display)
+				else
+					g.NextWindowData.ClearFlags();          // we behave like Begin() and need to consume those values
+				return menu_is_open;
+			}
+
+			// Tag menu as used. Next time BeginMenu() with same ID is called it will append to existing menu
+			g.MenusIdSubmittedThisFrame.push_back(id);		
+
+			// Odd hack to allow hovering across menus of a same menu-set (otherwise we wouldn't be able to hover parent without always being a Child window)
+			// This is only done for items for the menu set and not the full parent window.
+			const bool menuset_is_open = IsRootOfOpenMenuSet();
+			if (menuset_is_open)
+				ImGui::PushItemFlag(ImGuiItemFlags_NoWindowHoverableCheck, true);
+
+			// The reference position stored in popup_pos will be used by Begin() to find a suitable position for the child menu,
+			// However the final position is going to be different! It is chosen by FindBestWindowPosForPopup().
+			// e.g. Menus tend to overlap each other horizontally to amplify relative Z-ordering.
+			ImVec2 popup_pos, pos = window->DC.CursorPos;
+			ImGui::PushID(label);
+			if (!enabled)
+				ImGui::BeginDisabled();
+			const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+			bool pressed;
+
+			// We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
+			const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_NoHoldingActiveID | ImGuiSelectableFlags_NoSetKeyOwner | ImGuiSelectableFlags_SelectOnClick | ImGuiSelectableFlags_NoAutoClosePopups;
+			if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
+			{
+				// Menu inside a horizontal menu bar
+				// Selectable extend their highlight by half ItemSpacing in each direction.
+				// For ChildMenu, the popup position will be overwritten by the call to FindBestWindowPosForPopup() in Begin()
+				popup_pos = ImVec2(pos.x - 1.0f - IM_TRUNC(style.ItemSpacing.x * 0.5f), pos.y + label_size.y - style.FramePadding.y + window->MenuBarHeight);
+				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * 0.5f);
+				// PushStyleVarX(ImGuiStyleVar_ItemSpacing, style.ItemSpacing.x * 2.0f);
+				float w = label_size.x;
+				ImVec2 text_pos(window->DC.CursorPos.x + cellPadding.x + offsets->OffsetLabel, window->DC.CursorPos.y + cellPadding.y + window->DC.CurrLineTextBaseOffset);
+				pressed = ImGui::Selectable("", menu_is_open, selectable_flags, ImVec2(w, label_size.y));
+				ImGui::LogSetNextTextDecoration("[", "]");
+				ImGui::RenderText(text_pos, label);
+				// PopStyleVar();
+				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+			}
+			else
+			{
+				// Menu inside a regular/vertical menu
+				// (In a typical menu window where all items are BeginMenu() or MenuItem() calls, extra_w will always be 0.0f.
+				//  Only when they are other items sticking out we're going to add spacing, yet only register minimum width into the layout system.
+				popup_pos = ImVec2(pos.x, pos.y - style.WindowPadding.y);
+				float icon_w = (icon && icon[0]) ? ImGui::CalcTextSize(icon, NULL).x : 0.0f;
+				float checkmark_w = IM_TRUNC(g.FontSize * 1.20f);
+				float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, 0.0f, checkmark_w); // Feedback to next frame
+				float extra_w = ImMax(0.0f, ImGui::GetContentRegionAvail().x - min_w);
+				ImVec2 text_pos(window->DC.CursorPos.x + cellPadding.x + offsets->OffsetLabel, window->DC.CursorPos.y + cellPadding.y + window->DC.CurrLineTextBaseOffset);
+				pressed = ImGui::Selectable("", menu_is_open, selectable_flags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, label_size.y));
+				ImGui::LogSetNextTextDecoration("", ">");
+				ImGui::RenderText(text_pos, label);
+				if (icon_w > 0.0f)
+					ImGui::RenderText(ImVec2(pos.x + cellPadding.x + offsets->OffsetIcon, pos.y + cellPadding.y), icon);
+				ImGui::RenderArrow(window->DrawList, ImVec2(pos.x + offsets->OffsetMark + extra_w + g.FontSize * 0.30f - 6.0f, pos.y + cellPadding.y), ImGui::GetColorU32(ImGuiCol_Text), ImGuiDir_Right);
+			}
+			if (!enabled)
+				ImGui::EndDisabled();
+
+			const bool hovered = (g.HoveredId == id) && enabled && !g.NavHighlightItemUnderNav;
+			if (menuset_is_open)
+				ImGui::PopItemFlag();
+
+			bool want_open = false;
+			bool want_open_nav_init = false;
+			bool want_close = false;
+			if (window->DC.LayoutType == ImGuiLayoutType_Vertical) // (window->Flags & (ImGuiWindowFlags_Popup|ImGuiWindowFlags_ChildMenu))
+			{
+				// Close menu when not hovering it anymore unless we are moving roughly in the direction of the menu
+				// Implement http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown to avoid using timers, so menus feels more reactive.
+				bool moving_toward_child_menu = false;
+				ImGuiPopupData* child_popup = (g.BeginPopupStack.Size < g.OpenPopupStack.Size) ? &g.OpenPopupStack[g.BeginPopupStack.Size] : NULL; // Popup candidate (testing below)
+				ImGuiWindow* child_menu_window = (child_popup && child_popup->Window && child_popup->Window->ParentWindow == window) ? child_popup->Window : NULL;
+				if (g.HoveredWindow == window && child_menu_window != NULL)
+				{
+					const float ref_unit = g.FontSize; // FIXME-DPI
+					const float child_dir = (window->Pos.x < child_menu_window->Pos.x) ? 1.0f : -1.0f;
+					const ImRect next_window_rect = child_menu_window->Rect();
+					ImVec2 ta = ImVec2(g.IO.MousePos.x - g.IO.MouseDelta.x, g.IO.MousePos.y - g.IO.MouseDelta.y);
+					ImVec2 tb = (child_dir > 0.0f) ? next_window_rect.GetTL() : next_window_rect.GetTR();
+					ImVec2 tc = (child_dir > 0.0f) ? next_window_rect.GetBL() : next_window_rect.GetBR();
+					const float pad_farmost_h = ImClamp(ImFabs(ta.x - tb.x) * 0.30f, ref_unit * 0.5f, ref_unit * 2.5f); // Add a bit of extra slack.
+					ta.x += child_dir * -0.5f;
+					tb.x += child_dir * ref_unit;
+					tc.x += child_dir * ref_unit;
+					tb.y = ta.y + ImMax((tb.y - pad_farmost_h) - ta.y, -ref_unit * 8.0f); // Triangle has maximum height to limit the slope and the bias toward large sub-menus
+					tc.y = ta.y + ImMin((tc.y + pad_farmost_h) - ta.y, +ref_unit * 8.0f);
+					moving_toward_child_menu = ImTriangleContainsPoint(ta, tb, tc, g.IO.MousePos);
+					//GetForegroundDrawList()->AddTriangleFilled(ta, tb, tc, moving_toward_child_menu ? IM_COL32(0,128,0,128) : IM_COL32(128,0,0,128)); // [DEBUG]
+				}
+
+				// The 'HovereWindow == window' check creates an inconsistency (e.g. moving away from menu slowly tends to hit same window, whereas moving away fast does not)
+				// But we also need to not close the top-menu menu when moving over void. Perhaps we should extend the triangle check to a larger polygon.
+				// (Remember to test this on BeginPopup("A")->BeginMenu("B") sequence which behaves slightly differently as B isn't a Child of A and hovering isn't shared.)
+				if (menu_is_open && !hovered && g.HoveredWindow == window && !moving_toward_child_menu && !g.NavHighlightItemUnderNav && g.ActiveId == 0)
+					want_close = true;
+
+				// Open
+				// (note: at this point 'hovered' actually includes the NavDisableMouseHover == false test)
+				if (!menu_is_open && pressed) // Click/activate to open
+					want_open = true;
+				else if (!menu_is_open && hovered && !moving_toward_child_menu) // Hover to open
+					want_open = true;
+				else if (!menu_is_open && hovered && g.HoveredIdTimer >= 0.30f && g.MouseStationaryTimer >= 0.30f) // Hover to open (timer fallback)
+					want_open = true;
+				if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right) // Nav-Right to open
+				{
+					want_open = want_open_nav_init = true;
+					ImGui::NavMoveRequestCancel();
+					ImGui::SetNavCursorVisibleAfterMove();
+				}
+			}
+			else
+			{
+				// Menu bar
+				if (menu_is_open && pressed && menuset_is_open) // Click an open menu again to close it
+				{
+					want_close = true;
+					want_open = menu_is_open = false;
+				}
+				else if (pressed || (hovered && menuset_is_open && !menu_is_open)) // First click to open, then hover to open others
+				{
+					want_open = true;
+				}
+				else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down) // Nav-Down to open
+				{
+					want_open = true;
+					ImGui::NavMoveRequestCancel();
+				}
+			}
+
+			if (!enabled) // explicitly close if an open menu becomes disabled, facilitate users code a lot in pattern such as 'if (BeginMenu("options", has_object)) { ..use object.. }'
+				want_close = true;
+			if (want_close && ImGui::IsPopupOpen(id, ImGuiPopupFlags_None))
+				ImGui::ClosePopupToLevel(g.BeginPopupStack.Size, true);
+
+			IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Openable | (menu_is_open ? ImGuiItemStatusFlags_Opened : 0));
+			ImGui::PopID();
+
+			if (want_open && !menu_is_open && g.OpenPopupStack.Size > g.BeginPopupStack.Size)
+			{
+				// Don't reopen/recycle same menu level in the same frame if it is a different menu ID, first close the other menu and yield for a frame.
+				ImGui::OpenPopup(label);
+			}
+			else if (want_open)
+			{
+				menu_is_open = true;
+				ImGui::OpenPopup(label, ImGuiPopupFlags_NoReopen);// | (want_open_nav_init ? ImGuiPopupFlags_NoReopenAlwaysNavInit : 0));
+			}
+
+			if (menu_is_open)
+			{
+				ImGuiLastItemData last_item_in_parent = g.LastItemData;
+				ImGui::SetNextWindowPos(popup_pos, ImGuiCond_Always);                  // Note: misleading: the value will serve as reference for FindBestWindowPosForPopup(), not actual pos.
+				ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, style.PopupRounding); // First level will use _PopupRounding, subsequent will use _ChildRounding
+				menu_is_open = ImGui::BeginPopupMenuEx(id, label, window_flags); // menu_is_open may be 'false' when the popup is completely clipped (e.g. zero size display)
+				ImGui::PopStyleVar();
+				if (menu_is_open)
+				{
+					// Implement what ImGuiPopupFlags_NoReopenAlwaysNavInit would do:
+					// Perform an init request in the case the popup was already open (via a previous mouse hover)
+					if (want_open && want_open_nav_init && !g.NavInitRequest)
+					{
+						ImGui::FocusWindow(g.CurrentWindow, ImGuiFocusRequestFlags_UnlessBelowModal);
+						ImGui::NavInitWindow(g.CurrentWindow, false);
+					}
+
+					// Restore LastItemData so IsItemXXXX functions can work after BeginMenu()/EndMenu()
+					// (This fixes using IsItemClicked() and IsItemHovered(), but IsItemHovered() also relies on its support for ImGuiItemFlags_NoWindowHoverableCheck)
+					g.LastItemData = last_item_in_parent;
+					if (g.HoveredWindow == window)
+						g.LastItemData.StatusFlags |= ImGuiItemStatusFlags_HoveredWindow;
+				}
+			}
+			else
+			{
+				g.NextWindowData.ClearFlags(); // We behave like Begin() and need to consume those values
+			}
+
+			return menu_is_open;
+		}
+		bool BeginMenu(const char* label, bool enabled)
+		{
+			return BeginMenuEx(label, NULL, enabled);
+		}
+		void EndMenu()
+		{
+			// Nav: When a left move request our menu failed, close ourselves.
+			ImGuiContext& g = *GImGui;
+			ImGuiWindow* window = g.CurrentWindow;
+			IM_ASSERT(window->Flags & ImGuiWindowFlags_Popup);  // Mismatched BeginMenu()/EndMenu() calls
+			ImGuiWindow* parent_window = window->ParentWindow;  // Should always be != NULL is we passed assert.
+			if (window->BeginCount == window->BeginCountPreviousFrame)
+				if (g.NavMoveDir == ImGuiDir_Left && ImGui::NavMoveRequestButNoResultYet())
+					if (g.NavWindow && (g.NavWindow->RootWindowForNav == window) && parent_window->DC.LayoutType == ImGuiLayoutType_Vertical)
+					{
+						ImGui::ClosePopupToLevel(g.BeginPopupStack.Size - 1, true);
+						ImGui::NavMoveRequestCancel();
+					}
+
+			ImGui::EndPopup();
+		}
+		bool MenuItemEx(const char* label, const char* icon, const char* shortcut, bool selected, bool enabled)
+		{
+			ImGuiWindow* window = ImGui::GetCurrentWindow();
+			if (window->SkipItems)
+				return false;
+
+			ImGuiContext& g = *GImGui;
+			ImGuiStyle& style = g.Style;
+			ImVec2 pos = window->DC.CursorPos;			
+			ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
+			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
+			label_size.x += cellPadding.x * 2;
+			label_size.y += cellPadding.y * 2;
+
+			// See BeginMenuEx() for comments about this.
+			const bool menuset_is_open = IsRootOfOpenMenuSet();
+			if (menuset_is_open)
+				ImGui::PushItemFlag(ImGuiItemFlags_NoWindowHoverableCheck, true);
+
+			// We've been using the equivalent of ImGuiSelectableFlags_SetNavIdOnHover on all Selectable() since early Nav system days (commit 43ee5d73),
+			// but I am unsure whether this should be kept at all. For now moved it to be an opt-in feature used by menus only.
+			bool pressed;
+			ImGui::PushID(label);
+			if (!enabled)
+				ImGui::BeginDisabled();
+
+			// We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
+			const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_SelectOnRelease | ImGuiSelectableFlags_NoSetKeyOwner | ImGuiSelectableFlags_SetNavIdOnHover;
+			const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+			if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
+			{
+				// Mimic the exact layout spacing of BeginMenu() to allow MenuItem() inside a menu bar, which is a little misleading but may be useful
+				// Note that in this situation: we don't render the shortcut, we render a highlight instead of the selected tick mark.
+				float w = label_size.x;
+				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * 0.5f);
+				ImVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+				// PushStyleVarX(ImGuiStyleVar_ItemSpacing, style.ItemSpacing.x * 2.0f);
+				pressed = ImGui::Selectable("", selected, selectable_flags, ImVec2(w, 0.0f));
+				// PopStyleVar();
+				if (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_Visible)
+					ImGui::RenderText(text_pos, label);
+				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+			}
+			else
+			{
+				// Menu item inside a vertical menu
+				// (In a typical menu window where all items are BeginMenu() or MenuItem() calls, extra_w will always be 0.0f.
+				//  Only when they are other items sticking out we're going to add spacing, yet only register minimum width into the layout system.
+				float icon_w = (icon && icon[0]) ? ImGui::CalcTextSize(icon, NULL).x : 0.0f;
+				float shortcut_w = (shortcut && shortcut[0]) ? ImGui::CalcTextSize(shortcut, NULL).x : 0.0f;
+				float checkmark_w = IM_TRUNC(g.FontSize * 1.20f);
+				float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, shortcut_w, checkmark_w); // Feedback for next frame
+				float stretch_w = ImMax(0.0f, ImGui::GetContentRegionAvail().x - min_w);
+				pressed = ImGui::Selectable("", false, selectable_flags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, label_size.y));
+				if (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_Visible)
+				{
+					ImGui::RenderText(ImVec2(pos.x + cellPadding.x + offsets->OffsetLabel, pos.y + cellPadding.y), label);
+					if (icon_w > 0.0f)
+						ImGui::RenderText(ImVec2(pos.x + cellPadding.x + offsets->OffsetIcon, pos.y + cellPadding.y), icon);
+					if (shortcut_w > 0.0f)
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]);
+						ImGui::LogSetNextTextDecoration("(", ")");
+						ImGui::RenderText(ImVec2(pos.x + cellPadding.x + offsets->OffsetShortcut + stretch_w, pos.y + cellPadding.y), shortcut, NULL, false);
+						ImGui::PopStyleColor();
+					}
+					if (selected)
+						ImGui::RenderCheckMark(window->DrawList, ImVec2(pos.x + offsets->OffsetMark + stretch_w + g.FontSize * 0.40f - 6.0f, pos.y + g.FontSize * 0.134f * 0.5f + cellPadding.y), ImGui::GetColorU32(ImGuiCol_Text), g.FontSize * 0.866f);
+				}
+			}
+			IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (selected ? ImGuiItemStatusFlags_Checked : 0));
+			if (!enabled)
+				ImGui::EndDisabled();
+			ImGui::PopID();
+			if (menuset_is_open)
+				ImGui::PopItemFlag();
+
+			return pressed;
+		}
+		bool MenuItem(const char* label, const char* shortcut, bool selected, bool enabled)
+		{
+			return MenuItemEx(label, NULL, shortcut, selected, enabled);
+		}
+		bool MenuItem(const char* label, const char* shortcut, bool* p_selected, bool enabled)
+		{
+			if (MenuItemEx(label, NULL, shortcut, p_selected ? *p_selected : false, enabled))
+			{
+				if (p_selected)
+					*p_selected = !*p_selected;
+				return true;
+			}
+			return false;
+		}
+
+		void RenderMenuSeparator(bool b_light)
+		{
+			std::string separatorColor = b_light ? "menuSeparatorLight" : "menuSeparator";
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+			RenderSeparator(0,0, separatorColor);
+			ImGui::PopStyleVar();
 		}
 
 		void RenderSeparator(float topPadding, float bottomPadding, std::string separatorColor)
 		{
-			MoveScreenCursor(0, topPadding - 4);
+			MoveScreenCursor(0, topPadding);
 			ImGui::PushStyleColor(ImGuiCol_Separator, Assets::assetManager.GetColor(separatorColor));
+			Vector2 cursorPos = ImGui::GetCursorScreenPos();
 			ImGui::Separator();
+			cursorPos = ImGui::GetCursorScreenPos();
 			ImGui::PopStyleColor();
-			MoveScreenCursor(0, bottomPadding - 3);
+			MoveScreenCursor(0, bottomPadding);
 		}
 
 		bool BeginWindow(std::string name, bool& b_isOpen, ImGuiWindowFlags windowFlags, std::string bgColor)
@@ -255,12 +693,40 @@ namespace FlatEngine
 			ImGui::PopStyleVar();
 		}
 
-		void PushMenuStyles()
+		void PushTreeStyles()
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 4));	
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));		
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(4, 8));	
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 5));			
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 5));		
+
+			ImGui::PushStyleColor(ImGuiCol_MenuBarBg, Assets::assetManager.GetColor("menuBarBg"));
+			ImGui::PushStyleColor(ImGuiCol_Border, Assets::assetManager.GetColor("menuDropdownBorder"));
+			ImGui::PushStyleColor(ImGuiCol_PopupBg, Assets::assetManager.GetColor("menuDropdownBg"));
+			ImGui::PushStyleColor(ImGuiCol_Header, Assets::assetManager.GetColor("menuHeaderItem"));
+			ImGui::PushStyleColor(ImGuiCol_HeaderActive, Assets::assetManager.GetColor("menuHeaderItemActive"));
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Assets::assetManager.GetColor("menuHeaderItemHovered"));
+		}
+
+		void PopTreeStyles()
+		{
+			ImGui::PopStyleVar(4);
+			ImGui::PopStyleColor(6);
+		}
+		
+		void PushMenuStyles()
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 0));	
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 0));		
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(0,0));	
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(0,0));	
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(6, 3));	
+
+			// ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 4));	
+			// ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));		
+			// ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(4, 8));	
+			// ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 5));		
+
 			ImGui::PushStyleColor(ImGuiCol_MenuBarBg, Assets::assetManager.GetColor("menuBarBg"));
 			ImGui::PushStyleColor(ImGuiCol_Border, Assets::assetManager.GetColor("menuDropdownBorder"));
 			ImGui::PushStyleColor(ImGuiCol_PopupBg, Assets::assetManager.GetColor("menuDropdownBg"));
@@ -271,7 +737,7 @@ namespace FlatEngine
 
 		void PopMenuStyles()
 		{
-			ImGui::PopStyleVar(4);
+			ImGui::PopStyleVar(5);
 			ImGui::PopStyleColor(6);
 		}
 
@@ -1780,12 +2246,11 @@ namespace FlatEngine
 		void RenderSectionHeader(std::string headerText, float topPadding, float bottomPadding, std::string color, std::string separatorColor)
 		{
 			Vector2 headerP0 = ImGui::GetCursorScreenPos();
-			headerP0.y += topPadding;
-			GuiCore::RenderSeparator(topPadding, 3, separatorColor);
-			auto winSize = ImGui::GetWindowSize();			
-			ImGui::GetWindowDrawList()->AddRectFilled({ headerP0.x, headerP0.y - 3 }, { headerP0.x + winSize.x, headerP0.y + 17 }, Assets::assetManager.GetColor32(color), 0);
-			ImGui::Text(" %s", headerText.c_str());
-			GuiCore::RenderSeparator(4, bottomPadding, separatorColor);
+			auto winSize = ImGui::GetWindowSize();	
+			ImGui::GetWindowDrawList()->AddRectFilled({ headerP0.x, headerP0.y }, { headerP0.x + winSize.x, headerP0.y + topPadding + bottomPadding + 22 }, Assets::assetManager.GetColor32(color), 0);	
+			GuiCore::RenderSeparator(0, topPadding, separatorColor);						
+			ImGui::Text(" %s", headerText.c_str());			
+			GuiCore::RenderSeparator(bottomPadding, 0, separatorColor);
 		}
 
 		// *** SECOND VECTOR IS THE SIZE, **NOT*** THE END POSITION. *** Sets CursorScreenPos to the starting point! *** 

@@ -53,8 +53,7 @@ public:
 			BeginRender();	
 			FL::HandleEvents();
 			gameloop->Update();		
-			EndRender();
-			gameloop->DeleteObjectsInDeleteQueue();
+			EndRender();			
 
 			if (FL::b_closeProgramQueued)
 			{

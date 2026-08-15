@@ -64,6 +64,13 @@ namespace FlatEngine
         extern void SetNextViewportToFillWindow();
         extern void MoveScreenCursor(float x, float y);
         extern void RenderSectionHeader(std::string headerText, float topPadding = 0.0f, float bottomPadding = 0.0f, std::string color = "sectionHeaderBg", std::string separatorColor = "sectionHeaderSeparator");
+        extern bool BeginMainMenuBar();
+        extern void EndMainMenuBar();  
+        extern bool BeginMenu(const char* label, bool enabled = true);
+        extern void EndMenu();
+        extern bool MenuItem(const char* label, const char* shortcut = NULL, bool selected = false, bool enabled = true);
+        extern bool MenuItem(const char* label, const char* shortcut, bool* p_selected, bool enabled = true);
+        extern void RenderMenuSeparator(bool b_light = true);
         extern void RenderSeparator(float topPadding, float bottomPadding, std::string separatorColor = "separator"); 
         
         // investigate later if we can remove these from EXTERN functions and just use PushStringTable() externally, etc..
@@ -125,7 +132,7 @@ namespace FlatEngine
         extern bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string tooltip = "", float inputWidth = -1);
 
         extern bool RenderButton(std::string text, Vector2 size = Vector2(0), float rounding = 0, std::string color = "button", std::string hoverColor = "buttonHovered", std::string activeColor = "buttonActive", Vector2 framePadding = Vector2(5, 3));
-        extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(1), std::string borderColor = "buttonBorder", std::string bgColor = "imageButton", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));
+        extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(0), std::string borderColor = "buttonBorder", std::string bgColor = "imageButton", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));
         extern bool RenderInvisibleButton(std::string ID, Vector2 startingPoint, Vector2 size, bool b_allowOverlap = true, bool b_showRect = false, ImGuiButtonFlags flags = ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
         extern bool RenderCheckbox(std::string text, bool& b_toCheck);
 
@@ -138,6 +145,9 @@ namespace FlatEngine
         extern bool RenderSliderInt(std::string label, int& value, int increment = 1, int min = 0, int max = 1000, float width = -1);
         extern void PushSliderStyles();
         extern void PopSliderStyles();
+
+        extern void PushTreeStyles();
+		extern void PopTreeStyles();
 
         extern void PushMenuStyles();
         extern void PopMenuStyles();

@@ -10,7 +10,6 @@
 #include "tools/Logger.h"
 #include "tools/Time.h"
 
-#include <fstream>
 
 namespace FL = FlatEngine;
 
@@ -33,64 +32,95 @@ namespace FlatEngine
 			persistentScriptPath = "";
 			sceneToLoadAtRuntime = "";
 			persistentScript = Script();
-			focusedGameObjectID = -1;
 			b_autoSave = true;
 			m_musicVolume = 10;
 			m_effectsVolume = 10;
+			lastFocusedID = -1;
+		}
+
+		json Project::GetData()
+		{
+			UpdateSavedTime();
+			tm timeSaved = GetSavedTime();
+
+			json projectJson = json::object({		
+				{ "path", path },		
+				{ "yearsSinceSave", timeSaved.tm_year },
+				{ "monthsSinceSave", timeSaved.tm_mon },
+				{ "daysSinceSave", timeSaved.tm_mday },
+				{ "hoursSinceSave", timeSaved.tm_hour },
+				{ "minutesSinceSave", timeSaved.tm_min },
+				{ "secondsSinceSave", timeSaved.tm_sec },
+				{ "loadedScenePath", loadedScenePath},
+				{ "loadedAnimationPath", loadedAnimationPath },
+				{ "sceneToLoadAtRuntime", sceneToLoadAtRuntime },
+				{ "buildPath", buildPath },
+				{ "b_autoSave", b_autoSave },
+				{ "musicVolume", GetMusicVolume() },
+				{ "effectsVolume", GetEffectsVolume() },
+				{ "currentFileDirectory", currentFileDirectory },				
+				{ "b_persistentScriptActive", persistentScript.IsActive() }
+			});
+
+			json focusedIDs = json::array();
+			for (long ID : focusedGameObjectIDs)
+			{
+				focusedIDs.push_back(ID);
+			}
+			projectJson.emplace("focusedIDs", focusedIDs);
+
+			return projectJson;
+		}
+
+		void Project::PutData(json projectJson)
+		{
+			if (JsonHelper::JsonContains(projectJson, "Project Properties", "Project Properties"))
+			{								
+				try
+				{
+					json projectData = projectJson["Project Properties"];
+					std::string name = FileHelper::GetFilenameFromPath(path);
+					path = JsonHelper::CheckJsonString(projectData, "path", name);
+					loadedScenePath = JsonHelper::CheckJsonString(projectData, "loadedScenePath", name);
+					buildPath = JsonHelper::CheckJsonString(projectData, "buildPath", name);
+					loadedAnimationPath = JsonHelper::CheckJsonString(projectData, "loadedAnimationPath", name);						
+					sceneToLoadAtRuntime = JsonHelper::CheckJsonString(projectData, "sceneToLoadAtRuntime", name);						
+					b_autoSave = JsonHelper::CheckJsonBool(projectData, "b_autoSave", name);
+					SetMusicVolume(JsonHelper::CheckJsonInt(projectData, "musicVolume", name));
+					SetEffectsVolume(JsonHelper::CheckJsonInt(projectData, "effectsVolume", name));
+					currentFileDirectory = JsonHelper::CheckJsonString(projectData, "currentFileDirectory", name);						
+					persistentScript.PutData(JsonHelper::JsonContains(projectData, "persistentScript", name) ? projectData["persistentScript"] : json::object(), "Persistent Script");						
+					persistentScript.SetOwnerID(PERSISTENT_SCRIPT_ID);
+					persistentScript.SetActive(JsonHelper::CheckJsonBool(projectData, "b_persistentScriptActive", name));
+
+					if (JsonHelper::JsonContains(projectData, "focusedIDs", "Project Properties"))
+					{
+						json focusedIDsJson = projectData.at("focusedIDs");
+
+						for (int i = 0; i < focusedIDsJson.size(); i++)
+							AddFocusedObjectID(focusedIDsJson[i]);							
+					}
+				}
+				catch (const json::out_of_range& e)
+				{
+					Logger::log.Err("{}", e.what());
+				}
+			}
 		}
 
 		void Project::SavePersistentScript(std::string path)
-		{
-			std::string scriptPath = persistentScriptPath;
-			if (path != "")
-			{
-				scriptPath = path;
-			}
-			std::ofstream file_obj;
-			std::ifstream ifstream(scriptPath);
-			file_obj.open(scriptPath, std::ofstream::out | std::ofstream::trunc);
-			file_obj.close();
-			file_obj.open(scriptPath, std::ios::app);
-			json newFileObject = json::object({ {"Persistent Script", persistentScript.GetData() } });
-			file_obj << newFileObject.dump(4).c_str() << std::endl;
-			file_obj.close();
+		{			
+			json persistentScriptJson = json::object({ {"Persistent Script", persistentScript.GetData() } });
+			JsonHelper::WriteJsonToFile(persistentScriptJson, path != "" ? path : persistentScriptPath);
 		}
 
 		void Project::LoadPersistentScript(std::string path)
-		{
-			std::string scriptPath = path != "" ? path : persistentScriptPath;
+		{			
+			json fileContentJson = JsonHelper::LoadFileData(path != "" ? path : persistentScriptPath);
 
-			if (scriptPath != "")
-			{
-				std::ofstream file_obj;
-				std::ifstream ifstream(scriptPath);
-				file_obj.open(scriptPath, std::ios::in);
-				std::string fileContent = "";
-
-				if (file_obj.good())
-				{
-					std::string line;
-					while (!ifstream.eof())
-					{
-						std::getline(ifstream, line);
-						if (line != "")
-						{
-							fileContent.append(line + "\n");
-						}
-					}
-				}
-
-				file_obj.close();
-
-				if (file_obj.good() && fileContent != "")
-				{			
-					json fileContentJson = json::parse(fileContent);
-
-					if (fileContentJson.contains("Persistent Script"))
-					{		
-						persistentScript.PutData(fileContentJson["Persistent Script"], "Persistant Script");
-					}
-				}
+			if (fileContentJson.contains("Persistent Script"))
+			{		
+				persistentScript.PutData(fileContentJson["Persistent Script"], "Persistant Script");
 			}
 		}
 
@@ -115,7 +145,7 @@ namespace FlatEngine
 			}
 		}
 
-		const int Project::GetEffectsVolume()
+		int Project::GetEffectsVolume()
 		{
 			return m_effectsVolume;
 		}
@@ -127,77 +157,84 @@ namespace FlatEngine
 			m_timeSinceSave = Time::GetTMStructFromTimeStamp(currentTime);
 		}
 
-		const tm Project::GetSavedTime()
+		tm Project::GetSavedTime()
 		{
 			return m_timeSinceSave;
 		}
 
+		void Project::AddFocusedObjectID(long ID)
+		{
+			focusedGameObjectIDs.push_back(ID);
+			lastFocusedID = ID;
+		}
+
+		void Project::RemoveFocusedObjectID(long ID)
+		{
+			for (std::vector<long>::iterator iter = focusedGameObjectIDs.begin(); iter != focusedGameObjectIDs.end(); iter++)
+			{
+				if (*iter == ID)
+				{
+					focusedGameObjectIDs.erase(iter);
+					
+					if (lastFocusedID == ID && focusedGameObjectIDs.size())
+						lastFocusedID = focusedGameObjectIDs.back();
+					
+					return;
+				}
+			}
+		}
+
+		bool Project::IsIDFocused(long ID)
+		{
+			for (std::vector<long>::iterator iter = focusedGameObjectIDs.begin(); iter != focusedGameObjectIDs.end(); iter++)
+			{
+				if (*iter == ID)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void Project::RefocusID(long withID)
+		{
+			for (std::vector<long>::iterator iter = focusedGameObjectIDs.begin(); iter != focusedGameObjectIDs.end(); iter++)
+			{
+				if (*iter == lastFocusedID)
+				{
+					*iter = withID;
+					lastFocusedID = withID;
+					return;					
+				}
+			}
+
+			// otherwise...
+			AddFocusedObjectID(withID);			
+		}
+
+
+		// Project Manager
 		void LoadProject(std::string path)
 		{			 
+			if (!FileHelper::DoesFileExist(path))
+			{
+				Logger::log.Err("ProjectManager::LoadProject() : Path {} does not exist.", path);
+				return;
+			}
+
 			Scene newScene = Scene();
 			SceneManager::SetLoadedScene(std::move(newScene));
 
-			Project newProject = Project();
-			newProject.path = path;
-			
-			std::ofstream fileObject;
-			std::ifstream ifstream(path);
-
-			fileObject.open(path, std::ios::in);		
-			std::string fileContent = "";
-			
-			if (fileObject.good())
-			{
-				std::string line;
-				while (!ifstream.eof()) 
-				{
-					std::getline(ifstream, line);
-					fileContent.append(line + "\n");
-				}
-			}
-			
-			fileObject.close();
-
-			if (fileObject.good())
-			{		
-				json projectJson = json::parse(fileContent);
-
-				if (JsonHelper::JsonContains(projectJson, "Project Properties", "Project Properties"))
-				{								
-					try
-					{
-						json projectData = projectJson["Project Properties"];
-						std::string name = FileHelper::GetFilenameFromPath(path);
-
-						newProject.path = JsonHelper::CheckJsonString(projectData, "path", name);
-						newProject.loadedScenePath = JsonHelper::CheckJsonString(projectData, "loadedScenePath", name);
-						newProject.buildPath = JsonHelper::CheckJsonString(projectData, "buildPath", name);
-						newProject.loadedAnimationPath = JsonHelper::CheckJsonString(projectData, "loadedAnimationPath", name);
-						newProject.focusedGameObjectID = JsonHelper::CheckJsonLong(projectData, "focusedGameObjectID", name);
-						newProject.sceneToLoadAtRuntime = JsonHelper::CheckJsonString(projectData, "sceneToLoadAtRuntime", name);						
-						newProject.b_autoSave = JsonHelper::CheckJsonBool(projectData, "b_autoSave", name);
-						newProject.SetMusicVolume(JsonHelper::CheckJsonInt(projectData, "musicVolume", name));
-						newProject.SetEffectsVolume(JsonHelper::CheckJsonInt(projectData, "effectsVolume", name));
-						newProject.currentFileDirectory = JsonHelper::CheckJsonString(projectData, "currentFileDirectory", name);						
-						newProject.persistentScript.PutData(JsonHelper::JsonContains(projectData, "persistentScript", name) ? projectData["persistentScript"] : json::object(), "Persistent Script");						
-						newProject.persistentScript.SetOwnerID(PERSISTENT_SCRIPT_ID);
-						newProject.persistentScript.SetActive(JsonHelper::CheckJsonBool(projectData, "b_persistentScriptActive", name));
-					}
-					catch (const json::out_of_range& e)
-					{
-						Logger::log.Err("{}", e.what());
-					}
-				}
-			}
-			
-			loadedProject = newProject;
+			json projectJson = JsonHelper::LoadFileData(path);
+			loadedProject = Project();
+			loadedProject.PutData(projectJson);
+	
 			Assets::assetManager.CollectDirectories();		
 			Assets::assetManager.UpdateProjectDirs(loadedProject.path);	
-			FL::VulkanManager::vulkan.InitializeMaterials();
-			// InitializeTileSets();		
+			FL::VulkanManager::vulkan.InitializeMaterials();			
 			PrefabManager::InitializePrefabs();	
-			LuaManager::RetrieveLuaScriptPaths();		
-			// RetrieveCPPScriptNames();
+			LuaManager::RetrieveLuaScriptPaths();					
 			Controls::InitializeMappingContexts();		
 
 			if (loadedProject.loadedScenePath != "")
@@ -206,14 +243,13 @@ namespace FlatEngine
 			}
 			else
 			{
-				Logger::log.Info("No project scene to load.");
+				Logger::log.Info("ProjectManager::LoadProject() : No project scene to load for Project: {}.", loadedProject.path);
 			}
-
 		}
 
 		void CreateNewProject(std::string projectName)
 		{
-			SaveProject(loadedProject, loadedProject.path);
+			SaveProject(&loadedProject, loadedProject.path);
 
 			if (projectName != "")
 			{
@@ -226,7 +262,7 @@ namespace FlatEngine
 
 				newProject.persistentScriptPath = persistentScriptPath;				
 
-				SaveProject(newProject, projectFilePath);
+				SaveProject(&newProject, projectFilePath);
 				LoadProject(projectFilePath);
 			}
 		}
@@ -252,48 +288,22 @@ namespace FlatEngine
 			// TODO: Copy shader compilation files into shaders directory
 		}
 
-		void SaveProject(Project& project, std::string path)
+		void SaveProject(Project* project, std::string path)
 		{		
-			std::ofstream file_obj;
-			std::ifstream ifstream(path);
+			if (!FileHelper::DoesFileExist(path))
+			{
+				Logger::log.Err("ProjectManager::SaveProject() : Path {} does not exist.", path);
+				return;
+			}
 
-			// Delete old file contents
-			file_obj.open(path, std::ofstream::out | std::ofstream::trunc);
-			file_obj.close();
-			file_obj.open(path, std::ios::app);			
-			
-			project.UpdateSavedTime();
-			tm timeSaved = project.GetSavedTime();
-
-			json properties = json::object({
-				{ "path", path },
-				{ "loadedScenePath", project.loadedScenePath},
-				{ "loadedAnimationPath", project.loadedAnimationPath },
-				{ "sceneToLoadAtRuntime", project.sceneToLoadAtRuntime },
-				{ "buildPath", project.buildPath },
-				{ "b_autoSave", project.b_autoSave },
-				{ "musicVolume", project.GetMusicVolume() },
-				{ "effectsVolume", project.GetEffectsVolume() },
-				{ "currentFileDirectory", loadedProject.currentFileDirectory },
-				{ "focusedGameObjectID", loadedProject.focusedGameObjectID },
-				{ "yearsSinceSave", timeSaved.tm_year },
-				{ "monthsSinceSave", timeSaved.tm_mon },
-				{ "daysSinceSave", timeSaved.tm_mday },
-				{ "hoursSinceSave", timeSaved.tm_hour },
-				{ "minutesSinceSave", timeSaved.tm_min },
-				{ "secondsSinceSave", timeSaved.tm_sec },
-				{ "persistentScript", project.persistentScript.GetData() },
-				{ "b_persistentScriptActive", project.persistentScript.IsActive() }
-			});
-
-			json newFileObject = json::object({ {"Project Properties", properties } });
-			file_obj << newFileObject.dump(4).c_str() << std::endl;
-			file_obj.close();
+			loadedProject.path = path;
+			json projectJson = json::object({ {"Project Properties", loadedProject.GetData() } });
+			JsonHelper::WriteJsonToFile(projectJson, path);
 		}
 
 		void SaveCurrentProject()
 		{
-			SaveProject(loadedProject, loadedProject.path);
+			SaveProject(&loadedProject, loadedProject.path);
 		}
 
 		void BuildProject()

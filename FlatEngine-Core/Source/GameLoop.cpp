@@ -129,7 +129,7 @@ namespace FlatEngine
 					HandleButtons();	
 					RunUpdateOnScripts();
 					HandleAnimations();	
-					PhysicsManager::physics2D.Update(GetDeltaTime());
+					PhysicsManager::gamePhysics2D.Update(GetDeltaTime());
 
 					m_time += m_deltaTime;
 					if (m_accumulator >= m_deltaTime)
@@ -156,6 +156,8 @@ namespace FlatEngine
 		{
 			frameStart = FL::Time::Time();
 		}	
+
+		DeleteObjectsInDeleteQueue();
 	}
 
 	void GameLoop::Stop()
@@ -314,7 +316,7 @@ namespace FlatEngine
 				Vector4 activeEdges = button.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
-				if (PhysicsManager::physics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
+				if (PhysicsManager::gamePhysics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
 				{
 					if (button.GetActiveLayer() >= GetFirstUnblockedLayer())
 					{
@@ -415,7 +417,7 @@ namespace FlatEngine
 			bool b_blocksLayers = canvas.GetBlocksLayers();
 			int layerNumber = canvas.GetLayerNumber();
 
-			if (PhysicsManager::physics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
+			if (PhysicsManager::gamePhysics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
 			{
 				lowestUnblockedCanvas = canvas;
 				lowestUnblockedLayer = canvas.GetLayerNumber();

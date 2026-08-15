@@ -94,8 +94,8 @@ namespace FlatEngine
 			AudioManager::soundController.StopMusic();
 			VulkanManager::vulkan.ClearGroupedByMaterialMeshes();
 			SceneView::cameraSceneRenderObjects.Clear();
-			PhysicsManager::physics2D.Shutdown();
-			PhysicsManager::physics2D.Init();
+			PhysicsManager::gamePhysics2D.Shutdown();
+			PhysicsManager::gamePhysics2D.Init();
 
 			std::string pointToPath = pointTo != "" ? pointTo : actualPath;
 			json fileContentJson = JsonHelper::LoadFileData(actualPath);

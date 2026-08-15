@@ -20,7 +20,7 @@ namespace FlatGui
 	extern void RenderAnimator(bool& b_show);	
 	extern void RenderFileExplorer(bool& b_show);
 	extern void RenderHierarchy(bool& b_show);
-	extern void RenderInspector(bool& b_show);
+	extern void RenderInspector(bool& b_show, std::string windowID, long focusedID);
 	extern void RenderKeyFrameEditor(bool& b_show);
 	extern void RenderLog(bool &b_show);
 	extern void RenderMappingContextEditor(bool& b_show);

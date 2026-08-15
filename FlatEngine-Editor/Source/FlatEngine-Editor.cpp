@@ -76,9 +76,8 @@ void EditorApplication::Run()
 	{
 		BeginRender();	
 		FL::HandleEvents();
-		gameloop->Update();		
+		gameloop->Update();						
 		EndRender();
-		gameloop->DeleteObjectsInDeleteQueue();
 
 		if (FL::b_closeProgramQueued)
 		{
@@ -130,9 +129,9 @@ void EditorApplication::EndRender()
 
 void EditorApplication::OnLoadScene(std::string sceneName)
 {
-	if (FL::SceneManager::loadedScene.GetObjectByID(FL::ProjectManager::loadedProject.focusedGameObjectID) == nullptr)
+	if (FL::ProjectManager::loadedProject.loadedScenePath != sceneName)
 	{
-		FL::ProjectManager::loadedProject.focusedGameObjectID = -1;
+		FL::ProjectManager::loadedProject.focusedGameObjectIDs.clear();
 	}
 	if (gameloop->IsStarted())
 	{

@@ -23,9 +23,9 @@
 #include "managers/Settings.h"
 #include "managers/TileSetManager.h"
 #include "Modals.h"
-#include "physics/Joint.h"
+#include "physics/Joint2D.h"
 #include "physics/PhysicsManager.h"
-#include "physics/Shape.h"
+#include "physics/Shape2D.h"
 #include "render/VulkanManager.h"
 #include "scripting/CPPScriptMethods.h"
 #include "TagList.h"
@@ -46,7 +46,7 @@ namespace FL = FlatEngine;
 namespace FlatGui 
 {
 	namespace Inspector
-    {
+    {	
 		bool RenderIsActiveCheckbox(bool& b_isActive)
 		{
 			FL::GuiCore::MoveScreenCursor(0, 3);
@@ -66,53 +66,37 @@ namespace FlatGui
 
 			// Begin Component
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("componentBg"));			
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, FL::Vector2(10, 10));							
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, FL::Vector2(0, 0));							
 			ImGui::BeginChild(componentID.c_str(), FL::Vector2(0, 0), FL::GuiCore::autoResizeChildFlags);		
 			// {
 								
 				// Component Name													
-				FL::GuiCore::RenderSectionHeader("  " + componentType, 4, 0, "componentSectionHeaderBg", "componentSectionHeaderSeparator");				
-				FL::GuiCore::MoveScreenCursor(2, -19);
+				FL::GuiCore::RenderSectionHeader("  " + componentType, 0, 0, "componentSectionHeaderBg", "componentSectionHeaderSeparator");				
+				FL::GuiCore::MoveScreenCursor(2, -22);
 				ImGui::Image(FL::Assets::assetManager.GetTexture(FL::ComponentTypeStrings[component->GetType()]), FL::Vector2(16));
 
 				if (component->GetType() == FL::ComponentType_Transform)
 				{
-					FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 16, -19);					
+					FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 18, -20);					
 				}
 				else
 				{
-					FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 34, -19);
-				}
-				
-				std::string expandID = "##expandIcon-" + std::to_string(ownerID);
-				std::string trashcanID = "##trashIcon-" + std::to_string(ownerID);
-				std::string openFileID = "##openFileIcon-" + std::to_string(ownerID);
-
-				if (component->GetType() != FL::ComponentType_Transform)
-				{			
-					if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(16), 0, FL::Vector2(0)))
+					FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -20);
+					if (FL::GuiCore::RenderImageButton("##trashIcon-" + std::to_string(ownerID), FL::Assets::assetManager.GetTexture("trash")))
 					{
 						queuedForDelete = component;
 					}
 					ImGui::SameLine(0, 2);
 				}
-				if (b_isCollapsed)
-				{
-					if (FL::GuiCore::RenderImageButton(expandID.c_str(), FL::Assets::assetManager.GetTexture("expand"), FL::Vector2(16), 0, FL::Vector2(0)))
-					{
-						component->SetCollapsed(!b_isCollapsed);
-					}
-				}
+
+				std::string expandString = b_isCollapsed ? "expand" : "expandFlipped";
+				if (FL::GuiCore::RenderImageButton("##expandIcon-" + std::to_string(ownerID), FL::Assets::assetManager.GetTexture(expandString)))				
+					component->SetCollapsed(!b_isCollapsed);				
+
+				if (b_isCollapsed)				
+					FL::GuiCore::MoveScreenCursor(0,1); // reveals bottom separator on header				
 				else
-				{
-					if (FL::GuiCore::RenderImageButton(expandID.c_str(), FL::Assets::assetManager.GetTexture("expandFlipped"), FL::Vector2(16), 0, FL::Vector2(0)))
-					{
-						component->SetCollapsed(!b_isCollapsed);
-					}
-				}
-			
-				if (!component->IsCollapsed())
-				{			
+				{					
 					bool b_isActive = component->IsActive();
 					if (RenderIsActiveCheckbox(b_isActive))
 					{
@@ -140,7 +124,7 @@ namespace FlatGui
 
 			if (component->IsCollapsed())
 			{
-				FL::GuiCore::MoveScreenCursor(0, -3);
+				FL::GuiCore::MoveScreenCursor(0, -5);
 			}
 			else 
 			{
@@ -1263,30 +1247,33 @@ namespace FlatGui
 			return b_changed;
 		}
 
-		void RenderShapeComponentProps(FL::Shape* shape, b2ShapeId& shapeToDelete, b2ChainId& chainToDelete)
+		void RenderShape2DComponentProps(FL::Shape2D* shape, b2ShapeId& shapeToDelete, b2ChainId& chainToDelete)
 		{
 			b2ShapeId shapeID = shape->GetShapeID();
 			b2ChainId chainID = shape->GetChainID();
-			FL::ShapeType shapeType = shape->GetType();		
+			FL::ShapeType2D shapeType = shape->GetType();		
 			std::string ID = "";
-			if (shapeType != FL::ShapeType::ShapeType_Chain)			
+			if (shapeType != FL::ShapeType2D::ShapeType2D_Chain)			
 				ID = " (index:" + std::to_string(shapeID.index1) + " world:" + std::to_string(shapeID.world0) + ")";			
 			else			
 				ID = " (index:" + std::to_string(chainID.index1) + " world:" + std::to_string(chainID.world0) + ")";			
-			std::string shapeString = FL::ShapeTypeStrings[(int)shapeType] + ID;		
+			std::string shapeString = FL::ShapeType2DStrings[(int)shapeType] + ID;		
 
 			FL::GuiCore::RenderSectionHeader(shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);
-
-			std::string trashcanID = "##trashIcon-" + ID;
-			FL::GuiCore::MoveScreenCursor(0,-19);
-			if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash")))
+			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -22);
+			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash")))
 			{
 				shapeToDelete = shapeID;
 				chainToDelete = chainID;
 			}			
+			ImGui::SameLine(0,2);			
+			std::string expandString = shape->b_isCollapsed ? "expand" : "expandFlipped";
+			if (FL::GuiCore::RenderImageButton("##expandIcon-" + ID, FL::Assets::assetManager.GetTexture(expandString)))				
+				shape->b_isCollapsed = !shape->b_isCollapsed;	
 
-			FL::GuiCore::MoveScreenCursor(0, -3);
+			if (shape->b_isCollapsed)
+				return;
+
 			bool b_changed = false;
 			
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Density" + ID, "Density", FL::Vector2(), 0.001f, 0.001f), shape->density);
@@ -1301,30 +1288,30 @@ namespace FlatGui
 			std::visit([shape, &b_changed](auto&& sData) -> void
 			{
 				using T = std::decay_t<decltype(sData)>;
-				if constexpr (std::is_same_v<T, FL::BoxShapeData>)
+				if constexpr (std::is_same_v<T, FL::BoxShape2DData>)
 				{
 					b_changed |= RenderBoxProps(sData);
 				}
-				else if constexpr (std::is_same_v<T, FL::CircleShapeData>)
+				else if constexpr (std::is_same_v<T, FL::CircleShape2DData>)
 				{
 					b_changed |= RenderCircleProps(sData);
 				}
-				else if constexpr (std::is_same_v<T, FL::CapsuleShapeData>)
+				else if constexpr (std::is_same_v<T, FL::CapsuleShape2DData>)
 				{
 					b_changed |= RenderCapsuleProps(sData);
 				}
-				else if constexpr (std::is_same_v<T, FL::PolygonShapeData>)
+				else if constexpr (std::is_same_v<T, FL::PolygonShape2DData>)
 				{
 					b_changed |= RenderPolygonProps(sData);
 				}
-				else if constexpr (std::is_same_v<T, FL::ChainShapeData>)
+				else if constexpr (std::is_same_v<T, FL::ChainShape2DData>)
 				{
 					b_changed |= RenderChainProps(sData);
 				}
 			}, shape->shapeData);
 			
 			if (b_changed)			
-				FL::PhysicsManager::physics2D.RecreateShape(shape);	
+				FL::PhysicsManager::gamePhysics2D.RecreateShape(shape);	
 
 			FL::GuiCore::MoveScreenCursor(0, 3);
 		}
@@ -1418,30 +1405,34 @@ namespace FlatGui
 		{
 		}
 
-		void RenderJointComponentProps(FL::Joint* joint, long& jointIDToDelete)
+		void RenderJoint2DComponentProps(FL::Joint2D* joint, long& jointIDToDelete)
 		{		
 			long jointID = joint->GetID();
 			long ownerID = joint->GetOwnerID();				
-			FL::JointType jointType = joint->GetJointType();
-			std::string jointTypeString = FL::JointTypeStrings[(int)jointType];
+			FL::JointType2D jointType = joint->GetJointType();
+			std::string jointTypeString = FL::JointType2DStrings[(int)jointType];
 			std::string ID = " (id:" + std::to_string(jointID) + " index:" + std::to_string(joint->GetJointID().index1) + " world:" + std::to_string(joint->GetJointID().world0) + ")";
-			std::string jointString = FL::JointTypeStrings[(int)jointType] + ID;
+			std::string jointString = FL::JointType2DStrings[(int)jointType] + ID;
+
+			FL::GuiCore::RenderSectionHeader(jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");			
+			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -22);
+			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash")))
+			{
+				jointIDToDelete = jointID;
+			}
+			ImGui::SameLine(0,2);			
+			std::string expandString = joint->b_isCollapsed ? "expand" : "expandFlipped";
+			if (FL::GuiCore::RenderImageButton("##expandIcon-" + ID, FL::Assets::assetManager.GetTexture(expandString)))				
+				joint->b_isCollapsed = !joint->b_isCollapsed;	
+
+			if (joint->b_isCollapsed)
+				return;
 
 			FL::Body2D* bodyA = joint->GetBodyA();
 			FL::Body2D* bodyB = joint->GetBodyB();	
 			bool b_collideConnected = joint->DoesCollideConnected();
 			FL::Vector2 anchorA = joint->GetAnchorA();
 			FL::Vector2 anchorB = joint->GetAnchorB();
-
-			FL::GuiCore::RenderSectionHeader(jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 20, 0);			
-
-			std::string trashcanID = "##trashIcon-" + ID;
-			FL::GuiCore::MoveScreenCursor(0,-19);
-			if (FL::GuiCore::RenderImageButton(trashcanID.c_str(), FL::Assets::assetManager.GetTexture("trash")))
-			{
-				jointIDToDelete = jointID;
-			}
 
 			int droppedObjectID = -1;		
 			std::string bodyAName = bodyA != nullptr ? bodyA->GetOwningObject()->GetName() : "";
@@ -1471,27 +1462,27 @@ namespace FlatGui
 			std::visit([joint, ID](auto&& jData) -> void
 			{
 				using T = std::decay_t<decltype(jData)>;
-				if constexpr (std::is_same_v<T, FL::DistanceJointData>)
+				if constexpr (std::is_same_v<T, FL::DistanceJoint2DData>)
 				{
 					RenderDistanceJointProps(jData, ID);
 				}
-				else if constexpr (std::is_same_v<T, FL::RevoluteJointData>)
+				else if constexpr (std::is_same_v<T, FL::RevoluteJoint2DData>)
 				{
 					RenderRevoluteJointProps(jData, ID);
 				}
-				else if constexpr (std::is_same_v<T, FL::PrismaticJointData>)
+				else if constexpr (std::is_same_v<T, FL::PrismaticJoint2DData>)
 				{
 					RenderPrismaticJointProps(jData, ID);
 				}
-				else if constexpr (std::is_same_v<T, FL::MouseJointData>)
+				else if constexpr (std::is_same_v<T, FL::MouseJoint2DData>)
 				{
 					RenderMouseJointProps(jData, ID);
 				}
-				else if constexpr (std::is_same_v<T, FL::WeldJointData>)
+				else if constexpr (std::is_same_v<T, FL::WeldJoint2DData>)
 				{
 					RenderWeldJointProps(jData, ID);
 				}
-				else if constexpr (std::is_same_v<T, FL::WheelJointData>)
+				else if constexpr (std::is_same_v<T, FL::WheelJoint2DData>)
 				{
 					RenderWheelJointProps(jData, ID);
 				}
@@ -1529,11 +1520,11 @@ namespace FlatGui
 			if (ImGui::BeginPopupContextItem("##AddShape", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
-				for (int i = 1; i < FL::ShapeTypeStrings.size(); i++)
+				for (int i = 1; i < FL::ShapeType2DStrings.size(); i++)
 				{
-					if (ImGui::MenuItem(FL::ShapeTypeStrings[i].c_str()))
+					if (ImGui::MenuItem(FL::ShapeType2DStrings[i].c_str()))
 					{
-						body->AddShape((FL::ShapeType)i);
+						body->AddShape((FL::ShapeType2D)i);
 						ImGui::CloseCurrentPopup();
 					}
 				}		
@@ -1546,14 +1537,13 @@ namespace FlatGui
 				b2ShapeId shapeToDelete = b2_nullShapeId;
 				b2ChainId chainToDelete = b2_nullChainId;
 
-				std::vector<FL::Shape*> shapes = body->GetShapes();
+				std::vector<FL::Shape2D*> shapes = body->GetShapes();
 
 				for (int i = 0; i < shapes.size(); i++)
 				{
-					FL::GuiCore::MoveScreenCursor(0,5);
-					RenderShapeComponentProps(shapes[i], shapeToDelete, chainToDelete);
+					RenderShape2DComponentProps(shapes[i], shapeToDelete, chainToDelete);
 					
-					if (i != shapes.size() - 1)
+					if (!shapes[i]->b_isCollapsed || i == shapes.size() - 1 )
 					{
 						FL::GuiCore::MoveScreenCursor(0, 3);
 					}
@@ -1573,11 +1563,11 @@ namespace FlatGui
 			if (ImGui::BeginPopupContextItem("##AddJoint", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
-				for (int i = 1; i < FL::JointType_Size; i++)
+				for (int i = 1; i < FL::JointType2D_Size; i++)
 				{
-					if (ImGui::MenuItem(FL::JointTypeStrings[i].c_str()))
+					if (ImGui::MenuItem(FL::JointType2DStrings[i].c_str()))
 					{				
-						body->AddJoint((FL::JointType)i);
+						body->AddJoint((FL::JointType2D)i);
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -1588,14 +1578,13 @@ namespace FlatGui
 			if (body->GetJoints().size() > 0)
 			{
 				long jointIDToDelete = -1;			
-				std::vector<FL::Joint*> joints = body->GetJoints();
+				std::vector<FL::Joint2D*> joints = body->GetJoints();
 
 				for (int i = 0; i < joints.size(); i++)
-				{
-					FL::GuiCore::MoveScreenCursor(0,5);
-					RenderJointComponentProps(joints[i], jointIDToDelete);
+				{					
+					RenderJoint2DComponentProps(joints[i], jointIDToDelete);
 
-					if (i != joints.size() - 1)
+					if (!joints[i]->b_isCollapsed || i == joints.size() - 1)
 					{
 						FL::GuiCore::MoveScreenCursor(0, 3);
 					}
@@ -2187,205 +2176,212 @@ namespace FlatGui
 		return b_changed;
 	}
 
-	void RenderInspector(bool& b_show)
+	void RenderInspector(bool& b_show, std::string windowID, long focusedID)
 	{
 		if (!b_show)
 			return;
-
-		FL::GuiCore::b_currentTableLight = true;
-				
-		if (FL::GuiCore::BeginWindow("Inspector", b_show))
-		{
-			long focusedID = FL::ProjectManager::loadedProject.focusedGameObjectID;
-
-			if (focusedID != -1 && FL::SceneManager::loadedScene.GetObjectByID(focusedID) != nullptr)
-			{
-				FL::GameObject* focusedObject = FL::SceneManager::loadedScene.GetObjectByID(focusedID);
-	
-				std::string nameLabel = "Name";
-				std::string objectName = focusedObject->GetName();
-				if (FL::GuiCore::RenderInput("##GameObjectName", nameLabel, objectName))
-				{
-					focusedObject->SetName(objectName);
-				}
-
-				bool b_isActive = focusedObject->IsActive();
-				FL::GuiCore::MoveScreenCursor(3, 2);
-				if (FL::GuiCore::RenderCheckbox("Active", b_isActive))
-				{
-					focusedObject->SetActive(b_isActive);
-				}
-				ImGui::SameLine(ImGui::GetContentRegionAvail().x - 90, 5);
-				FL::GuiCore::MoveScreenCursor(0, -2);
-
-				static FL::Vector2 mousePos = ImGui::GetCursorScreenPos();
-				FL::TagList &tagList = focusedObject->GetTagList();			
-				if (FL::GuiCore::RenderButton("Tags"))
-				{
-					mousePos = FL::Vector2(ImGui::GetIO().MousePos.x - 200, ImGui::GetIO().MousePos.y);
-					ImGui::SetNextWindowPos(mousePos);
-				}
-
-
-				FL::GuiCore::PushMenuStyles();
-				if (ImGui::BeginPopupContextItem("TagsPopup", ImGuiPopupFlags_MouseButtonLeft))
-				{
-					if (FL::GuiCore::PushTable("TagsTable", 3))
-					{
-						for (std::string tag : FL::Assets::assetManager.GetTags())
-						{
-							std::string tableRowId = tag + "TagCheckboxTableRow";
-							RenderTagListTable(tableRowId.c_str(), tag, &tagList);
-						}
-						FL::GuiCore::PopTable();
-					}
-					ImGui::EndPopup();					
-				}
-				FL::GuiCore::PopMenuStyles();
-
-
-				// Three Dots More Options Button
-				ImGui::SameLine(0, 5);
-				FL::GuiCore::MoveScreenCursor(0, -1);
-				FL::GuiCore::RenderImageButton("##InspectorMoreButton", FL::Assets::assetManager.GetTexture("threeDots"),FL::Vector2(16), 0. ,FL::Vector2(1), "buttonBorder", "transparent");		
-				FL::GuiCore::PushMenuStyles();
-				if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft)) // <-- use last item id as popup id
-				{
-					if (ImGui::MenuItem(" Delete GameObject"))
-					{
-						FL::ProjectManager::loadedProject.focusedGameObjectID = -1;
-						focusedID = -1;
-						FL::SceneManager::loadedScene.DeleteGameObject(focusedObject->GetID());
-						ImGui::CloseCurrentPopup();
-					}
-	
-					ImGui::EndPopup();
-				}
-				FL::GuiCore::PopMenuStyles();
-
-				ImGui::SameLine(0,3);
-				FL::GuiCore::MoveScreenCursor(0, -1);
-				static bool b_expandAll = true;
-				if (b_expandAll)
-				{
-					if (FL::GuiCore::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedID), FL::Assets::assetManager.GetTexture("expandFlipped"),FL::Vector2(16), 0 ,FL::Vector2(1), "buttonBorder", "transparent"))
-					{
-						for (int i = 1; i < FL::ComponentType_Size; i++)
-						{
-							FL::Component* component = focusedObject->GetComponent((FL::ComponentType)i);
-							if (component != nullptr)
-							{
-								component->SetCollapsed(b_expandAll);
-							}
-						}
-						b_expandAll = !b_expandAll;
-					}
-					if (ImGui::IsItemHovered())
-					{
-						FL::GuiCore::RenderTextToolTip("Collapse all");
-					}
-				}
-				else
-				{
-					if (FL::GuiCore::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedID), FL::Assets::assetManager.GetTexture("expand"),FL::Vector2(16), 0 ,FL::Vector2(1), "buttonBorder", "transparent", "white"))
-					{
-						for (int i = 1; i < FL::ComponentType_Size; i++)
-						{
-							FL::Component* component = focusedObject->GetComponent((FL::ComponentType)i);
-							if (component != nullptr)
-							{
-								component->SetCollapsed(b_expandAll);
-							}
-						}
-						b_expandAll = !b_expandAll;
-					}
-					if (ImGui::IsItemHovered())
-					{
-						FL::GuiCore::RenderTextToolTip("Expand all");
-					}
-				}		
-
-				// For scrolling components section with background
-				ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("componentsScrollingBg"));				
-				ImGui::BeginChild("ComponentsSectionBg",FL::Vector2(0, ImGui::GetContentRegionAvail().y - 30), FL::GuiCore::childFlags);
-				ImGui::PopStyleColor();
-				// {			
-
-					FL::Vector2 windowPos;
-					FL::Vector2 windowSize;
 		
-					if (focusedObject != nullptr)
-					{
-						FL::Component* queuedForDelete = nullptr;
-						
-						for (int i = 1; i < FL::ComponentType_Size; i++)
-						{
-							FL::Component* component = focusedObject->GetComponent((FL::ComponentType)i);
-							if (component != nullptr)
-							{
-								Inspector::BeginComponent(component, queuedForDelete);
-								if (!component->IsCollapsed())
-								{
-									switch ((FL::ComponentType)i)
-									{											
-										case FL::ComponentType_Animation:           Inspector::RenderAnimationComponent(static_cast<FL::Animation*>(component)); break;
-										case FL::ComponentType_Audio:			    Inspector::RenderAudioComponent(static_cast<FL::Audio*>(component)); break;
-										// case FL::ComponentType_Body: 			    Inspector::RenderBodyComponent(static_cast<FL::Body*>(component)); break;
-										case FL::ComponentType_Body2D: 			    Inspector::RenderBody2DComponent(static_cast<FL::Body2D*>(component)); break;
-										case FL::ComponentType_Button: 			    Inspector::RenderButtonComponent(static_cast<FL::Button*>(component)); break;
-										case FL::ComponentType_Camera:			    Inspector::RenderCameraComponent(static_cast<FL::Camera*>(component)); break;
-										case FL::ComponentType_Canvas:			    Inspector::RenderCanvasComponent(static_cast<FL::Canvas*>(component)); break;
-										case FL::ComponentType_CharacterController: Inspector::RenderCharacterControllerComponent(static_cast<FL::CharacterController*>(component)); break;										
-										case FL::ComponentType_Light:			    Inspector::RenderLightComponent(static_cast<FL::Light*>(component)); break;
-										case FL::ComponentType_Mesh:			    Inspector::RenderMeshComponent(static_cast<FL::Mesh*>(component)); break;
-										case FL::ComponentType_Script:			    Inspector::RenderScriptComponent(static_cast<FL::Script*>(component)); break;
-										case FL::ComponentType_Sprite:			    Inspector::RenderSpriteComponent(static_cast<FL::Sprite*>(component)); break;
-										case FL::ComponentType_Text:			    Inspector::RenderTextComponent(static_cast<FL::Text*>(component)); break;
-										case FL::ComponentType_TileMap:			    Inspector::RenderTileMapComponent(static_cast<FL::TileMap*>(component)); break;
-										case FL::ComponentType_Transform:		    Inspector::RenderTransformComponent(static_cast<FL::Transform*>(component)); break;
-									
-										default: break;
-									}
-								}
-								Inspector::EndComponent(component);
-							}
-						}
-
-						if (queuedForDelete != nullptr)
-						{
-							focusedObject->RemoveComponent(queuedForDelete);
-							queuedForDelete = nullptr;
-						}
-					}
-
-				// }
-				ImGui::EndChild(); // ComponentsSectionBg
-
+		FL::GuiCore::b_currentTableLight = true;
+		long objectQueuedForDeletion = -1;
 				
-				FL::GuiCore::PushMenuStyles();
-				FL::GuiCore::RenderButton("Add Component",FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
-				if (ImGui::BeginPopupContextItem("##AddComponent", ImGuiPopupFlags_MouseButtonLeft))
+		if (FL::GuiCore::BeginWindow("Inspector##" + windowID, b_show))
+		{
+			if (focusedID == -1 || FL::SceneManager::loadedScene.GetObjectByID(focusedID) == nullptr)
+			{
+				FL::GuiCore::EndWindow(); // Inspector	
+				return;
+			}
+
+			if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))			
+				FL::ProjectManager::loadedProject.lastFocusedID = focusedID;
+
+			FL::GameObject* focusedObject = FL::SceneManager::loadedScene.GetObjectByID(focusedID);
+			
+			std::string nameLabel = "Name";
+			std::string objectName = focusedObject->GetName();
+			if (FL::GuiCore::RenderInput("##GameObjectName", nameLabel, objectName))
+			{
+				focusedObject->SetName(objectName);
+			}
+
+			bool b_isActive = focusedObject->IsActive();
+			FL::GuiCore::MoveScreenCursor(3, 2);
+			if (FL::GuiCore::RenderCheckbox("Active", b_isActive))
+			{
+				focusedObject->SetActive(b_isActive);
+			}
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 90, 5);
+			FL::GuiCore::MoveScreenCursor(0, -2);
+
+			static FL::Vector2 mousePos = ImGui::GetCursorScreenPos();
+			FL::TagList &tagList = focusedObject->GetTagList();			
+			if (FL::GuiCore::RenderButton("Tags"))
+			{
+				mousePos = FL::Vector2(ImGui::GetIO().MousePos.x - 200, ImGui::GetIO().MousePos.y);
+				ImGui::SetNextWindowPos(mousePos);
+			}
+
+
+			FL::GuiCore::PushMenuStyles();
+			if (ImGui::BeginPopupContextItem("TagsPopup", ImGuiPopupFlags_MouseButtonLeft))
+			{
+				if (FL::GuiCore::PushTable("TagsTable", 3))
 				{
-					// Add all the component types you can add to this GameObject
+					for (std::string tag : FL::Assets::assetManager.GetTags())
+					{
+						std::string tableRowId = tag + "TagCheckboxTableRow";
+						RenderTagListTable(tableRowId.c_str(), tag, &tagList);
+					}
+					FL::GuiCore::PopTable();
+				}
+				ImGui::EndPopup();					
+			}
+			FL::GuiCore::PopMenuStyles();
+
+
+			// Three Dots More Options Button
+			ImGui::SameLine(0, 5);
+			FL::GuiCore::MoveScreenCursor(0, -1);
+			FL::GuiCore::RenderImageButton("##InspectorMoreButton", FL::Assets::assetManager.GetTexture("threeDots"),FL::Vector2(16), 0. ,FL::Vector2(1), "buttonBorder", "transparent");		
+			FL::GuiCore::PushMenuStyles();
+			if (ImGui::BeginPopupContextItem("##InspectorMoreContext", ImGuiPopupFlags_MouseButtonLeft)) // <-- use last item id as popup id
+			{
+				if (ImGui::MenuItem(" Delete GameObject"))
+				{						
+					objectQueuedForDeletion = focusedID;								
+					ImGui::CloseCurrentPopup();
+				}
+
+				ImGui::EndPopup();
+			}
+			FL::GuiCore::PopMenuStyles();
+
+			ImGui::SameLine(0,3);
+			FL::GuiCore::MoveScreenCursor(0, -1);
+			static bool b_expandAll = true;
+			if (b_expandAll)
+			{
+				if (FL::GuiCore::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedID), FL::Assets::assetManager.GetTexture("expandFlipped"),FL::Vector2(16), 0 ,FL::Vector2(1), "buttonBorder", "transparent"))
+				{
 					for (int i = 1; i < FL::ComponentType_Size; i++)
 					{
-						if (!focusedObject->GetComponent((FL::ComponentType)i))
+						FL::Component* component = focusedObject->GetComponent((FL::ComponentType)i);
+						if (component != nullptr)
 						{
-							std::string componentTypeString = " " + FL::ComponentTypeStrings[i];
-							if (ImGui::MenuItem(componentTypeString.c_str()))
-							{
-								focusedObject->AddComponent((FL::ComponentType)i);
-								ImGui::CloseCurrentPopup();
-							}
-							if (i < FL::ComponentType_Size - 1)
-								FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+							component->SetCollapsed(b_expandAll);
 						}
-					}					
-					ImGui::EndPopup();
+					}
+					b_expandAll = !b_expandAll;
 				}
-				FL::GuiCore::PopMenuStyles();
+				if (ImGui::IsItemHovered())
+				{
+					FL::GuiCore::RenderTextToolTip("Collapse all");
+				}
 			}
-		}				
+			else
+			{
+				if (FL::GuiCore::RenderImageButton("##ExpandCollapseAllComponents" + std::to_string(focusedID), FL::Assets::assetManager.GetTexture("expand"),FL::Vector2(16), 0 ,FL::Vector2(1), "buttonBorder", "transparent", "white"))
+				{
+					for (int i = 1; i < FL::ComponentType_Size; i++)
+					{
+						FL::Component* component = focusedObject->GetComponent((FL::ComponentType)i);
+						if (component != nullptr)
+						{
+							component->SetCollapsed(b_expandAll);
+						}
+					}
+					b_expandAll = !b_expandAll;
+				}
+				if (ImGui::IsItemHovered())
+				{
+					FL::GuiCore::RenderTextToolTip("Expand all");
+				}
+			}		
+
+			// For scrolling components section with background
+			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("componentsScrollingBg"));				
+			ImGui::BeginChild("ComponentsSectionBg",FL::Vector2(0, ImGui::GetContentRegionAvail().y - 30), FL::GuiCore::childFlags);
+			ImGui::PopStyleColor();
+			// {			
+
+				if (focusedObject != nullptr)
+				{
+					FL::Component* queuedForDelete = nullptr;
+					
+					for (int i = 1; i < FL::ComponentType_Size; i++)
+					{
+						FL::Component* component = focusedObject->GetComponent((FL::ComponentType)i);
+						if (component != nullptr)
+						{
+							Inspector::BeginComponent(component, queuedForDelete);
+							if (!component->IsCollapsed())
+							{
+								switch ((FL::ComponentType)i)
+								{											
+									case FL::ComponentType_Animation:           Inspector::RenderAnimationComponent(static_cast<FL::Animation*>(component)); break;
+									case FL::ComponentType_Audio:			    Inspector::RenderAudioComponent(static_cast<FL::Audio*>(component)); break;
+									// case FL::ComponentType_Body: 			    Inspector::RenderBodyComponent(static_cast<FL::Body*>(component)); break;
+									case FL::ComponentType_Body2D: 			    Inspector::RenderBody2DComponent(static_cast<FL::Body2D*>(component)); break;
+									case FL::ComponentType_Button: 			    Inspector::RenderButtonComponent(static_cast<FL::Button*>(component)); break;
+									case FL::ComponentType_Camera:			    Inspector::RenderCameraComponent(static_cast<FL::Camera*>(component)); break;
+									case FL::ComponentType_Canvas:			    Inspector::RenderCanvasComponent(static_cast<FL::Canvas*>(component)); break;
+									case FL::ComponentType_CharacterController: Inspector::RenderCharacterControllerComponent(static_cast<FL::CharacterController*>(component)); break;										
+									case FL::ComponentType_Light:			    Inspector::RenderLightComponent(static_cast<FL::Light*>(component)); break;
+									case FL::ComponentType_Mesh:			    Inspector::RenderMeshComponent(static_cast<FL::Mesh*>(component)); break;
+									case FL::ComponentType_Script:			    Inspector::RenderScriptComponent(static_cast<FL::Script*>(component)); break;
+									case FL::ComponentType_Sprite:			    Inspector::RenderSpriteComponent(static_cast<FL::Sprite*>(component)); break;
+									case FL::ComponentType_Text:			    Inspector::RenderTextComponent(static_cast<FL::Text*>(component)); break;
+									case FL::ComponentType_TileMap:			    Inspector::RenderTileMapComponent(static_cast<FL::TileMap*>(component)); break;
+									case FL::ComponentType_Transform:		    Inspector::RenderTransformComponent(static_cast<FL::Transform*>(component)); break;
+								
+									default: break;
+								}
+							}
+							Inspector::EndComponent(component);
+						}
+					}
+
+					if (queuedForDelete != nullptr)
+					{
+						focusedObject->RemoveComponent(queuedForDelete);
+						queuedForDelete = nullptr;
+					}
+				}
+
+			// }
+			ImGui::EndChild(); // ComponentsSectionBg
+
+			
+			FL::GuiCore::PushMenuStyles();
+			FL::GuiCore::RenderButton("Add Component",FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
+			if (ImGui::BeginPopupContextItem("##AddComponent", ImGuiPopupFlags_MouseButtonLeft))
+			{
+				// Add all the component types you can add to this GameObject
+				for (int i = 1; i < FL::ComponentType_Size; i++)
+				{
+					if (!focusedObject->GetComponent((FL::ComponentType)i))
+					{
+						std::string componentTypeString = " " + FL::ComponentTypeStrings[i];
+						if (ImGui::MenuItem(componentTypeString.c_str()))
+						{
+							focusedObject->AddComponent((FL::ComponentType)i);
+							ImGui::CloseCurrentPopup();
+						}
+						if (i < FL::ComponentType_Size - 1)
+							FL::GuiCore::RenderSeparator(0,0,"menuSeparatorLight");
+					}
+				}					
+				ImGui::EndPopup();
+			}
+			FL::GuiCore::PopMenuStyles();
+		}		
+		
+		if (objectQueuedForDeletion != -1)
+		{
+			FL::ProjectManager::loadedProject.RemoveFocusedObjectID(focusedID);			
+			FL::SceneManager::loadedScene.DeleteGameObject(focusedID);
+			objectQueuedForDeletion = -1;
+		}
 		
 		FL::GuiCore::EndWindow(); // Inspector	
 	}

@@ -12,8 +12,8 @@ namespace FlatEngine
 {	
 	class Body;
 	class Body2D;
-	class Shape;
-	class Joint;
+	class Shape2D;
+	class Joint2D;
 
 	namespace PhysicsManager
 	{
@@ -35,13 +35,13 @@ namespace FlatEngine
 			void DestroyBody(b2BodyId bodyID);
 			void RecreateBody(FL::Body2D* parentBody);
 
-			void CreateShape(FL::Shape* shape, FL::Body2D* parentBody = nullptr);
-			void DestroyShape(FL::Shape* shape);
-			void RecreateShape(FL::Shape* shape);
+			void CreateShape(FL::Shape2D* shape, FL::Body2D* parentBody = nullptr);
+			void DestroyShape(FL::Shape2D* shape);
+			void RecreateShape(FL::Shape2D* shape);
 
-			void CreateJoint(FL::Joint* joint, FL::Body2D* bodyA = nullptr, FL::Body2D* bodyB = nullptr);
-			void DestroyJoint(FL::Joint* joint);
-			void RecreateJoint(FL::Joint* joint);
+			void CreateJoint(FL::Joint2D* joint, FL::Body2D* bodyA = nullptr, FL::Body2D* bodyB = nullptr);
+			void DestroyJoint(FL::Joint2D* joint);
+			void RecreateJoint(FL::Joint2D* joint);
 
 		private:
 			void HandleCollisions();
@@ -67,9 +67,9 @@ namespace FlatEngine
 			// void DestroyBody(b2BodyId bodyID);
 			// void RecreateBody(FL::Body* parentBody);
 
-			// void CreateShape(FL::Shape* shape, FL::Body2D* parentBody = nullptr);
+			// void CreateShape(FL::Shape2D* shape, FL::Body2D* parentBody = nullptr);
 			// void DestroyShape(b2ShapeId shapeID);
-			// void RecreateShape(FL::Shape* shape);
+			// void RecreateShape(FL::Shape2D* shape);
 
 			// void CreateJoint(FL::Body* bodyA, FL::Body* bodyB, FL::Joint* joint);
 			// void DestroyJoint(b2JointId jointID);
@@ -79,6 +79,6 @@ namespace FlatEngine
 		};
 
 		// 2D Physics for Scene
-		extern Physics2D physics2D;
+		extern Physics2D gamePhysics2D;
 	}
 }

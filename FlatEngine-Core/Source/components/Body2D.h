@@ -1,9 +1,9 @@
 #pragma once
 #include "GameObject.h"
 #include "components/Component.h"
-#include "physics/Joint.h"
+#include "physics/Joint2D.h"
 #include "physics/PhysicsManager.h"
-#include "physics/Shape.h"
+#include "physics/Shape2D.h"
 #include "tools/Vector2.h"
 
 #include <id.h>
@@ -13,8 +13,7 @@
 
 namespace FlatEngine
 {
-	class Joint;
-	class DistanceJoint;
+	class Joint2D;
 
 	class Body2D : public Component
 	{
@@ -44,13 +43,13 @@ namespace FlatEngine
 		void SetOnSensorEndTouch(void (*endSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID));
 		void OnSensorEndTouch(b2ShapeId myID, b2ShapeId touchedID);
 	
-		void AddShape(ShapeType type, json jsonData = json::object(), std::string name = "");
+		void AddShape(ShapeType2D type, json jsonData = json::object(), std::string name = "");
 		const b2BodyId GetBodyID();
-		std::vector<Shape*> GetShapes();		
+		std::vector<Shape2D*> GetShapes();		
 		void RemoveShape(b2ShapeId shapeID);
 		void RemoveChain(b2ChainId chainID);
-		void AddJoint(JointType type, json jsonData = json::object(), std::string name = "");
-        std::vector<Joint*> GetJoints();        
+		void AddJoint(JointType2D type, json jsonData = json::object(), std::string name = "");
+        std::vector<Joint2D*> GetJoints();        
         void RemoveJoint(long jointID);
 		void UpdateRenderShapes();
 
@@ -92,19 +91,19 @@ namespace FlatEngine
 		long m_currentJointID;
 		std::vector<long> m_freedJointIDs;
 
-		std::list<Shape> m_boxes;
-		std::list<Shape> m_circles;
-		std::list<Shape> m_capsules;
-		std::list<Shape> m_polygons;
-		std::list<Shape> m_chains;
+		std::list<Shape2D> m_boxes;
+		std::list<Shape2D> m_circles;
+		std::list<Shape2D> m_capsules;
+		std::list<Shape2D> m_polygons;
+		std::list<Shape2D> m_chains;
 
-		std::list<Joint> m_distanceJoints;
-        std::list<Joint> m_prismaticJoints;
-        std::list<Joint> m_revoluteJoints;
-        std::list<Joint> m_mouseJoints;
-        std::list<Joint> m_wheelJoints;
-        std::list<Joint> m_motorJoints;
-        std::list<Joint> m_weldJoints;  
+		std::list<Joint2D> m_distanceJoints;
+        std::list<Joint2D> m_prismaticJoints;
+        std::list<Joint2D> m_revoluteJoints;
+        std::list<Joint2D> m_mouseJoints;
+        std::list<Joint2D> m_wheelJoints;
+        std::list<Joint2D> m_motorJoints;
+        std::list<Joint2D> m_weldJoints;  
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

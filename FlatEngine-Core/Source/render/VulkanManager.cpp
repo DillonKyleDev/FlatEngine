@@ -1313,7 +1313,7 @@ namespace FlatEngine
                 // BODY2D DRAW SHAPES
                 for (Body2D body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
                 {
-                    for (Shape* shape : body2D.GetShapes())
+                    for (Shape2D* shape : body2D.GetShapes())
                     {
                         for (SceneView::SceneRenderObject& renderShape : shape->renderShapes)                        
                         {                 
@@ -1331,7 +1331,7 @@ namespace FlatEngine
                             }
                         }
                     }
-                    for (Joint* joint : body2D.GetJoints())
+                    for (Joint2D* joint : body2D.GetJoints())
                     {
                         for (SceneView::SceneRenderObject& renderShape : joint->renderShapes)                        
                         {                 

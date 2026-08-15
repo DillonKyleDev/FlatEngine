@@ -93,9 +93,12 @@ F_Textures = {
 	search = "../engine/images/icons/search.png",
 	-- Components
 	Transform = "../engine/images/icons/components/transform.png",
-	Animation = "../engine/images/icons/components/animation.png",
+	Animation = "../engine/images/icons/components/animation2.png",
 	Light = "../engine/images/icons/components/light.png",
 	Mesh = "../engine/images/icons/components/mesh2.png",
 	Body2D = "../engine/images/icons/components/body2d.png",
 	Audio = "../engine/images/icons/components/audio.png",
+	Camera = "../engine/images/icons/components/camera.png",
+	Script = "../engine/images/icons/components/script.png",
+	Sprite = "../engine/images/icons/components/sprite.png",
 }

@@ -116,6 +116,7 @@ GENERATED += $(OBJDIR)/GuiCore.o
 GENERATED += $(OBJDIR)/Helper.o
 GENERATED += $(OBJDIR)/ImGuiManager.o
 GENERATED += $(OBJDIR)/Joint.o
+GENERATED += $(OBJDIR)/Joint2D.o
 GENERATED += $(OBJDIR)/JsonHelper.o
 GENERATED += $(OBJDIR)/Light.o
 GENERATED += $(OBJDIR)/Line.o
@@ -140,6 +141,7 @@ GENERATED += $(OBJDIR)/SceneView.o
 GENERATED += $(OBJDIR)/Script.o
 GENERATED += $(OBJDIR)/Settings.o
 GENERATED += $(OBJDIR)/Shape.o
+GENERATED += $(OBJDIR)/Shape2D.o
 GENERATED += $(OBJDIR)/Sprite.o
 GENERATED += $(OBJDIR)/TagList.o
 GENERATED += $(OBJDIR)/Text.o
@@ -196,6 +198,7 @@ OBJECTS += $(OBJDIR)/GuiCore.o
 OBJECTS += $(OBJDIR)/Helper.o
 OBJECTS += $(OBJDIR)/ImGuiManager.o
 OBJECTS += $(OBJDIR)/Joint.o
+OBJECTS += $(OBJDIR)/Joint2D.o
 OBJECTS += $(OBJDIR)/JsonHelper.o
 OBJECTS += $(OBJDIR)/Light.o
 OBJECTS += $(OBJDIR)/Line.o
@@ -220,6 +223,7 @@ OBJECTS += $(OBJDIR)/SceneView.o
 OBJECTS += $(OBJDIR)/Script.o
 OBJECTS += $(OBJDIR)/Settings.o
 OBJECTS += $(OBJDIR)/Shape.o
+OBJECTS += $(OBJDIR)/Shape2D.o
 OBJECTS += $(OBJDIR)/Sprite.o
 OBJECTS += $(OBJDIR)/TagList.o
 OBJECTS += $(OBJDIR)/Text.o
@@ -443,10 +447,16 @@ $(OBJDIR)/TileSetManager.o: Source/managers/TileSetManager.cpp
 $(OBJDIR)/Joint.o: Source/physics/Joint.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Joint2D.o: Source/physics/Joint2D.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/PhysicsManager.o: Source/physics/PhysicsManager.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Shape.o: Source/physics/Shape.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Shape2D.o: Source/physics/Shape2D.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Allocator.o: Source/render/Allocator.cpp

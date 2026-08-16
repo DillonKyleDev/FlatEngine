@@ -12,6 +12,7 @@ namespace FlatEngine
 		Vector4();
 		Vector4(float xyzwValue);
 		Vector4(float x, float y, float z, float w);
+		// Vector4(Vector4&& toMove) noexcept = default;
 		Vector4(const ImVec4& toCopy);
 		Vector4(const glm::vec4 vec4);
 

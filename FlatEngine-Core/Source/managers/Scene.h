@@ -46,7 +46,9 @@ namespace FlatEngine
 
 		void KeepNextGameObjectIDUpToDate(long id);
 		void SetNextGameObjectID(long nextID);
-		long GetNextGameObjectID();
+		long GetNextGameObjectID();		
+		long GetNextJoint2DID();
+		void AddFreedJoint2DID(long freedID);
 
 		void OnPrefabInstantiated();
 		void SortSceneObjects();
@@ -92,6 +94,8 @@ namespace FlatEngine
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		long m_nextGameObjectID;
 		std::vector<long> m_freedGameObjectIDs;
+		long m_nextJoint2DID;
+		std::vector<long> m_freedJoint2DIDs;
 		long m_primaryCameraID;
 
 		UMapVector<Transform> m_Transforms;

@@ -101,10 +101,22 @@ F_Textures = {
 	Camera = "../engine/images/icons/components/camera.png",
 	Script = "../engine/images/icons/components/script.png",
 	Sprite = "../engine/images/icons/components/sprite.png",
+	Canvas = "../engine/images/icons/components/canvas.png",
+	Button = "../engine/images/icons/components/button.png",
+	Text = "../engine/images/icons/components/text.png",
 	-- Shapes
 	Box2D = "../engine/images/icons/components/box.png",
 	Circle2D = "../engine/images/icons/components/circle.png",
 	Capsule2D = "../engine/images/icons/components/capsule2D.png",
 	Polygon2D = "../engine/images/icons/components/polygon2D.png",
+	Chain2D = "../engine/images/icons/components/chain.png",
 	Capsule = "../engine/images/icons/components/capsule.png",
+	-- Joints
+	Distance2D = "../engine/images/icons/components/distanceJoint.png",
+	Revolute2D = "../engine/images/icons/components/distanceJoint.png",
+	Prismatic2D = "../engine/images/icons/components/distanceJoint.png",
+	Weld2D = "../engine/images/icons/components/distanceJoint.png",
+	Wheel2D = "../engine/images/icons/components/distanceJoint.png",
+	Motor2D = "../engine/images/icons/components/distanceJoint.png",
+	Mouse2D = "../engine/images/icons/components/distanceJoint.png",
 }

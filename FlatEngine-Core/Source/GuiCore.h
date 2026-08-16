@@ -48,10 +48,9 @@ namespace FlatEngine
         extern CURSOR_MODE cursorMode;
         
 
-        extern void SetupImGui();
-        extern void RestartImGui();
+        extern void SetupImGui();      
+        extern void SetImGuiVars();  
         extern void QuitImGui();
-        extern void SetImGuiVars();
 
         extern void BeginImGuiRender();
         extern void EndImGuiRender();       

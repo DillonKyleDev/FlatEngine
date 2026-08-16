@@ -17,6 +17,7 @@ namespace FlatEngine
 		name = "New Scene";
 		path = "";				 		
 		m_nextGameObjectID = 0;
+		m_nextJoint2DID = 0;
 		m_primaryCameraID = -1;
 	}
 	
@@ -247,6 +248,29 @@ namespace FlatEngine
 		}
 
 		return ID;
+	}
+
+	long Scene::GetNextJoint2DID()
+	{
+		long ID;
+
+		if (m_freedJoint2DIDs.size() > 0)
+		{
+			ID = m_freedJoint2DIDs.back();
+			m_freedJoint2DIDs.pop_back();
+		}
+		else
+		{
+			ID = m_nextJoint2DID;
+			m_nextJoint2DID += 1;
+		}
+
+		return ID;
+	}
+
+	void Scene::AddFreedJoint2DID(long freedID)
+	{
+		m_freedJoint2DIDs.push_back(freedID);
 	}
 
 	void Scene::OnPrefabInstantiated()

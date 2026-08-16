@@ -58,7 +58,7 @@ namespace FlatEngine
                 }
 
                 IDtoIndex[ID] = vec.size();
-                vec.push_back(item);
+                vec.push_back(std::move(item));
                 return &vec.back();
             }
 

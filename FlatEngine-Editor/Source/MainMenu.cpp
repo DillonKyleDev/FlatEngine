@@ -307,7 +307,7 @@ namespace FlatGui
 					}
 					else
 					{
-						ImGui::Text("Right click GameObject in hierarchy to create a Prefab");
+						FL::GuiCore::MenuItem("Right click GameObject in the Hierarchy to create a Prefab.");
 					}
 
 					ImGui::EndMenu();

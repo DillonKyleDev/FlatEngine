@@ -1,6 +1,7 @@
 #include "components/Body2D.h"
 #include "components/Transform.h"
 #include "GameObject.h"
+#include "managers/SceneManager.h"
 #include "tools/Quaternion.h"
 #include "tools/Vector3.h"
 
@@ -52,8 +53,8 @@ namespace FlatEngine
 	{
 		if (GetOwningObject() != nullptr)
 		{
-			GameObject* parent = GetOwningObject();
-			Body2D* body2D = parent->Get<Body2D>();
+			GameObject* owner = GetOwningObject();
+			Body2D* body2D = owner->Get<Body2D>();
 
 			if (body2D != nullptr)
 			{
@@ -62,17 +63,22 @@ namespace FlatEngine
 				m_position.y = body2DPos.y;
 			}
 
-			Vector3 positionOrigin = Vector3();
+			glm::vec4 rotatedPosition = glm::vec4(m_position.x, m_position.y, m_position.z, 1);
+			Vector3 parentAbsPosition;
+			GameObject* parent = owner->GetParent();
 
-			if (parent->GetParent() != nullptr)
+			if (parent != nullptr)
 			{
-				positionOrigin = parent->GetParent()->Get<Transform>()->GetAbsolutePosition();
+				Transform* parentTransform = parent->Get<Transform>();
+				glm::mat4 parentRotationMatrix = parentTransform->GetAbsoluteRotationMatrix();
+				rotatedPosition = parentRotationMatrix * rotatedPosition;
+				parentAbsPosition = parentTransform->GetAbsolutePosition();				
 			}
 
-			return positionOrigin + m_position;
+			return Vector3(rotatedPosition) + parentAbsPosition;
 		}
 
-		return Vector3();
+		return m_position;
 	}
 
 	void Transform::SetPosition(Vector3 newPosition)
@@ -154,14 +160,11 @@ namespace FlatEngine
 
 	Vector3 Transform::GetRotation()
 	{
-		if (GetOwningObject() != nullptr)
-		{
-			Body2D* body2D = GetOwningObject()->Get<Body2D>();
+		Body2D* body2D = SceneManager::loadedScene.Get<Body2D>(GetOwnerID());
 
-			if (body2D != nullptr)
-			{
-				m_rotation.z = body2D->GetRotation();
-			}
+		if (body2D != nullptr)
+		{
+			m_rotation.z = body2D->GetRotation();
 		}
 
 		return m_rotation;
@@ -180,45 +183,51 @@ namespace FlatEngine
 		m_rotation.z += rotation;
 	}
 
-	// positive rotation = counterclockwise when viewed from the positive axis looking toward the origin (standard right-hand rule)
-	glm::mat4 Transform::GetRotationMatrix()
+	Vector3 Transform::GetAbsoluteRotation()
 	{
-		if (GetOwningObject() != nullptr)
-		{
-			Body2D* body2D = GetOwningObject()->Get<Body2D>();
+		GetRotation();
 
-			if (body2D != nullptr)
-			{
-				m_rotation.z = body2D->GetRotation();
-			}
+		Vector3 parentAbsRotation = Vector3();
+		GameObject* owner = GetOwningObject();
+
+		if (owner != nullptr && owner->GetParentID() != -1)
+		{
+			glm::mat4 parentRotationMatrix = SceneManager::loadedScene.Get<Transform>(owner->GetParentID())->GetRotationMatrix();
+
+			parentAbsRotation = SceneManager::loadedScene.Get<Transform>(owner->GetParentID())->GetAbsoluteRotation();
 		}
-		
-		glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(m_rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		return m_rotation + parentAbsRotation;		
+	}
+
+	// positive rotation = counterclockwise when viewed from the positive axis looking toward the origin (standard right-hand rule)
+	glm::mat4 GetRotationMatrixInternal(Vector3 rotations)
+	{		
+		glm::mat4 xRotation = glm::rotate(glm::mat4(1.0f), glm::radians(rotations.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 yRotation = glm::rotate(glm::mat4(1.0f), glm::radians(rotations.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::mat4 zRotation = glm::rotate(glm::mat4(1.0f), glm::radians(rotations.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 		return (yRotation * xRotation * zRotation);
 	}
 
-	// float Transform::GetAbsoluteRotation()
-	// {
-		//Body* body = GetParent()->Get<Body>();
+	glm::mat4 Transform::GetRotationMatrix()
+	{
+		GetRotation();
+		return GetRotationMatrixInternal(m_rotation);
+	}
 
-		//if (body != nullptr)
-		//{			
-		//	m_rotation = body->GetRotation();
-		//}
+	glm::mat4 Transform::GetAbsoluteRotationMatrix()
+	{
+		glm::mat4 parentAbsRotationMatrix = glm::mat4(1);
+		GameObject* owner = GetOwningObject();
 
-		//float parentTrueRotation = 0;
+		if (owner != nullptr && owner->GetParentID() != -1)
+		{		
+			parentAbsRotationMatrix = SceneManager::loadedScene.Get<Transform>(owner->GetParentID())->GetAbsoluteRotationMatrix();
+		}
 
-		//if (GetParent()->GetParent() != nullptr)
-		//{
-		//	parentTrueRotation = GetParent()->GetParent()->Get<Transform>()->GetAbsoluteRotation();
-		//}
-
-		//return m_rotation + parentTrueRotation;
-		// return m_rotation.z;
-	// }
+		return parentAbsRotationMatrix * GetRotationMatrix();
+	}
 
 	glm::mat4 Transform::GetScaleMatrix()
 	{

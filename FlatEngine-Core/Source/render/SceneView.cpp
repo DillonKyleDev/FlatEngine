@@ -395,7 +395,7 @@ namespace FlatEngine
 				return;
 			}
 
-			Vector3 position = focusedTransform->GetPosition();
+			Vector3 position = focusedTransform->GetAbsolutePosition();
 			transformGizmoRenderObject.mesh.SetActive(true);
 			transformGizmoRenderObject.transform.SetPosition(position);	
         }

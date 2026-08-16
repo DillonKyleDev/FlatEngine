@@ -50,34 +50,19 @@ F_Colors = {
 	colliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
 	colliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
 	colliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
-	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),
-	-- Box
-	boxColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
-	boxColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.3),
-	boxColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),	
-	boxColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),	
-	-- Circle	
-	circleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	circleColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
-	circleColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
-	circleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),
-	-- Capsule
+	colliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),	
+	-- Shapes
+	boxColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),		
+	boxColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),			
+	circleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
+	circleColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),	
 	capsuleColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	capsuleColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),
-	capsuleColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
-	capsuleColliderInactiveLight = Vector4:new(0.9, 0.2, 0.2, 0.25),
-	-- Polygon
-	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	polygonColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
-	polygonColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
-	polygonColliderInactiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
-	-- Chain
-	chainColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),
-	chainColliderActiveLight = Vector4:new(0.19, 0.9, 0.2, 0.25),
-	chainColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
-	chainColliderInactiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
-	chainColliderEndSegmentsActive = Vector4:new(1.0, 0.0, 0.0, 1.0),
-	chainColliderEndSegmentsActiveLight = Vector4:new(1.0, 0.0, 0.0, 0.25),
+	capsuleColliderInactive = Vector4:new(0.9, 0.2, 0.2, 1.0),	
+	polygonColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
+	polygonColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),		
+	chainColliderActive = Vector4:new(0.19, 0.9, 0.2, 1.0),	
+	chainColliderInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),	
+	chainEndSegmentsColliderActive = Vector4:new(1.0, 0.5, 0.0, 1.0),	
 
 	rayCast = Vector4:new(0.8, 0.75, 0.05, 1.0),
 	-- Button Components
@@ -289,12 +274,7 @@ F_Colors = {
 	hierarchyChildObject = Vector4:new(0.3, 0.3, 0.7, 0.2),
 	-- Combos
 	comboBg = Vector4:new(0.29, 0.29, 0.31, 0.0),
-	comboHovered = Vector4:new(0.25, 0.25, 0.26, 1.0),
-	comboSelectable = Vector4:new(0.34, .34, .4, 1.0),
-	comboSelected = Vector4:new(0.45, 0.45, 0.50, 1.0),
-	comboHighlighted = Vector4:new(0.25, 0.25, 0.28, 1.0),
-	comboArrow = Vector4:new(0.21, 0.21, 0.23, 1.0),
-	comboArrowHovered = Vector4:new(0.15, 0.15, 0.16, 1.0),
+	comboHovered = Vector4:new(0.45, 0.45, 0.46, 1.0),
 	-- Selects
 	selectableSecondaryBg = Vector4:new(0.3, 0.3, 0.65, 1.0),
 	-- Buttons

@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Types.h"
 #include "components/Component.h"
 #include "physics/Joint2D.h"
 #include "physics/PhysicsManager.h"
@@ -8,6 +9,7 @@
 
 #include <id.h>
 #include <list>
+#include <unordered_map>
 #include <vector>
 
 
@@ -49,6 +51,9 @@ namespace FlatEngine
 		void RemoveShape(b2ShapeId shapeID);
 		void RemoveChain(b2ChainId chainID);
 		void AddJoint(JointType2D type, json jsonData = json::object(), std::string name = "");
+		void AddConnectedJoint(Joint2D* joint);
+		void RemoveConnectedJoint(Joint2D* joint);
+		std::unordered_map<long, Joint2D*> GetConnectedJoints();
         std::vector<Joint2D*> GetJoints();        
         void RemoveJoint(long jointID);
 		void UpdateRenderShapes();
@@ -84,18 +89,20 @@ namespace FlatEngine
 		float linearDamping = 0.0f;
 		float angularDamping = 0.0f;
 
+		void RecreateJoints();
+		
 	private:
 		b2BodyId m_bodyID = b2_nullBodyId;
 		FL::Vector2 position = FL::Vector2();	
 		b2Rot rotation = b2MakeRot(0);
-		long m_currentJointID;
-		std::vector<long> m_freedJointIDs;
 
 		std::list<Shape2D> m_boxes;
 		std::list<Shape2D> m_circles;
 		std::list<Shape2D> m_capsules;
 		std::list<Shape2D> m_polygons;
 		std::list<Shape2D> m_chains;
+
+		std::unordered_map<long, Joint2D*> m_jointsConnected;
 
 		std::list<Joint2D> m_distanceJoints;
         std::list<Joint2D> m_prismaticJoints;
@@ -104,6 +111,8 @@ namespace FlatEngine
         std::list<Joint2D> m_wheelJoints;
         std::list<Joint2D> m_motorJoints;
         std::list<Joint2D> m_weldJoints;  
+
+		UMapVector<Joint2D> m_joints;
 
 		// Contacts
 		void (*m_beginContactCallback)(b2Manifold, b2ShapeId, b2ShapeId);

@@ -1254,9 +1254,9 @@ namespace FlatGui
 			FL::ShapeType2D shapeType = shape->GetType();		
 			std::string ID = "";
 			if (shapeType != FL::ShapeType2D::ShapeType2D_Chain)			
-				ID = " (index:" + std::to_string(shapeID.index1) + " world:" + std::to_string(shapeID.world0) + ")";			
+				ID = " (shape index:" + std::to_string(shapeID.index1) + " world:" + std::to_string(shapeID.world0) + ")";			
 			else			
-				ID = " (index:" + std::to_string(chainID.index1) + " world:" + std::to_string(chainID.world0) + ")";			
+				ID = " (chain index:" + std::to_string(chainID.index1) + " world:" + std::to_string(chainID.world0) + ")";			
 			std::string shapeString = FL::ShapeType2DStrings[(int)shapeType] + ID;		
 
 			FL::GuiCore::RenderSectionHeader("  " + shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
@@ -1414,7 +1414,7 @@ namespace FlatGui
 			long ownerID = joint->GetOwnerID();				
 			FL::JointType2D jointType = joint->GetType();
 			std::string jointTypeString = FL::JointType2DStrings[(int)jointType];
-			std::string ID = " (id:" + std::to_string(jointID) + " index:" + std::to_string(joint->GetJointID().index1) + " world:" + std::to_string(joint->GetJointID().world0) + ")";
+			std::string ID = " (id:" + std::to_string(jointID) + " index:" + std::to_string(joint->GetJointID().index1) + " world:" + std::to_string(joint->GetJointID().world0) + " gen:" + std::to_string(joint->GetJointID().generation) + ")";
 			std::string jointString = FL::JointType2DStrings[(int)jointType] + ID;
 
 			FL::GuiCore::RenderSectionHeader("  " + jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");		
@@ -1445,15 +1445,15 @@ namespace FlatGui
 			std::string bodyBName = bodyB != nullptr ? bodyB->GetOwningObject()->GetName() : "";
 
 			FL::GuiCore::MoveScreenCursor(0, 6.0f);
-
-			if (FL::GuiCore::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
-			{
-				if (droppedObjectID >= 0)
-				{
-					joint->SetBodyAID(droppedObjectID);
-				}
-			}
-			if (FL::GuiCore::DropInput("##InputBodyB" + ID, "BodyB", bodyBName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
+			
+			// if (FL::GuiCore::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
+			// {
+			// 	if (droppedObjectID >= 0)
+			// 	{
+			// 		joint->SetBodyAID(droppedObjectID);
+			// 	}
+			// }
+			if (FL::GuiCore::DropInput("##InputBodyB" + ID, "Connected Body2D", bodyBName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop Body2D GameObjects from the Hierarchy."))
 			{
 				if (droppedObjectID >= 0)
 				{

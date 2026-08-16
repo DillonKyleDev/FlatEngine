@@ -754,12 +754,11 @@ namespace FlatEngine
 		JointType2D type;
 		std::vector<SceneView::SceneRenderObject> renderShapes;
 		std::variant<DistanceJoint2DData, MotorJoint2DData, MouseJoint2DData, PrismaticJoint2DData, RevoluteJoint2DData, WeldJoint2DData, WheelJoint2DData> jointData;
-		long bodyAID = -1;
-		long bodyBID = -1;
-		JointType2D jointType = JointType2D_None;
-		bool b_collideConnected = false;
-		Vector2 anchorA = Vector2();
-		Vector2 anchorB = Vector2();
+		long bodyAID;
+		long bodyBID;		
+		bool b_collideConnected;
+		Vector2 anchorA;
+		Vector2 anchorB;
 		bool b_isCollapsed;
 
 	private:

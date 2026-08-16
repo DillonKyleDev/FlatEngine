@@ -177,32 +177,33 @@ namespace FlatEngine
 			}
 		}
 
-		void Physics2D::CreateBody(Body2D* parentBody)
+		void Physics2D::CreateBody(Body2D* body)
 		{
-			b2BodyDef bodyDef = b2DefaultBodyDef();
-			b2Vec2 position = b2Vec2(parentBody->position.x, parentBody->position.y);
-			bodyDef.isEnabled = parentBody->IsActive();
+			Transform* transform = SceneManager::loadedScene.Get<Transform>(body->GetOwnerID());
+			Vector3 transformPos = transform->GetCleanPosition();
+			b2BodyDef bodyDef = b2DefaultBodyDef();			
+			bodyDef.isEnabled = body->IsActive();
 			bodyDef.isAwake = true;
 			bodyDef.enableSleep = true;
-			bodyDef.userData = reinterpret_cast<void*>(parentBody->GetOwnerID());
-			bodyDef.position = position;
-			bodyDef.rotation = parentBody->rotation;
+			bodyDef.userData = reinterpret_cast<void*>(body->GetOwnerID());
+			bodyDef.position = b2Vec2(transformPos.x, transformPos.y);
+			bodyDef.rotation = body->rotation;
 			b2MotionLocks motionLocks;		
-			motionLocks.angularZ = parentBody->b_lockedRotation;
-			motionLocks.linearX = parentBody->b_lockedXAxis;
-			motionLocks.linearY = parentBody->b_lockedYAxis;
+			motionLocks.angularZ = body->b_lockedRotation;
+			motionLocks.linearX = body->b_lockedXAxis;
+			motionLocks.linearY = body->b_lockedYAxis;
 			bodyDef.motionLocks = motionLocks;
-			bodyDef.gravityScale = parentBody->gravityScale;
-			bodyDef.linearDamping = parentBody->linearDamping;
-			bodyDef.angularDamping = parentBody->angularDamping;
-			bodyDef.type = parentBody->type;		
+			bodyDef.gravityScale = body->gravityScale;
+			bodyDef.linearDamping = body->linearDamping;
+			bodyDef.angularDamping = body->angularDamping;
+			bodyDef.type = body->type;		
 			b2BodyId bodyID = b2CreateBody(m_worldID, &bodyDef);
-			parentBody->SetBodyID(bodyID);
+			body->SetBodyID(bodyID);
 		}
 
-		void Physics2D::CreateShape(Shape2D* shape, Body2D* parentBody)
+		void Physics2D::CreateShape(Shape2D* shape, Body2D* body)
 		{
-			b2BodyId bodyID = parentBody != nullptr ? parentBody->GetBodyID() : b2_nullBodyId;
+			b2BodyId bodyID = body != nullptr ? body->GetBodyID() : b2_nullBodyId;
 			b2ShapeDef shapeDef = b2DefaultShapeDef();
 			shapeDef.userData = shape;
 			shapeDef.enableContactEvents = shape->b_enableContactEvents;
@@ -215,7 +216,7 @@ namespace FlatEngine
 			b2Filter filter = b2DefaultFilter();
 			filter.categoryBits = 0;
 			filter.maskBits = 0;
-			TagList tagList = parentBody != nullptr ? parentBody->GetOwningObject()->GetTagList() : TagList();
+			TagList tagList = body != nullptr ? body->GetOwningObject()->GetTagList() : TagList();
 			tagList.UpdateBits();
 			filter.categoryBits = tagList.GetCategoryBits();
 			filter.maskBits = tagList.GetMaskBits();
@@ -227,7 +228,7 @@ namespace FlatEngine
 			material.rollingResistance = shape->rollingResistance;
 			material.tangentSpeed = shape->tangentSpeed;
 
-			std::visit([parentBody, bodyID, shapeDef, filter, material, shape](auto&& sData) -> void
+			std::visit([body, bodyID, shapeDef, filter, material, shape](auto&& sData) -> void
 			{
 				using T = std::decay_t<decltype(sData)>;
 				if constexpr (std::is_same_v<T, BoxShape2DData>)
@@ -236,7 +237,7 @@ namespace FlatEngine
 					b2Vec2 center = b2Vec2(sData.offset.x, sData.offset.y);
 					shape->polygon = b2MakeOffsetRoundedBox(sData.dimensions.x / 2, sData.dimensions.y / 2, center, rotationOffset, sData.cornerRadius);
 
-					if (parentBody != nullptr)	
+					if (body != nullptr)	
 					{	
 						b2ShapeId id = b2CreatePolygonShape(bodyID, &shapeDef, &shape->polygon);
 						// Logger::log.Debug("Box: index: {}, world: {}, generation: {}", id.index1, id.world0, id.generation);
@@ -251,7 +252,7 @@ namespace FlatEngine
 					circle.radius = sData.radius;
 					shape->circle = circle;
 
-					if (parentBody != nullptr)	
+					if (body != nullptr)	
 					{	
 						b2ShapeId id = b2CreateCircleShape(bodyID, &shapeDef, &shape->circle);						
 						shape->SetShapeID(id);	
@@ -279,7 +280,7 @@ namespace FlatEngine
 						{					
 							shape->polygon = b2MakePolygon(&hull, cornerRadius);	
 
-							if (parentBody != nullptr)				
+							if (body != nullptr)				
 								shape->SetShapeID(b2CreatePolygonShape(bodyID, &shapeDef, &shape->polygon));									
 						}
 					}
@@ -309,7 +310,7 @@ namespace FlatEngine
 					capsule.radius = sData.radius;
 					shape->capsule = capsule;
 
-					if (parentBody != nullptr)				
+					if (body != nullptr)				
 						shape->SetShapeID(b2CreateCapsuleShape(bodyID, &shapeDef, &shape->capsule));		
 				}
 				else if constexpr (std::is_same_v<T, ChainShape2DData>)
@@ -345,19 +346,26 @@ namespace FlatEngine
 			b2DestroyBody(bodyID);
 		}
 
-		void Physics2D::RecreateBody(Body2D* parentBody)
+		void Physics2D::RecreateBody(Body2D* body)
 		{
-			DestroyBody(parentBody->GetBodyID());
-			CreateBody(parentBody);
+			DestroyBody(body->GetBodyID());
+			CreateBody(body);
 
-			for (Shape2D* shape : parentBody->GetShapes())
+			for (Shape2D* shape : body->GetShapes())
 			{
 				RecreateShape(shape);			
 			}
 
-			for (Joint2D* joint : parentBody->GetJoints())
+			// body->RecreateJoints();
+			// RecreateJoint(&(body->m_distanceJoints.front()));
+			for (Joint2D* joint : body->GetJoints())
+			{				
+				RecreateJoint(joint);
+			}
+
+			for (auto& jointPair : body->GetConnectedJoints())
 			{
-				RecreateJoint(joint);			
+				RecreateJoint(jointPair.second);
 			}
 		}
 
@@ -390,9 +398,10 @@ namespace FlatEngine
 				bodyB = joint->GetBodyB();
 			
 			if (bodyA == bodyB || bodyA == nullptr || bodyB == nullptr)
-				return;
+				return;			
 
-			DestroyJoint(joint);
+			// bodyA->AddConnectedJoint(joint);
+			bodyB->AddConnectedJoint(joint);			
 			
 			b2JointDef jointDef;
 			jointDef.userData = joint;
@@ -413,104 +422,104 @@ namespace FlatEngine
 				if constexpr (std::is_same_v<T, DistanceJoint2DData>)
 				{	
 					b2DistanceJointDef distanceJointDef = b2DefaultDistanceJointDef();
-					distanceJointDef.base = jointDef;
-					distanceJointDef.length = jData.length;
-					distanceJointDef.enableSpring = jData.b_enableSpring;
-					distanceJointDef.enableLimit = jData.b_enableLimit;
-					distanceJointDef.enableMotor = jData.b_enableMotor;
-					distanceJointDef.dampingRatio = jData.dampingRatio;
-					distanceJointDef.hertz = jData.hertz;
-					distanceJointDef.minLength = jData.minLength;
-					distanceJointDef.maxLength = jData.maxLength;
-					distanceJointDef.motorSpeed = jData.motorSpeed;
-					distanceJointDef.maxMotorForce = jData.maxMotorForce;
+					distanceJointDef.base          		= jointDef;
+					distanceJointDef.length        		= jData.length;
+					distanceJointDef.enableSpring 		= jData.b_enableSpring;
+					distanceJointDef.enableLimit   		= jData.b_enableLimit;
+					distanceJointDef.enableMotor   		= jData.b_enableMotor;
+					distanceJointDef.dampingRatio  		= jData.dampingRatio;
+					distanceJointDef.hertz         		= jData.hertz;
+					distanceJointDef.minLength     		= jData.minLength;
+					distanceJointDef.maxLength     		= jData.maxLength;
+					distanceJointDef.motorSpeed    		= jData.motorSpeed;
+					distanceJointDef.maxMotorForce 		= jData.maxMotorForce;
 					joint->SetJointID(b2CreateDistanceJoint(this->m_worldID, &distanceJointDef));
 				}
 				else if constexpr (std::is_same_v<T, RevoluteJoint2DData>)
 				{
 					b2RevoluteJointDef revoluteJointDef = b2DefaultRevoluteJointDef();
-					revoluteJointDef.base = jointDef;
-					revoluteJointDef.dampingRatio = jData.dampingRatio;
-					revoluteJointDef.enableLimit = jData.b_enableLimit;
-					revoluteJointDef.enableSpring = jData.b_enableSpring;
-					revoluteJointDef.enableMotor = jData.b_enableMotor;
-					revoluteJointDef.dampingRatio = jData.dampingRatio;
-					revoluteJointDef.hertz = jData.hertz;
-					revoluteJointDef.lowerAngle = jData.lowerAngle;
-					revoluteJointDef.upperAngle = jData.upperAngle;
-					revoluteJointDef.maxMotorTorque = jData.maxMotorTorque;
-					revoluteJointDef.motorSpeed = jData.motorSpeed;
-					revoluteJointDef.targetAngle = jData.targetAngle;			
+					revoluteJointDef.base           	= jointDef;
+					revoluteJointDef.dampingRatio   	= jData.dampingRatio;
+					revoluteJointDef.enableLimit    	= jData.b_enableLimit;
+					revoluteJointDef.enableSpring   	= jData.b_enableSpring;
+					revoluteJointDef.enableMotor    	= jData.b_enableMotor;
+					revoluteJointDef.dampingRatio   	= jData.dampingRatio;
+					revoluteJointDef.hertz          	= jData.hertz;
+					revoluteJointDef.lowerAngle     	= jData.lowerAngle;
+					revoluteJointDef.upperAngle     	= jData.upperAngle;
+					revoluteJointDef.maxMotorTorque 	= jData.maxMotorTorque;
+					revoluteJointDef.motorSpeed     	= jData.motorSpeed;
+					revoluteJointDef.targetAngle    	= jData.targetAngle;			
 					joint->SetJointID(b2CreateRevoluteJoint(this->m_worldID, &revoluteJointDef));					
 				}
 				else if constexpr (std::is_same_v<T, PrismaticJoint2DData>)
 				{
 					b2PrismaticJointDef prismaticJointDef = b2DefaultPrismaticJointDef();
-					prismaticJointDef.base = jointDef;
-					prismaticJointDef.dampingRatio = jData.dampingRatio;
-					prismaticJointDef.enableLimit = jData.b_enableLimit;
-					prismaticJointDef.enableSpring = jData.b_enableSpring;
-					prismaticJointDef.enableMotor = jData.b_enableMotor;
-					prismaticJointDef.dampingRatio = jData.dampingRatio;
-					prismaticJointDef.hertz = jData.hertz;
-					prismaticJointDef.lowerTranslation = jData.lowerTranslation;
-					prismaticJointDef.upperTranslation = jData.upperTranslation;
-					prismaticJointDef.targetTranslation = jData.targetTranslation;
-					prismaticJointDef.motorSpeed = jData.motorSpeed;
-					prismaticJointDef.maxMotorForce = jData.maxMotorForce;
+					prismaticJointDef.base                = jointDef;
+					prismaticJointDef.dampingRatio        = jData.dampingRatio;
+					prismaticJointDef.enableLimit         = jData.b_enableLimit;
+					prismaticJointDef.enableSpring        = jData.b_enableSpring;
+					prismaticJointDef.enableMotor         = jData.b_enableMotor;
+					prismaticJointDef.dampingRatio        = jData.dampingRatio;
+					prismaticJointDef.hertz               = jData.hertz;
+					prismaticJointDef.lowerTranslation    = jData.lowerTranslation;
+					prismaticJointDef.upperTranslation    = jData.upperTranslation;
+					prismaticJointDef.targetTranslation   = jData.targetTranslation;
+					prismaticJointDef.motorSpeed          = jData.motorSpeed;
+					prismaticJointDef.maxMotorForce       = jData.maxMotorForce;
 					joint->SetJointID(b2CreatePrismaticJoint(this->m_worldID, &prismaticJointDef));
 				}
 				else if constexpr (std::is_same_v<T, MouseJoint2DData>)
 				{
 					b2MouseJointDef mouseJointDef = b2DefaultMouseJointDef();
-					mouseJointDef.base = jointDef;			
-					mouseJointDef.dampingRatio = jData.dampingRatio;
-					mouseJointDef.maxForce = jData.maxForce;						
-					mouseJointDef.dampingRatio = jData.dampingRatio;
-					mouseJointDef.hertz = jData.hertz;			
+					mouseJointDef.base            = jointDef;			
+					mouseJointDef.dampingRatio    = jData.dampingRatio;
+					mouseJointDef.maxForce        = jData.maxForce;						
+					mouseJointDef.dampingRatio    = jData.dampingRatio;
+					mouseJointDef.hertz           = jData.hertz;			
 					joint->SetJointID(b2CreateMouseJoint(this->m_worldID, &mouseJointDef));
 				}
 				else if constexpr (std::is_same_v<T, WeldJoint2DData>)
 				{
-					b2WeldJointDef weldJointDef = b2DefaultWeldJointDef();
-					weldJointDef.base = jointDef;
+					b2WeldJointDef weldJointDef      = b2DefaultWeldJointDef();
+					weldJointDef.base                = jointDef;
 					weldJointDef.angularDampingRatio = jData.angularDampingRatio;
-					weldJointDef.angularHertz = jData.angularHertz;
-					weldJointDef.linearDampingRatio = jData.linearDampingRatio;
-					weldJointDef.linearHertz = jData.linearHertz;
+					weldJointDef.angularHertz        = jData.angularHertz;
+					weldJointDef.linearDampingRatio  = jData.linearDampingRatio;
+					weldJointDef.linearHertz         = jData.linearHertz;
 					joint->SetJointID(b2CreateWeldJoint(this->m_worldID, &weldJointDef));
 				}
 				else if constexpr (std::is_same_v<T, MotorJoint2DData>)
 				{
-					b2MotorJointDef motorJointDef = b2DefaultMotorJointDef();
-					motorJointDef.base = jointDef;
+					b2MotorJointDef motorJointDef     = b2DefaultMotorJointDef();
+					motorJointDef.base                = jointDef;
 					motorJointDef.angularDampingRatio = jData.angularDampingRatio;
-					motorJointDef.angularHertz = jData.angularHertz;
-					motorJointDef.angularVelocity = jData.angularVelocity;
-					motorJointDef.linearDampingRatio = jData.linearDampingRatio;
-					motorJointDef.linearHertz = jData.linearHertz;
-					motorJointDef.linearVelocity = Vector2::GetB2Vec2(jData.linearVelocity);
-					motorJointDef.maxSpringForce = jData.maxSpringForce;
-					motorJointDef.maxSpringTorque = jData.maxSpringTorque;
-					motorJointDef.maxVelocityForce = jData.maxVelocityForce;
-					motorJointDef.maxVelocityTorque = jData.maxVelocityTorque;
+					motorJointDef.angularHertz        = jData.angularHertz;
+					motorJointDef.angularVelocity     = jData.angularVelocity;
+					motorJointDef.linearDampingRatio  = jData.linearDampingRatio;
+					motorJointDef.linearHertz         = jData.linearHertz;
+					motorJointDef.linearVelocity      = Vector2::GetB2Vec2(jData.linearVelocity);
+					motorJointDef.maxSpringForce      = jData.maxSpringForce;
+					motorJointDef.maxSpringTorque     = jData.maxSpringTorque;
+					motorJointDef.maxVelocityForce    = jData.maxVelocityForce;
+					motorJointDef.maxVelocityTorque   = jData.maxVelocityTorque;
 					motorJointDef.relativeTransform.p = Vector2::GetB2Vec2(jData.relativeTransformPos);
 					motorJointDef.relativeTransform.q = b2MakeRot(jData.angleBetween);
 					joint->SetJointID(b2CreateMotorJoint(this->m_worldID, &motorJointDef));
 				}
 				else if constexpr (std::is_same_v<T, WheelJoint2DData>)
 				{
-					b2WheelJointDef wheelJointDef = b2DefaultWheelJointDef();
-					wheelJointDef.base = jointDef;
-					wheelJointDef.dampingRatio = jData.dampingRatio;
-					wheelJointDef.enableLimit = jData.b_enableLimit;
-					wheelJointDef.enableMotor = jData.b_enableMotor;
-					wheelJointDef.enableSpring = jData.b_enableSpring;
-					wheelJointDef.hertz = jData.hertz;
+					b2WheelJointDef wheelJointDef  = b2DefaultWheelJointDef();
+					wheelJointDef.base             = jointDef;
+					wheelJointDef.dampingRatio     = jData.dampingRatio;
+					wheelJointDef.enableLimit      = jData.b_enableLimit;
+					wheelJointDef.enableMotor      = jData.b_enableMotor;
+					wheelJointDef.enableSpring     = jData.b_enableSpring;
+					wheelJointDef.hertz            = jData.hertz;
 					wheelJointDef.lowerTranslation = jData.lowerTranslation;
 					wheelJointDef.upperTranslation = jData.upperTranslation;
-					wheelJointDef.maxMotorTorque = jData.maxMotorTorque;
-					wheelJointDef.motorSpeed = jData.motorSpeed;
+					wheelJointDef.maxMotorTorque   = jData.maxMotorTorque;
+					wheelJointDef.motorSpeed       = jData.motorSpeed;
 					joint->SetJointID(b2CreateWheelJoint(this->m_worldID, &wheelJointDef));
 				}
 			}, joint->jointData);
@@ -520,8 +529,9 @@ namespace FlatEngine
 		{
 			if (joint != nullptr && b2Joint_IsValid(joint->m_jointID))
 			{
+				// joint->GetBodyB()->RemoveConnectedJoint(joint);
 				b2DestroyJoint(joint->m_jointID);
-				joint->SetJointID(b2_nullJointId);
+				joint->SetJointID(b2_nullJointId);				
 			}
 		}
 

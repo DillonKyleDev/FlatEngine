@@ -401,19 +401,17 @@ namespace FlatGui
 
 			// Table for Scene Objects in Hierarchy			
 			float visibleIconColumnWidth = 24;
-			float isPrefabIconColumnWidth = 24;
-			static float currentIndent = 10;
+			float isPrefabIconColumnWidth = 23;			
 			static bool b_allAreVisible = false;
-			std::vector<FL::GameObject>& sceneObjects = FL::SceneManager::loadedScene.GetSceneObjects();			
-
 			static long node_clicked = -1;
+			long queuedForDelete = -1;
+			long parentToUnparent = -1;
+			long childToRemove = -1;
+			std::vector<FL::GameObject>& sceneObjects = FL::SceneManager::loadedScene.GetSceneObjects();						
 
 			FL::GuiCore::BeginWindowChild("##ScrollingHierarchy", "outerWindow", 0, FL::Vector2());
 			// {
-
-				long queuedForDelete = -1;
-				long parentToUnparent = -1;
-				long childToRemove = -1;
+				
 				ImGui::PushStyleColor(ImGuiCol_FrameBg, FL::Assets::assetManager.GetColor("innerWindow"));
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2());
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, FL::Vector2());

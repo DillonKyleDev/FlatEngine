@@ -31,11 +31,11 @@ namespace FlatEngine
 			void Update(float deltaTime);
 
 			Body2D* GetBodyFromShapeID(b2ShapeId shapeID);
-			void CreateBody(FL::Body2D* parentBody);
+			void CreateBody(FL::Body2D* body);
 			void DestroyBody(b2BodyId bodyID);
-			void RecreateBody(FL::Body2D* parentBody);
+			void RecreateBody(FL::Body2D* body);
 
-			void CreateShape(FL::Shape2D* shape, FL::Body2D* parentBody = nullptr);
+			void CreateShape(FL::Shape2D* shape, FL::Body2D* body = nullptr);
 			void DestroyShape(FL::Shape2D* shape);
 			void RecreateShape(FL::Shape2D* shape);
 
@@ -63,11 +63,11 @@ namespace FlatEngine
 			// void Update(float deltaTime);
 			// void HandleCollisions();
 
-			// void CreateBody(FL::Body* parentBody);
+			// void CreateBody(FL::Body* body);
 			// void DestroyBody(b2BodyId bodyID);
-			// void RecreateBody(FL::Body* parentBody);
+			// void RecreateBody(FL::Body* body);
 
-			// void CreateShape(FL::Shape2D* shape, FL::Body2D* parentBody = nullptr);
+			// void CreateShape(FL::Shape2D* shape, FL::Body2D* body = nullptr);
 			// void DestroyShape(b2ShapeId shapeID);
 			// void RecreateShape(FL::Shape2D* shape);
 

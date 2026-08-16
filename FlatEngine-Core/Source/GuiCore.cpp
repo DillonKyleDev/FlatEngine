@@ -70,7 +70,7 @@ namespace FlatEngine
 			style.Colors[ImGuiCol_FrameBgHovered]        = Assets::assetManager.GetColor("frameBgHovered");
 			style.Colors[ImGuiCol_TitleBgCollapsed]      = Assets::assetManager.GetColor("titleBgCollapsed");
 			style.Colors[ImGuiCol_TextSelectedBg]        = Assets::assetManager.GetColor("textSelectedBg");
-			style.Colors[ImGuiCol_PopupBg]               = Assets::assetManager.GetColor("popupBg");
+			// style.Colors[ImGuiCol_PopupBg]               = Assets::assetManager.GetColor("popupBg");
 			style.Colors[ImGuiCol_NavWindowingHighlight] = Assets::assetManager.GetColor("navWindowHighlight");
 			style.Colors[ImGuiCol_NavHighlight]          = Assets::assetManager.GetColor("navHighlight");
 			style.Colors[ImGuiCol_NavWindowingDimBg]     = Assets::assetManager.GetColor("navWindowDimBg");
@@ -107,9 +107,12 @@ namespace FlatEngine
 			style.Colors[ImGuiCol_TableBorderStrong]    = Assets::assetManager.GetColor("tableBorderStrong");
 			style.Colors[ImGuiCol_TableBorderLight]     = Assets::assetManager.GetColor("tableBorderLight");
 			// Menus
-			style.Colors[ImGuiCol_Header]       		= Assets::assetManager.GetColor("treeSelectableSelected");
-			style.Colors[ImGuiCol_HeaderHovered]        = Assets::assetManager.GetColor("treeSelectableHovered");
-			style.Colors[ImGuiCol_HeaderActive]         = Assets::assetManager.GetColor("treeSelectableActive");
+			style.Colors[ImGuiCol_MenuBarBg]            = Assets::assetManager.GetColor("menuBarBg");
+			style.Colors[ImGuiCol_Border] 				= Assets::assetManager.GetColor("menuDropdownBorder");
+			style.Colors[ImGuiCol_PopupBg] 				= Assets::assetManager.GetColor("menuDropdownBg");
+			style.Colors[ImGuiCol_Header] 				= Assets::assetManager.GetColor("menuHeaderItem");
+			style.Colors[ImGuiCol_HeaderActive] 		= Assets::assetManager.GetColor("menuHeaderItemActive");
+			style.Colors[ImGuiCol_HeaderHovered] 		= Assets::assetManager.GetColor("menuHeaderItemHovered");
 			// Modals
 			style.Colors[ImGuiCol_ModalWindowDimBg] 	= Assets::assetManager.GetColor("modalWindowDimBg");
 			
@@ -128,16 +131,11 @@ namespace FlatEngine
 			style.TabBarOverlineSize = 1.0f;
 			style.ScrollbarSize = 12.0f;			
 			style.DockingSeparatorSize = 1.0f;
-			style.CellPadding = Vector2(0);						
+			style.CellPadding = Vector2(0);			
+			style.ItemInnerSpacing = Vector2(4);
+			style.ItemSpacing = Vector2(8,4);
 			style.SeparatorTextAlign = Vector2(0.5f, 0.0f);
 			style.SeparatorTextBorderSize = 1;
-		}
-
-		void RestartImGui()
-		{
-			//QuitImGui();
-			SetupImGui();
-			SetImGuiVars();
 		}
 
 		void QuitImGui()
@@ -667,51 +665,47 @@ namespace FlatEngine
 			ImGui::PopStyleVar();
 			ImGui::PopStyleColor();
 		}
-
 		void EndWindowChild()
 		{
 			ImGui::EndChild();
 		}
 
-		void PushComboStyles()
+		void PushCellSpacingStyles()
 		{
-			// ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(4, 4));				
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::PushStyleColor(ImGuiCol_Button, Assets::assetManager.GetColor("comboArrow"));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Assets::assetManager.GetColor("comboArrowHovered"));
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor("comboBg"));
-			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, Assets::assetManager.GetColor("comboHovered"));
-			// For Selectables
-			ImGui::PushStyleColor(ImGuiCol_Header, Assets::assetManager.GetColor("comboSelectable"));
-			ImGui::PushStyleColor(ImGuiCol_HeaderActive, Assets::assetManager.GetColor("comboSelected"));
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Assets::assetManager.GetColor("comboHighlighted"));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(4, 8));		
+		}
+		void PopCellSpacingStyles()
+		{
+			ImGui::PopStyleVar(4);
 		}
 
+		void PushComboStyles()
+		{
+			PushCellSpacingStyles();
+			// ImGui::PushStyleColor(ImGuiCol_Button, Assets::assetManager.GetColor("comboArrow"));
+			// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Assets::assetManager.GetColor("comboArrowHovered"));
+			// ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor("comboBg"));
+			// ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, Assets::assetManager.GetColor("comboHovered"));		
+			// ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Assets::assetManager.GetColor("comboHovered"));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor("comboBg"));
+			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, Assets::assetManager.GetColor("comboHovered"));			
+		}
 		void PopComboStyles()
 		{
-			ImGui::PopStyleColor(7);
-			ImGui::PopStyleVar();
+			ImGui::PopStyleColor(2);
+			PopCellSpacingStyles();
 		}
 
 		void PushTreeStyles()
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 4));	
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));		
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(4, 8));	
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 5));		
-
-			ImGui::PushStyleColor(ImGuiCol_MenuBarBg, Assets::assetManager.GetColor("menuBarBg"));
-			ImGui::PushStyleColor(ImGuiCol_Border, Assets::assetManager.GetColor("menuDropdownBorder"));
-			ImGui::PushStyleColor(ImGuiCol_PopupBg, Assets::assetManager.GetColor("menuDropdownBg"));
-			ImGui::PushStyleColor(ImGuiCol_Header, Assets::assetManager.GetColor("menuHeaderItem"));
-			ImGui::PushStyleColor(ImGuiCol_HeaderActive, Assets::assetManager.GetColor("menuHeaderItemActive"));
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Assets::assetManager.GetColor("menuHeaderItemHovered"));
+			PushCellSpacingStyles();						
 		}
-
 		void PopTreeStyles()
 		{
-			ImGui::PopStyleVar(4);
-			ImGui::PopStyleColor(6);
+			PopCellSpacingStyles();		
 		}
 		
 		void PushMenuStyles()
@@ -720,25 +714,11 @@ namespace FlatEngine
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 0));		
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(0,0));	
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(0,0));	
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(6, 3));	
-
-			// ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(0, 4));	
-			// ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, Vector2(8, 8));		
-			// ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, Vector2(4, 8));	
-			// ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 5));		
-
-			ImGui::PushStyleColor(ImGuiCol_MenuBarBg, Assets::assetManager.GetColor("menuBarBg"));
-			ImGui::PushStyleColor(ImGuiCol_Border, Assets::assetManager.GetColor("menuDropdownBorder"));
-			ImGui::PushStyleColor(ImGuiCol_PopupBg, Assets::assetManager.GetColor("menuDropdownBg"));
-			ImGui::PushStyleColor(ImGuiCol_Header, Assets::assetManager.GetColor("menuHeaderItem"));
-			ImGui::PushStyleColor(ImGuiCol_HeaderActive, Assets::assetManager.GetColor("menuHeaderItemActive"));
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Assets::assetManager.GetColor("menuHeaderItemHovered"));
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(6, 3));		
 		}
-
 		void PopMenuStyles()
 		{
-			ImGui::PopStyleVar(5);
-			ImGui::PopStyleColor(6);
+			ImGui::PopStyleVar(5);			
 		}
 
 		void PushTableStyles()
@@ -1834,7 +1814,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 
-			PushComboStyles();
+			PushComboStyles();			
 			if (ImGui::BeginCombo(ID.c_str(), options[currentOption].c_str()))
 			{
 				for (int i = 0; i < options.size(); i++)
@@ -1847,7 +1827,7 @@ namespace FlatEngine
 					}
 				}
 				ImGui::EndCombo();
-			}
+			}			
 			PopComboStyles();
 
 			return b_interactedWith;

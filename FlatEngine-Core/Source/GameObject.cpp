@@ -15,6 +15,7 @@
 #include "components/TileMap.h"
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
+#include "physics/Joint2D.h"
 #include "tools/JsonHelper.h"
 #include <math_functions.h>
 
@@ -99,14 +100,14 @@ namespace FlatEngine
 
 		if (JsonHelper::JsonContains(objectJson, "tags", m_name))
 			m_tagList.PutData(objectJson.at("tags"), m_name);	
-
+		
 		if (objectJson.contains("components"))
 		{
 			for (int j = 0; j < objectJson.at("components").size(); j++)
 			{
 				json componentJson = objectJson.at("components").at(j);								 
 				ComponentType type = GetTypeFromString<ComponentType>(ComponentTypeFromString, JsonHelper::CheckJsonString(componentJson, "componentType", m_name));
-				Component* component = AddComponent(type, componentJson);   				
+				Component* component = AddComponent(type, componentJson);   						
 			}
 		}
 

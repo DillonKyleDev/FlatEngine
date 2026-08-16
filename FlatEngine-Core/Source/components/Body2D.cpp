@@ -12,6 +12,7 @@
 #include "tools/Vector3.h"
 #include "Types.h"
 #include <math_functions.h>
+#include <unordered_map>
 
 
 namespace FlatEngine
@@ -21,7 +22,6 @@ namespace FlatEngine
 		SetOwnerID(ownerID);
 		SetType(ComponentType_Body2D);
 
-		m_currentJointID = 0;
 		m_bodyID = b2BodyId();
 		type = b2_dynamicBody;
 		rotation = b2MakeRot(0);
@@ -141,12 +141,7 @@ namespace FlatEngine
 
 	void Body2D::AddJoint(JointType2D type, json componentJson, std::string name)
 	{
-		Joint2D joint = Joint2D(GetOwnerID(), m_freedJointIDs.size() ? m_freedJointIDs.back() : m_currentJointID, type);
-		if (m_freedJointIDs.size())
-			m_freedJointIDs.pop_back();
-		else
-		 	m_currentJointID++;
-
+		Joint2D joint = Joint2D(GetOwnerID(), SceneManager::loadedScene.GetNextJoint2DID(), type);
 		joint.PutData(componentJson, name);
 
 		switch (type)
@@ -154,12 +149,38 @@ namespace FlatEngine
 			case JointType2D_Distance:  { m_distanceJoints.push_back(joint);  PhysicsManager::gamePhysics2D.CreateJoint(&m_distanceJoints.back()); break; }
 			case JointType2D_Prismatic: { m_prismaticJoints.push_back(joint); PhysicsManager::gamePhysics2D.CreateJoint(&m_prismaticJoints.back()); break; }
 			case JointType2D_Revolute:  { m_revoluteJoints.push_back(joint);  PhysicsManager::gamePhysics2D.CreateJoint(&m_revoluteJoints.back()); break; }
-			case JointType2D_Mouse: 	  { m_mouseJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_mouseJoints.back()); break; }			
-			case JointType2D_Wheel: 	  { m_wheelJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_wheelJoints.back()); break; }
+			case JointType2D_Mouse: 	{ m_mouseJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_mouseJoints.back()); break; }			
+			case JointType2D_Wheel: 	{ m_wheelJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_wheelJoints.back()); break; }
 			case JointType2D_Motor:     { m_motorJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_motorJoints.back()); break; }
 			case JointType2D_Weld:      { m_weldJoints.push_back(joint);      PhysicsManager::gamePhysics2D.CreateJoint(&m_weldJoints.back()); break; }
 			default: break;
 		}		
+	}
+
+	// This Body2D is a BodyB for Joint2D* joint and needs to be able to reference that joint when it is recreated or destroyed.
+	void Body2D::AddConnectedJoint(Joint2D* joint)
+	{
+		if (joint == nullptr)
+			return;
+
+		if (m_jointsConnected.count(joint->GetID()) == 0)
+		{
+			m_jointsConnected.emplace(joint->GetID(), joint);
+		}
+	}
+	void Body2D::RemoveConnectedJoint(Joint2D* joint)
+	{
+		if (joint == nullptr)
+			return;
+
+		if (m_jointsConnected.count(joint->GetID()))
+		{
+			m_jointsConnected.erase(joint->GetID());
+		}
+	}
+	std::unordered_map<long, Joint2D*> Body2D::GetConnectedJoints()
+	{
+		return m_jointsConnected;
 	}
 
 	void Body2D::Cleanup()
@@ -433,15 +454,6 @@ namespace FlatEngine
 						}
 					}
 
-					// Set the shape color for the endpoint lines that are not actual colliders as the orange color when !b_isLoop
-					// shape->renderShapes[0].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[1].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[2].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[3].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[4].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[5].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[6].mesh.SetUBOVec4("color", color);
-					// shape->renderShapes[7].mesh.SetUBOVec4("color", color);	
 					for (int p = 0; p < sData.points.size(); p++)
 					{
 						if (p == sData.points.size() - 1)
@@ -462,8 +474,12 @@ namespace FlatEngine
 						Vector3 startPos = Vector3(pointStart, ownerPos.z);
 						b2Vec2 pointEnd = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[pNext].x, sData.points[pNext].y));
 						Vector3 endPos = Vector3(pointEnd, ownerPos.z);
-
 						shape->renderShapes[p].transform = SceneView::GetLineTransformForStartEndPos(startPos, endPos);
+
+						std::string color = "chain";
+						if ((p == 0 || p == shape->renderShapes.size() - 2) && !sData.b_isLoop)
+							color = "chainEndSegments";
+						shape->renderShapes[p].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color + postfix));
 					}
 				}
 			}, shape->shapeData);
@@ -832,7 +848,7 @@ namespace FlatEngine
 			{
 				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
 				m_distanceJoints.erase(jointIter);
-				m_freedJointIDs.push_back(jointID);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
 			}
 		}
@@ -843,7 +859,7 @@ namespace FlatEngine
 			{
 				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
 				m_prismaticJoints.erase(jointIter);
-				m_freedJointIDs.push_back(jointID);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
 			}
 		}
@@ -854,7 +870,7 @@ namespace FlatEngine
 			{
 				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
 				m_revoluteJoints.erase(jointIter);
-				m_freedJointIDs.push_back(jointID);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
 			}
 		}
@@ -865,7 +881,7 @@ namespace FlatEngine
 			{
 				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
 				m_weldJoints.erase(jointIter);
-				m_freedJointIDs.push_back(jointID);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
 			}
 		}
@@ -876,7 +892,7 @@ namespace FlatEngine
 			{
 				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
 				m_motorJoints.erase(jointIter);
-				m_freedJointIDs.push_back(jointID);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
 			}
 		}
@@ -887,9 +903,28 @@ namespace FlatEngine
 			{
 				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
 				m_wheelJoints.erase(jointIter);
-				m_freedJointIDs.push_back(jointID);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
 			}
+		}
+
+		for (std::list<Joint2D>::iterator jointIter = m_mouseJoints.begin(); jointIter != m_mouseJoints.end(); jointIter++)
+		{
+			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
+			{
+				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				m_mouseJoints.erase(jointIter);
+				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
+				return;
+			}
+		}
+	}
+
+	void Body2D::RecreateJoints()
+	{
+		for (Joint2D& joint : m_distanceJoints)
+		{
+			PhysicsManager::gamePhysics2D.RecreateJoint(&joint);
 		}
 	}
 }

@@ -3,11 +3,14 @@
 #include "managers/AudioManager.h"
 #include "managers/SceneManager.h"
 #include "managers/ProjectManager.h"
+#include "physics/Joint2D.h"
+#include "physics/PhysicsManager.h"
 #include "render/SceneView.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
 #include "tools/Logger.h"
+#include <box2d.h>
 
 
 namespace FlatEngine
@@ -103,11 +106,12 @@ namespace FlatEngine
 			loadedScene = Scene();
 			loadedScenePath = pointToPath;
 			loadedScene.path = pointToPath;
-			loadedScene.name = FileHelper::GetFilenameFromPath(pointToPath, false);
-			std::vector<json> prefabsJson = std::vector<json>();
+			loadedScene.name = FileHelper::GetFilenameFromPath(pointToPath, false);			
 
 			if (fileContentJson.contains("Scene GameObjects") && fileContentJson.at("Scene GameObjects").size())
 			{
+				std::vector<json> prefabsJson = std::vector<json>();
+				std::vector<Joint2D*> joints2D;
 				auto sceneObjectsjson = fileContentJson.at("Scene GameObjects");
 				
 				for (auto objectJson : sceneObjectsjson)
@@ -121,6 +125,17 @@ namespace FlatEngine
 						GameObject loadedObject = GameObject(JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"));						
 						GameObject* objectPtr = loadedScene.AddSceneObject(loadedObject);							
 						objectPtr->PutData(objectJson);
+
+						// Collect Joint2Ds that were not created because their Connected Body2D was not created yet.
+						Body2D* body2D = loadedScene.Get<Body2D>(objectPtr->GetID());
+						if (body2D != nullptr)
+						{
+							for (Joint2D* joint : body2D->GetJoints())
+							{
+								if (joint->HasValidBodies() && !b2Joint_IsValid(joint->GetJointID()))
+									joints2D.push_back(joint);
+							}
+						}	
 					}
 				}
 
@@ -130,6 +145,11 @@ namespace FlatEngine
 					GameObject loadedObject = GameObject(JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"));						
 					GameObject* objectPtr = loadedScene.AddSceneObject(loadedObject);							
 					objectPtr->PutData(objectJson);														
+				}				
+				
+				for (Joint2D* joint : joints2D)
+				{
+					PhysicsManager::gamePhysics2D.CreateJoint(joint);
 				}
 
 				loadedScene.SortSceneObjects();				

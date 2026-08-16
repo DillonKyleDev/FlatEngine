@@ -13,15 +13,15 @@ namespace FlatEngine
 		m_ownerID = ownerID;		
 		type = jointType;
 		b_isCollapsed = false;
-
-		PhysicsManager::gamePhysics2D.CreateJoint(this);
+		bodyAID = ownerID;
+		bodyBID = -1;		
+		b_collideConnected = false;
 	}
 
 	json Joint2D::GetData()
 	{
 		json jointJson = {
 			{ "jointType", JointType2DStrings[type] },
-			{ "bodyAID", bodyAID },
 			{ "bodyBID", bodyBID },
 			{ "b_collideConnected", b_collideConnected },
 			{ "b_isCollapsed", b_isCollapsed },
@@ -60,8 +60,7 @@ namespace FlatEngine
 			return;
 
 		b_collideConnected = JsonHelper::CheckJsonBool(jointJson, "b_collideConnected", name);
-		b_isCollapsed = JsonHelper::CheckJsonBool(jointJson, "b_isCollapsed", name);
-		bodyAID = JsonHelper::CheckJsonLong(jointJson, "bodyAID", name);
+		b_isCollapsed = JsonHelper::CheckJsonBool(jointJson, "b_isCollapsed", name);		
 		bodyBID = JsonHelper::CheckJsonLong(jointJson, "bodyBID", name);
 		anchorA.x = JsonHelper::CheckJsonFloat(jointJson, "anchorAX", name);
 		anchorA.y = JsonHelper::CheckJsonFloat(jointJson, "anchorAY", name);
@@ -108,13 +107,11 @@ namespace FlatEngine
 
 	void Joint2D::SetBodyBID(long newBodyBID)
 	{			
-		if (bodyBID == bodyAID)
+		if (newBodyBID != bodyAID)
 		{
-			bodyAID = -1;
+			bodyBID = newBodyBID;
+			PhysicsManager::gamePhysics2D.RecreateJoint(this);
 		}
-
-		bodyBID = newBodyBID;
-		PhysicsManager::gamePhysics2D.RecreateJoint(this);
 	}
 
 	JointType2D Joint2D::GetType()

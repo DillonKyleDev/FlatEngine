@@ -17,6 +17,7 @@ namespace FlatEngine
 		Vector3(const Vector3& toCopy);
 		Vector3(Vector3&& toMove) noexcept = default;
 		Vector3(const glm::vec3 vec3);
+		Vector3(const glm::vec4 vec4);
 		Vector3(Vector2 vec2, float z);
 		
 		static Vector3 Normalize(Vector3 vec);

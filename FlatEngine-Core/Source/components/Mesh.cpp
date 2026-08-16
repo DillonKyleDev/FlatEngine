@@ -4,6 +4,7 @@
 #include "managers/Assets.h"
 #include "render/DeviceManager.h"
 #include "render/RenderWindow.h"
+#include "render/Structs.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
@@ -423,19 +424,21 @@ namespace FlatEngine
 		BaseUBO base{};
 		base.meshPosition = transform->GetAbsolutePosition().GetGLMVec4();
 		base.cameraPosition = glm::vec4(cameraPos, 0);
-		base.model = transform->GetRotationMatrix() * transform->GetScaleMatrix();
+		base.model = transform->GetAbsoluteRotationMatrix() * transform->GetScaleMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
-		if (GetOwningObject() != nullptr && GetOwningObject()->GetName() == "UI")
+
+		if (GetOwningObject() != nullptr && GetOwningObject()->GetName() == "UI" && viewportType != ViewportType_SceneView)
 		{
 			bool b_orthographic = camera->b_orthographic;
 			camera->b_orthographic = true;
-			base.projection = camera->GetProjection();
+			base.projection = camera->GetProjection(); // camera->GetOrthographicProjection() <-- make this function
 			camera->b_orthographic = b_orthographic;
 		}
 		else
 		{
 			base.projection = camera->GetProjection();
 		}
+
 		ubo.baseUBO = base;
 		
 		int vec4Counter = 0;

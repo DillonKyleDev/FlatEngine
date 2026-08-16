@@ -27,11 +27,13 @@ namespace FlatEngine
 		Vector3 GetCleanPosition();
 		Vector3 GetCleanRotation();
 		Vector3 GetPosition();
-		Vector3 GetAbsolutePosition();
+		Vector3 GetAbsolutePosition();		
+		Vector3 GetRotation();		
+		Vector3 GetAbsoluteRotation();
+		glm::mat4 GetRotationMatrix();	
+		glm::mat4 GetAbsoluteRotationMatrix();
 		Vector3 GetScale();
 		Vector3 GetAbsoluteScale();
-		Vector3 GetRotation();		
-		glm::mat4 GetRotationMatrix();		
 		glm::mat4 GetScaleMatrix();
 		glm::vec4 GetLookDirection();
 		void LookAt(Vector3 lookAt);

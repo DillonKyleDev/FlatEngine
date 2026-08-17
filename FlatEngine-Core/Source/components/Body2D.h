@@ -45,6 +45,8 @@ namespace FlatEngine
 		void SetOnSensorEndTouch(void (*endSensorTouchCallback)(b2ShapeId myID, b2ShapeId touchedID));
 		void OnSensorEndTouch(b2ShapeId myID, b2ShapeId touchedID);
 	
+		void RecreateBody();
+
 		void AddShape(ShapeType2D type, json jsonData = json::object(), std::string name = "");
 		const b2BodyId GetBodyID();
 		std::vector<Shape2D*> GetShapes();		
@@ -58,6 +60,7 @@ namespace FlatEngine
         void RemoveJoint(long jointID);
 		void UpdateRenderShapes();
 
+		void Wake();
 		void SetBodyID(b2BodyId bodyID);
 		void SetBodyType(b2BodyType type);
 		void SetPosition(Vector2 position);

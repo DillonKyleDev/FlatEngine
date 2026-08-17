@@ -1,5 +1,5 @@
 
-#include "components/Body.h"
+// #include "components/Body.h"
 #include "components/Body2D.h"
 #include "GameObject.h"
 #include "components/Transform.h"
@@ -79,6 +79,7 @@ namespace FlatEngine
 			b2WorldDef worldDef = b2DefaultWorldDef();
 			worldDef.gravity = b2Vec2{ 0.0f, -10.0f };
 			m_worldID = b2CreateWorld(&worldDef);	
+			// b2World_EnableSleeping(m_worldID, false);
 		}
 
 		void Physics2D::Shutdown()
@@ -93,8 +94,7 @@ namespace FlatEngine
 			int substepCount = 4;
 
 			b2World_Step(m_worldID, timeStep, substepCount);
-			HandleCollisions();
-			// DrawDebugShapes();
+			HandleCollisions();			
 		}
 
 		void Physics2D::HandleCollisions()
@@ -102,72 +102,69 @@ namespace FlatEngine
 			b2ContactEvents contactEvents = b2World_GetContactEvents(m_worldID);
 			b2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldID);
 
-			// Contacts
-			for (int i = 0; i < contactEvents.beginCount; ++i)
-			{
-				b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
-				b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;	
-				if (GetBodyFromShapeID(beginEvent->shapeIdA) != nullptr)
-					GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);
-				else
-				 	Logger::log.Err("Body not found from shapeID: {}, {}", beginEvent->shapeIdA.index1, beginEvent->shapeIdA.generation);
-				if (GetBodyFromShapeID(beginEvent->shapeIdB))
-					GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
-				else
-				 	Logger::log.Err("Body not found from shapeID: {}, {}", beginEvent->shapeIdB.index1, beginEvent->shapeIdB.generation);
-			}
-			for (int i = 0; i < contactEvents.endCount; ++i)
-			{
-				b2ContactEndTouchEvent* endEvent = contactEvents.endEvents + i;
-				if (b2Shape_IsValid(endEvent->shapeIdA) && b2Shape_IsValid(endEvent->shapeIdB))
-				{
-					if (GetBodyFromShapeID(endEvent->shapeIdA) != nullptr)
-						GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
-					else
-						Logger::log.Err("Body not found from shapeID: {}, {}", endEvent->shapeIdA.index1, endEvent->shapeIdA.generation);
-					if (GetBodyFromShapeID(endEvent->shapeIdB))
-						GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
-					else
-						Logger::log.Err("Body not found from shapeID: {}, {}", endEvent->shapeIdB.index1, endEvent->shapeIdB.generation);
-				}
-			}
+			// // Contacts
+			// for (int i = 0; i < contactEvents.beginCount; ++i)
+			// {
+			// 	b2ContactBeginTouchEvent* beginEvent = contactEvents.beginEvents + i;	
+			// 	b2Manifold manifold = b2Contact_GetData(beginEvent->contactId).manifold;	
+			// 	if (GetBodyFromShapeID(beginEvent->shapeIdA) != nullptr)
+			// 		GetBodyFromShapeID(beginEvent->shapeIdA)->OnBeginContact(manifold, beginEvent->shapeIdA, beginEvent->shapeIdB);				 	
+			// 	if (GetBodyFromShapeID(beginEvent->shapeIdB))
+			// 		GetBodyFromShapeID(beginEvent->shapeIdB)->OnBeginContact(manifold, beginEvent->shapeIdB, beginEvent->shapeIdA);
+			// 	else
+			// 	 	Logger::log.Trace("Body not found from shapeID: {}, {}. Suspected Chain, must add userdata to each link in the chain.", beginEvent->shapeIdB.index1, beginEvent->shapeIdB.generation);
+			// }
+			// for (int i = 0; i < contactEvents.endCount; ++i)
+			// {
+			// 	b2ContactEndTouchEvent* endEvent = contactEvents.endEvents + i;
+			// 	if (b2Shape_IsValid(endEvent->shapeIdA) && b2Shape_IsValid(endEvent->shapeIdB))
+			// 	{
+			// 		if (GetBodyFromShapeID(endEvent->shapeIdA) != nullptr)
+			// 			GetBodyFromShapeID(endEvent->shapeIdA)->OnEndContact(endEvent->shapeIdA, endEvent->shapeIdB);
+			// 		else
+			// 			Logger::log.Trace("Body not found from shapeID: {}, {}. Suspected Chain, must add userdata to each link in the chain.", endEvent->shapeIdA.index1, endEvent->shapeIdA.generation);
+			// 		if (GetBodyFromShapeID(endEvent->shapeIdB))
+			// 			GetBodyFromShapeID(endEvent->shapeIdB)->OnEndContact(endEvent->shapeIdB, endEvent->shapeIdA);
+			// 		else
+			// 			Logger::log.Trace("Body not found from shapeID: {}, {}. Suspected Chain, must add userdata to each link in the chain.", endEvent->shapeIdB.index1, endEvent->shapeIdB.generation);
+			// 	}
+			// }
 
-			// Sensors
-			for (int i = 0; i < sensorEvents.beginCount; ++i)
-			{
-				b2SensorBeginTouchEvent* beginTouch = sensorEvents.beginEvents + i;
-				GetBodyFromShapeID(beginTouch->sensorShapeId)->OnSensorBeginTouch(beginTouch->sensorShapeId, beginTouch->visitorShapeId);
-				GetBodyFromShapeID(beginTouch->visitorShapeId)->OnSensorBeginTouch(beginTouch->visitorShapeId, beginTouch->sensorShapeId);
-			}
-			for (int i = 0; i < sensorEvents.endCount; ++i)
-			{
-				b2SensorEndTouchEvent* endTouch = sensorEvents.endEvents + i;
-				if (b2Shape_IsValid(endTouch->visitorShapeId))
-				{
-					GetBodyFromShapeID(endTouch->sensorShapeId)->OnSensorEndTouch(endTouch->sensorShapeId, endTouch->visitorShapeId);
-					GetBodyFromShapeID(endTouch->visitorShapeId)->OnSensorEndTouch(endTouch->visitorShapeId, endTouch->sensorShapeId);
-				}
-			}
+			// // Sensors
+			// for (int i = 0; i < sensorEvents.beginCount; ++i)
+			// {
+			// 	b2SensorBeginTouchEvent* beginTouch = sensorEvents.beginEvents + i;
+			// 	GetBodyFromShapeID(beginTouch->sensorShapeId)->OnSensorBeginTouch(beginTouch->sensorShapeId, beginTouch->visitorShapeId);
+			// 	GetBodyFromShapeID(beginTouch->visitorShapeId)->OnSensorBeginTouch(beginTouch->visitorShapeId, beginTouch->sensorShapeId);
+			// }
+			// for (int i = 0; i < sensorEvents.endCount; ++i)
+			// {
+			// 	b2SensorEndTouchEvent* endTouch = sensorEvents.endEvents + i;
+			// 	if (b2Shape_IsValid(endTouch->visitorShapeId))
+			// 	{
+			// 		GetBodyFromShapeID(endTouch->sensorShapeId)->OnSensorEndTouch(endTouch->sensorShapeId, endTouch->visitorShapeId);
+			// 		GetBodyFromShapeID(endTouch->visitorShapeId)->OnSensorEndTouch(endTouch->visitorShapeId, endTouch->sensorShapeId);
+			// 	}
+			// }
 
-			// Hit events
-			for (int i = 0; i < contactEvents.hitCount; ++i)
-			{
-				float hitSpeedForSound = 10.0f;
+			// // Hit events
+			// for (int i = 0; i < contactEvents.hitCount; ++i)
+			// {
+			// 	float hitSpeedForSound = 10.0f;
 
-				b2ContactHitEvent* hitEvent = contactEvents.hitEvents + i;
-				if (hitEvent->approachSpeed > hitSpeedForSound)
-				{
-					// Play sound, etc..
-				}
-			}
+			// 	b2ContactHitEvent* hitEvent = contactEvents.hitEvents + i;
+			// 	if (hitEvent->approachSpeed > hitSpeedForSound)
+			// 	{
+			// 		// Play sound, etc..
+			// 	}
+			// }
 		}
 
 		Body2D* Physics2D::GetBodyFromShapeID(b2ShapeId shapeID)
 		{
 			Shape2D* shape = static_cast<Shape2D*>(b2Shape_GetUserData(shapeID));
 			if (shape != nullptr && b2Shape_IsValid(shape->GetShapeID()))
-			{
-				// Logger::log.Debug("Data found for: index: {}, world: {}, generation: {}", shapeID.index1, shapeID.world0, shapeID.generation);
+			{				
 				return SceneManager::loadedScene.Get<Body2D>(shape->GetOwnerID());
 			}
 			else
@@ -180,13 +177,13 @@ namespace FlatEngine
 		void Physics2D::CreateBody(Body2D* body)
 		{
 			Transform* transform = SceneManager::loadedScene.Get<Transform>(body->GetOwnerID());
-			Vector3 transformPos = transform->GetCleanPosition();
+			// Vector3 transformPos = transform->GetCleanPosition();
 			b2BodyDef bodyDef = b2DefaultBodyDef();			
 			bodyDef.isEnabled = body->IsActive();
 			bodyDef.isAwake = true;
 			bodyDef.enableSleep = true;
-			bodyDef.userData = reinterpret_cast<void*>(body->GetOwnerID());
-			bodyDef.position = b2Vec2(transformPos.x, transformPos.y);
+			bodyDef.userData = body; //reinterpret_cast<void*>(body->GetOwnerID());
+			bodyDef.position = b2Vec2(body->position.x, body->position.y);
 			bodyDef.rotation = body->rotation;
 			b2MotionLocks motionLocks;		
 			motionLocks.angularZ = body->b_lockedRotation;
@@ -228,7 +225,7 @@ namespace FlatEngine
 			material.rollingResistance = shape->rollingResistance;
 			material.tangentSpeed = shape->tangentSpeed;
 
-			std::visit([body, bodyID, shapeDef, filter, material, shape](auto&& sData) -> void
+			std::visit([body, bodyID, &shapeDef, filter, material, shape](auto&& sData) -> void
 			{
 				using T = std::decay_t<decltype(sData)>;
 				if constexpr (std::is_same_v<T, BoxShape2DData>)
@@ -343,12 +340,13 @@ namespace FlatEngine
 
 		void Physics2D::DestroyBody(b2BodyId bodyID)
 		{
-			b2DestroyBody(bodyID);
+			b2DestroyBody(bodyID);			
 		}
 
 		void Physics2D::RecreateBody(Body2D* body)
 		{
 			DestroyBody(body->GetBodyID());
+			body->SetBodyID(b2_nullBodyId);
 			CreateBody(body);
 
 			for (Shape2D* shape : body->GetShapes())
@@ -356,8 +354,6 @@ namespace FlatEngine
 				RecreateShape(shape);			
 			}
 
-			// body->RecreateJoints();
-			// RecreateJoint(&(body->m_distanceJoints.front()));
 			for (Joint2D* joint : body->GetJoints())
 			{				
 				RecreateJoint(joint);
@@ -365,15 +361,14 @@ namespace FlatEngine
 
 			for (auto& jointPair : body->GetConnectedJoints())
 			{
-				RecreateJoint(jointPair.second);
+				CreateJoint(jointPair.second);
 			}
 		}
 
 		void Physics2D::DestroyShape(Shape2D* shape)
 		{
 			if (b2Shape_IsValid(shape->GetShapeID()))
-			{
-				// Logger::log.Debug("Destroying: index: {}, world: {}, generation: {}", shape->GetShapeID().index1, shape->GetShapeID().world0, shape->GetShapeID().generation);
+			{				
 				b2DestroyShape(shape->GetShapeID(), true);
 			}
 			if (b2Chain_IsValid(shape->GetChainID()))
@@ -413,9 +408,6 @@ namespace FlatEngine
 			jointDef.localFrameB.q = bodyB->GetB2Rotation();
 			jointDef.collideConnected = joint->b_collideConnected;
 
-			b2Vec2 anchorA = b2Body_GetWorldPoint(jointDef.bodyIdA, Vector2::GetB2Vec2(joint->anchorA));
-			b2Vec2 anchorB = b2Body_GetWorldPoint(jointDef.bodyIdB, Vector2::GetB2Vec2(joint->anchorB));
-
 			std::visit([jointDef, joint, this](auto&& jData) -> void
 			{
 				using T = std::decay_t<decltype(jData)>;
@@ -433,7 +425,7 @@ namespace FlatEngine
 					distanceJointDef.maxLength     		= jData.maxLength;
 					distanceJointDef.motorSpeed    		= jData.motorSpeed;
 					distanceJointDef.maxMotorForce 		= jData.maxMotorForce;
-					joint->SetJointID(b2CreateDistanceJoint(this->m_worldID, &distanceJointDef));
+					joint->SetJointID(b2CreateDistanceJoint(this->m_worldID, &distanceJointDef));					
 				}
 				else if constexpr (std::is_same_v<T, RevoluteJoint2DData>)
 				{
@@ -529,10 +521,10 @@ namespace FlatEngine
 		{
 			if (joint != nullptr && b2Joint_IsValid(joint->m_jointID))
 			{
-				// joint->GetBodyB()->RemoveConnectedJoint(joint);
-				b2DestroyJoint(joint->m_jointID);
-				joint->SetJointID(b2_nullJointId);				
+				b2DestroyJoint(joint->m_jointID);							
 			}
+
+			joint->SetJointID(b2_nullJointId);	
 		}
 
 		void Physics2D::RecreateJoint(Joint2D* joint)

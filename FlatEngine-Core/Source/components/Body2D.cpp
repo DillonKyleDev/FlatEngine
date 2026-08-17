@@ -11,6 +11,7 @@
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include "Types.h"
+#include <box2d.h>
 #include <math_functions.h>
 #include <unordered_map>
 
@@ -130,11 +131,11 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case ShapeType2D_Box:     { m_boxes.push_back(shape);    PhysicsManager::gamePhysics2D.CreateShape(&m_boxes.back(), this); break; }
-			case ShapeType2D_Circle:  { m_circles.push_back(shape);  PhysicsManager::gamePhysics2D.CreateShape(&m_circles.back(), this); break; }
-			case ShapeType2D_Capsule: { m_capsules.push_back(shape); PhysicsManager::gamePhysics2D.CreateShape(&m_capsules.back(), this); break; }
-			case ShapeType2D_Polygon: { m_polygons.push_back(shape); PhysicsManager::gamePhysics2D.CreateShape(&m_polygons.back(), this); break; }			
-			case ShapeType2D_Chain:   { m_chains.push_back(shape);   PhysicsManager::gamePhysics2D.CreateShape(&m_chains.back(), this); break; }
+			case ShapeType2D_Box:     { m_boxes.push_back(std::move(shape));    PhysicsManager::gamePhysics2D.CreateShape(&m_boxes.back(), this); break; }
+			case ShapeType2D_Circle:  { m_circles.push_back(std::move(shape));  PhysicsManager::gamePhysics2D.CreateShape(&m_circles.back(), this); break; }
+			case ShapeType2D_Capsule: { m_capsules.push_back(std::move(shape)); PhysicsManager::gamePhysics2D.CreateShape(&m_capsules.back(), this); break; }
+			case ShapeType2D_Polygon: { m_polygons.push_back(std::move(shape)); PhysicsManager::gamePhysics2D.CreateShape(&m_polygons.back(), this); break; }			
+			case ShapeType2D_Chain:   { m_chains.push_back(std::move(shape));   PhysicsManager::gamePhysics2D.CreateShape(&m_chains.back(), this); break; }
 			default: break;
 		}
 	}
@@ -146,13 +147,13 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case JointType2D_Distance:  { m_distanceJoints.push_back(joint);  PhysicsManager::gamePhysics2D.CreateJoint(&m_distanceJoints.back()); break; }
-			case JointType2D_Prismatic: { m_prismaticJoints.push_back(joint); PhysicsManager::gamePhysics2D.CreateJoint(&m_prismaticJoints.back()); break; }
-			case JointType2D_Revolute:  { m_revoluteJoints.push_back(joint);  PhysicsManager::gamePhysics2D.CreateJoint(&m_revoluteJoints.back()); break; }
-			case JointType2D_Mouse: 	{ m_mouseJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_mouseJoints.back()); break; }			
-			case JointType2D_Wheel: 	{ m_wheelJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_wheelJoints.back()); break; }
-			case JointType2D_Motor:     { m_motorJoints.push_back(joint);     PhysicsManager::gamePhysics2D.CreateJoint(&m_motorJoints.back()); break; }
-			case JointType2D_Weld:      { m_weldJoints.push_back(joint);      PhysicsManager::gamePhysics2D.CreateJoint(&m_weldJoints.back()); break; }
+			case JointType2D_Distance:  { m_distanceJoints.push_back(std::move(joint));  PhysicsManager::gamePhysics2D.CreateJoint(&m_distanceJoints.back()); break; }
+			case JointType2D_Prismatic: { m_prismaticJoints.push_back(std::move(joint)); PhysicsManager::gamePhysics2D.CreateJoint(&m_prismaticJoints.back()); break; }
+			case JointType2D_Revolute:  { m_revoluteJoints.push_back(std::move(joint));  PhysicsManager::gamePhysics2D.CreateJoint(&m_revoluteJoints.back()); break; }
+			case JointType2D_Mouse: 	{ m_mouseJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_mouseJoints.back()); break; }			
+			case JointType2D_Wheel: 	{ m_wheelJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_wheelJoints.back()); break; }
+			case JointType2D_Motor:     { m_motorJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_motorJoints.back()); break; }
+			case JointType2D_Weld:      { m_weldJoints.push_back(std::move(joint));      PhysicsManager::gamePhysics2D.CreateJoint(&m_weldJoints.back()); break; }
 			default: break;
 		}		
 	}
@@ -191,11 +192,22 @@ namespace FlatEngine
 		m_capsules.clear();
 		m_chains.clear();
 
+		for (Shape2D* shape : GetShapes())
+		{
+			if (shape != nullptr)
+				shape->Cleanup();
+		}
 		for (Joint2D* joint : GetJoints())
 		{
-			PhysicsManager::gamePhysics2D.DestroyJoint(joint);
+			if (joint != nullptr)
+				RemoveJoint(joint->GetID());
 		}
-
+		// for (auto& joint : m_jointsConnected)
+		// {
+		// 	if (joint.second != nullptr && joint.second->GetBodyA() != nullptr)
+		// 		joint.second->GetBodyA()->RemoveJoint(joint.second->GetID());
+		// }
+		
 		m_distanceJoints.clear();
         m_prismaticJoints.clear();
         m_revoluteJoints.clear();
@@ -540,8 +552,9 @@ namespace FlatEngine
 	void Body2D::SetPosition(Vector2 newPosition)
 	{
 		position = newPosition;	
+		Wake();
 		b2Body_SetTransform(m_bodyID, Vector2::GetB2Vec2(position), GetB2Rotation());
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		// PhysicsManager::gamePhysics2D.RecreateBody(this);
 	}
 
 	Vector2 Body2D::GetPosition()
@@ -553,16 +566,21 @@ namespace FlatEngine
 		return Vector2(b2Position.x, b2Position.y);
 	}
 
+	void Body2D::Wake()
+	{
+		b2Body_SetAwake(m_bodyID, true);
+	}
+
 	void Body2D::SetRotation(float newRotation)
 	{
-		rotation = b2MakeRot(Numbers::DegreesToRadians(newRotation));
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		Wake();
+		b2Body_SetTransform(m_bodyID, Vector2::GetB2Vec2(position), b2MakeRot(Numbers::DegreesToRadians(newRotation)));		
 	}
 
 	void Body2D::SetRotation(b2Rot newRotation)
 	{
 		rotation = newRotation;
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		RecreateBody();
 	}
 
 	// Returns rotation in degrees between -180 and 180
@@ -585,28 +603,35 @@ namespace FlatEngine
 		return b2Body_GetRotation(m_bodyID);
 	}
 
+	void Body2D::RecreateBody()
+	{
+		position = GetPosition();
+		rotation = GetB2Rotation();
+		PhysicsManager::gamePhysics2D.RecreateBody(this);
+	}
+
 	void Body2D::SetLockedRotation(bool b_lockRotation)
 	{
 		b_lockedRotation = b_lockRotation;
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		RecreateBody();
 	}
 
 	void Body2D::SetLockedXAxis(bool b_lockXAxis)
 	{
 		b_lockedXAxis = b_lockXAxis;
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		RecreateBody();
 	}
 
 	void Body2D::SetLockedYAxis(bool b_lockYAxis)
 	{
 		b_lockedYAxis = b_lockYAxis;
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		RecreateBody();
 	}
 
 	void Body2D::SetGravityScale(float newGravityScale)
 	{
 		gravityScale = newGravityScale;
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		RecreateBody();
 	}
 
 	void Body2D::SetLinearDamping(float newLinearDamping)
@@ -614,7 +639,7 @@ namespace FlatEngine
 		if (linearDamping >= 0)
 		{
 			linearDamping = newLinearDamping;
-			PhysicsManager::gamePhysics2D.RecreateBody(this);
+			RecreateBody();
 		}
 	}
 
@@ -623,14 +648,14 @@ namespace FlatEngine
 		if (angularDamping >= 0)
 		{
 			angularDamping = newAngularDamping;
-			PhysicsManager::gamePhysics2D.RecreateBody(this);
+			RecreateBody();
 		}
 	}
 
 	void Body2D::SetBodyType(b2BodyType newType)
 	{
 		type = newType;
-		PhysicsManager::gamePhysics2D.RecreateBody(this);
+		RecreateBody();
 
 		// If is KINEMATIC, you can drive the body to a specific transform (position and rotation) using:
 		// b2Vec2 targetPosition = { x, y };
@@ -840,13 +865,17 @@ namespace FlatEngine
 		return joints;
 	}
 
+	// Todo: Simplify this somehow.
 	void Body2D::RemoveJoint(long jointID)
 	{
 		for (std::list<Joint2D>::iterator jointIter = m_distanceJoints.begin(); jointIter != m_distanceJoints.end(); jointIter++)
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+				
+				jointIter->Cleanup();				
 				m_distanceJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
@@ -857,7 +886,10 @@ namespace FlatEngine
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+
+				jointIter->Cleanup();	
 				m_prismaticJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
@@ -868,7 +900,10 @@ namespace FlatEngine
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+				
+				jointIter->Cleanup();	
 				m_revoluteJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
@@ -879,7 +914,10 @@ namespace FlatEngine
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+				
+				jointIter->Cleanup();	
 				m_weldJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
@@ -890,7 +928,10 @@ namespace FlatEngine
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+				
+				jointIter->Cleanup();	
 				m_motorJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
@@ -901,7 +942,10 @@ namespace FlatEngine
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+				
+				jointIter->Cleanup();	
 				m_wheelJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;
@@ -912,7 +956,10 @@ namespace FlatEngine
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
 			{
-				PhysicsManager::gamePhysics2D.DestroyJoint(&(*jointIter));
+				if (jointIter->GetBodyB())
+					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
+				
+				jointIter->Cleanup();	
 				m_mouseJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);
 				return;

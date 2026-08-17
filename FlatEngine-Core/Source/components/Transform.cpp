@@ -87,8 +87,8 @@ namespace FlatEngine
 
 		if (GetOwningObject() != nullptr)
 		{
-			GameObject* parent = GetOwningObject();
-			Body2D* body2D = parent->Get<Body2D>();
+			GameObject* owner = GetOwningObject();
+			Body2D* body2D = owner->Get<Body2D>();
 
 			if (body2D != nullptr)
 			{

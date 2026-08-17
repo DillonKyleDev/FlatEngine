@@ -92,174 +92,20 @@ namespace FlatEngine
 			motorSpeed = JsonHelper::CheckJsonFloat(jointData, "motorSpeed", name);
 		}
 
-		void SetLength(float setLength)
-		{
-			if (setLength > 0)
-			{
-				length = setLength;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2DistanceJoint_SetLength(jointID, length);
-				}
-			}
-		}
-
-		float GetLength()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2DistanceJoint_GetLength(jointID);
-			}
-			else
-			{
-				return length;
-			}
-		}
-
-		void SetLengthRange(float setMinLength, float setMaxLength)
-		{
-			if (setMinLength >= 0 && setMaxLength >= setMinLength)
-			{
-				minLength = setMinLength;
-				maxLength = setMaxLength;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2DistanceJoint_SetLengthRange(jointID, minLength, maxLength);				
-				}
-			}
-		}
-
-		void SetEnableSpring(bool b_setEnableSpring)
-		{
-			b_enableSpring = b_setEnableSpring;
-
-			if (b2Joint_IsValid(jointID))
-			{
-				b2DistanceJoint_EnableSpring(jointID, b_enableSpring);
-			}
-		}
-
-		void SetSpringHertz(float springHertz)
-		{
-			if (springHertz >= 0)
-			{
-				hertz = springHertz;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2DistanceJoint_SetSpringHertz(jointID, springHertz);
-				}
-			}
-		}
-
-		float GetSpringHertz()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2DistanceJoint_GetSpringHertz(jointID);
-			}
-			else
-			{
-				return hertz;
-			}
-		}
-
-		void SetSpringDampingRatio(float springDampingRatio)
-		{
-			if (springDampingRatio >= 0)
-			{
-				dampingRatio = springDampingRatio;
-
-				if (b2Joint_IsValid(jointID))
-				{				
-					b2DistanceJoint_SetSpringDampingRatio(jointID, springDampingRatio);
-				}
-			}
-		}
-
-		float GetSpringDampingRatio()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2DistanceJoint_GetSpringDampingRatio(jointID);
-			}
-			else
-			{
-				return dampingRatio;
-			}
-		}
-
-		void SetEnableMotor(bool b_setEnableMotor)
-		{
-			b_enableMotor = b_setEnableMotor;
-
-			if (b2Joint_IsValid(jointID))
-			{
-				b2DistanceJoint_EnableSpring(jointID, b_enableMotor);
-			}
-		}
-
-		void SetMotorSpeed(float setMotorSpeed)
-		{
-			if (setMotorSpeed >= 0)
-			{
-				motorSpeed = setMotorSpeed;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2DistanceJoint_SetMotorSpeed(jointID, motorSpeed);
-				}
-			}
-		}
-
-		float GetMotorSpeed()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2DistanceJoint_GetMotorSpeed(jointID);
-			}
-			else
-			{
-				return motorSpeed;
-			}		
-		}
-
-		void SetMaxMotorForce(float setMaxMotorForce)
-		{
-			if (setMaxMotorForce >= 0)
-			{
-				maxMotorForce = setMaxMotorForce;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2DistanceJoint_SetMaxMotorForce(jointID, maxMotorForce);
-				}
-			}
-		}
-
-		float GetMotorForce()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2DistanceJoint_GetMotorForce(jointID);
-			}
-			else
-			{
-				return 0;
-			}
-		}
-
-		void SetEnableLimit(bool b_setEnableLimit)
-		{
-			b_enableLimit = b_setEnableLimit;
-
-			if (b2Joint_IsValid(jointID))
-			{
-				b2DistanceJoint_EnableLimit(jointID, b_enableLimit);
-			}
-		}
+		void SetLength(float setLength);
+		float GetLength();
+		void SetLengthRange(float setMinLength, float setMaxLength);
+		void SetEnableSpring(bool b_setEnableSpring);
+		void SetSpringHertz(float springHertz);
+		float GetSpringHertz();
+		void SetSpringDampingRatio(float springDampingRatio);
+		float GetSpringDampingRatio();
+		void SetEnableMotor(bool b_setEnableMotor);
+		void SetMotorSpeed(float setMotorSpeed);
+		float GetMotorSpeed();
+		void SetMaxMotorForce(float setMaxMotorForce);
+		float GetMotorForce();
+		void SetEnableLimit(bool b_setEnableLimit);
 	};
 	struct MotorJoint2DData {
 		b2JointId jointID;
@@ -392,202 +238,22 @@ namespace FlatEngine
 			motorSpeed = JsonHelper::CheckJsonFloat(jointData, "motorSpeed", name);
 		}
 
-		void SetReferenceAngle(float length)
-		{
-			
-		}
-
-		float GetReferenceAngle()
-		{
-			return 0;
-		}
-
-		void SetTargetTranslation(float targetTranslation)
-		{
-
-		}
-
-		float GetTargetTranslation()
-		{
-			return 0;
-		}
-
-		// Translation upper and lower tied to b_enableLimit
-		void SetTranslationRange(float setLowerTranslation, float setUpperTranslation)
-		{
-			if (true) // some constraint on translation range todo)
-			{
-				lowerTranslation = setLowerTranslation;
-				upperTranslation = setUpperTranslation;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2PrismaticJoint_SetLimits(jointID, lowerTranslation, upperTranslation);
-				}
-				else
-				{
-					PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-				}
-			}
-		}
-
-		void SetEnableSpring(bool b_setEnableSpring)
-		{
-			b_enableSpring = b_setEnableSpring;
-
-			if (b2Joint_IsValid(jointID))
-			{
-				b2PrismaticJoint_EnableSpring(jointID, b_enableSpring);
-			}
-			else
-			{
-				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-			}
-		}
-
-		void SetSpringHertz(float springHertz)
-		{
-			if (springHertz >= 0)
-			{
-				hertz = springHertz;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2PrismaticJoint_SetSpringHertz(jointID, springHertz);
-				}
-				else
-				{
-					PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-				}
-			}
-		}
-
-		float GetSpringHertz()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2PrismaticJoint_GetSpringHertz(jointID);
-			}
-			else
-			{
-				return hertz;
-			}
-		}
-
-		void SetSpringDampingRatio(float springDampingRatio)
-		{
-			if (springDampingRatio >= 0)
-			{
-				dampingRatio = springDampingRatio;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2PrismaticJoint_SetSpringDampingRatio(jointID, springDampingRatio);
-				}
-				else
-				{
-					PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-				}
-			}
-		}
-
-		float GetSpringDampingRatio()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2PrismaticJoint_GetSpringDampingRatio(jointID);
-			}
-			else
-			{
-				return dampingRatio;
-			}
-		}
-
-		void SetEnableMotor(bool b_setEnableMotor)
-		{
-			b_enableMotor = b_setEnableMotor;
-
-			if (b2Joint_IsValid(jointID))
-			{
-				b2PrismaticJoint_EnableSpring(jointID, b_enableMotor);
-			}
-			else
-			{
-				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-			}
-		}
-
-		void SetMotorSpeed(float setMotorSpeed)
-		{
-			if (setMotorSpeed >= 0)
-			{
-				motorSpeed = setMotorSpeed;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2PrismaticJoint_SetMotorSpeed(jointID, motorSpeed);
-				}
-				else
-				{
-					PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-				}
-			}
-		}
-
-		float GetMotorSpeed()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2PrismaticJoint_GetMotorSpeed(jointID);
-			}
-			else
-			{
-				return motorSpeed;
-			}
-		}
-
-		void SetMaxMotorForce(float setMaxMotorForce)
-		{
-			if (setMaxMotorForce >= 0)
-			{
-				maxMotorForce = setMaxMotorForce;
-
-				if (b2Joint_IsValid(jointID))
-				{
-					b2PrismaticJoint_SetMaxMotorForce(jointID, maxMotorForce);
-				}
-				else
-				{
-					PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-				}
-			}
-		}
-
-		float GetMotorForce()
-		{
-			if (b2Joint_IsValid(jointID))
-			{
-				return b2PrismaticJoint_GetMotorForce(jointID);
-			}
-			else
-			{
-				return 0;
-			}
-		}
-
-		void SetEnableLimit(bool b_setEnableLimit)
-		{
-			b_enableLimit = b_setEnableLimit;
-
-			if (b2Joint_IsValid(jointID))
-			{
-				b2PrismaticJoint_EnableLimit(jointID, b_enableLimit);
-			}
-			else
-			{
-				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
-			}
-		}
+		void SetReferenceAngle(float length);
+		float GetReferenceAngle();
+		void SetTargetTranslation(float targetTranslation);
+		float GetTargetTranslation();		
+		void SetTranslationRange(float setLowerTranslation, float setUpperTranslation);
+		void SetEnableSpring(bool b_setEnableSpring);
+		void SetSpringHertz(float springHertz);
+		float GetSpringHertz();
+		void SetSpringDampingRatio(float springDampingRatio);
+		float GetSpringDampingRatio();
+		void SetEnableMotor(bool b_setEnableMotor);
+		void SetMotorSpeed(float setMotorSpeed);
+		float GetMotorSpeed();
+		void SetMaxMotorForce(float setMaxMotorForce);
+		float GetMotorForce();
+		void SetEnableLimit(bool b_setEnableLimit);
 	};
 	struct RevoluteJoint2DData {
 		b2JointId jointID;
@@ -729,13 +395,16 @@ namespace FlatEngine
 
 	public:
 		Joint2D(long ownerID, long myID, JointType2D type = JointType2D_None);
+		// Joint2D(Joint2D&& toMove) noexcept = default;
 		json GetData();
 		void PutData(json jointData, std::string name);
-		const long GetID();
+		long GetID();
+		void Cleanup();
 		void SetOwnerID(long ownerID);
 		long GetOwnerID();
 		void SetBodyAID(long bodyAID);
 		void SetBodyBID(long bodyBID);
+		void WakeBodies();
 		JointType2D GetType();
 		void SetJointID(b2JointId jointID);
 		b2JointId GetJointID();

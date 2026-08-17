@@ -68,9 +68,20 @@ namespace FlatEngine
 		anchorB.y = JsonHelper::CheckJsonFloat(jointJson, "anchorBY", name);
 	}
 
-	const long Joint2D::GetID()
+	long Joint2D::GetID()
 	{
 		return m_ID;
+	}
+
+	void Joint2D::Cleanup()
+	{
+		PhysicsManager::gamePhysics2D.DestroyJoint(this);
+		for (SceneView::SceneRenderObject renderShape : renderShapes)
+		{
+			renderShape.mesh.Cleanup();
+		}
+
+		renderShapes.clear();
 	}
 
 	void Joint2D::SetOwnerID(long ownerID)
@@ -181,5 +192,401 @@ namespace FlatEngine
 			return 0;
 
 		return b2Joint_GetConstraintTorque(m_jointID);
+	}
+
+	void Joint2D::WakeBodies()
+	{
+		GetBodyA()->Wake();
+		GetBodyB()->Wake();	
+	}
+
+
+	// Distance Joint	 
+	void DistanceJoint2DData::SetLength(float setLength)
+	{
+		if (setLength > 0)
+		{
+			length = setLength;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();				
+				b2DistanceJoint_SetLength(jointID, length);
+			}
+			else
+			{
+				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+			}
+		}
+	}
+
+	float DistanceJoint2DData::GetLength()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2DistanceJoint_GetLength(jointID);
+		}
+		else
+		{
+			return length;
+		}
+	}
+
+	void DistanceJoint2DData::SetLengthRange(float setMinLength, float setMaxLength)
+	{
+		if (setMinLength >= 0 && setMaxLength >= setMinLength)
+		{
+			minLength = setMinLength;
+			maxLength = setMaxLength;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2DistanceJoint_SetLengthRange(jointID, minLength, maxLength);				
+			}
+		}
+	}
+
+	void DistanceJoint2DData::SetEnableSpring(bool b_setEnableSpring)
+	{
+		b_enableSpring = b_setEnableSpring;
+
+		if (b2Joint_IsValid(jointID))
+		{
+			static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+			b2DistanceJoint_EnableSpring(jointID, b_enableSpring);
+		}
+	}
+
+	void DistanceJoint2DData::SetSpringHertz(float springHertz)
+	{
+		if (springHertz >= 0)
+		{
+			hertz = springHertz;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2DistanceJoint_SetSpringHertz(jointID, springHertz);
+			}
+		}
+	}
+
+	float DistanceJoint2DData::GetSpringHertz()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2DistanceJoint_GetSpringHertz(jointID);
+		}
+		else
+		{
+			return hertz;
+		}
+	}
+
+	void DistanceJoint2DData::SetSpringDampingRatio(float springDampingRatio)
+	{
+		if (springDampingRatio >= 0)
+		{
+			dampingRatio = springDampingRatio;
+
+			if (b2Joint_IsValid(jointID))
+			{				
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2DistanceJoint_SetSpringDampingRatio(jointID, springDampingRatio);
+			}
+		}
+	}
+
+	float DistanceJoint2DData::GetSpringDampingRatio()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2DistanceJoint_GetSpringDampingRatio(jointID);
+		}
+		else
+		{
+			return dampingRatio;
+		}
+	}
+
+	void DistanceJoint2DData::SetEnableMotor(bool b_setEnableMotor)
+	{
+		b_enableMotor = b_setEnableMotor;
+
+		if (b2Joint_IsValid(jointID))
+		{
+			static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+			b2DistanceJoint_EnableSpring(jointID, b_enableMotor);
+		}
+	}
+
+	void DistanceJoint2DData::SetMotorSpeed(float setMotorSpeed)
+	{
+		if (setMotorSpeed >= 0)
+		{
+			motorSpeed = setMotorSpeed;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2DistanceJoint_SetMotorSpeed(jointID, motorSpeed);
+			}
+		}
+	}
+
+	float DistanceJoint2DData::GetMotorSpeed()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2DistanceJoint_GetMotorSpeed(jointID);
+		}
+		else
+		{
+			return motorSpeed;
+		}		
+	}
+
+	void DistanceJoint2DData::SetMaxMotorForce(float setMaxMotorForce)
+	{
+		if (setMaxMotorForce >= 0)
+		{
+			maxMotorForce = setMaxMotorForce;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2DistanceJoint_SetMaxMotorForce(jointID, maxMotorForce);
+			}
+		}
+	}
+
+	float DistanceJoint2DData::GetMotorForce()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2DistanceJoint_GetMotorForce(jointID);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	void DistanceJoint2DData::SetEnableLimit(bool b_setEnableLimit)
+	{
+		b_enableLimit = b_setEnableLimit;
+
+		if (b2Joint_IsValid(jointID))
+		{
+			static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+			b2DistanceJoint_EnableLimit(jointID, b_enableLimit);
+		}
+	}
+
+	// Prismatic Joint
+	void PrismaticJoint2DData::SetReferenceAngle(float length)
+	{
+		static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+	}
+
+	float PrismaticJoint2DData::GetReferenceAngle()
+	{
+		return 0;
+	}
+
+	void PrismaticJoint2DData::SetTargetTranslation(float targetTranslation)
+	{
+		static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+	}
+
+	float PrismaticJoint2DData::GetTargetTranslation()
+	{
+		return 0;
+	}
+
+	// Translation upper and lower tied to b_enableLimit
+	void PrismaticJoint2DData::SetTranslationRange(float setLowerTranslation, float setUpperTranslation)
+	{
+		if (true) // some constraint on translation range todo)
+		{
+			lowerTranslation = setLowerTranslation;
+			upperTranslation = setUpperTranslation;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2PrismaticJoint_SetLimits(jointID, lowerTranslation, upperTranslation);
+			}
+			else
+			{
+				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+			}
+		}
+	}
+
+	void PrismaticJoint2DData::SetEnableSpring(bool b_setEnableSpring)
+	{
+		b_enableSpring = b_setEnableSpring;
+
+		if (b2Joint_IsValid(jointID))
+		{
+			static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+			b2PrismaticJoint_EnableSpring(jointID, b_enableSpring);
+		}
+		else
+		{
+			PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+		}
+	}
+
+	void PrismaticJoint2DData::SetSpringHertz(float springHertz)
+	{
+		if (springHertz >= 0)
+		{
+			hertz = springHertz;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2PrismaticJoint_SetSpringHertz(jointID, springHertz);
+			}
+			else
+			{
+				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+			}
+		}
+	}
+
+	float PrismaticJoint2DData::GetSpringHertz()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2PrismaticJoint_GetSpringHertz(jointID);
+		}
+		else
+		{
+			return hertz;
+		}
+	}
+
+	void PrismaticJoint2DData::SetSpringDampingRatio(float springDampingRatio)
+	{
+		if (springDampingRatio >= 0)
+		{
+			dampingRatio = springDampingRatio;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2PrismaticJoint_SetSpringDampingRatio(jointID, springDampingRatio);
+			}
+			else
+			{
+				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+			}
+		}
+	}
+
+	float PrismaticJoint2DData::GetSpringDampingRatio()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2PrismaticJoint_GetSpringDampingRatio(jointID);
+		}
+		else
+		{
+			return dampingRatio;
+		}
+	}
+
+	void PrismaticJoint2DData::SetEnableMotor(bool b_setEnableMotor)
+	{
+		b_enableMotor = b_setEnableMotor;
+
+		if (b2Joint_IsValid(jointID))
+		{
+			static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+			b2PrismaticJoint_EnableSpring(jointID, b_enableMotor);
+		}
+		else
+		{
+			PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+		}
+	}
+
+	void PrismaticJoint2DData::SetMotorSpeed(float setMotorSpeed)
+	{
+		if (setMotorSpeed >= 0)
+		{
+			motorSpeed = setMotorSpeed;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2PrismaticJoint_SetMotorSpeed(jointID, motorSpeed);
+			}
+			else
+			{
+				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+			}
+		}
+	}
+
+	float PrismaticJoint2DData::GetMotorSpeed()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2PrismaticJoint_GetMotorSpeed(jointID);
+		}
+		else
+		{
+			return motorSpeed;
+		}
+	}
+
+	void PrismaticJoint2DData::SetMaxMotorForce(float setMaxMotorForce)
+	{
+		if (setMaxMotorForce >= 0)
+		{
+			maxMotorForce = setMaxMotorForce;
+
+			if (b2Joint_IsValid(jointID))
+			{
+				static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+				b2PrismaticJoint_SetMaxMotorForce(jointID, maxMotorForce);
+			}
+			else
+			{
+				PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+			}
+		}
+	}
+
+	float PrismaticJoint2DData::GetMotorForce()
+	{
+		if (b2Joint_IsValid(jointID))
+		{
+			return b2PrismaticJoint_GetMotorForce(jointID);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	void PrismaticJoint2DData::SetEnableLimit(bool b_setEnableLimit)
+	{
+		b_enableLimit = b_setEnableLimit;
+
+		if (b2Joint_IsValid(jointID))
+		{
+			static_cast<Joint2D*>(b2Joint_GetUserData(jointID))->WakeBodies();
+			b2PrismaticJoint_EnableLimit(jointID, b_enableLimit);
+		}
+		else
+		{
+			PhysicsManager::gamePhysics2D.CreateJoint(static_cast<Joint2D*>(b2Joint_GetUserData(jointID)));
+		}
 	}
 }

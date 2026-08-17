@@ -336,6 +336,7 @@ namespace FlatEngine
 		Shape2D(long ownerID, ShapeType2D type);	
 		json GetData();
 		void PutData(json shapeDataJson, std::string name);
+		void Cleanup();
 		ShapeType2D GetType();		
 		void SetShapeID(b2ShapeId shapeID);
 		void SetChainID(b2ChainId chainID);

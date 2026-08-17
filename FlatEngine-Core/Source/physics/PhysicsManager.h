@@ -3,6 +3,7 @@
 #include "tools/Vector4.h"
 #include "tools/Vector2.h"
 
+#include <list>
 #include <types.h>
 
 namespace FL = FlatEngine;
@@ -43,10 +44,17 @@ namespace FlatEngine
 			void DestroyJoint(FL::Joint2D* joint);
 			void RecreateJoint(FL::Joint2D* joint);
 
-		private:
-			void HandleCollisions();
-
 			b2WorldId m_worldID;
+			
+		private:
+			std::list<Joint2D> m_distanceJoints;
+			std::list<Joint2D> m_prismaticJoints;
+			std::list<Joint2D> m_revoluteJoints;
+			std::list<Joint2D> m_mouseJoints;
+			std::list<Joint2D> m_wheelJoints;
+			std::list<Joint2D> m_motorJoints;
+			std::list<Joint2D> m_weldJoints;  
+			void HandleCollisions();			
 		};
 
 		class Physics

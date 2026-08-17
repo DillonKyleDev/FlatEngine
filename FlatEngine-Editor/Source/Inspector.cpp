@@ -1465,7 +1465,7 @@ namespace FlatGui
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("#AnchorA" + ID, "Anchor A"), anchorA)) joint->SetAnchorA(anchorA);
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("#AnchorB" + ID, "Anchor B"), anchorB)) joint->SetAnchorB(anchorB);
 
-			std::visit([joint, ID](auto&& jData) -> void
+			std::visit([ID](auto&& jData) -> void
 			{
 				using T = std::decay_t<decltype(jData)>;
 				if constexpr (std::is_same_v<T, FL::DistanceJoint2DData>)
@@ -1511,7 +1511,7 @@ namespace FlatGui
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyAngularDamping" + std::to_string(ownerID), "Angular Damp", FL::Vector2(), 0.01f, 0.0f), body->angularDamping)) body->SetAngularDamping(body->angularDamping);			
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockRotation" + std::to_string(ownerID), "Lock Rotation"), body->b_lockedRotation)) body->SetLockedRotation(body->b_lockedRotation);
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockX-Axis" + std::to_string(ownerID), "Lock X-Axis"), body->b_lockedXAxis)) body->SetLockedXAxis(body->b_lockedXAxis);
-			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockY-Axis" + std::to_string(ownerID), "Lock X-Axis"), body->b_lockedYAxis)) body->SetLockedYAxis(body->b_lockedYAxis);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockY-Axis" + std::to_string(ownerID), "Lock Y-Axis"), body->b_lockedYAxis)) body->SetLockedYAxis(body->b_lockedYAxis);
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityX" + std::to_string(ownerID), "X Vel."), { std::to_string(linearVelocity.x) });								
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityY" + std::to_string(ownerID), "Y Vel."), { std::to_string(linearVelocity.y) });			
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##AngularVelocity" + std::to_string(ownerID), "Angular Vel."), { std::to_string(angularVelocity) });						

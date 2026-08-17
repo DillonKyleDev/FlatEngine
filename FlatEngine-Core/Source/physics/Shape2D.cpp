@@ -85,6 +85,11 @@ namespace FlatEngine
 		rollingResistance = JsonHelper::CheckJsonFloat(shapeJson, "rollingResistance", name);
 	}	
 
+	void Shape2D::Cleanup()
+	{
+		PhysicsManager::gamePhysics2D.DestroyShape(this);
+	}
+
 	void Shape2D::SetShapeID(b2ShapeId shapeID)
 	{
 		m_shapeID = shapeID;

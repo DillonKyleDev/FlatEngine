@@ -6,12 +6,21 @@
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
 #include "physics/PhysicsManager.h"
-#include "render/VulkanManager.h"
 #include "tools/Logger.h"
 
 
 namespace FlatEngine
-{
+{	
+	void CleanupBody(Body2D& body) { body.Cleanup(); }
+	void CleanupMesh(Mesh& mesh) { mesh.Cleanup(); }
+	void CleanupCamera(Camera& camera) 
+	{
+		if (camera.IsPrimary())
+			SceneManager::loadedScene.RemovePrimaryCamera();
+		
+		SceneView::cameraSceneRenderObjects.Remove(camera.GetOwnerID());			
+	}
+
 	Scene::Scene()
 	{
 		name = "New Scene";
@@ -19,34 +28,33 @@ namespace FlatEngine
 		m_nextGameObjectID = 0;
 		m_nextJoint2DID = 0;
 		m_primaryCameraID = -1;
+
+		m_Bodies2D = UMapVector<Body2D>(CleanupBody);
+		m_Meshes = UMapVector<Mesh>(CleanupMesh);
+		m_Cameras = UMapVector<Camera>(CleanupCamera);
 	}
 	
 	bool Scene::SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB)
 	{
-		return gameObjectA->GetHierarchyPosition() < gameObjectB->GetHierarchyPosition();
+		return gameObjectA->hierarchyPosition < gameObjectB->hierarchyPosition;
 	}
 
 	void Scene::Unload()
 	{
 		m_sceneObjects.Clear();
-
 		m_Transforms.Clear();
-		m_Sprites.Clear();
-		m_Cameras.Clear();
-		m_Scripts.Clear();		
-		m_Buttons.Clear();
-		m_Canvases.Clear();
 		m_Animations.Clear();
 		m_Audios.Clear();
+		m_Bodies2D.Clear();
+		m_Buttons.Clear();
+		m_Cameras.Clear();
+		m_Canvases.Clear();
+		m_CharacterControllers.Clear();	
+		m_Meshes.Clear();	
+		m_Scripts.Clear();		
+		m_Sprites.Clear();
 		m_Texts.Clear();
-		m_CharacterControllers.Clear();		
-		m_TileMaps.Clear();
-
-		for (Body2D& body : m_Bodies2D.GetAll())
-		{
-			body.Cleanup();
-		}
-		m_Bodies2D.Clear();		
+		m_TileMaps.Clear();		
 	}
 
 	GameObject* Scene::AddSceneObject(GameObject sceneObject)
@@ -60,18 +68,19 @@ namespace FlatEngine
 
 		long parentID = sceneObject.GetParentID();
 
+		sceneObject.hierarchyPosition = m_sortedHierarchyObjects.size() ? m_sortedHierarchyObjects.back()->hierarchyPosition + 1 : 0;
+		GameObject* objectPtr = m_sceneObjects.Add(ID, sceneObject);
+
 		// For objects created after initial Scene load
-		if (parentID != -1 && GetObjectByID(parentID) != nullptr)
+		GameObject* parent = GetObjectByID(parentID);
+		if (parentID != -1 && parent != nullptr)
 		{
-			GetObjectByID(parentID)->AddChild(ID);
+			parent->AddChild(ID);
 		}	
 
-		sceneObject.SetHierarchyPosition((int)m_sceneObjects.GetAll().size());		    
+		KeepNextGameObjectIDUpToDate(ID);		
 
-		KeepNextGameObjectIDUpToDate(ID);
-		SortSceneObjects();
-
-		return m_sceneObjects.Add(ID, sceneObject);
+		return objectPtr;
 	}
 
 	void Scene::KeepNextGameObjectIDUpToDate(long ID)
@@ -143,12 +152,16 @@ namespace FlatEngine
 		GameObject newObject = GameObject(parentID, myID);
 		long ID = newObject.GetID();
 
+		GameObject* objectPtr = AddSceneObject(newObject);
+
 		if (parentID != -1 && GetObjectByID(parentID) != nullptr)
 		{
 			GetObjectByID(parentID)->AddChild(ID);
 		}	
 
-		return AddSceneObject(newObject);
+		SortSceneObjects();
+
+		return objectPtr;
 	}
 
 	void Scene::DeleteGameObject(long sceneObjectID)
@@ -173,6 +186,7 @@ namespace FlatEngine
 	void Scene::RemoveSceneObject(long ID)
 	{
 		m_sceneObjects.Remove(ID);
+		SortSceneObjects();
 	}
 
 	// Recursive
@@ -273,9 +287,6 @@ namespace FlatEngine
 		m_freedJoint2DIDs.push_back(freedID);
 	}
 
-	void Scene::OnPrefabInstantiated()
-	{		
-	}
 
 	void Scene::SortSceneObjects()
 	{
@@ -289,9 +300,17 @@ namespace FlatEngine
 		std::sort(m_sortedHierarchyObjects.begin(), m_sortedHierarchyObjects.end(), SortHierarchyObjects);
 	}
 
-	std::vector<GameObject*> Scene::GetSortedHierarchyObjects()
+	std::vector<GameObject*>& Scene::GetSortedHierarchyObjects()
 	{
 		return m_sortedHierarchyObjects;
+	}
+
+	long Scene::GetNextHierarchyPosition()
+	{
+		if (m_sortedHierarchyObjects.size())
+			return m_sortedHierarchyObjects.back()->hierarchyPosition + 1;
+		else
+		 	return 0;
 	}
 
 	template<> UMapVector<Animation>&           Scene::GetContainer<Animation>()  		   { return m_Animations; }
@@ -335,37 +354,6 @@ namespace FlatEngine
 			case ComponentType_TileMap:    			return Add<TileMap>(ownerID);
 			case ComponentType_Transform:  			return Add<Transform>(ownerID);
 			default:                       			return nullptr;
-		}
-	}
-
-	template<> void Scene::Remove<Camera>(long ownerID)
-	{
-		if (m_Cameras.Get(ownerID))
-		{
-			if (m_Cameras.Get(ownerID)->IsPrimary())
-				RemovePrimaryCamera();
-			
-			m_Cameras.Remove(ownerID);	
-			SceneView::cameraSceneRenderObjects.Remove(ownerID);		
-		}
-	}
-	template<> void Scene::Remove<Body2D>(long ownerID)
-	{
-		if (m_Bodies2D.Get(ownerID))
-		{
-			m_Bodies2D.Get(ownerID)->Cleanup();
-			m_Bodies2D.Remove(ownerID);			
-		}
-	}
-	template<> void Scene::Remove<Mesh>(long ownerID)
-	{
-		if (m_Meshes.Get(ownerID))
-		{
-			std::string materialName = m_Meshes.Get(ownerID)->GetMaterialName();
-			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(materialName, ownerID);
-			VulkanManager::vulkan.RemoveGameViewMaterialMesh(materialName, ownerID);
-			m_Meshes.Get(ownerID)->Cleanup();
-			m_Meshes.Remove(ownerID);
 		}
 	}
 
@@ -421,8 +409,8 @@ namespace FlatEngine
 	{
 		if (SceneManager::loadedScene.Get<Camera>(m_primaryCameraID))
 		{
-			SceneManager::loadedScene.Get<Camera>(m_primaryCameraID)->SetPrimaryCamera(false);
-			m_primaryCameraID = -1;
+			SceneManager::loadedScene.Get<Camera>(m_primaryCameraID)->SetPrimaryCamera(false);			
 		}
+		m_primaryCameraID = -1;
 	}
 }

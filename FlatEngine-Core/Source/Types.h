@@ -86,8 +86,20 @@ namespace FlatEngine
                 }
 
                 // Remove the last element (our target is now there)
+                if (m_cleanup != nullptr)
+                    m_cleanup(vec.back());
                 vec.pop_back();
                 IDtoIndex.erase(it);
+            }
+
+            void Swap(long first, long second)
+            {
+                auto it = IDtoIndex.find(first);
+                if (it == IDtoIndex.end()) return;
+                it = IDtoIndex.find(second);
+                if (it == IDtoIndex.end()) return;
+
+                std::swap(vec[first], vec[second]);
             }
 
             void Clear()

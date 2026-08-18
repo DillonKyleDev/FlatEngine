@@ -30,8 +30,8 @@ F_Colors = {
 	componentSectionBorder = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	componentBorder = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	componentBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
-	componentSectionHeaderBg = Vector4:new(0.45, 0.45, 0.8, 1.0),
-	componentSectionHeaderSeparator = Vector4:new(0.7, 0.7, 0.9, 1.0),
+	componentSectionHeaderBg = Vector4:new(0.38, 0.38, 0.44, 1.0),
+	componentSectionHeaderSeparator = Vector4:new(0.54, 0.54, 0.58, 1.0),
 	pivotSelectionBg = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	pivotButtonHovered = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	openFileButtonBg = Vector4:new(0.25, 0.25, 0.26, 1.0),
@@ -39,9 +39,14 @@ F_Colors = {
 
 	shapesScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
 	shapeBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
-	shapeSectionHeaderSeparator = Vector4:new(0.45, 0.45, 0.5, 1.0),
+	shapeSectionHeaderBg = Vector4:new(0.25, 0.25, 0.5, 0.6), 
+	shapeSectionHeaderSeparator = Vector4:new(0.3, 0.3, 0.45, 1.0),
+	shapeSectionHeaderText = Vector4:new(0.7, 0.7, 0.8, 1.0),
 	jointsScrollingBg = Vector4:new(0.25, 0.34, 0.56, 0.4),
 	jointBg = Vector4:new(0.16, 0.16, 0.18, 1.0),
+	jointSectionHeaderBg = Vector4:new(0.25, 0.25, 0.5, 0.6), 
+	jointSectionHeaderSeparator = Vector4:new(0.3, 0.3, 0.45, 1.0),
+	jointSectionHeaderText = Vector4:new(0.7, 0.7, 0.8, 1.0),
 	-- Colliders --
 	sensorActive = Vector4:new(1.0, 1.0, 0.27, 1.0),
 	sensorInactive = Vector4:new(1.0, 0.0, 0.0, 1.0),
@@ -92,6 +97,7 @@ F_Colors = {
 	sectionHeaderSecondaryBg = Vector4:new(0.4, 0.4, 0.8, 0.25),
 	sectionHeaderEmptyBg= Vector4:new(0.35, 0.35, 0.8, 0.05),
 	sectionHeaderSeparator = Vector4:new(0.35, 0.35, 0.7, 0.6), 
+	sectionHeaderText = Vector4:new(0.9, 0.9, 0.9, 1.0),
 	-- Main Menu
 	menuBarBg = Vector4:new(0.1, 0.1, 0.11, 1.0),
 	menuDropdownBg = Vector4:new(0.25, 0.25, 0.3, 0.95),
@@ -135,7 +141,7 @@ F_Colors = {
 	cursorModeButtonHoverSelected = Vector4:new(0.4, 0.4, 0.4, 0.6),
 	cursorModeButtonSelectedBorder = Vector4:new(1, 1, 1, 1);
 	selectedCursorModeButtonBg =  Vector4:new(0.4, 0.4, 0.4, 0.8),
-	buttonBorder =  Vector4:new(0.35, 0.35, 0.35, 1.0),
+	buttonBorder =  Vector4:new(1.0, 1.0, 1.0, 0.4),
 	-- Modals
 	modalWindowDimBg = Vector4:new(0.1, 0.4, 0.1, 0.5),
 	-- Project Hub
@@ -283,7 +289,7 @@ F_Colors = {
 	buttonActive = Vector4:new(0.2, 0.2, 0.5, 0.8),
 	imageButton = Vector4:new(0.18, 0.18, 0.2, 1.0),
 	imageButtonDark = Vector4:new(0.15, 0.15, 0.15, 1.0),
-	imageButtonHovered = Vector4:new(0.3, 0.3, 0.3, 1.0),
+	imageButtonHovered = Vector4:new(1.0, 1.0, 1.0, 0.3),
 	imageButtonActive = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	imageButtonTint = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	-- Sliders/Drags

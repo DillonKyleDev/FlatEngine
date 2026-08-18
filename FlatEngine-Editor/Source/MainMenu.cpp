@@ -1,3 +1,5 @@
+#include "Types.h"
+#include "components/Body2D.h"
 #include "components/Component.h"
 #include "FileManager.h"
 #include "FlatEngine.h"
@@ -11,6 +13,7 @@
 #include "managers/ProjectManager.h"
 #include "Modals.h"
 #include "physics/Shape.h"
+#include "physics/Shape2D.h"
 #include "render/SceneView.h"
 #include "render/VulkanManager.h"
 #include "TagList.h"
@@ -214,7 +217,8 @@ namespace FlatGui
 				// FL::GuiCore::MoveScreenCursor(0,-1);
 				if (FL::GuiCore::MenuItem("GameObject         "))
 				{
-					FL::SceneManager::loadedScene.CreateGameObject(-1);
+					FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);
+					FL::ProjectManager::loadedProject.RefocusID(newObject->GetID());
 				}
 				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Persistent Script"))
@@ -224,53 +228,46 @@ namespace FlatGui
 				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::BeginMenu("Components"))
 				{
-					for (int i = 1; i < FL::ComponentType_Size; i++)
+					for (int i = 2; i < FL::ComponentType_Size; i++)
 					{						
-						std::string componentTypeString = ""+ FL::ComponentTypeStrings[i];
+						std::string componentTypeString = FL::ComponentTypeStrings[i];
 						if ((FL::ComponentType)i == FL::ComponentType_Body2D)
 						{
 							if (FL::GuiCore::BeginMenu("Body2D"))
 							{
-								if (FL::GuiCore::MenuItem("Empty"))
-								{
-									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
-									newObject->Add<FL::Body2D>();
-									newObject->SetName("Body2D");
+								// Shapes
+								FL::GuiCore::MenuItem("SHAPE TYPE", NULL, false, false);
+								FL::GuiCore::RenderMenuSeparator(false);
+								for (int i = 0; i < FL::ShapeType2D_Size; i++)
+								{						
+									std::string shapeTypeString = (FL::ShapeType2D)i != FL::ShapeType2D_None ? FL::ShapeType2DStrings[i] : "Empty";	
+									if (FL::GuiCore::MenuItem(shapeTypeString.c_str()))
+									{
+										FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+										FL::Body2D* body = newObject->Add<FL::Body2D>();
+										newObject->SetName(shapeTypeString + "Body2D");
+										body->AddShape((FL::ShapeType2D)i);
+										FL::ProjectManager::loadedProject.RefocusID(newObject->GetID());									
+									}
+									FL::GuiCore::RenderMenuSeparator();
 								}
-								if (FL::GuiCore::MenuItem("Box"))
-								{
-									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
-									FL::Body2D* body = newObject->Add<FL::Body2D>();
-									body->AddShape(FL::ShapeType2D_Box);
-									newObject->SetName("BoxBody2D");
-								}
-								if (FL::GuiCore::MenuItem("Circle"))
-								{
-									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
-									FL::Body2D* body = newObject->Add<FL::Body2D>();
-									body->AddShape(FL::ShapeType2D_Circle);
-									newObject->SetName("CircleBody2D");
-								}
-								if (FL::GuiCore::MenuItem("Capsule"))
-								{
-									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
-									FL::Body2D* body = newObject->Add<FL::Body2D>();
-									body->AddShape(FL::ShapeType2D_Capsule);
-									newObject->SetName("CapsuleBody2D");
-								}
-								if (FL::GuiCore::MenuItem("Polygon"))
-								{
-									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
-									FL::Body2D* body = newObject->Add<FL::Body2D>();
-									body->AddShape(FL::ShapeType2D_Polygon);
-									newObject->SetName("PolygonBody2D");
-								}
-								if (FL::GuiCore::MenuItem("Chain"))
-								{
-									FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
-									FL::Body2D* body = newObject->Add<FL::Body2D>();
-									body->AddShape(FL::ShapeType2D_Chain);
-									newObject->SetName("ChainBody2D");
+
+								// Joints
+								FL::GuiCore::RenderMenuSeparator(false);
+								FL::GuiCore::MenuItem("JOINT TYPE", NULL, false, false);
+								FL::GuiCore::RenderMenuSeparator(false);
+								for (int i = 1; i < FL::JointType2D_Size; i++)
+								{						
+									std::string jointTypeString = FL::JointType2DStrings[i];									
+									if (FL::GuiCore::MenuItem(jointTypeString.c_str()))
+									{
+										FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);							
+										FL::Body2D* body = newObject->Add<FL::Body2D>();
+										newObject->SetName(jointTypeString + "Body2D");
+										body->AddJoint((FL::JointType2D)i);
+										FL::ProjectManager::loadedProject.RefocusID(newObject->GetID());									
+									}
+									FL::GuiCore::RenderMenuSeparator();
 								}
 								ImGui::EndMenu();
 							}
@@ -280,6 +277,7 @@ namespace FlatGui
 							FL::GameObject* newObject = FL::SceneManager::loadedScene.CreateGameObject(-1);						 
 							newObject->AddComponent((FL::ComponentType)i);
 							newObject->SetName(FL::ComponentTypeStrings[i]);
+							FL::ProjectManager::loadedProject.RefocusID(newObject->GetID());
 							ImGui::CloseCurrentPopup();
 						}
 						if (i < FL::ComponentType_Size - 1)
@@ -298,7 +296,8 @@ namespace FlatGui
 							std::string prefabLabel = ""+ iter->first;
 							if (FL::GuiCore::MenuItem(prefabLabel.c_str()))
 							{
-								FL::GameObject *instantiatedObject = FL::PrefabManager::Instantiate(iter->first);
+								FL::GameObject* instantiatedObject = FL::PrefabManager::Instantiate(iter->first);
+								FL::ProjectManager::loadedProject.RefocusID(instantiatedObject->GetID());
 							}
 							iter++;
 							if (iter != prefabs.end())

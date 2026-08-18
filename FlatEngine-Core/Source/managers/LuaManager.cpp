@@ -389,7 +389,7 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Vector2>("Vector2",
-				sol::constructors<Vector2(), Vector2(float x,float y)>(),				
+				sol::constructors<Vector2(), Vector2(float xyValue), Vector2(float x,float y)>(),				
 				"x", &Vector2::x,				
 				"y", &Vector2::y,				
 				"Normalize", &Vector2::NormalizeSelf,
@@ -404,14 +404,14 @@ namespace FlatEngine
 			);
 
 			lua.new_usertype<Vector3>("Vector3",
-				sol::constructors<Vector3(), Vector3(float x, float y, float z)>(),				
+				sol::constructors<Vector3(), Vector3(float xyzValue), Vector3(float x, float y, float z)>(),				
 				"x", &Vector3::x,				
 				"y", &Vector3::y,				
 				"z", &Vector3::z
 			);
 
 			lua.new_usertype<Vector4>("Vector4",
-				sol::constructors<Vector4(), Vector4(float x, float y, float z, float w)>(),		
+				sol::constructors<Vector4(), Vector4(float xyzwValue), Vector4(float x, float y, float z, float w)>(),		
 				"x", &Vector4::x,
 				"y", &Vector4::y,
 				"z", &Vector4::z,

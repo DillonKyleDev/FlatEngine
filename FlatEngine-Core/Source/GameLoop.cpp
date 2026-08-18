@@ -85,38 +85,17 @@ namespace FlatEngine
 		if ((m_b_started && !m_b_paused) || (m_b_paused && m_b_frameSkipped))
 		{			
 			int iterations = 0;								
-
-			if (m_b_paused && m_b_frameSkipped)
-			{
-				if (framesSkipped < m_framesToSkip)
-				{
-					framesSkipped++;
-				}
-				else
-				{
-					framesSkipped = 0;
-					m_b_frameSkipped = false;
-				}
-			}			
-
 			float frameTime = (float)(FL::Time::Time() - frameStart) / 1000.0f; // actual deltaTime (in seconds)
 
 			// Only add accumulated time if the GameLoop is not paused or if a frame was skipped while paused, then add a small fixed amount of time
-			if (!m_b_paused)
+			if (!m_b_paused || m_b_frameSkipped)
 			{
 				m_accumulator += frameTime;
 				if (m_accumulator > 0.25f)
 				{
 					m_accumulator = 0.25f; // prevent death spiral
 				}
-			}
-			else if (m_b_frameSkipped)
-			{
-				m_accumulator += m_deltaTime;
-			}
-
-			if (!m_b_paused || m_b_frameSkipped)
-			{				
+		
 				while (m_accumulator >= m_deltaTime)
 				{
 					AddFrame();
@@ -138,6 +117,19 @@ namespace FlatEngine
 					}
 
 					iterations++;
+
+					if (m_b_paused && m_b_frameSkipped)
+					{
+						if (framesSkipped < m_framesToSkip)
+						{
+							framesSkipped++;
+						}
+						else
+						{
+							framesSkipped = 0;
+							m_b_frameSkipped = false;
+						}
+					}		
 				}
 			}
 			

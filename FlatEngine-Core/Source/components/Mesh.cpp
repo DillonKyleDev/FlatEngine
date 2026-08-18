@@ -179,6 +179,8 @@ namespace FlatEngine
 
 	void Mesh::Cleanup()
 	{				
+		VulkanManager::vulkan.RemoveSceneViewMaterialMesh(m_materialName, GetOwnerID());
+		VulkanManager::vulkan.RemoveGameViewMaterialMesh(m_materialName, GetOwnerID());
 		CleanupTextures();	
 		CleanupUniformBuffers();
 	}
@@ -222,7 +224,7 @@ namespace FlatEngine
 		m_sceneViewMaterial = VulkanManager::vulkan.GetMaterial(materialName, ViewportType::ViewportType_SceneView);
 		m_gameViewMaterial = VulkanManager::vulkan.GetMaterial(materialName, ViewportType::ViewportType_GameView);
 
-		if (m_materialName != "")
+		if (m_materialName != "" && m_model != nullptr && m_model->GetModelPath() != "")
 		{			
 			VulkanManager::vulkan.RemoveSceneViewMaterialMesh(m_materialName, GetOwnerID());
 			VulkanManager::vulkan.RemoveGameViewMaterialMesh(m_materialName, GetOwnerID());
@@ -270,7 +272,7 @@ namespace FlatEngine
 		m_b_missingTextures = false;
 		m_b_initialized = true;
 
-		if (m_sceneViewMaterial != nullptr && m_model != nullptr)
+		if (m_sceneViewMaterial != nullptr && m_model != nullptr && m_model->GetModelPath() != "")
 		{
 			for (std::map<uint32_t, TexturePipelineData>::iterator iter = m_sceneViewMaterial->GetTexturesPipelineData()->begin(); iter != m_sceneViewMaterial->GetTexturesPipelineData()->end(); iter++)
 			{
@@ -286,7 +288,8 @@ namespace FlatEngine
 				}
 			}
 
-			CreateTextureResources();
+			if (!m_b_missingTextures)
+				CreateTextureResources();
 
 			if (m_sceneViewMaterial != nullptr)
 			{

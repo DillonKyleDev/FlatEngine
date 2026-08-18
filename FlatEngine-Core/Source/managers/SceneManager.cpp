@@ -28,7 +28,7 @@ namespace FlatEngine
 			loadedScenePath = scene.path;
 		}
 
-		Scene *CreateAndLoadNewScene()
+		Scene* CreateAndLoadNewScene()
 		{
 			loadedScene = Scene();
 			return &loadedScene;
@@ -44,10 +44,10 @@ namespace FlatEngine
 				{
 					for (GameObject& sceneObject : sceneObjects)
 					{
-						if (!sceneObject.IsPrefabChild())
-						{
+						// if (!sceneObject.IsPrefabChild())
+						// {
 							sceneObjectsJsonArray.push_back(sceneObject.GetData());
-						}
+						// }
 					}
 				}
 
@@ -151,11 +151,12 @@ namespace FlatEngine
 				{
 					PhysicsManager::gamePhysics2D.CreateJoint(joint);
 				}
-
-				loadedScene.SortSceneObjects();				
+						
 				application->OnLoadScene(pointToPath);
 			}
 
+			loadedScene.SortSceneObjects();
+			
 			return true;
 		}
 

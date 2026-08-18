@@ -30,11 +30,12 @@ namespace FlatEngine
 		m_parentID = newParentID;
 		m_b_isPrefab = false;
 		m_prefabName = "";
-		m_b_isPrefabsChild = false;
 		m_tagList = TagList(m_ID);
 		m_name = "GameObject";	
 		m_b_isActive = true;
-		m_hierarchyPosition = 0;
+		hierarchyPosition = 0;
+		parentedHierarchyPosition = -1;
+		b_collapsed = false;
 	}
 
 	template<> Body2D*      		GameObject::Get<Body2D>()      		   { return SceneManager::loadedScene.Get<Body2D>(m_ID); }	
@@ -78,6 +79,9 @@ namespace FlatEngine
 			{ "name", objectName },
 			{ "id", b_IDOverride ? -1 : GetID() },
 			{ "b_isActive", IsActive() },
+			{ "b_collapsed", b_collapsed },
+			{ "hierarchyPosition", hierarchyPosition },
+			{ "parentedHierarchyPosition", parentedHierarchyPosition },
 			{ "parent", b_IDOverride ? -1 : GetParentID() },
 			{ "children", childrenArray },
 			{ "components", componentsArray },
@@ -92,8 +96,11 @@ namespace FlatEngine
 		m_name = JsonHelper::CheckJsonString(objectJson, "name", "Name");
 		SetActive(JsonHelper::CheckJsonBool(objectJson, "b_isActive", m_name));
 		SetIsPrefab(JsonHelper::CheckJsonBool(objectJson, "b_isPrefab", m_name));
+		b_collapsed = JsonHelper::CheckJsonBool(objectJson, "b_collapsed", m_name);
 		if (JsonHelper::CheckJsonLong(objectJson, "id", m_name) != -1) SetID(JsonHelper::CheckJsonLong(objectJson, "id", m_name));
 		if (JsonHelper::CheckJsonLong(objectJson, "parent", m_name) != -1) SetParentID(JsonHelper::CheckJsonLong(objectJson, "parent", m_name));	
+		if (JsonHelper::CheckJsonLong(objectJson, "hierarchyPosition", m_name) != -1) hierarchyPosition = JsonHelper::CheckJsonLong(objectJson, "hierarchyPosition", m_name);
+		if (JsonHelper::CheckJsonLong(objectJson, "parentedHierarchyPosition", m_name) != -1) parentedHierarchyPosition = JsonHelper::CheckJsonLong(objectJson, "parentedHierarchyPosition", m_name);
 		SetPrefabName(JsonHelper::CheckJsonString(objectJson, "prefabName", m_name));
 		Vector3 spawnLocation = Vector3(JsonHelper::CheckJsonFloat(objectJson, "spawnLocationX", m_name), JsonHelper::CheckJsonFloat(objectJson, "spawnLocationY", m_name), JsonHelper::CheckJsonFloat(objectJson, "spawnLocationZ", m_name));
 		m_tagList = TagList(GetID());				
@@ -129,16 +136,6 @@ namespace FlatEngine
 	bool GameObject::IsPrefab()
 	{
 		return m_b_isPrefab;
-	}
-
-	void GameObject::SetIsPrefabChild(bool b_isPrefabChild)
-	{
-		m_b_isPrefabsChild = b_isPrefabChild;
-	}
-
-	bool GameObject::IsPrefabChild()
-	{
-		return m_b_isPrefabsChild;
 	}
 
 	void GameObject::SetPrefabName(std::string prefabName)
@@ -303,6 +300,12 @@ namespace FlatEngine
 		}
 	}
 
+	// This GameObject either has a Canvas Component or is a child of one that does.
+	bool GameObject::IsCanvasGameObject()
+	{
+		return Get<Canvas>() != nullptr || (GetParent() != nullptr && GetParent()->IsCanvasGameObject());
+	}
+
 	void GameObject::SetParentID(long newParentID)
 	{
 		m_parentID = newParentID;
@@ -313,7 +316,22 @@ namespace FlatEngine
 		return m_parentID;
 	}
 
-	void GameObject::AddChild(long childID)
+	bool ChildOrderCompare(long childAID, long childBID)
+	{
+		bool b_aFirst = true;
+
+		GameObject* objectA = SceneManager::loadedScene.GetObjectByID(childAID);
+		GameObject* objectB = SceneManager::loadedScene.GetObjectByID(childBID);
+
+		if (objectA != nullptr && objectB != nullptr)
+		{
+			b_aFirst = objectA->parentedHierarchyPosition < objectB->parentedHierarchyPosition;
+		}
+
+		return b_aFirst;
+	}
+
+	void GameObject::AddChild(long childID, long insertBefore)
 	{
 		if (childID != -1)
 		{
@@ -328,7 +346,36 @@ namespace FlatEngine
 			}
 			if (!b_contains)
 			{
-				m_childrenIDs.push_back(childID);
+				GameObject* child = SceneManager::loadedScene.GetObjectByID(childID);
+
+				if (child->parentedHierarchyPosition == -1 && insertBefore == -1)
+				{
+					long lastChildPosition = SceneManager::loadedScene.GetObjectByID(childID)->parentedHierarchyPosition;
+					child->parentedHierarchyPosition = lastChildPosition + 1;
+					m_childrenIDs.push_back(childID);
+					return;
+				}
+
+				if (insertBefore != -1)
+					child->parentedHierarchyPosition = insertBefore;
+
+				bool b_posFound = false;
+				for (std::vector<long>::iterator iter = m_childrenIDs.begin(); iter != m_childrenIDs.end(); iter++)
+				{								
+					if (child->parentedHierarchyPosition > SceneManager::loadedScene.GetObjectByID(*iter)->parentedHierarchyPosition)
+					{
+						if (b_posFound)
+							child->parentedHierarchyPosition++;	
+
+						m_childrenIDs.insert(iter, childID);
+						b_posFound = true;					
+					}
+				}			
+
+				if (!b_posFound && m_childrenIDs.size() == 0)
+					m_childrenIDs.push_back(childID);
+				else if (!b_posFound)
+					m_childrenIDs.insert(m_childrenIDs.begin(), childID);
 			}
 		}
 	}
@@ -376,13 +423,13 @@ namespace FlatEngine
 	{
 		m_b_isActive = b_active;
 
-		//for (long child : GetChildren())
-		//{
-		//	if (SceneManager::loadedScene.GetObjectByID(child) != nullptr)
-		//	{
-		//		SceneManager::loadedScene.GetObjectByID(child)->SetActive(b_active);
-		//	}
-		//}
+		for (long child : GetChildren())
+		{
+			if (SceneManager::loadedScene.GetObjectByID(child) != nullptr)
+			{
+				SceneManager::loadedScene.GetObjectByID(child)->SetActive(b_active);
+			}
+		}
 	}
 
 	bool GameObject::IsActive()
@@ -393,15 +440,5 @@ namespace FlatEngine
 	GameObject *GameObject::GetParent()
 	{
 		return SceneManager::loadedScene.GetObjectByID(m_parentID);
-	}
-
-	void GameObject::SetHierarchyPosition(long position)
-	{
-		m_hierarchyPosition = position;
-	}
-
-	long GameObject::GetHierarchyPosition()
-	{
-		return m_hierarchyPosition;
 	}
 }

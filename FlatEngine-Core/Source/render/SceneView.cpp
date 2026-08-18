@@ -282,6 +282,7 @@ namespace FlatEngine
 				}
 				if (b_isActive)
 				{
+					GuiCore::b_mouseDownCanWarp = true;
 					if (ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
 					{	
 						float moveDamping = Settings::settings.sceneViewCameraSpeed * 0.00001f;									
@@ -289,11 +290,11 @@ namespace FlatEngine
 						if (IsOrthoGraphic())
 						{
 							Vector3 cameraPos = sceneViewCameraTransform.GetPosition();
-							sceneViewCameraTransform.SetPosition(Vector3(cameraPos.x - (mouseDelta.x / (float)sceneViewCamera.gridStep), cameraPos.y + (mouseDelta.y / (float)sceneViewCamera.gridStep), cameraPos.z));			
+							sceneViewCameraTransform.SetPosition(Vector3(cameraPos.x - (GuiCore::mouseDelta.x / (float)sceneViewCamera.gridStep), cameraPos.y + (GuiCore::mouseDelta.y / (float)sceneViewCamera.gridStep), cameraPos.z));			
 						}
 						else 
 						{						
-							AddSceneCameraRotation(mouseDelta);
+							AddSceneCameraRotation(GuiCore::mouseDelta);
 
 							Controls::MappingContext* engineContext = FL::Controls::GetMappingContext("EngineContext");
 							glm::vec4 lookDir = sceneViewCameraTransform.GetLookDirection();
@@ -331,7 +332,7 @@ namespace FlatEngine
 					{	
 						if (IsOrthoGraphic())
 						{
-							AddSceneCameraRotation(mouseDelta);
+							AddSceneCameraRotation(GuiCore::mouseDelta);
 						}
 					}									
 				}

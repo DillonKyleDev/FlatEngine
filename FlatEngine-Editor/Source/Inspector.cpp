@@ -81,16 +81,16 @@ namespace FlatGui
 				}
 				else
 				{
-					FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -20);
-					if (FL::GuiCore::RenderImageButton("##trashIcon-" + std::to_string(ownerID), FL::Assets::assetManager.GetTexture("trash")))
+					FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 34, -20);
+					if (FL::GuiCore::RenderImageButton("##trashIcon-" + std::to_string(ownerID), FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(16), 0, FL::Vector2(), "transparent"))
 					{
 						queuedForDelete = component;
 					}
-					ImGui::SameLine(0, 2);
+					ImGui::SameLine(0, 0);
 				}
 
 				std::string expandString = b_isCollapsed ? "expand" : "expandFlipped";
-				if (FL::GuiCore::RenderImageButton("##expandIcon-" + std::to_string(ownerID), FL::Assets::assetManager.GetTexture(expandString)))				
+				if (FL::GuiCore::RenderImageButton("##expandIcon-" + std::to_string(ownerID), FL::Assets::assetManager.GetTexture(expandString), FL::Vector2(16), 0, FL::Vector2(), "transparent"))				
 					component->SetCollapsed(!b_isCollapsed);				
 
 				if (b_isCollapsed)				
@@ -1109,15 +1109,14 @@ namespace FlatGui
 			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);
 			bool b_changed = false;
 			bool b_light = true;
-						
-			
+									
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeCornerRadius" + ID, "Corner Radius", FL::Vector2(), 0.01f, 0.0f), sData.cornerRadius);
 			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##BoxDimensions" + ID, "Dimensions", FL::Vector2(), 0.01f, 0.0f), sData.dimensions);			
 			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 			
 			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);
-			FL::GuiCore::RenderSeparator(4,0);
+			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;	
 		}
@@ -1131,8 +1130,7 @@ namespace FlatGui
 									
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeRadius" + ID, "Radius", FL::Vector2(), 0.001f, 0.001f), sData.radius);
 			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
-
-			FL::GuiCore::RenderSeparator(4,0);
+			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;
 		}
@@ -1153,7 +1151,7 @@ namespace FlatGui
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);					
-			FL::GuiCore::RenderSeparator(4,0);
+			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;
 		}
@@ -1197,7 +1195,7 @@ namespace FlatGui
 				}
 			}
 
-			FL::GuiCore::RenderSeparator(3,0);
+			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;
 		}
@@ -1241,8 +1239,8 @@ namespace FlatGui
 					b_pointLight = !b_pointLight;
 				}
 			}			
-			
-			FL::GuiCore::RenderSeparator(3,0);
+
+			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;
 		}
@@ -1259,22 +1257,22 @@ namespace FlatGui
 				ID = " (chain index:" + std::to_string(chainID.index1) + " world:" + std::to_string(chainID.world0) + ")";			
 			std::string shapeString = FL::ShapeType2DStrings[(int)shapeType] + ID;		
 
-			FL::GuiCore::RenderSectionHeader("  " + shapeString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");
+			FL::GuiCore::RenderSectionHeader("  " + shapeString, 0, 0, "shapeSectionHeaderBg", "shapeSectionHeaderSeparator", "shapeSectionHeaderText");
 			FL::GuiCore::MoveScreenCursor(2, -22);
 			ImGui::Image(FL::Assets::assetManager.GetTexture(FL::ShapeType2DStrings[shape->GetType()]), FL::Vector2(16));
 
-			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -20);
-			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash")))
+			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 34, -20);
+			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(16), 0, FL::Vector2(), "transparent", "transparent", "col_8"))
 			{
 				shapeToDelete = shapeID;
 				chainToDelete = chainID;
 			}			
-			ImGui::SameLine(0,2);			
+			ImGui::SameLine(0,0);			
 			std::string expandString = shape->b_isCollapsed ? "expand" : "expandFlipped";
-			if (FL::GuiCore::RenderImageButton("##expandIcon-" + ID, FL::Assets::assetManager.GetTexture(expandString)))				
+			if (FL::GuiCore::RenderImageButton("##expandIcon-" + ID, FL::Assets::assetManager.GetTexture(expandString), FL::Vector2(16), 0, FL::Vector2(), "transparent", "transparent", "col_8"))				
 				shape->b_isCollapsed = !shape->b_isCollapsed;	
 
-			if (shape->b_isCollapsed)
+			if (shape->b_isCollapsed)		
 				return;
 
 			bool b_changed = false;
@@ -1315,8 +1313,6 @@ namespace FlatGui
 			
 			if (b_changed)			
 				FL::PhysicsManager::gamePhysics2D.RecreateShape(shape);	
-
-			FL::GuiCore::MoveScreenCursor(0, 3);
 		}
 
 		// Joints
@@ -1350,7 +1346,7 @@ namespace FlatGui
 			}
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Limit##" + ID, "Enable Limit"), b_enableLimit)) jData.SetEnableLimit(b_enableLimit);
 
-			FL::GuiCore::MoveScreenCursor(0, 3.0f);
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderPrismaticJointProps(auto&& jData, std::string ID)
@@ -1385,27 +1381,32 @@ namespace FlatGui
 			}
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("Enable Limit##" + ID, "Enable Limit"), b_enableLimit)) jData.SetEnableLimit(b_enableLimit);
 
-			FL::GuiCore::MoveScreenCursor(0, 3.0f);
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderRevoluteJointProps(auto&& jData, std::string ID)
 		{
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderMouseJointProps(auto&& jData, std::string ID)
 		{		
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderWeldJointProps(auto&& jData, std::string ID)
 		{
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderMotorJointProps(auto&& jData, std::string ID)
 		{
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderWheelJointProps(auto&& jData, std::string ID)
 		{
+			FL::GuiCore::RenderSeparator(0,3);
 		}
 
 		void RenderJoint2DComponentProps(FL::Joint2D* joint, long& jointIDToDelete)
@@ -1417,18 +1418,18 @@ namespace FlatGui
 			std::string ID = " (id:" + std::to_string(jointID) + " index:" + std::to_string(joint->GetJointID().index1) + " world:" + std::to_string(joint->GetJointID().world0) + " gen:" + std::to_string(joint->GetJointID().generation) + ")";
 			std::string jointString = FL::JointType2DStrings[(int)jointType] + ID;
 
-			FL::GuiCore::RenderSectionHeader("  " + jointString, 0, 0, "sectionHeaderBg", "shapeSectionHeaderSeparator");		
+			FL::GuiCore::RenderSectionHeader("  " + jointString, 0, 0, "jointSectionHeaderBg", "jointSectionHeaderSeparator", "jointSectionHeaderText");		
 			FL::GuiCore::MoveScreenCursor(2, -22);
 			ImGui::Image(FL::Assets::assetManager.GetTexture(FL::JointType2DStrings[joint->GetType()]), FL::Vector2(16));
 
-			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 36, -20);
-			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash")))
+			FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 34, -20);
+			if (FL::GuiCore::RenderImageButton("##trashIcon-" + ID, FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(16), 0, FL::Vector2(), "transparent", "transparent", "col_8"))
 			{
 				jointIDToDelete = jointID;
 			}
-			ImGui::SameLine(0,2);			
+			ImGui::SameLine(0,0);			
 			std::string expandString = joint->b_isCollapsed ? "expand" : "expandFlipped";
-			if (FL::GuiCore::RenderImageButton("##expandIcon-" + ID, FL::Assets::assetManager.GetTexture(expandString)))				
+			if (FL::GuiCore::RenderImageButton("##expandIcon-" + ID, FL::Assets::assetManager.GetTexture(expandString), FL::Vector2(16), 0, FL::Vector2(), "transparent", "transparent", "col_8"))				
 				joint->b_isCollapsed = !joint->b_isCollapsed;	
 
 			if (joint->b_isCollapsed)
@@ -1445,14 +1446,7 @@ namespace FlatGui
 			std::string bodyBName = bodyB != nullptr ? bodyB->GetOwningObject()->GetName() : "";
 
 			FL::GuiCore::MoveScreenCursor(0, 6.0f);
-			
-			// if (FL::GuiCore::DropInput("##InputBodyA" + ID, "BodyA", bodyAName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop GameObjects from the Hierarchy to assign it's Body component."))
-			// {
-			// 	if (droppedObjectID >= 0)
-			// 	{
-			// 		joint->SetBodyAID(droppedObjectID);
-			// 	}
-			// }
+
 			if (FL::GuiCore::DropInput("##InputBodyB" + ID, "Connected Body2D", bodyBName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop Body2D GameObjects from the Hierarchy."))
 			{
 				if (droppedObjectID >= 0)
@@ -1549,7 +1543,11 @@ namespace FlatGui
 				{
 					RenderShape2DComponentProps(shapes[i], shapeToDelete, chainToDelete);
 					
-					if (!shapes[i]->b_isCollapsed || i == shapes.size() - 1 )
+					if (shapes[i]->b_isCollapsed && i != shapes.size() - 1)
+					{
+						FL::GuiCore::MoveScreenCursor(0, -2);
+					}
+					else
 					{
 						FL::GuiCore::MoveScreenCursor(0, 3);
 					}
@@ -1590,7 +1588,11 @@ namespace FlatGui
 				{					
 					RenderJoint2DComponentProps(joints[i], jointIDToDelete);
 
-					if (!joints[i]->b_isCollapsed || i == joints.size() - 1)
+					if (joints[i]->b_isCollapsed && i != joints.size() - 1)
+					{
+						FL::GuiCore::MoveScreenCursor(0, -2);
+					}
+					else
 					{
 						FL::GuiCore::MoveScreenCursor(0, 3);
 					}
@@ -2367,7 +2369,10 @@ namespace FlatGui
 				{
 					if (!focusedObject->GetComponent((FL::ComponentType)i))
 					{
-						std::string componentTypeString = " " + FL::ComponentTypeStrings[i];
+						if (((FL::ComponentType)i == FL::ComponentType_Button || (FL::ComponentType)i == FL::ComponentType_Text) && !focusedObject->IsCanvasGameObject())
+							continue;
+						
+						std::string componentTypeString = FL::ComponentTypeStrings[i];
 						if (FL::GuiCore::MenuItem(componentTypeString.c_str()))
 						{
 							focusedObject->AddComponent((FL::ComponentType)i);

@@ -6,6 +6,7 @@
 #include "managers/Assets.h"
 #include "managers/LuaManager.h"
 #include "physics/PhysicsManager.h"
+#include "physics/Shape2D.h"
 #include "render/SceneView.h"
 #include "tools/Numbers.h"
 #include "tools/Vector2.h"
@@ -14,6 +15,7 @@
 #include <box2d.h>
 #include <math_functions.h>
 #include <unordered_map>
+#include <vector>
 
 
 namespace FlatEngine
@@ -126,6 +128,9 @@ namespace FlatEngine
 
 	void Body2D::AddShape(ShapeType2D type, json componentJson, std::string name)
 	{
+		if (type == ShapeType2D_None)
+			return;
+		
 		Shape2D shape = Shape2D(GetOwnerID(), type);
 		shape.PutData(componentJson, name);
 
@@ -198,16 +203,20 @@ namespace FlatEngine
 				shape->Cleanup();
 		}
 		for (Joint2D* joint : GetJoints())
-		{
-			if (joint != nullptr)
-				RemoveJoint(joint->GetID());
+		{			
+			if (joint != nullptr && joint->GetBodyB() != nullptr)
+				joint->GetBodyB()->RemoveJoint(joint->GetID());
 		}
-		// for (auto& joint : m_jointsConnected)
-		// {
-		// 	if (joint.second != nullptr && joint.second->GetBodyA() != nullptr)
-		// 		joint.second->GetBodyA()->RemoveJoint(joint.second->GetID());
-		// }
-		
+		if (m_jointsConnected.size())
+		{
+			for (auto& joint : m_jointsConnected)
+			{
+				if (joint.second != nullptr && joint.second->GetBodyA() != nullptr)
+					joint.second->GetBodyA()->RemoveJoint(joint.second->GetID());
+			}
+		}
+
+		m_jointsConnected.clear();
 		m_distanceJoints.clear();
         m_prismaticJoints.clear();
         m_revoluteJoints.clear();
@@ -868,13 +877,16 @@ namespace FlatEngine
 	// Todo: Simplify this somehow.
 	void Body2D::RemoveJoint(long jointID)
 	{
+		if (m_jointsConnected.count(jointID))
+		{
+			m_jointsConnected.at(jointID)->Cleanup();				
+			m_jointsConnected.erase(jointID);
+		}
+
 		for (std::list<Joint2D>::iterator jointIter = m_distanceJoints.begin(); jointIter != m_distanceJoints.end(); jointIter++)
 		{
 			if (jointIter->GetID() == jointID && jointIter->GetID() == jointID)
-			{
-				if (jointIter->GetBodyB())
-					jointIter->GetBodyB()->RemoveConnectedJoint(&(*jointIter));
-				
+			{				
 				jointIter->Cleanup();				
 				m_distanceJoints.erase(jointIter);
 				SceneManager::loadedScene.AddFreedJoint2DID(jointID);

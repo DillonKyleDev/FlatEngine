@@ -1268,6 +1268,7 @@ namespace FlatEngine
                         for (auto& objectID : materials.second.GetAll())
                         {
                             Mesh* mesh = SceneManager::loadedScene.Get<Mesh>(objectID);
+
                             if (mesh == nullptr)
                             {
                                 Sprite* sprite = SceneManager::loadedScene.Get<Sprite>(objectID);
@@ -1276,6 +1277,9 @@ namespace FlatEngine
                                 else
                                     continue;
                             }
+
+                            if (!mesh->Initialized() || !mesh->IsActive() || !mesh->GetOwningObject()->IsActive())
+                                continue;
 
                             m_renderToTextureSceneViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
 
@@ -1395,12 +1399,25 @@ namespace FlatEngine
                                     continue;
                             }
 
+                            if (!mesh->Initialized() || !mesh->IsActive() || !mesh->GetOwningObject()->IsActive())
+                                continue;
+
                             m_renderToTextureGameViewRenderPass.BindIndexed(GetModel(mesh->GetModel()->GetModelPath()));
-                            Camera* primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();
-                            
+                            Camera* primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();     
+                            Transform* primaryCameraTransform = nullptr;                       
+                            if (primaryCamera == nullptr)
+                            {
+                                primaryCamera = &SceneView::sceneViewCamera;
+                                primaryCameraTransform = &SceneView::sceneViewCameraTransform;
+                            }
+                            else 
+                            {
+                                primaryCameraTransform = SceneManager::loadedScene.Get<Transform>(primaryCamera->GetOwnerID());
+                            }
+
                             if (mesh->Initialized() && material != nullptr && !mesh->MissingTextures())
                             {
-                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneManager::loadedScene.Get<Transform>(mesh->GetOwnerID()), primaryCamera, SceneManager::loadedScene.Get<Transform>(primaryCamera->GetOwnerID()));
+                                mesh->UpdateUniformBuffer(ViewportType::ViewportType_GameView, SceneManager::loadedScene.Get<Transform>(mesh->GetOwnerID()), primaryCamera, primaryCameraTransform);
                                 m_renderToTextureGameViewRenderPass.BindIndexed(mesh->GetModel());
                                 m_renderToTextureGameViewRenderPass.BindDescriptorSets(mesh->GetGameViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_GameView);
                                 m_renderToTextureGameViewRenderPass.DrawIndexed(mesh->GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                       

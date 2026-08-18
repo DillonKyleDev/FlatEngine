@@ -5,6 +5,7 @@
 #include "tools/Vector2.h"
 
 #include <cstddef>
+#include <imgui.h>
 
 namespace FL = FlatEngine;
 
@@ -64,7 +65,7 @@ namespace FlatGui
 			ImGui::EndDisabled();
 			if (ImGui::IsItemHovered())
 			{
-				FL::GuiCore::RenderTextToolTip("Advance 1");
+				FL::GuiCore::RenderTextToolTip("Advance 1 frame");
 			}
 			ImGui::SameLine(0, 5);
 
@@ -76,18 +77,17 @@ namespace FlatGui
 			ImGui::EndDisabled();
 			if (ImGui::IsItemHovered())
 			{
-				FL::GuiCore::RenderTextToolTip("Advance " + std::to_string(framesToSkip));
+				FL::GuiCore::RenderTextToolTip("Advance " + std::to_string(framesToSkip) + " frames");
 			}
 
 			ImGui::SameLine(0, 5); 
-			FL::GuiCore::MoveScreenCursor(3, 5);
-			ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("logText"));
-			ImGui::Text("Frames to advance ");
+			FL::GuiCore::MoveScreenCursor(0, 4);
+			ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("col_8"));
+			FL::GuiCore::RenderDragInt("##NumberOfFramesToSkipDrag", 30, framesToSkip, 1, 1, INT_MAX);	
+			ImGui::SameLine(0,0);
+			FL::GuiCore::MoveScreenCursor(0,4);
+			ImGui::Text("Frames");	
 			ImGui::PopStyleColor();
-			ImGui::SameLine();
-			FL::GuiCore::MoveScreenCursor(-12, 2);
-			FL::GuiCore::RenderDragInt("##NumberOfFramesToSkipDrag", 30, framesToSkip, 1, 1, 360);
-		
 
 			ImGui::PopStyleVar();
 

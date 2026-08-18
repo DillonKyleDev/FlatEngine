@@ -15,6 +15,11 @@ namespace FlatEngine
 
     namespace GuiCore
     {
+        extern bool b_mouseDownCanWarp;
+        extern Vector2 mouseDelta;
+        extern Vector2 mousePos;
+        extern Vector2 lastMousePos;
+
         extern ImGuiChildFlags childFlags;
         extern ImGuiChildFlags autoResizeChildFlags;
         extern ImGuiChildFlags resizeChildFlags;
@@ -25,13 +30,11 @@ namespace FlatEngine
         extern ImGuiInputTextFlags inputFlags;
 
         extern float childPadding;
-
         extern bool b_currentTableLight;
 
         // Drag/Drop IDs
         extern std::string fileExplorerTarget;
         extern std::string hierarchyTarget;	
-
         extern std::vector<std::string> selectedFiles;
 
         enum CURSOR_MODE {
@@ -44,13 +47,13 @@ namespace FlatEngine
             CURSOR_MODE_TILE_MULTISELECT,
             CURSOR_MODE_TILE_MOVE,
         };
-	
         extern CURSOR_MODE cursorMode;
         
-
         extern void SetupImGui();      
         extern void SetImGuiVars();  
         extern void QuitImGui();
+
+        extern void CalculateMouseDelta();
 
         extern void BeginImGuiRender();
         extern void EndImGuiRender();       
@@ -62,7 +65,7 @@ namespace FlatEngine
         
         extern void SetNextViewportToFillWindow();
         extern void MoveScreenCursor(float x, float y);
-        extern void RenderSectionHeader(std::string headerText, float topPadding = 0.0f, float bottomPadding = 0.0f, std::string color = "sectionHeaderBg", std::string separatorColor = "sectionHeaderSeparator");
+        extern void RenderSectionHeader(std::string headerText, float topPadding = 0.0f, float bottomPadding = 0.0f, std::string color = "sectionHeaderBg", std::string separatorColor = "sectionHeaderSeparator", std::string textColor = "sectionHeaderText");
         extern bool BeginMainMenuBar();
         extern void EndMainMenuBar();  
         extern bool BeginMenu(const char* label, bool enabled = true);
@@ -100,10 +103,11 @@ namespace FlatEngine
             bool b_vertSeperator = true;
             ImGuiTableFlags flags = ImGuiTableFlags_RowBg;         
 
-            TableProps(std::string setID, std::string setLabel, Vector2 tableWidth = Vector2(), float setIncrement = 0.1f, float setMin = -FLT_MAX, float setMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
+            TableProps(std::string setID, std::string setLabel, Vector2 setTableSize = Vector2(), float setIncrement = 0.1f, float setMin = -FLT_MAX, float setMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
             {
                 ID = setID;
                 label = setLabel;
+                tableSize = setTableSize;
                 increment = setIncrement;
                 min = setMin;
                 max = setMax;
@@ -131,7 +135,7 @@ namespace FlatEngine
         extern bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string tooltip = "", float inputWidth = -1);
 
         extern bool RenderButton(std::string text, Vector2 size = Vector2(0), float rounding = 0, std::string color = "button", std::string hoverColor = "buttonHovered", std::string activeColor = "buttonActive", Vector2 framePadding = Vector2(5, 3));
-        extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(0), std::string borderColor = "buttonBorder", std::string bgColor = "imageButton", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));
+        extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(0), std::string borderColor = "buttonBorder", std::string bgColor = "transparent", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));
         extern bool RenderInvisibleButton(std::string ID, Vector2 startingPoint, Vector2 size, bool b_allowOverlap = true, bool b_showRect = false, ImGuiButtonFlags flags = ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight);
         extern bool RenderCheckbox(std::string text, bool& b_toCheck);
 

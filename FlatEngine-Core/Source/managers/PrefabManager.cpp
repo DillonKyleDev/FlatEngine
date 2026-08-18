@@ -119,10 +119,13 @@ namespace FlatEngine
 
 		long InstantiateChildPrefab(Prefab prefab, long parentID)
 		{
+			long nextHierarchyPosition = SceneManager::loadedScene.GetNextHierarchyPosition();
 			GameObject* childPtr = SceneManager::loadedScene.CreateEmptyGameObject(parentID);
-			childPtr->PutData(prefab.parent);	
-			long ID = childPtr->GetID();
-
+			childPtr->PutData(prefab.parent);					
+			childPtr->hierarchyPosition = nextHierarchyPosition;		
+			
+			long ID = childPtr->GetID();	
+			
 			for (Prefab grandchild : prefab.children)
 			{
 				childPtr->AddChild(InstantiateChildPrefab(grandchild, ID));
@@ -137,10 +140,13 @@ namespace FlatEngine
 
 			if (prefabs.count(prefabName) > 0)
 			{
+				long nextHierarchyPosition = SceneManager::loadedScene.GetNextHierarchyPosition();
 				Prefab prefab = prefabs.at(prefabName);				
 				prefabPtr = SceneManager::loadedScene.CreateEmptyGameObject();
-				prefabPtr->PutData(prefab.parent);								
-
+				prefabPtr->PutData(prefab.parent);	
+				prefabPtr->hierarchyPosition = nextHierarchyPosition;
+				prefabPtr->parentedHierarchyPosition = 0;
+												
 				for (Prefab child : prefab.children)
 				{
 					prefabPtr->AddChild(InstantiateChildPrefab(child, prefabPtr->GetID()));
@@ -150,6 +156,8 @@ namespace FlatEngine
 			{
 				Logger::log.Err("PrefabManager::Instantiate() - Prefab {} was not found.", prefabName);				
 			}
+
+			SceneManager::loadedScene.SortSceneObjects();
 
 			return prefabPtr;
 		}

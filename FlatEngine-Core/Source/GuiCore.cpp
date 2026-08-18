@@ -1,6 +1,7 @@
 #include "GuiCore.h"
 #include "managers/Assets.h"
 #include "managers/LuaManager.h"
+#include "render/RenderWindow.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
 #include "tools/Logger.h"
@@ -17,6 +18,11 @@ namespace FlatEngine
 {
 	namespace GuiCore
 	{
+		bool b_mouseDownCanWarp = false;
+		Vector2 mouseDelta;
+		Vector2 mousePos;
+		Vector2 lastMousePos;
+
 		// Flags		
 		ImGuiChildFlags autoResizeChildFlags = ImGuiChildFlags_AutoResizeY;
 		ImGuiChildFlags resizeChildFlags = ImGuiChildFlags_ResizeX | ImGuiChildFlags_AlwaysUseWindowPadding;
@@ -150,9 +156,9 @@ namespace FlatEngine
 		{	
 			ImGui_ImplVulkan_NewFrame();		
 			ImGui_ImplSDL2_NewFrame();		
-			ImGui::NewFrame();
-			
+			ImGui::NewFrame();			
 			ImGui::DockSpaceOverViewport();
+			b_mouseDownCanWarp = false;
 		}
 		
 		void EndImGuiRender()
@@ -176,6 +182,73 @@ namespace FlatEngine
 			ImGui::SetNextWindowPos({ 0,0 });
 		}
 
+
+		Vector2 GetMousePosWindow()
+		{
+			int globalX, globalY;
+			SDL_GetGlobalMouseState(&globalX, &globalY);
+			int windowX, windowY;
+			SDL_GetWindowPosition(RenderWindow::window.GetWindow(), &windowX, &windowY);
+			int windowWidth, windowHeight;
+			SDL_GetWindowSize(RenderWindow::window.GetWindow(), &windowWidth, &windowHeight);
+
+			return Vector2(globalX - windowX, globalY - windowY);		
+		}
+
+		void CalculateMouseDelta()
+		{
+			if (!GuiCore::b_mouseDownCanWarp)
+			{	
+				lastMousePos = GetMousePosWindow();
+				mouseDelta = Vector2();
+				return;
+			}
+
+			mousePos = GetMousePosWindow();
+			mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);	
+			ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
+
+			if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) || ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+			{
+				int windowWidth, windowHeight;
+				SDL_GetWindowSize(RenderWindow::window.GetWindow(), &windowWidth, &windowHeight);
+
+				if (mousePos.x > windowWidth - 2)
+				{
+					SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, mousePos.y);
+					lastMousePos = Vector2(0, mousePos.y);
+					mouseDelta.x = 1;
+					ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
+					return;
+				}
+				else if (mousePos.x < 1)
+				{
+					SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), windowWidth - 2, mousePos.y);
+					lastMousePos = Vector2(windowWidth - 1, mousePos.y);
+					mouseDelta.x = -1;
+					ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
+					return;
+				}
+				if (mousePos.y > windowHeight - 1)
+				{
+					SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), mousePos.x, 1);
+					lastMousePos = Vector2(mousePos.x, 0);
+					mouseDelta.y = 1;
+					ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
+					return;
+				}
+				else if (mousePos.y < 1)
+				{
+					SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), mousePos.x, windowHeight - 1);
+					lastMousePos = Vector2(mousePos.x, windowHeight);
+					mouseDelta.y = 1;
+					ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
+					return;
+				}			
+			}
+
+			lastMousePos = mousePos;
+		}
 		// ImGui Wrappers
 		void MoveScreenCursor(float x, float y)
 		{
@@ -980,26 +1053,28 @@ namespace FlatEngine
 			std::string column1Label = tableProps.ID + std::to_string(1);
 			std::string column2Label = tableProps.ID + std::to_string(2);
 						
+			Vector2 regionAvailable = tableProps.tableSize.x != 0 ? tableProps.tableSize : ImGui::GetContentRegionAvail();						
 			if (tableProps.labelWidth == 0) 
+			{
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+				if (tableProps.labelWidth < regionAvailable.x / 3.0f)
+				{
+					tableProps.labelWidth = regionAvailable.x / 3.0f;
+				}
+			}
+
 			TableProps labelTableProps = tableProps;
 			labelTableProps.ID = column0Label;
 			labelTableProps.labelWidth = tableProps.labelWidth;
 			RenderLabelTable(tableProps);
 
 			ImGui::SameLine(0,0);
-
-			RenderVerticalSeparator(tableProps.b_vertSeperator);
-
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
+			RenderVerticalSeparator(tableProps.b_vertSeperator);		
 
 			std::vector<float> widths { 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 						
-			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 4, GuiCore::tableFlags, tableProps.tableSize, widths))
+			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 4, GuiCore::tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
 			{
 				ImGui::TableNextRow();			
 				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[0], valueColor, 16);				
@@ -1030,27 +1105,29 @@ namespace FlatEngine
 			std::string column1Label = tableProps.ID + std::to_string(1);
 			std::string column2Label = tableProps.ID + std::to_string(2);
 			std::string column3Label = tableProps.ID + std::to_string(3);
-						
+
+			Vector2 regionAvailable = tableProps.tableSize.x != 0 ? tableProps.tableSize : ImGui::GetContentRegionAvail();						
 			if (tableProps.labelWidth == 0) 
+			{
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+				if (tableProps.labelWidth < regionAvailable.x / 4.0f)
+				{
+					tableProps.labelWidth = regionAvailable.x / 4.0f;
+				}
+			}
+
 			TableProps labelTableProps = tableProps;
 			labelTableProps.ID = column0Label;
 			labelTableProps.labelWidth = tableProps.labelWidth;
 			RenderLabelTable(labelTableProps);
 
 			ImGui::SameLine(0,0);
-
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
-
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
 
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			
-			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 6, GuiCore::tableFlags, tableProps.tableSize, widths))
+			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 6, GuiCore::tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
 			{
 				ImGui::TableNextRow();					
 				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[0], valueColor, 16);				
@@ -1083,27 +1160,29 @@ namespace FlatEngine
 			std::string column2Label = tableProps.ID + std::to_string(2);
 			std::string column3Label = tableProps.ID + std::to_string(3);
 			std::string column4Label = tableProps.ID + std::to_string(4);
-						
+
+			Vector2 regionAvailable = tableProps.tableSize.x != 0 ? tableProps.tableSize : ImGui::GetContentRegionAvail();						
 			if (tableProps.labelWidth == 0) 
+			{
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+				if (tableProps.labelWidth < regionAvailable.x / 5.0f)
+				{
+					tableProps.labelWidth = regionAvailable.x / 5.0f;
+				}
+			}
+						
 			TableProps labelTableProps = tableProps;
 			labelTableProps.ID = column0Label;
 			labelTableProps.labelWidth = tableProps.labelWidth;
 			RenderLabelTable(tableProps);
 
 			ImGui::SameLine(0,0);
-
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
-			
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
 
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";
 			
-			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 8, GuiCore::tableFlags, tableProps.tableSize, widths))
+			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 8, GuiCore::tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
 			{
 				ImGui::TableNextRow();			
 				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[0], valueColor, 16);				
@@ -1518,7 +1597,7 @@ namespace FlatEngine
 
 				ImGui::SameLine(0,3);
 				int trashButtonWidth = 23;								
-				Vector2 tableSize = ImGui::GetContentRegionAvail().x - trashButtonWidth;
+				Vector2 tableSize = Vector2(ImGui::GetContentRegionAvail().x - trashButtonWidth);
 				tableSize.y = 0.0f;						
 				std::string inputElementID = "LuaScript_" + ID + std::to_string(paramCounter);		
 				switch(param.type)
@@ -2042,6 +2121,11 @@ namespace FlatEngine
 				ImGui::SetMouseCursor(ImGuiMouseCursor_::ImGuiMouseCursor_ResizeEW);
 			}
 
+			if (ImGui::IsItemActive())
+			{
+				b_mouseDownCanWarp = true;
+			}
+
 			ImGui::PopStyleColor(3);
 
 			return b_sliderChanged;
@@ -2067,6 +2151,11 @@ namespace FlatEngine
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_::ImGuiMouseCursor_ResizeEW);
+			}
+
+			if (ImGui::IsItemActive())
+			{
+				b_mouseDownCanWarp = true;
 			}
 
 			ImGui::PopStyleColor(3);
@@ -2097,10 +2186,15 @@ namespace FlatEngine
 			}
 			
 			bool b_sliderChanged = ImGui::DragInt(ID.c_str(), &value, speed, min, max, "%d", flags | ImGuiSliderFlags_AlwaysClamp);
-			
+						
 			if (ImGui::IsItemHovered())
-			{
+			{				
 				ImGui::SetMouseCursor(ImGuiMouseCursor_::ImGuiMouseCursor_ResizeEW);
+			}
+
+			if (ImGui::IsItemActive())
+			{
+				b_mouseDownCanWarp = true;
 			}
 
 			ImGui::PopStyleColor(3);
@@ -2135,6 +2229,11 @@ namespace FlatEngine
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::SetMouseCursor(ImGuiMouseCursor_::ImGuiMouseCursor_ResizeEW);
+			}
+
+			if (ImGui::IsItemActive())
+			{
+				b_mouseDownCanWarp = true;
 			}
 
 			ImGui::PopStyleColor(3);
@@ -2223,13 +2322,15 @@ namespace FlatEngine
 			return b_checked;
 		}
 
-		void RenderSectionHeader(std::string headerText, float topPadding, float bottomPadding, std::string color, std::string separatorColor)
+		void RenderSectionHeader(std::string headerText, float topPadding, float bottomPadding, std::string color, std::string separatorColor, std::string textColor)
 		{
 			Vector2 headerP0 = ImGui::GetCursorScreenPos();
 			auto winSize = ImGui::GetWindowSize();	
 			ImGui::GetWindowDrawList()->AddRectFilled({ headerP0.x, headerP0.y }, { headerP0.x + winSize.x, headerP0.y + topPadding + bottomPadding + 22 }, Assets::assetManager.GetColor32(color), 0);	
-			GuiCore::RenderSeparator(0, topPadding, separatorColor);						
+			GuiCore::RenderSeparator(0, topPadding, separatorColor);	
+			ImGui::PushStyleColor(ImGuiCol_Text, Assets::assetManager.GetColor32(textColor));
 			ImGui::Text(" %s", headerText.c_str());			
+			ImGui::PopStyleColor();
 			GuiCore::RenderSeparator(bottomPadding, 0, separatorColor);
 		}
 
@@ -2260,7 +2361,7 @@ namespace FlatEngine
 		{		
 			ImGui::BeginTooltip();
 			ImGui::Text("%s", title.c_str());
-			GuiCore::RenderSeparator(5, 5);
+			GuiCore::RenderMenuSeparator();
 		}
 
 		void EndToolTip()
@@ -2270,34 +2371,34 @@ namespace FlatEngine
 
 		void RenderToolTipText(std::string label, std::string text)
 		{
-			std::string newLabel = label + "  |  ";
+			std::string newLabel = label + ": ";
 			ImGui::Text("%s", newLabel.c_str());
 			ImGui::SameLine();
 			ImGui::Text("%s", text.c_str());
-			GuiCore::RenderSeparator(5, 5);
+			GuiCore::RenderMenuSeparator();
 		}
 
 		void RenderToolTipFloat(std::string label, float data)
 		{
-			std::string newLabel = label + "  |  ";
+			std::string newLabel = label + ": ";
 			ImGui::Text("%s", newLabel.c_str());
 			ImGui::SameLine();
-			ImGui::Text("%s", std::to_string(data).c_str());
-			GuiCore::RenderSeparator(5, 5);
+			ImGui::Text("%s", std::to_string(data).c_str());	
+			GuiCore::RenderMenuSeparator();		
 		}
 
 		void RenderToolTipLong(std::string label, long data)
 		{
-			std::string newLabel = label + "  |  ";
+			std::string newLabel = label + ": ";
 			ImGui::Text("%s", newLabel.c_str());
 			ImGui::SameLine();
-			ImGui::Text("%s", std::to_string(data).c_str());
-			GuiCore::RenderSeparator(5, 5);
+			ImGui::Text("%s", std::to_string(data).c_str());	
+			GuiCore::RenderMenuSeparator();		
 		}
 
 		void RenderToolTipLongVector(std::string label, std::vector<long> data)
 		{
-			std::string newLabel = label + "  |  ";
+			std::string newLabel = label + ": ";
 			ImGui::Text("%s", newLabel.c_str());
 			for (int i = 0; i < data.size(); i++)
 			{
@@ -2307,7 +2408,7 @@ namespace FlatEngine
 				ImGui::SameLine();
 				ImGui::Text("%s", dataString.c_str());
 			}
-			GuiCore::MoveScreenCursor(0, 5);
+			GuiCore::RenderMenuSeparator();
 		}
 		
 		void RenderTextToolTip(std::string text)

@@ -45,13 +45,13 @@ namespace FlatEngine
 
 		Component* AddComponent(ComponentType type, json componentJson = json::object());
 		void RemoveComponent(Component* component);		
-		Component* GetComponent(ComponentType type);
-		std::vector<Component*> GetComponents();
+		Component* GetComponent(ComponentType type);		
+		bool IsCanvasGameObject();
 
 		void SetParentID(long parentID);
 		long GetParentID();
 		GameObject *GetParent();
-		void AddChild(long childID);
+		void AddChild(long childID, long insertBefore = -1);
 		void RemoveChild(long childID);
 		GameObject *GetFirstChild();
 		GameObject *FindChildByName(std::string name);
@@ -59,20 +59,20 @@ namespace FlatEngine
 		bool HasChildren();
 		void SetActive(bool b_active);
 		bool IsActive();
-		void SetHierarchyPosition(long position);
-		long GetHierarchyPosition();
-		
+
+		long hierarchyPosition;
+		long parentedHierarchyPosition;
+		bool b_collapsed;
+
 	private:
 		std::string m_name;
 		bool m_b_isPrefab;
-		bool m_b_isPrefabsChild;
 		std::string m_prefabName;
 		Vector3 m_prefabSpawnLocation;
 		TagList m_tagList;
 		long m_ID;
 		long m_parentID;
 		bool m_b_isActive;		
-		std::vector<long> m_childrenIDs;			
-		long m_hierarchyPosition;
+		std::vector<long> m_childrenIDs;					
 	};
 }

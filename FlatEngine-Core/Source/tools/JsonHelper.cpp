@@ -44,13 +44,7 @@ namespace FlatEngine
         }
 
         void WriteJsonToFile(json jsonData, std::string filepath)
-        {
-            if (!FileHelper::DoesFileExist(filepath))
-            {
-                Logger::log.Err("JsonHelper::WriteJsonToFile() : file path {} does not exist.", filepath);
-                return;
-            }
-            
+        {            
             std::ofstream fileObject;
             std::ifstream ifstream(filepath);
 

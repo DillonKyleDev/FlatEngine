@@ -35,10 +35,7 @@ namespace FlatEngine
 	bool b_closeProgramQueued = false;
 	bool b_loadNewScene = false;
 	std::string sceneToBeLoaded = "";
-	std::vector<SDL_Event> events;
-	Vector2 mouseDelta;
-	Vector2 mousePos;
-	Vector2 lastMousePos;
+	std::vector<SDL_Event> events;	
 
 
 	bool Init(int windowWidth, int windowHeight)
@@ -142,62 +139,6 @@ namespace FlatEngine
 		SDL_Quit();
 	}
 
-	Vector2 GetMousePosWindow()
-	{
-		int globalX, globalY;
-		SDL_GetGlobalMouseState(&globalX, &globalY);
-		int windowX, windowY;
-		SDL_GetWindowPosition(RenderWindow::window.GetWindow(), &windowX, &windowY);
-		int windowWidth, windowHeight;
-		SDL_GetWindowSize(RenderWindow::window.GetWindow(), &windowWidth, &windowHeight);
-
-		return Vector2(globalX - windowX, globalY - windowY);		
-	}
-
-	void CalculateMouseDelta()
-	{
-		mousePos = GetMousePosWindow();	
-		mouseDelta = Vector2(mousePos.x - lastMousePos.x, mousePos.y - lastMousePos.y);	
-		ImGui::GetIO().MouseDelta = ImVec2(mouseDelta.x, mouseDelta.y);
-
-		if (ImGui::IsMouseDragging(ImGuiMouseButton_Left) || ImGui::IsMouseDragging(ImGuiMouseButton_Right))
-		{
-			int windowWidth, windowHeight;
-			SDL_GetWindowSize(RenderWindow::window.GetWindow(), &windowWidth, &windowHeight);
-
-			if (mousePos.x > windowWidth - 2)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), 1, mousePos.y);
-				lastMousePos = Vector2(0, mousePos.y);
-				mouseDelta.x = 1;
-				return;
-			}
-			else if (mousePos.x < 1)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), windowWidth - 2, mousePos.y);
-				lastMousePos = Vector2(windowWidth, mousePos.y);
-				mouseDelta.x = -1;
-				return;
-			}
-			if (mousePos.y > windowHeight - 1)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), mousePos.x, 1);
-				lastMousePos = Vector2(mousePos.x, 0);
-				mouseDelta.y = 1;
-				return;
-			}
-			else if (mousePos.y < 1)
-			{
-				SDL_WarpMouseInWindow(RenderWindow::window.GetWindow(), mousePos.x, windowHeight - 1);
-				lastMousePos = Vector2(mousePos.x, windowHeight);
-				mouseDelta.y = 1;
-				return;
-			}			
-		}
-
-		lastMousePos = mousePos;
-	}
-
 	void HandleEvents()
 	{
 		// Unfire all keybinds that were fired in the last frame then clear the saved keys
@@ -266,6 +207,6 @@ namespace FlatEngine
 			}				
 		}
 
-		CalculateMouseDelta();
+		GuiCore::CalculateMouseDelta();
 	}
 }

@@ -50,9 +50,9 @@ namespace FlatEngine
 		long GetNextJoint2DID();
 		void AddFreedJoint2DID(long freedID);
 
-		void OnPrefabInstantiated();
 		void SortSceneObjects();
-		std::vector<GameObject*> GetSortedHierarchyObjects();		
+		std::vector<GameObject*>& GetSortedHierarchyObjects();		
+		long GetNextHierarchyPosition();
 
 		std::vector<Script*> GetScripts(long ownerID);
 		// Raw member variables
@@ -90,7 +90,7 @@ namespace FlatEngine
 		void RemoveSceneObject(long ID);
 
 		UMapVector<GameObject> m_sceneObjects;
-		std::vector<GameObject*> m_sortedHierarchyObjects;
+		std::vector<GameObject*> m_sortedHierarchyObjects;		
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		long m_nextGameObjectID;
 		std::vector<long> m_freedGameObjectIDs;

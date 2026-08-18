@@ -519,12 +519,13 @@ namespace FlatEngine
 
 		void Physics2D::DestroyJoint(FL::Joint2D* joint)
 		{
-			if (joint != nullptr && b2Joint_IsValid(joint->m_jointID))
+			if (joint != nullptr)
 			{
-				b2DestroyJoint(joint->m_jointID);							
+				if (b2Joint_IsValid(joint->m_jointID))
+					b2DestroyJoint(joint->m_jointID);	
+				
+				joint->SetJointID(b2_nullJointId);							
 			}
-
-			joint->SetJointID(b2_nullJointId);	
 		}
 
 		void Physics2D::RecreateJoint(Joint2D* joint)

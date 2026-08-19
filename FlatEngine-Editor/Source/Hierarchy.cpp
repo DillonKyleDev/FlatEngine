@@ -20,9 +20,9 @@ namespace FlatGui
 	long createChildParentID = -1;
 	long queuedForDelete = -1;
 	long parentToUnparent = -1;
-	long droppedObject = -1;
-	long newChildParent = -1;
-	long insertChildBefore = -1;
+	long droppedObjectID = -1;
+	long newDroppedParent = -1;
+	long insertDroppedObjectBefore = -1;
 
 
 	void AddObjectToHierarchy(FL::GameObject* currentObject, const char* charName, long& node_clicked, float indent)
@@ -65,25 +65,24 @@ namespace FlatGui
 
 				if (currentObject->GetID() != ID)
 				{
-					droppedObject = ID;	
+					droppedObjectID = ID;	
 
-					// if dropped object had a parent before that was not the same as currentObjects' level (and if not root) then unparent it from old parent
-					if (dropped->GetParentID() != -1 && (currentObject->GetParentID() == -1 || dropped->GetParentID() != currentObject->GetID()))
+					// Was parented before
+					if (dropped->GetParentID() != -1)
 					{
 						parentToUnparent = dropped->GetParentID();												
 					}
 					// If object dropped in root of Hierarchy, save the new hierarchy position of dropped object
 					if (currentParentID == -1)
 					{
-						insertChildBefore = currentObject->hierarchyPosition;
+						insertDroppedObjectBefore = currentObject->hierarchyPosition;
 					}
-					// The object was dropped inside a parent objects internal Hierarchy, add the dropped object as a new child to it.
+					// The object was dropped inside a parent objects internal hierarchy, add the dropped object as a new child to it.
 					else
-					{						
-						newChildParent = currentParentID;
-						insertChildBefore = currentObject->parentedHierarchyPosition;
+					{												
+						insertDroppedObjectBefore = currentObject->parentedHierarchyPosition;
 					}		
-					dropped->SetParentID(currentParentID);
+					newDroppedParent = currentParentID;					
 				}
 			}
 			ImGui::EndDragDropTarget();
@@ -242,20 +241,15 @@ namespace FlatGui
 				int ID = *(const int*)payload->Data;							
 				FL::GameObject* dropped = FL::SceneManager::loadedScene.GetObjectByID(ID);
 				long currentObjectID = currentObject->GetID();
-				droppedObject = ID;	
+				droppedObjectID = ID;	
 
 				// Remove dropped object from its previous parents children
 				if (dropped->GetParentID() != -1)
 				{
 					parentToUnparent = dropped->GetParentID();
-				}
-				// If currentObject is not null, which it shouldn't be, it's the new parent
-				if (currentObjectID != -1)
-				{					
-					newChildParent = currentObjectID;
-				}
-	
-				dropped->SetParentID(currentObjectID);				
+				}			
+				
+				newDroppedParent = currentObjectID;											
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -395,10 +389,10 @@ namespace FlatGui
 			// Table for Scene Objects in Hierarchy			
 			float visibleIconColumnWidth = 24;
 			float isPrefabIconColumnWidth = 24;			
-			static bool b_allAreVisible = false;
+			static bool b_allAreVisible = true;
 			static long node_clicked = -1;
 
-			std::vector<FL::GameObject*>& sceneObjects = FL::SceneManager::loadedScene.GetSortedHierarchyObjects();						
+			std::vector<long> sceneObjectIDs = FL::SceneManager::loadedScene.GetSortedHierarchyObjects();						
 
 			FL::GuiCore::BeginWindowChild("##ScrollingHierarchy", "outerWindow", 0, FL::Vector2());
 			// {
@@ -417,9 +411,9 @@ namespace FlatGui
 					ImGui::TableSetColumnIndex(0);		
 					if (FL::GuiCore::RenderImageButton("##SetAllVisible", FL::Assets::assetManager.GetTexture(b_allAreVisible ? "show": "hide"), FL::Vector2(16, 16), 0, FL::Vector2(4), "transparent", "button", "white", "buttonHovered", "buttonActive"))
 					{
-						for (FL::GameObject* sceneObject : sceneObjects)
+						for (long sceneObjectID : sceneObjectIDs)
 						{
-							sceneObject->SetActive(!b_allAreVisible);
+							FL::SceneManager::loadedScene.GetObjectByID(sceneObjectID)->SetActive(!b_allAreVisible);							
 						}
 						b_allAreVisible = !b_allAreVisible;
 					}					
@@ -431,11 +425,13 @@ namespace FlatGui
 					ImGui::PopStyleColor();
 
 					ImGui::TableSetColumnIndex(2);
-					FL::GuiCore::MoveScreenCursor(3, 4);
+					FL::GuiCore::MoveScreenCursor(4, 4);
 					ImGui::Image(FL::Assets::assetManager.GetTexture("prefabCube"), FL::Vector2(16, 16));
 
-					for (FL::GameObject* sceneObject : sceneObjects)
+					for (long sceneObjectID : sceneObjectIDs)
 					{
+						FL::GameObject* sceneObject  = FL::SceneManager::loadedScene.GetObjectByID(sceneObjectID);
+						
 						// If this object does not have a parent we render it and all of its children.
 						if (sceneObject->GetParentID() == -1)
 						{
@@ -497,51 +493,40 @@ namespace FlatGui
 			}
 
 			// Perform dropped object actions
-			if (droppedObject != -1)
+			if (droppedObjectID != -1)
 			{		
+				FL::GameObject* dropped = FL::SceneManager::loadedScene.GetObjectByID(droppedObjectID);				
+
 				if (parentToUnparent != -1)		
-					FL::SceneManager::loadedScene.GetObjectByID(parentToUnparent)->RemoveChild(droppedObject);
+					FL::SceneManager::loadedScene.GetObjectByID(parentToUnparent)->RemoveChild(droppedObjectID);
+				else if (dropped->GetParentID() == -1)
+					FL::SceneManager::loadedScene.RemoveSortedHierarchyObject(dropped);
 				
+				dropped->SetParentID(newDroppedParent);
+
 				// Reparent the dropped object to the parent tree it was dropped into
-				if (newChildParent != -1)
+				if (newDroppedParent != -1)
 				{
-					FL::GameObject* newParent = FL::SceneManager::loadedScene.GetObjectByID(newChildParent);
+					FL::GameObject* newParent = FL::SceneManager::loadedScene.GetObjectByID(newDroppedParent);
 					if (newParent != nullptr)
 					{
-						FL::SceneManager::loadedScene.GetObjectByID(newChildParent)->parentedHierarchyPosition = -1;
-						newParent->AddChild(droppedObject, insertChildBefore);
+						dropped->parentedHierarchyPosition = insertDroppedObjectBefore; // insertDroppedObjectBefore could be -1 (not set) which is accounted for in AddChild()
+						newParent->AddChild(dropped);
+						newParent->ReduceParentHierarchyPositions();
 					}
 				}
-				// Reorder the hierarchy to fit the dropped object into its new position
-				if (insertChildBefore != -1)
+				// Reorder the root hierarchy to fit the dropped object into its new position
+				else if (insertDroppedObjectBefore != -1)
 				{						
-					FL::GameObject* droppedChild = FL::SceneManager::loadedScene.GetObjectByID(droppedObject);
-					droppedChild->hierarchyPosition = insertChildBefore;
-					for (std::vector<FL::GameObject*>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
-					{
-						if ((*iter)->GetID() == droppedObject)
-						{
-							sceneObjects.erase(iter);
-							break;
-						}						
-					}
-					bool b_posFound = false;
-					for (std::vector<FL::GameObject*>::iterator iter = sceneObjects.begin(); iter != sceneObjects.end(); iter++)
-					{
-						if (b_posFound)
-							(*iter)->hierarchyPosition++;	
-
-						if ((*iter)->hierarchyPosition == insertChildBefore)
-						{
-							sceneObjects.insert(iter, droppedChild);	
-							b_posFound = true;												
-						}										
-					}
+					dropped->hierarchyPosition = insertDroppedObjectBefore;										
+					FL::SceneManager::loadedScene.InsertSortedHierarchyObject(dropped);
+					FL::SceneManager::loadedScene.ReduceHierarchyPositions();
 				}
+
 				parentToUnparent = -1;
-				droppedObject = -1;
-				newChildParent = -1;
-				insertChildBefore = -1;			
+				droppedObjectID = -1;
+				newDroppedParent = -1;
+				insertDroppedObjectBefore = -1;			
 			}			
 			if (createChildParentID != -1)
 			{

@@ -29,11 +29,12 @@ namespace FlatEngine
 		m_ID = myID != -1 ? myID : SceneManager::loadedScene.GetNextGameObjectID();
 		m_parentID = newParentID;
 		m_b_isPrefab = false;
+		m_b_isPrefabChild = false;
 		m_prefabName = "";
 		m_tagList = TagList(m_ID);
 		m_name = "GameObject";	
 		m_b_isActive = true;
-		hierarchyPosition = 0;
+		hierarchyPosition = -1;
 		parentedHierarchyPosition = -1;
 		b_collapsed = false;
 	}
@@ -93,12 +94,15 @@ namespace FlatEngine
 
 	void GameObject::PutData(json objectJson)
 	{
+		if (objectJson.empty())
+			return;
+		
 		m_name = JsonHelper::CheckJsonString(objectJson, "name", "Name");
 		SetActive(JsonHelper::CheckJsonBool(objectJson, "b_isActive", m_name));
 		SetIsPrefab(JsonHelper::CheckJsonBool(objectJson, "b_isPrefab", m_name));
 		b_collapsed = JsonHelper::CheckJsonBool(objectJson, "b_collapsed", m_name);
-		if (JsonHelper::CheckJsonLong(objectJson, "id", m_name) != -1) SetID(JsonHelper::CheckJsonLong(objectJson, "id", m_name));
-		if (JsonHelper::CheckJsonLong(objectJson, "parent", m_name) != -1) SetParentID(JsonHelper::CheckJsonLong(objectJson, "parent", m_name));	
+		// if (JsonHelper::CheckJsonLong(objectJson, "id", m_name) != -1) SetID(JsonHelper::CheckJsonLong(objectJson, "id", m_name));
+		// if (JsonHelper::CheckJsonLong(objectJson, "parent", m_name) != -1) SetParentID(JsonHelper::CheckJsonLong(objectJson, "parent", m_name));	
 		if (JsonHelper::CheckJsonLong(objectJson, "hierarchyPosition", m_name) != -1) hierarchyPosition = JsonHelper::CheckJsonLong(objectJson, "hierarchyPosition", m_name);
 		if (JsonHelper::CheckJsonLong(objectJson, "parentedHierarchyPosition", m_name) != -1) parentedHierarchyPosition = JsonHelper::CheckJsonLong(objectJson, "parentedHierarchyPosition", m_name);
 		SetPrefabName(JsonHelper::CheckJsonString(objectJson, "prefabName", m_name));
@@ -123,6 +127,7 @@ namespace FlatEngine
 			for (int c = 0; c < objectJson["children"].size(); c++)
 			{
 				m_childrenIDs.push_back(objectJson["children"][c]);
+				m_sortedChildrenIDs.push_back(objectJson["children"][c]);
 			}
 		}              	
 	}
@@ -136,6 +141,25 @@ namespace FlatEngine
 	bool GameObject::IsPrefab()
 	{
 		return m_b_isPrefab;
+	}
+	
+	void GameObject::SetIsPrefabChild(bool b_isPrefabChild)
+	{
+		m_b_isPrefabChild = b_isPrefabChild;
+	}
+
+	bool GameObject::IsPrefabChild()
+	{
+		bool b_parentIsPrefab = false;
+
+		if (GetParentID() != -1)
+		{
+			b_parentIsPrefab = GetParent()->m_b_isPrefab || GetParent()->IsPrefabChild();
+		}
+		if (b_parentIsPrefab && !m_b_isPrefabChild)
+			Logger::log.Warn("GameObject \"{}\" was not saved because it is the child of a Prefab and will not be loaded at next Scene load.\n    (Unparent it or save the Prefab itself to save the GameObject.)", m_name);
+
+		return m_b_isPrefabChild || b_parentIsPrefab;		
 	}
 
 	void GameObject::SetPrefabName(std::string prefabName)
@@ -331,62 +355,106 @@ namespace FlatEngine
 		return b_aFirst;
 	}
 
-	void GameObject::AddChild(long childID, long insertBefore)
+	void GameObject::SortChildren()
 	{
-		if (childID != -1)
+		std::sort(m_sortedChildrenIDs.begin(), m_sortedChildrenIDs.end(), ChildOrderCompare);
+	}
+
+	bool GameObject::HasChild(GameObject* child)
+	{		
+		for (long ID : m_childrenIDs)
 		{
-			bool b_contains = false;
-
-			for (long ID : m_childrenIDs)
+			if (ID == child->GetID())
 			{
-				if (ID == childID)
-				{
-					b_contains = true;
-				}
+				return true;
 			}
-			if (!b_contains)
+		}
+
+		return false;
+	}
+
+	void GameObject::ReduceParentHierarchyPositions()
+	{
+		if (m_sortedChildrenIDs.size())
+		{
+			GameObject* lastChild = SceneManager::loadedScene.GetObjectByID(m_sortedChildrenIDs.back());
+			
+			if (lastChild != nullptr && lastChild->parentedHierarchyPosition > m_sortedChildrenIDs.size() + 10)
 			{
-				GameObject* child = SceneManager::loadedScene.GetObjectByID(childID);
-
-				if (child->parentedHierarchyPosition == -1 && insertBefore == -1)
+				int newParentHierarchyPos = 0;
+				for (long ID : m_sortedChildrenIDs)
 				{
-					long lastChildPosition = SceneManager::loadedScene.GetObjectByID(childID)->parentedHierarchyPosition;
-					child->parentedHierarchyPosition = lastChildPosition + 1;
-					m_childrenIDs.push_back(childID);
-					return;
-				}
-
-				if (insertBefore != -1)
-					child->parentedHierarchyPosition = insertBefore;
-
-				bool b_posFound = false;
-				for (std::vector<long>::iterator iter = m_childrenIDs.begin(); iter != m_childrenIDs.end(); iter++)
-				{								
-					if (child->parentedHierarchyPosition > SceneManager::loadedScene.GetObjectByID(*iter)->parentedHierarchyPosition)
+					GameObject* child = SceneManager::loadedScene.GetObjectByID(ID);	
+					
+					if (child != nullptr)
 					{
-						if (b_posFound)
-							child->parentedHierarchyPosition++;	
-
-						m_childrenIDs.insert(iter, childID);
-						b_posFound = true;					
+						child->parentedHierarchyPosition = newParentHierarchyPos;
+						newParentHierarchyPos++;
 					}
-				}			
-
-				if (!b_posFound && m_childrenIDs.size() == 0)
-					m_childrenIDs.push_back(childID);
-				else if (!b_posFound)
-					m_childrenIDs.insert(m_childrenIDs.begin(), childID);
+				}
 			}
 		}
 	}
 
+	void GameObject::AddChild(GameObject* child)
+	{
+		if (child == nullptr || HasChild(child))
+			return;
+
+		m_childrenIDs.push_back(child->GetID());
+
+		if (child->parentedHierarchyPosition == -1)
+		{
+			if (m_sortedChildrenIDs.size() && SceneManager::loadedScene.GetObjectByID(m_sortedChildrenIDs.back()) != nullptr)
+				child->parentedHierarchyPosition = SceneManager::loadedScene.GetObjectByID(m_sortedChildrenIDs.back())->parentedHierarchyPosition;
+			
+			child->parentedHierarchyPosition++;
+			m_sortedChildrenIDs.push_back(child->GetID());
+			
+			return;
+		}
+
+		bool b_inserted = false;
+		for (std::vector<long>::iterator iter = m_sortedChildrenIDs.begin(); iter != m_sortedChildrenIDs.end(); iter++)
+		{								
+			GameObject* existingChild = SceneManager::loadedScene.GetObjectByID(*iter);
+						
+			if (existingChild != nullptr)
+			{
+				if (b_inserted)
+					existingChild->parentedHierarchyPosition++;	
+
+				if (existingChild->parentedHierarchyPosition >= child->parentedHierarchyPosition && !b_inserted)
+				{				
+					iter = m_sortedChildrenIDs.insert(iter, child->GetID());
+					b_inserted = true;	
+
+					if (child->parentedHierarchyPosition != existingChild->parentedHierarchyPosition)
+					 	return; // only keep going if we needed to increment the remaining positions. ie inserted == existing
+				}												
+			}
+		}			
+
+		if (!b_inserted)
+			m_sortedChildrenIDs.insert(m_sortedChildrenIDs.begin(), child->GetID());
+	}
+
 	void GameObject::RemoveChild(long childID)
 	{
-		for (int i = 0; i < m_childrenIDs.size(); i++)
+		for (auto iter = m_childrenIDs.begin(); iter != m_childrenIDs.end(); iter++)
 		{
-			if (m_childrenIDs[i] == childID)
+			if ((*iter) == childID)
 			{
-				m_childrenIDs.erase(m_childrenIDs.begin() + i);
+				m_childrenIDs.erase(iter);
+				break;
+			}
+		}
+		for (auto iter = m_sortedChildrenIDs.begin(); iter != m_sortedChildrenIDs.end(); iter++)
+		{
+			if ((*iter) == childID)
+			{
+				m_sortedChildrenIDs.erase(iter);
+				return;
 			}
 		}
 	}
@@ -411,7 +479,7 @@ namespace FlatEngine
 
 	std::vector<long> GameObject::GetChildren()
 	{
-		return m_childrenIDs;
+		return m_sortedChildrenIDs;
 	}
 
 	bool GameObject::HasChildren()

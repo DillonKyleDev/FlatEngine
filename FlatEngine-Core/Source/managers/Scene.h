@@ -29,29 +29,32 @@ namespace FlatEngine
 	{
 	public:
 		Scene();
-		static bool SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB);
+		// static bool SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB);
 
 		void Unload();
-		GameObject* AddSceneObject(GameObject sceneObject);
+		GameObject* CreateGameObject(long parentID = -1, long myID = -1);			
+		GameObject* AddSceneObject(json objectJson = json::object(), long parentID = -1, long ID = -1);
+		void ReduceHierarchyPositions();
+		void InsertSortedHierarchyObject(GameObject* object);
+		void RemoveSortedHierarchyObject(GameObject* object);
 		std::vector<GameObject>& GetSceneObjects();
 		void SetAnimatorPreviewObjects(std::vector<GameObject*> previewObjects);
 		std::vector<GameObject*> GetAnimatorPreviewObjects();
-		GameObject* GetObjectByID(long ID);
+		GameObject* GetObjectByID(long ID); // *NOT PERSISTENT* Be careful! If you add objects to the scene after getting this pointer, it WILL eventually become garbage because Scene::m_sceneObjects is a std::vector under the hood
 		GameObject* GetObjectByName(std::string name);
-		GameObject* GetObjectByTag(std::string tag);
-		GameObject* CreateGameObject(long parentID = -1, long myID = -1);
-		GameObject* CreateEmptyGameObject(long parentID = -1, long myID = -1);
+		GameObject* GetObjectByTag(std::string tag);			
 		void DeleteGameObject(long sceneObjectID);
 		void DeleteGameObject(GameObject* objectToDelete);
 
 		void KeepNextGameObjectIDUpToDate(long id);
 		void SetNextGameObjectID(long nextID);
 		long GetNextGameObjectID();		
+		void CollectUnusedGameObjectIDs();
 		long GetNextJoint2DID();
 		void AddFreedJoint2DID(long freedID);
 
 		void SortSceneObjects();
-		std::vector<GameObject*>& GetSortedHierarchyObjects();		
+		std::vector<long> GetSortedHierarchyObjects();		
 		long GetNextHierarchyPosition();
 
 		std::vector<Script*> GetScripts(long ownerID);
@@ -84,13 +87,13 @@ namespace FlatEngine
 		std::string name;
 		std::string path;
 
-	private:
+	private:		
 		template<class T> UMapVector<T>& GetContainer();
 		void DeleteChildrenAndSelf(GameObject *objectToDelete);
 		void RemoveSceneObject(long ID);
 
 		UMapVector<GameObject> m_sceneObjects;
-		std::vector<GameObject*> m_sortedHierarchyObjects;		
+		std::vector<long> m_sortedHierarchyObjects;		
 		std::vector<GameObject*> m_animatorPreviewObjects;
 		long m_nextGameObjectID;
 		std::vector<long> m_freedGameObjectIDs;

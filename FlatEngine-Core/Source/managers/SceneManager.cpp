@@ -1,7 +1,9 @@
 #include "Application.h"
 #include "FlatEngine.h"
+#include "GameObject.h"
 #include "managers/AudioManager.h"
 #include "managers/SceneManager.h"
+#include "managers/PrefabManager.h"
 #include "managers/ProjectManager.h"
 #include "physics/Joint2D.h"
 #include "physics/PhysicsManager.h"
@@ -44,10 +46,10 @@ namespace FlatEngine
 				{
 					for (GameObject& sceneObject : sceneObjects)
 					{
-						// if (!sceneObject.IsPrefabChild())
-						// {
+						if (!sceneObject.IsPrefabChild())
+						{
 							sceneObjectsJsonArray.push_back(sceneObject.GetData());
-						// }
+						}
 					}
 				}
 
@@ -122,10 +124,8 @@ namespace FlatEngine
 					}
 					else
 					{
-						GameObject loadedObject = GameObject(JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"));						
-						GameObject* objectPtr = loadedScene.AddSceneObject(loadedObject);							
-						objectPtr->PutData(objectJson);
-
+						GameObject* objectPtr = loadedScene.AddSceneObject(objectJson);							
+						
 						// Collect Joint2Ds that were not created because their Connected Body2D was not created yet.
 						Body2D* body2D = loadedScene.Get<Body2D>(objectPtr->GetID());
 						if (body2D != nullptr)
@@ -140,22 +140,37 @@ namespace FlatEngine
 				}
 
 				// Create prefabs after regular objects so that prefab children don't steal "unused" GameObject IDs from regular objects and then get overwritten by those objects
-				for (json objectJson : prefabsJson)
+				for (json prefabJson : prefabsJson)
 				{
-					GameObject loadedObject = GameObject(JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"));						
-					GameObject* objectPtr = loadedScene.AddSceneObject(loadedObject);							
-					objectPtr->PutData(objectJson);														
+					std::string prefabName = JsonHelper::CheckJsonString(prefabJson, "prefabName", "Prefab");
+					if (prefabName == "")
+						continue;
+					
+					Vector3 spawnLocation = Vector3(JsonHelper::CheckJsonFloat(prefabJson, "spawnLocationX", prefabName), JsonHelper::CheckJsonFloat(prefabJson, "spawnLocationY", prefabName), JsonHelper::CheckJsonFloat(prefabJson, "spawnLocationZ", prefabName));
+					GameObject* objectPtr = PrefabManager::Instantiate(prefabName, spawnLocation, JsonHelper::CheckJsonLong(prefabJson, "parent", prefabName), JsonHelper::CheckJsonLong(prefabJson, "id", prefabName));
+					objectPtr->b_collapsed = JsonHelper::CheckJsonBool(prefabJson, "b_collapsed", prefabName);
+					objectPtr->hierarchyPosition = JsonHelper::CheckJsonLong(prefabJson, "hierarchyPosition", prefabName);
+					objectPtr->parentedHierarchyPosition = JsonHelper::CheckJsonLong(prefabJson, "parentedHierarchyPosition", prefabName);
 				}				
+
+				loadedScene.CollectUnusedGameObjectIDs();
 				
 				for (Joint2D* joint : joints2D)
 				{
 					PhysicsManager::gamePhysics2D.CreateJoint(joint);
 				}
+
+				for (GameObject& gameObject : loadedScene.GetSceneObjects())
+				{
+					gameObject.SortChildren();
+					gameObject.ReduceParentHierarchyPositions();
+				}
+
+				loadedScene.SortSceneObjects(); // This gets all the prefabs. They are added to the scene before their hierarchyPos is set				
+				loadedScene.ReduceHierarchyPositions();
 						
 				application->OnLoadScene(pointToPath);
 			}
-
-			loadedScene.SortSceneObjects();
 			
 			return true;
 		}

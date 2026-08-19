@@ -237,7 +237,6 @@ namespace FlatEngine
 					if (body != nullptr)	
 					{	
 						b2ShapeId id = b2CreatePolygonShape(bodyID, &shapeDef, &shape->polygon);
-						// Logger::log.Debug("Box: index: {}, world: {}, generation: {}", id.index1, id.world0, id.generation);
 						shape->SetShapeID(id);	
 					}
 				}

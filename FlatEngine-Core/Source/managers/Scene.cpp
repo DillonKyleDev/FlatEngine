@@ -33,11 +33,6 @@ namespace FlatEngine
 		m_Meshes = UMapVector<Mesh>(CleanupMesh);
 		m_Cameras = UMapVector<Camera>(CleanupCamera);
 	}
-	
-	bool Scene::SortHierarchyObjects(GameObject* gameObjectA, GameObject* gameObjectB)
-	{
-		return gameObjectA->hierarchyPosition < gameObjectB->hierarchyPosition;
-	}
 
 	void Scene::Unload()
 	{
@@ -57,25 +52,100 @@ namespace FlatEngine
 		m_TileMaps.Clear();		
 	}
 
-	GameObject* Scene::AddSceneObject(GameObject sceneObject)
+	void Scene::ReduceHierarchyPositions()
 	{
-		long ID = sceneObject.GetID();
+		if (m_sortedHierarchyObjects.size())
+		{
+			GameObject* lastObject = SceneManager::loadedScene.GetObjectByID(m_sortedHierarchyObjects.back());
+			
+			if (lastObject != nullptr && lastObject->hierarchyPosition > m_sortedHierarchyObjects.size() + 10)
+			{
+				int newHierarchyPos = 0;
+				for (long ID : m_sortedHierarchyObjects)
+				{
+					GameObject* object = SceneManager::loadedScene.GetObjectByID(ID);	
+					
+					if (object != nullptr)
+					{
+						object->hierarchyPosition = newHierarchyPos;
+						newHierarchyPos++;
+					}
+				}
+			}
+		}
+	}
 
+	void Scene::InsertSortedHierarchyObject(GameObject* object)
+	{
+		if (object == nullptr || object->GetParentID() != -1)
+			return;
+
+		if (object->hierarchyPosition == -1)
+		{
+			object->hierarchyPosition = (m_sortedHierarchyObjects.size() && GetObjectByID(m_sortedHierarchyObjects.back()) != nullptr) ? GetObjectByID(m_sortedHierarchyObjects.back())->hierarchyPosition + 1 : 0;
+			m_sortedHierarchyObjects.push_back(object->GetID());
+		}		
+		else 
+		{
+			bool b_inserted = false;
+			for (auto iter = m_sortedHierarchyObjects.begin(); iter != m_sortedHierarchyObjects.end(); iter++)
+			{				
+				GameObject* existingObject = GetObjectByID((*iter));
+				if (existingObject != nullptr)
+				{	
+					if (b_inserted)
+						existingObject->hierarchyPosition++;
+
+					if (existingObject->hierarchyPosition >= object->hierarchyPosition && !b_inserted)
+					{
+						iter = m_sortedHierarchyObjects.insert(iter, object->GetID());
+						b_inserted = true;
+
+						if (object->hierarchyPosition != existingObject->hierarchyPosition)
+							return;
+					}
+				}
+			}
+
+			if (!b_inserted)
+				m_sortedHierarchyObjects.insert(m_sortedHierarchyObjects.begin(), object->GetID());
+		}
+	}
+
+	void Scene::RemoveSortedHierarchyObject(GameObject* object)
+	{
+		for (auto iter = m_sortedHierarchyObjects.begin(); iter != m_sortedHierarchyObjects.end(); iter++)
+		{
+			if (object->GetID() == (*iter))
+			{
+				m_sortedHierarchyObjects.erase(iter);
+				return;
+			}
+		}
+	}
+
+	// (internal) To add a new GameObject to Scene, use Scene::CreateGameObject();
+	GameObject* Scene::AddSceneObject(json objectJson, long parentID, long ID)
+	{
+		GameObject loadedObject = GameObject(parentID != -1 || objectJson.empty() ? parentID : JsonHelper::CheckJsonLong(objectJson, "parent", "GameObject"), ID != -1 || objectJson.empty() ? ID : JsonHelper::CheckJsonLong(objectJson, "id", "GameObject"))	;
+
+		ID = loadedObject.GetID();
 		if (ID == -1)
+		{
 			ID = GetNextGameObjectID();
+			loadedObject.SetID(ID);
+		}
+		GameObject* objectPtr = m_sceneObjects.Add(ID, loadedObject);		
+		objectPtr->PutData(objectJson);
 
-		sceneObject.SetID(ID);
-
-		long parentID = sceneObject.GetParentID();
-
-		sceneObject.hierarchyPosition = m_sortedHierarchyObjects.size() ? m_sortedHierarchyObjects.back()->hierarchyPosition + 1 : 0;
-		GameObject* objectPtr = m_sceneObjects.Add(ID, sceneObject);
+		InsertSortedHierarchyObject(objectPtr);
 
 		// For objects created after initial Scene load
+		parentID = loadedObject.GetParentID();
 		GameObject* parent = GetObjectByID(parentID);
-		if (parentID != -1 && parent != nullptr)
+		if (objectJson.empty() && parent != nullptr)
 		{
-			parent->AddChild(ID);
+			parent->AddChild(objectPtr);
 		}	
 
 		KeepNextGameObjectIDUpToDate(ID);		
@@ -83,85 +153,11 @@ namespace FlatEngine
 		return objectPtr;
 	}
 
-	void Scene::KeepNextGameObjectIDUpToDate(long ID)
-	{
-		if (ID >= m_nextGameObjectID)
-		{
-			m_nextGameObjectID = ID + 1;
-		}
-	}
-
-	std::vector<GameObject> &Scene::GetSceneObjects()
-	{
-		return m_sceneObjects.GetAll();
-	}
-
-	void Scene::SetAnimatorPreviewObjects(std::vector<GameObject*> previewObjects)
-	{
-		m_animatorPreviewObjects = previewObjects;
-	}
-
-	std::vector<GameObject*> Scene::GetAnimatorPreviewObjects()
-	{
-		return m_animatorPreviewObjects;
-	}
-
-	GameObject* Scene::GetObjectByID(long ID)
-	{
-		return m_sceneObjects.Get(ID);
-	}
-
-	GameObject* Scene::GetObjectByName(std::string name)
-	{
-		for (GameObject& gameObject : m_sceneObjects.GetAll())
-		{
-			if (name == gameObject.GetName())
-			{
-				return &gameObject;
-			}
-		
-		}
-		return nullptr;
-	}
-
-	GameObject* Scene::GetObjectByTag(std::string tag)
-	{
-		for (GameObject& gameObject : m_sceneObjects.GetAll())
-		{
-			if (gameObject.GetTagList().HasTag(tag))
-			{
-				return &gameObject;
-			}
-		}
-		return nullptr;
-	}
-
 	GameObject* Scene::CreateGameObject(long parentID, long myID)
 	{
-		GameObject* newObjectPtr = CreateEmptyGameObject(parentID, myID);
+		GameObject* newObjectPtr = AddSceneObject(json::object(), parentID, myID);
 		newObjectPtr->Add<Transform>();
-
 		return newObjectPtr;
-	}
-
-	GameObject* Scene::CreateEmptyGameObject(long parentID, long myID)
-	{
-		if (myID == -1)
-			myID = GetNextGameObjectID();
-
-		GameObject newObject = GameObject(parentID, myID);
-		long ID = newObject.GetID();
-
-		GameObject* objectPtr = AddSceneObject(newObject);
-
-		if (parentID != -1 && GetObjectByID(parentID) != nullptr)
-		{
-			GetObjectByID(parentID)->AddChild(ID);
-		}	
-
-		SortSceneObjects();
-
-		return objectPtr;
 	}
 
 	void Scene::DeleteGameObject(long sceneObjectID)
@@ -170,8 +166,7 @@ namespace FlatEngine
 
 		if (objectToDelete != nullptr)
 		{
-			DeleteChildrenAndSelf(objectToDelete);
-			SortSceneObjects();
+			DeleteChildrenAndSelf(objectToDelete);			
 		}
 	}
 
@@ -185,8 +180,8 @@ namespace FlatEngine
 
 	void Scene::RemoveSceneObject(long ID)
 	{
-		m_sceneObjects.Remove(ID);
-		SortSceneObjects();
+		RemoveSortedHierarchyObject(GetObjectByID(ID));
+		m_sceneObjects.Remove(ID);		
 	}
 
 	// Recursive
@@ -241,6 +236,63 @@ namespace FlatEngine
 		}
 	}
 
+	// Gets the highest ID of any GameObject currently in the Scene
+	void Scene::KeepNextGameObjectIDUpToDate(long ID)
+	{
+		if (ID >= m_nextGameObjectID)
+		{
+			m_nextGameObjectID = ID + 1;
+		}
+	}
+
+	std::vector<GameObject> &Scene::GetSceneObjects()
+	{
+		return m_sceneObjects.GetAll();
+	}
+
+	void Scene::SetAnimatorPreviewObjects(std::vector<GameObject*> previewObjects)
+	{
+		m_animatorPreviewObjects = previewObjects;
+	}
+
+	std::vector<GameObject*> Scene::GetAnimatorPreviewObjects()
+	{
+		return m_animatorPreviewObjects;
+	}
+
+	// *NOT PERSISTENT* Be careful! If you add objects to the scene after getting this pointer, it WILL eventually become garbage because Scene::m_sceneObjects is a std::vector under the hood
+	GameObject* Scene::GetObjectByID(long ID)
+	{
+		return m_sceneObjects.Get(ID);
+	}
+
+	// *NOT PERSISTENT* Be careful! If you add objects to the scene after getting this pointer, it WILL eventually become garbage because Scene::m_sceneObjects is a std::vector under the hood
+	GameObject* Scene::GetObjectByName(std::string name)
+	{
+		for (GameObject& gameObject : m_sceneObjects.GetAll())
+		{
+			if (name == gameObject.GetName())
+			{
+				return &gameObject;
+			}
+		
+		}
+		return nullptr;
+	}
+
+	// *NOT PERSISTENT* Be careful! If you add objects to the scene after getting this pointer, it WILL eventually become garbage because Scene::m_sceneObjects is a std::vector under the hood
+	GameObject* Scene::GetObjectByTag(std::string tag)
+	{
+		for (GameObject& gameObject : m_sceneObjects.GetAll())
+		{
+			if (gameObject.GetTagList().HasTag(tag))
+			{
+				return &gameObject;
+			}
+		}
+		return nullptr;
+	}
+
 	void Scene::SetNextGameObjectID(long nextID)
 	{
 		m_nextGameObjectID = nextID;
@@ -262,6 +314,17 @@ namespace FlatEngine
 		}
 
 		return ID;
+	}
+
+	void Scene::CollectUnusedGameObjectIDs()
+	{
+		for (long i = 0; i < m_nextGameObjectID; i++)
+		{
+			if (GetObjectByID(i) == nullptr)
+			{
+				m_freedGameObjectIDs.push_back(i);
+			}
+		}
 	}
 
 	long Scene::GetNextJoint2DID()
@@ -287,20 +350,17 @@ namespace FlatEngine
 		m_freedJoint2DIDs.push_back(freedID);
 	}
 
+	bool SortHierarchyObjects(long objectAID, long objectBID)
+	{
+		return SceneManager::loadedScene.GetObjectByID(objectAID)->hierarchyPosition < SceneManager::loadedScene.GetObjectByID(objectBID)->hierarchyPosition;
+	}
 
 	void Scene::SortSceneObjects()
 	{
-		m_sortedHierarchyObjects.clear();
-
-		for (GameObject& gameObject : m_sceneObjects.GetAll())
-		{
-			m_sortedHierarchyObjects.push_back(&(gameObject));
-		}
-
 		std::sort(m_sortedHierarchyObjects.begin(), m_sortedHierarchyObjects.end(), SortHierarchyObjects);
 	}
 
-	std::vector<GameObject*>& Scene::GetSortedHierarchyObjects()
+	std::vector<long> Scene::GetSortedHierarchyObjects()
 	{
 		return m_sortedHierarchyObjects;
 	}
@@ -308,7 +368,7 @@ namespace FlatEngine
 	long Scene::GetNextHierarchyPosition()
 	{
 		if (m_sortedHierarchyObjects.size())
-			return m_sortedHierarchyObjects.back()->hierarchyPosition + 1;
+			return GetObjectByID(m_sortedHierarchyObjects.back())->hierarchyPosition + 1;
 		else
 		 	return 0;
 	}

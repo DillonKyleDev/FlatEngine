@@ -276,12 +276,12 @@ namespace FlatEngine
 				const bool b_isClicked = ImGui::IsItemClicked();
 
 				const float mouse_threshold_for_pan = 0.0f;
-				if (ImGui::IsItemClicked(ImGuiMouseButton_Left) || ImGui::IsItemClicked(ImGuiMouseButton_Right))
-				{
-					SDL_ShowCursor(SDL_FALSE);
-				}
+				
 				if (b_isActive)
 				{
+					if (ImGui::IsMouseDown(ImGuiMouseButton_Left) || ImGui::IsMouseDown(ImGuiMouseButton_Right))
+						ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+
 					GuiCore::b_mouseDownCanWarp = true;
 					if (ImGui::IsMouseDragging(ImGuiMouseButton_Right, mouse_threshold_for_pan))
 					{	
@@ -373,16 +373,9 @@ namespace FlatEngine
 						}
 					}
 				}
-				if (ImGui::IsItemDeactivated())
-				{				
-					SDL_ShowCursor(SDL_TRUE);
-				}
 
-				// Show cursor position in scene view when pressing Alt
 				if (b_isHovered && inputOutput.KeyAlt)
-				{
 					RenderSceneViewTooltip();
-				}
 			}
 		}
 

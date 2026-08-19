@@ -11,6 +11,8 @@
 
 namespace FlatEngine
 {
+	const int MAX_FONT_SIZE = 1000;
+	
 	class Text : public Component
 	{
 	public:

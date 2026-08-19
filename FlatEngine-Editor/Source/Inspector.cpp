@@ -149,7 +149,7 @@ namespace FlatGui
 			FL::GuiCore::TableProps scaleProps = FL::GuiCore::TableProps("##TransformComponentTable", "Scale", tableSize);
 			scaleProps.labelWidth = 68;
 			scaleProps.valueLabelColors = valueColors;
-			scaleProps.min = 0;
+			scaleProps.floatMin = 0;
 
 			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);		
 			if (FL::GuiCore::RenderVector3Table(rotationProps, rotation)) transform->SetRotation(rotation);			
@@ -239,12 +239,8 @@ namespace FlatGui
 			FL::Vector2 textureScale = sprite->GetScale();
 			FL::Pivot pivotPoint = sprite->GetPivotPoint();
 			std::string pivotString = sprite->GetPivotPointString();
-			float xScale = textureScale.x;
-			float yScale = textureScale.y;
 			int renderOrder = sprite->GetRenderOrder();
 			FL::Vector2 offset = sprite->GetOffset();
-			float xOffset = offset.x;
-			float yOffset = offset.y;
 			std::string pathString = "Path: ";
 			std::string textureWidthString = std::to_string(textureWidth) + "px";
 			std::string textureHeightString = std::to_string(textureHeight) + "px";
@@ -277,42 +273,13 @@ namespace FlatGui
 				}
 			}
 
-			FL::GuiCore::RenderSeparator(2, 3);
-			
-			if (FL::GuiCore::PushTable("##SpriteProperties" + std::to_string(ownerID), 2))
-			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##xSpriteScaleDrag" + std::to_string(ownerID), "X Scale", xScale, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					sprite->SetScale(FL::Vector2(xScale, yScale));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ySpriteScaleDrag" + std::to_string(ownerID), "Y Scale", yScale, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					sprite->SetScale(FL::Vector2(xScale, yScale));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##xSpriteOffsetDrag" + std::to_string(ownerID), "X Offset", xOffset, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					sprite->SetOffset(FL::Vector2(xOffset, yOffset));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ySpriteOffsetDrag" + std::to_string(ownerID), "Y Offset", yOffset, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					sprite->SetOffset(FL::Vector2(xOffset, yOffset));
-				}
-				if (FL::GuiCore::RenderIntDragTableRow("##renderOrder" + std::to_string(ownerID), "Render Order", renderOrder, 1, 0, (int)FL::VulkanManager::maxSpriteLayers))
-				{
-					sprite->SetRenderOrder(renderOrder);
-				}				
-				FL::GuiCore::PopTable();
-				FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureWidth" + std::to_string(ownerID), "Texture width"), {textureWidthString});
-				FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});
-			}
-
+			FL::GuiCore::RenderSeparator(2, 3);			
+			if (FL::GuiCore::RenderInt32Table(FL::GuiCore::TableProps("##renderOrder" + std::to_string(ownerID), "Render Order"), renderOrder)) sprite->SetRenderOrder(renderOrder);		
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##xSpriteOffsetDrag" + std::to_string(ownerID), "X Offset"), offset)) sprite->SetOffset(offset);			
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureWidth" + std::to_string(ownerID), "Texture width"), {textureWidthString});
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});
 			FL::GuiCore::RenderSeparator(3, 3);
-
-			if (RenderPivotSelectionButtons("Sprite", pivotPoint))
-			{
-				sprite->SetPivotPoint(pivotPoint);
-			}
-
+			if (RenderPivotSelectionButtons("Sprite", pivotPoint)) sprite->SetPivotPoint(pivotPoint);
 			FL::GuiCore::RenderSeparator(6, 3);
 
 			// Tint color picker
@@ -459,163 +426,116 @@ namespace FlatGui
 
 		void RenderButtonComponent(FL::Button* button)
 		{
-			float activeWidth = button->GetActiveWidth();
-			float activeHeight = button->GetActiveHeight();
-			FL::Vector2 activeOffset = button->GetActiveOffset();
-			int activeLayer = button->GetActiveLayer();	
+			FL::Vector2 dimensions = button->GetDimensions();			
+			FL::Vector2 offset = button->GetOffset();
+			int activeLayer = button->GetLayer();	
 			bool b_leftClick = button->GetLeftClick();
 			bool b_rightClick = button->GetRightClick();
 			FL::LuaManager::LuaParameter functionParams = button->GetFunctionParams();
 			long ownerID = button->GetOwnerID();
-			std::string functionName = functionParams.name;
+			FL::GameObject* owner = FL::SceneManager::loadedScene.GetObjectByID(ownerID);
 			// bool b_cppEvent = functionParams.b_cppEvent;
 			// bool b_luaEvent = functionParams.b_luaEvent;
-
-			if (FL::GuiCore::PushTable("##ButtonProperties" + std::to_string(ownerID), 2))
+			
+			if (owner != nullptr && !owner->IsCanvasGameObject())
 			{
-				if (FL::GuiCore::RenderIntDragTableRow("##activeLayer" + std::to_string(ownerID), "Active layer", activeLayer, 1, 20, 20))
-				{
-					button->SetActiveLayer(activeLayer);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##activeWidth" + std::to_string(ownerID), "Active width", activeWidth, 0.1f, 0, 1000))
-				{
-					button->SetActiveDimensions(activeWidth, activeHeight);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##activeHeight" + std::to_string(ownerID), "Active height", activeHeight, 0.1f, 0, 1000))
-				{
-					button->SetActiveDimensions(activeWidth, activeHeight);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##activeoffsetx" + std::to_string(ownerID), "X Offset", activeOffset.x, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					button->SetActiveOffset(activeOffset);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##activeoffsety" + std::to_string(ownerID), "Y Offset", activeOffset.y, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					button->SetActiveOffset(activeOffset);
-				}
-				if (FL::GuiCore::RenderCheckboxTableRow("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click", b_leftClick))
-				{
-					button->SetLeftClick(b_leftClick);
-				}
-				if (FL::GuiCore::RenderCheckboxTableRow("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click", b_rightClick))
-				{
-					button->SetRightClick(b_rightClick);
-				}
-				FL::GuiCore::PopTable();
-
-				std::string choices[2] = { "C++", "Lua" };
-				std::string currentChoice = "";
-
-				// if (b_cppEvent)
-				// {
-				// 	currentChoice = "C++";
-				// }
-				// else if (b_luaEvent)
-				// {
-				// 	currentChoice = "Lua";
-				// }
-
-				std::string cppRadioID = "C++ Function##" + std::to_string(ownerID);
-				std::string luaRadioID = "Lua Function##" + std::to_string(ownerID);
-
-				// if (ImGui::RadioButton(cppRadioID.c_str(), currentChoice == choices[0]))
-				// {
-				// 	currentChoice = choices[0];
-				// 	functionParams->b_cppEvent = true;
-				// 	functionParams->b_luaEvent = false;
-				// }
-				// if (ImGui::RadioButton(luaRadioID.c_str(), currentChoice == choices[1]))
-				// {
-				// 	currentChoice = choices[1];
-				// 	functionParams->b_cppEvent = false;
-				// 	functionParams->b_luaEvent = true;
-				// }
-
-				FL::GuiCore::RenderSeparator(1, 1);
-
-				// if (functionParams->b_cppEvent)
-				// {
-				// 	int currentEventFunction = 0;
-				// 	std::vector<std::string> eventFunctions = { "- none -" };
-
-				// 	for (std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>::iterator iter = FL::F_CPPAnimationEventFunctions.begin(); iter != FL::F_CPPAnimationEventFunctions.end(); iter++)
-				// 	{
-				// 		eventFunctions.push_back(iter->first);
-				// 	}
-
-				// 	for (int i = 0; i < eventFunctions.size(); i++)
-				// 	{
-				// 		if (functionParams->functionName == eventFunctions[i])
-				// 		{
-				// 			currentEventFunction = i;
-				// 		}
-				// 	}
-
-				// 	if (eventFunctions.size())
-				// 	{
-				// 		FL::GuiCore::MoveScreenCursor(0, 3);
-				// 		ImGui::Text("%s", "Callback Function:");
-				// 		ImGui::SameLine();
-				// 		FL::GuiCore::MoveScreenCursor(0, -3);
-				// 		std::string comboID = "##EventFunctionName";
-				// 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-				// 		if (FL::GuiCore::RenderCombo(comboID, eventFunctions[currentEventFunction], eventFunctions, currentEventFunction))
-				// 		{
-				// 			functionParams->functionName = eventFunctions[currentEventFunction];
-				// 		}		
-				// 		FL::GuiCore::MoveScreenCursor(0, -6);
-				// 	}
-				// 	else
-				// 	{
-				// 		ImGui::TextWrapped("Add C++ callback functions using AddCPPAnimationEventFunction() in attached C++ script.");
-				// 	}
-				// }
-
-				// if (functionParams->b_luaEvent)
-				// {
-					FL::GuiCore::RenderInput("##ButtonEventName", "Callback Function", functionParams.name);
-				// }
-
-				if (FL::GuiCore::PushTable("##ButtonEventParameters", 2))
-				{
-					FL::GuiCore::RenderInputTableRow("##ButtonEventParamString" + std::to_string(ownerID), "String", functionParams.p_string, false);
-					FL::GuiCore::RenderIntDragTableRow("##ButtonEventParamInt" + std::to_string(ownerID), "Int", functionParams.p_int32, 1, -INT_MAX, INT_MAX);
-					// FL::GuiCore::RenderIntDragTableRow("##ButtonEventParamLong" + std::to_string(ownerID), "Long", functionParams.p_int64, 1, -INT_MAX, INT_MAX);
-					FL::GuiCore::RenderFloatDragTableRow("##ButtonEventParamFloat" + std::to_string(ownerID), "Float", functionParams.p_float, 0.001f, -FLT_MAX, FLT_MAX);
-					FL::GuiCore::RenderFloatDragTableRow("##ButtonEventParamVector2X" + std::to_string(ownerID), "Vector2 X", functionParams.p_vec2.x, 0.001f, -FLT_MAX, FLT_MAX);
-					FL::GuiCore::RenderFloatDragTableRow("##ButtonEventParamVector2Y" + std::to_string(ownerID), "Vector2 Y", functionParams.p_vec2.y, 0.001f, -FLT_MAX, FLT_MAX);
-					FL::GuiCore::RenderCheckboxTableRow("##ButtonEventParamBoolean" + std::to_string(ownerID), "Boolean", functionParams.p_bool);
-					FL::GuiCore::PopTable();
-				}
-
-				FL::GuiCore::MoveScreenCursor(0, 3);								
+				FL::GuiCore::RenderWarningText("Warning: Button GameObjects must also have a Canvas component or be nested inside a Canvas GameObject. It will not function properly otherwise.");
 			}
+
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click"), b_leftClick)) button->SetLeftClick(b_leftClick);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_leftClick)) button->SetRightClick(b_rightClick);	
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) button->SetDimensions(dimensions);	
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##offset" + std::to_string(ownerID), "Offset"), offset)) button->SetOffset(offset);	
+
+			std::string choices[2] = { "C++", "Lua" };
+			std::string currentChoice = "";
+
+			// if (b_cppEvent)
+			// {
+			// 	currentChoice = "C++";
+			// }
+			// else if (b_luaEvent)
+			// {
+			// 	currentChoice = "Lua";
+			// }
+
+			std::string cppRadioID = "C++ Function##" + std::to_string(ownerID);
+			std::string luaRadioID = "Lua Function##" + std::to_string(ownerID);
+
+			// if (ImGui::RadioButton(cppRadioID.c_str(), currentChoice == choices[0]))
+			// {
+			// 	currentChoice = choices[0];
+			// 	functionParams->b_cppEvent = true;
+			// 	functionParams->b_luaEvent = false;
+			// }
+			// if (ImGui::RadioButton(luaRadioID.c_str(), currentChoice == choices[1]))
+			// {
+			// 	currentChoice = choices[1];
+			// 	functionParams->b_cppEvent = false;
+			// 	functionParams->b_luaEvent = true;
+			// }
+
+			FL::GuiCore::RenderSeparator(1, 1);
+
+			// if (functionParams->b_cppEvent)
+			// {
+			// 	int currentEventFunction = 0;
+			// 	std::vector<std::string> eventFunctions = { "- none -" };
+
+			// 	for (std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>::iterator iter = FL::F_CPPAnimationEventFunctions.begin(); iter != FL::F_CPPAnimationEventFunctions.end(); iter++)
+			// 	{
+			// 		eventFunctions.push_back(iter->first);
+			// 	}
+
+			// 	for (int i = 0; i < eventFunctions.size(); i++)
+			// 	{
+			// 		if (functionParams->functionName == eventFunctions[i])
+			// 		{
+			// 			currentEventFunction = i;
+			// 		}
+			// 	}
+
+			// 	if (eventFunctions.size())
+			// 	{
+			// 		FL::GuiCore::MoveScreenCursor(0, 3);
+			// 		ImGui::Text("%s", "Callback Function:");
+			// 		ImGui::SameLine();
+			// 		FL::GuiCore::MoveScreenCursor(0, -3);
+			// 		std::string comboID = "##EventFunctionName";
+			// 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			// 		if (FL::GuiCore::RenderCombo(comboID, eventFunctions[currentEventFunction], eventFunctions, currentEventFunction))
+			// 		{
+			// 			functionParams->functionName = eventFunctions[currentEventFunction];
+			// 		}		
+			// 		FL::GuiCore::MoveScreenCursor(0, -6);
+			// 	}
+			// 	else
+			// 	{
+			// 		ImGui::TextWrapped("Add C++ callback functions using AddCPPAnimationEventFunction() in attached C++ script.");
+			// 	}
+			// }
+
+			// if (functionParams->b_luaEvent)
+			// {
+				FL::GuiCore::RenderInput("##ButtonEventName", "Callback Function", button->parameterContainer.name);
+			// }
+			FL::GuiCore::RenderLuaParametersTable("##ButtonEventParameters", "On Click Parameters", button->parameterContainer);
+
+			FL::GuiCore::MoveScreenCursor(0, 3);								
 		}
 
 		void RenderCanvasComponent(FL::Canvas* canvas)
 		{
-			float canvasWidth = canvas->GetWidth();
-			float canvasHeight = canvas->GetHeight();
+			FL::Vector2 dimensions = canvas->GetDimensions();
 			int layerNumber = canvas->GetLayerNumber();
 			bool b_blocksLayers = canvas->GetBlocksLayers();
 			long ownerID = canvas->GetOwnerID();
 
-			if (FL::GuiCore::PushTable("##CanvasProperties" + std::to_string(ownerID), 2))
-			{
-				if (FL::GuiCore::RenderIntDragTableRow("##layerNumber" + std::to_string(ownerID), "Canvas layer", layerNumber, 1, 20, 20))
-				{
-					canvas->SetLayerNumber(layerNumber);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##Canvas width" + std::to_string(ownerID), "Width", canvasWidth, 0.1f, 0.1f, FLT_MAX))
-				{
-					canvas->SetDimensions(canvasWidth, canvasHeight);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##Canvas height" + std::to_string(ownerID), "Height", canvasHeight, 0.1f, 0.1f, FLT_MAX))
-				{
-					canvas->SetDimensions(canvasWidth, canvasHeight);
-				}
-				FL::GuiCore::PopTable();
-			}
+			FL::GuiCore::TableProps canvasLayerProps("##layerNumber" + std::to_string(ownerID), "Canvas layer");
+			canvasLayerProps.intMin = 0;
+			canvasLayerProps.intMax = FL::MAX_CANVAS_LAYERS;
+			if (FL::GuiCore::RenderInt32Table(canvasLayerProps, layerNumber)) canvas->SetLayerNumber(layerNumber);
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Canvas Dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) canvas->SetDimensions(dimensions);
 
 			FL::GuiCore::RenderSeparator(3, 3);
 
@@ -966,7 +886,13 @@ namespace FlatGui
 			float xOffset = offset.x;
 			float yOffset = offset.y;
 			long ownerID = text->GetOwnerID();
+			FL::GameObject* owner = FL::SceneManager::loadedScene.GetObjectByID(ownerID);
 
+			if (owner != nullptr && !owner->IsCanvasGameObject())
+			{
+				FL::GuiCore::RenderWarningText("Warning: Text GameObjects must also have a Canvas component or be nested inside a Canvas GameObject. It will not function properly otherwise.");
+			}
+			
 			std::string textText = text->GetText();
 			if (FL::GuiCore::RenderInput("##TextContent" + std::to_string(ownerID), "Text", textText))
 			{
@@ -1003,34 +929,20 @@ namespace FlatGui
 			}
 
 			FL::GuiCore::RenderSeparator(3, 3);
-
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textWidth" + std::to_string(ownerID), "Text width"), { std::to_string(textureWidth) });
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textHeight" + std::to_string(ownerID), "Text height"), { std::to_string(textureHeight) });
-
-			if (FL::GuiCore::PushTable("##TextProperties" + std::to_string(ownerID), 2))
-			{				
-				if (FL::GuiCore::RenderIntDragTableRow("##textFontSize" + std::to_string(ownerID), "Font size", fontSize, 1, 0, 1000))
-				{
-					text->SetFontSize(fontSize);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##xTextOffset" + std::to_string(ownerID), "X offset", xOffset, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					text->SetOffset(FL::Vector2(xOffset, yOffset));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##yTextOffset" + std::to_string(ownerID), "Y offset", yOffset, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					text->SetOffset(FL::Vector2(xOffset, yOffset));
-				}
-				if (FL::GuiCore::RenderIntDragTableRow("##TextRenderOrder" + std::to_string(ownerID), "Render Order", renderOrder, 1, 0, (int)FL::VulkanManager::maxSpriteLayers))
-				{
-					text->SetRenderOrder(renderOrder);
-				}
-				FL::GuiCore::PopTable();
-			}
-
+			FL::GuiCore::TableProps fontSizeTableProps("##textFontSize" + std::to_string(ownerID), "Font size");
+			fontSizeTableProps.intMin = 0;
+			fontSizeTableProps.intMax = FL::MAX_FONT_SIZE;
+			if (FL::GuiCore::RenderInt32Table(fontSizeTableProps, fontSize)) text->SetFontSize(fontSize);
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##TextOffset" + std::to_string(ownerID), "Offset"), offset)) text->SetOffset(FL::Vector2(xOffset, yOffset));
+			FL::GuiCore::TableProps renderOrderTableProps("##TextRenderOrder" + std::to_string(ownerID), "Render Order");
+			renderOrderTableProps.intMin = 0;
+			renderOrderTableProps.intMax = (int)FL::VulkanManager::maxSpriteLayers;
+			if (FL::GuiCore::RenderInt32Table(renderOrderTableProps, renderOrder)) text->SetRenderOrder(renderOrder);
 			FL::GuiCore::RenderSeparator(3, 3);
 
-			if (RenderPivotSelectionButtons("Text", pivotPoint))
+			if (Inspector::RenderPivotSelectionButtons("Text", pivotPoint))
 			{
 				text->SetPivotPoint(pivotPoint);
 			}
@@ -1066,20 +978,20 @@ namespace FlatGui
 
 			bool b_changed = false;
 
-			if (FL::GuiCore::PushTable("##CharacterControllerProps" + std::to_string(ownerID), 2))
-			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##MaxAccelerationDrag" + std::to_string(ownerID), "Max Acceleration", maxAcceleration, 0.01f, 0.0f, 20.0f))
-				{
-					characterController->SetMaxAcceleration(maxAcceleration);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##MaxSpeedDrag" + std::to_string(ownerID), "Max Speed", maxSpeed, 0.01f, 0.0f, 1000.0f))
-				{
-					characterController->SetMaxSpeed(maxSpeed);
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##AirControlDrag" + std::to_string(ownerID), "Air Control", airControl, 0.01f, 0.0f, 1000.0f))
-				{
-					characterController->SetAirControl(airControl);
-				}				
+			// if (FL::GuiCore::PushTable("##CharacterControllerProps" + std::to_string(ownerID), 2))
+			// {
+			// 	if (FL::GuiCore::RenderFloatDragTableRow("##MaxAccelerationDrag" + std::to_string(ownerID), "Max Acceleration", maxAcceleration, 0.01f, 0.0f, 20.0f))
+			// 	{
+			// 		characterController->SetMaxAcceleration(maxAcceleration);
+			// 	}
+			// 	if (FL::GuiCore::RenderFloatDragTableRow("##MaxSpeedDrag" + std::to_string(ownerID), "Max Speed", maxSpeed, 0.01f, 0.0f, 1000.0f))
+			// 	{
+			// 		characterController->SetMaxSpeed(maxSpeed);
+			// 	}
+			// 	if (FL::GuiCore::RenderFloatDragTableRow("##AirControlDrag" + std::to_string(ownerID), "Air Control", airControl, 0.01f, 0.0f, 1000.0f))
+			// 	{
+			// 		characterController->SetAirControl(airControl);
+			// 	}				
 				// if (FL::GuiCore::RenderFloatDragTableRow("##CharacterControllerShapeRadius" + std::to_string(ownerID), "Radius", radius, 0.01f, 0.01f, FLT_MAX))
 				// {
 				// 	capsule.SetRadius(radius);
@@ -1092,9 +1004,9 @@ namespace FlatGui
 				// {
 				// 	capsule.SetRadius(radius);
 				// }
-				FL::GuiCore::PopTable();
-			}
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##IsMoving" + std::to_string(ownerID), "Is Moving"), { isMovingString });
+			// 	FL::GuiCore::PopTable();
+			// }
+			// FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##IsMoving" + std::to_string(ownerID), "Is Moving"), { isMovingString });
 
 			// b_changed |= FL::GuiCore::RenderCheckbox(" Horizontal", shapeProps.b_horizontal);
 
@@ -1613,18 +1525,18 @@ namespace FlatGui
 			int renderOrder = tileMap->GetRenderOrder();
 			std::vector<std::string> tileSets = tileMap->GetTileSets();
 
-			if (FL::GuiCore::PushTable("##tileMapProps" + std::to_string(ownerID), 2))
-			{
-				if (FL::GuiCore::RenderIntDragTableRow("##Width" + std::to_string(ownerID), "Width", width, 1, 1, INT_MAX))
-				{
-					tileMap->SetWidth(width);
-					//tileMap->CalculateColliderValues();
-				}
-				if (FL::GuiCore::RenderIntDragTableRow("##Height" + std::to_string(ownerID), "Height", height, 1, 1, INT_MAX))
-				{
-					tileMap->SetHeight(height);
-					//tileMap->RecalcCollisionAreaValues();
-				}
+			// if (FL::GuiCore::PushTable("##tileMapProps" + std::to_string(ownerID), 2))
+			// {
+			// 	if (FL::GuiCore::RenderIntDragTableRow("##Width" + std::to_string(ownerID), "Width", width, 1, 1, INT_MAX))
+			// 	{
+			// 		tileMap->SetWidth(width);
+			// 		//tileMap->CalculateColliderValues();
+			// 	}
+			// 	if (FL::GuiCore::RenderIntDragTableRow("##Height" + std::to_string(ownerID), "Height", height, 1, 1, INT_MAX))
+			// 	{
+			// 		tileMap->SetHeight(height);
+			// 		//tileMap->RecalcCollisionAreaValues();
+			// 	}
 				//if (FL::GuiCore::RenderIntDragTableRow("##TileWidth" + std::to_string(ID), "Tile Width", tileWidth, 1, 1, INT_MAX))
 				//{
 				//	tileMap->SetTileWidth(tileWidth);
@@ -1635,12 +1547,12 @@ namespace FlatGui
 				//	tileMap->SetTileHeight(tileHeight);
 				//	//tileMap->RecalcCollisionAreaValues();
 				//}
-				if (FL::GuiCore::RenderIntDragTableRow("##RenderOrder" + std::to_string(ownerID), "Render Order", renderOrder, 1, 0, FL::VulkanManager::maxSpriteLayers))
-				{
-					tileMap->SetRenderOrder(renderOrder);
-				}
-				FL::GuiCore::PopTable();
-			}
+			// 	if (FL::GuiCore::RenderIntDragTableRow("##RenderOrder" + std::to_string(ownerID), "Render Order", renderOrder, 1, 0, FL::VulkanManager::maxSpriteLayers))
+			// 	{
+			// 		tileMap->SetRenderOrder(renderOrder);
+			// 	}
+			// 	FL::GuiCore::PopTable();
+			// }
 
 			FL::GuiCore::RenderSeparator(4, 4);
 
@@ -2110,47 +2022,10 @@ namespace FlatGui
 		{
 			long ownerID = light->GetOwnerID();		
 			FL::Vector3 direction = light->GetDirection();
-			float xDir = direction.x;
-			float yDir = direction.y;
-			float zDir = direction.z;
 			FL::Vector4 color = light->GetColor();
-			float colorX = color.x;
-			float colorY = color.y;
-			float colorZ = color.z;
-			float colorW = color.w;
 
-			if (FL::GuiCore::PushTable("##LightProperties" + std::to_string(ownerID), 2))
-			{
-				if (FL::GuiCore::RenderFloatDragTableRow("##XDirection" + std::to_string(ownerID), "X Direction", xDir, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					light->SetDirection(FL::Vector3(xDir, yDir, zDir));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##YDirection" + std::to_string(ownerID), "Y Direction", yDir, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					light->SetDirection(FL::Vector3(xDir, yDir, zDir));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ZDirection" + std::to_string(ownerID), "Z Direction", zDir, 0.1f, -FLT_MAX, FLT_MAX))
-				{
-					light->SetDirection(FL::Vector3(xDir, yDir, zDir));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ColorX" + std::to_string(ownerID), "Red", colorX, 0.001f, 0, 1))
-				{
-					light->SetColor(FL::Vector4(colorX, colorY, colorZ, colorW));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ColorY" + std::to_string(ownerID), "Green", colorY, 0.001f, 0, 1))
-				{
-					light->SetColor(FL::Vector4(colorX, colorY, colorZ, colorW));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ColorZ" + std::to_string(ownerID), "Blue", colorZ, 0.001f, 0, 1))
-				{
-					light->SetColor(FL::Vector4(colorX, colorY, colorZ, colorW));
-				}
-				if (FL::GuiCore::RenderFloatDragTableRow("##ColorW" + std::to_string(ownerID), "Alpha", colorW, 0.001f, 0, 1))
-				{
-					light->SetColor(FL::Vector4(colorX, colorY, colorZ, colorW));
-				}
-				FL::GuiCore::PopTable();
-			}
+			if (FL::GuiCore::RenderVector3Table(FL::GuiCore::TableProps("##LightDirection" + std::to_string(ownerID), "Direction"), direction)) light->SetDirection(direction);
+			if (FL::GuiCore::RenderVector4Table(FL::GuiCore::TableProps("##LightColor" + std::to_string(ownerID), "Color"), color)) light->SetColor(color);
 		}
 	}
 

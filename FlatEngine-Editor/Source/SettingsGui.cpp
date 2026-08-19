@@ -49,28 +49,28 @@ namespace FlatGui
 					// List settings per grouping
 					if (settingSelected == "Settings")
 					{
-						FL::GuiCore::RenderInputTableRow("##SceneLoadedOnStart", "Game start scene path", FL::ProjectManager::loadedProject.sceneToLoadAtRuntime, false);
-						if (ImGui::IsItemHovered())
-						{
-							FL::GuiCore::RenderTextToolTip("Enter as a relative path from inside the FlatEngine-Runtime folder (no quotation marks)\nie ../projects/project_name/scenes/scene_name.scn");
-						}
+						// FL::GuiCore::RenderInputTableRow("##SceneLoadedOnStart", "Game start scene path", FL::ProjectManager::loadedProject.sceneToLoadAtRuntime, false);
+						// if (ImGui::IsItemHovered())
+						// {
+						// 	FL::GuiCore::RenderTextToolTip("Enter as a relative path from inside the FlatEngine-Runtime folder (no quotation marks)\nie ../projects/project_name/scenes/scene_name.scn");
+						// }
 
-						FL::GuiCore::RenderInputTableRow("Final Build Path", "Final project build path", FL::ProjectManager::loadedProject.buildPath);
-						if (ImGui::IsItemHovered())
-						{
-							FL::GuiCore::RenderTextToolTip("Absolute or relative path is allowed (no quotation marks)");
-						}
+						// FL::GuiCore::RenderInputTableRow("Final Build Path", "Final project build path", FL::ProjectManager::loadedProject.buildPath);
+						// if (ImGui::IsItemHovered())
+						// {
+						// 	FL::GuiCore::RenderTextToolTip("Absolute or relative path is allowed (no quotation marks)");
+						// }
 
 						int musicVolume = FL::ProjectManager::loadedProject.GetMusicVolume();
 						int effectsVolume = FL::ProjectManager::loadedProject.GetEffectsVolume();
-						if (FL::GuiCore::RenderIntSliderTableRow("##MusicVolume", "Music Volume", musicVolume, 1, 0, MIX_MAX_VOLUME))
-						{
-							FL::AudioManager::SetMusicVolume(musicVolume);
-						}
-						if (FL::GuiCore::RenderIntSliderTableRow("##EffectVolume", "Effects Volume", effectsVolume, 1, 0, MIX_MAX_VOLUME))
-						{
-							FL::AudioManager::SetEffectsVolume(effectsVolume);
-						}
+						// if (FL::GuiCore::RenderIntSliderTableRow("##MusicVolume", "Music Volume", musicVolume, 1, 0, MIX_MAX_VOLUME))
+						// {
+						// 	FL::AudioManager::SetMusicVolume(musicVolume);
+						// }
+						// if (FL::GuiCore::RenderIntSliderTableRow("##EffectVolume", "Effects Volume", effectsVolume, 1, 0, MIX_MAX_VOLUME))
+						// {
+						// 	FL::AudioManager::SetEffectsVolume(effectsVolume);
+						// }
 						
 						// bool b_fullscreen = FL::ProjectManager::loadedProject.IsFullscreen();
 						// if (FL::GuiCore::RenderCheckboxTableRow("##FullscreenCheckbox", "Fullscreen", b_fullscreen))
@@ -85,7 +85,7 @@ namespace FlatGui
 					}
 					else if (settingSelected == "State")
 					{
-						FL::GuiCore::RenderCheckboxTableRow("##AutoSaveCheckbox", "Auto Save", FL::ProjectManager::loadedProject.b_autoSave);
+						// FL::GuiCore::RenderCheckboxTableRow("##AutoSaveCheckbox", "Auto Save", FL::ProjectManager::loadedProject.b_autoSave);
 					}
 
 					FL::GuiCore::PopTable(); // SettingsTable

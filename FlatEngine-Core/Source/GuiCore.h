@@ -76,16 +76,8 @@ namespace FlatEngine
         extern void RenderSeparator(float topPadding, float bottomPadding, std::string separatorColor = "separator"); 
         
         // investigate later if we can remove these from EXTERN functions and just use PushStringTable() externally, etc..
-        extern void PushTableStyles();
-        extern void PopTableStyles();
-        extern bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = tableFlags, Vector2 outerSize = Vector2(0), std::vector<float> widths = std::vector<float>());
-        extern bool RenderFloatDragTableRow(std::string ID, std::string fieldName, float& value, float increment, float min, float max, std::string labelColor = "", std::string valueColor = "");
-        extern bool RenderIntSliderTableRow(std::string ID, std::string fieldName, int& value, int increment, int min, int max, std::string color = "");        
-        extern bool RenderIntDragTableRow(std::string ID, std::string fieldName, int& value, float speed, int min, int max);
-        extern bool RenderCheckboxTableRow(std::string ID, std::string fieldName, bool& _value);
-        extern void RenderSelectableTableRow(std::string ID, std::string fieldName, std::vector<std::string> options, int& currentOption);
-        extern bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles = false);        
         extern void PopTable();
+        extern bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = tableFlags, Vector2 outerSize = Vector2(0), std::vector<float> widths = std::vector<float>());
 
         struct TableProps {
             std::string ID;
@@ -95,22 +87,25 @@ namespace FlatEngine
             std::string labelColor;
             std::string valueColor;
             std::vector<std::string> valueLabelColors = std::vector<std::string>();            
-            float increment;
-            float min;
-            float max;
+            float floatIncrement;
+            int intIncrement = 1;
+            float floatMin;
+            float floatMax;
+            int intMin = -INT_MAX;
+            int intMax = INT_MAX;
             bool b_light = true;
             bool b_lightSet = false;
             bool b_vertSeperator = true;
             ImGuiTableFlags flags = ImGuiTableFlags_RowBg;         
 
-            TableProps(std::string setID, std::string setLabel, Vector2 setTableSize = Vector2(), float setIncrement = 0.1f, float setMin = -FLT_MAX, float setMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
+            TableProps(std::string setID, std::string setLabel, Vector2 setTableSize = Vector2(), float setFloatIncrement = 0.1f, float setFloatMin = -FLT_MAX, float setFloatMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
             {
                 ID = setID;
                 label = setLabel;
                 tableSize = setTableSize;
-                increment = setIncrement;
-                min = setMin;
-                max = setMax;
+                floatIncrement = setFloatIncrement;
+                floatMin = setFloatMin;
+                floatMax = setFloatMax;
                 labelColor = setLabelColor;
                 valueColor = setValueColor;
                 labelWidth = setLableWidth;
@@ -140,10 +135,10 @@ namespace FlatEngine
         extern bool RenderCheckbox(std::string text, bool& b_toCheck);
 
         extern bool RenderDragFloat(std::string ID, float width, float& value, float increment, float min, float max, ImGuiSliderFlags flags = 0, std::string bgColor = "drag");
-        extern bool RenderDragDouble(std::string ID, float width, double& value, double increment, std::string bgColor = "drag");
-        extern bool RenderDragInt(std::string ID, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags = 0, std::string bgColor = "drag");
-        extern bool RenderDragLong(std::string ID, float width, long& value, std::string bgColor = "drag");
-       
+        extern bool RenderDragDouble(std::string ID, float width, double& value, double increment, float min, float max, std::string bgColor = "drag");
+        extern bool RenderDragInt(std::string ID, float width, int& value, int increment, int min, int max, ImGuiSliderFlags flags = 0, std::string bgColor = "drag");
+        extern bool RenderDragLong(std::string ID, float width, long& value, int increment, int min, int max, std::string bgColor = "drag");
+
         extern bool RenderSliderFloat(std::string label, float& value, float increment = 0.1f, float min = 0.0f, float max = 1000, float width = -1, int digitsAfterDecimal = 3);
         extern bool RenderSliderInt(std::string label, int& value, int increment = 1, int min = 0, int max = 1000, float width = -1);
         extern void PushSliderStyles();
@@ -165,6 +160,7 @@ namespace FlatEngine
         extern void RenderTreeLeaf(std::string name, std::string& nodeClicked);
         extern void PopTreeList();       
 
+        extern void RenderWarningText(std::string warning);
         extern void RenderTextToolTip(std::string text);
         extern void BeginToolTip(std::string title);
         extern void EndToolTip();

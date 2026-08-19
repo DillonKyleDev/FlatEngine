@@ -95,6 +95,7 @@ namespace FlatEngine
             }
         };
         struct LuaParameterContainer {
+            std::string name;
             std::map<std::string, LuaParameter> parameters;
             std::string tempParameterName = "";
             int tempParameterType = 0;     

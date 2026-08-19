@@ -17,6 +17,8 @@ namespace FlatEngine
 		json GetData(bool b_IDOverride = false);
 		void PutData(json objectJson);
 
+		void SetActive(bool b_active);
+		bool IsActive();
 		void SetIsPrefab(bool b_isPrefab);
 		bool IsPrefab();
 		void SetIsPrefabChild(bool b_isPrefabChild);
@@ -51,14 +53,15 @@ namespace FlatEngine
 		void SetParentID(long parentID);
 		long GetParentID();
 		GameObject *GetParent();
-		void AddChild(long childID, long insertBefore = -1);
+		void AddChild(GameObject* child);
 		void RemoveChild(long childID);
 		GameObject *GetFirstChild();
 		GameObject *FindChildByName(std::string name);
 		std::vector<long> GetChildren();
 		bool HasChildren();
-		void SetActive(bool b_active);
-		bool IsActive();
+		bool HasChild(GameObject* child);
+		void SortChildren();
+		void ReduceParentHierarchyPositions();
 
 		long hierarchyPosition;
 		long parentedHierarchyPosition;
@@ -67,6 +70,7 @@ namespace FlatEngine
 	private:
 		std::string m_name;
 		bool m_b_isPrefab;
+		bool m_b_isPrefabChild;
 		std::string m_prefabName;
 		Vector3 m_prefabSpawnLocation;
 		TagList m_tagList;
@@ -74,5 +78,6 @@ namespace FlatEngine
 		long m_parentID;
 		bool m_b_isActive;		
 		std::vector<long> m_childrenIDs;					
+		std::vector<long> m_sortedChildrenIDs;					
 	};
 }

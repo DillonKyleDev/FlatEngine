@@ -847,18 +847,18 @@ namespace FlatGui
 
 						// Offset
 						ImGui::BeginDisabled(!sprite->b_offsetAnimated);	
-						if (FL::GuiCore::PushTable("##AnimatedSpriteProperties", 2))
-						{
-							if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedxSpriteOffsetDrag", "X Offset", xOffset, 0.1f, -FLT_MAX, -FLT_MAX))
-							{
-								sprite->xOffset = xOffset;
-							}
-							if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedySpriteOffsetDrag", "Y Offset", yOffset, 0.1f, -FLT_MAX, -FLT_MAX))
-							{
-								sprite->yOffset = yOffset;
-							}
-							FL::GuiCore::PopTable();
-						}
+						// if (FL::GuiCore::PushTable("##AnimatedSpriteProperties", 2))
+						// {
+						// 	if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedxSpriteOffsetDrag", "X Offset", xOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+						// 	{
+						// 		sprite->xOffset = xOffset;
+						// 	}
+						// 	if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedySpriteOffsetDrag", "Y Offset", yOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+						// 	{
+						// 		sprite->yOffset = yOffset;
+						// 	}
+						// 	FL::GuiCore::PopTable();
+						// }
 						ImGui::EndDisabled();
 
 						FL::GuiCore::MoveScreenCursor(0, 8);
@@ -948,18 +948,18 @@ namespace FlatGui
 						FL::GuiCore::RenderCheckbox("##offsetAnimated", text->b_offsetAnimated);
 						ImGui::SameLine();
 						ImGui::BeginDisabled(!text->b_offsetAnimated);
-						if (FL::GuiCore::PushTable("##AnimatedTextProperties", 2))
-						{
-							if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedxTextOffsetDrag", "X Offset", xOffset, 0.1f, -FLT_MAX, -FLT_MAX))
-							{
-								text->xOffset = xOffset;
-							}
-							if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedyTextOffsetDrag", "Y Offset", yOffset, 0.1f, -FLT_MAX, -FLT_MAX))
-							{
-								text->yOffset = yOffset;
-							}
-							FL::GuiCore::PopTable();
-						}
+						// if (FL::GuiCore::PushTable("##AnimatedTextProperties", 2))
+						// {
+						// 	if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedxTextOffsetDrag", "X Offset", xOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+						// 	{
+						// 		text->xOffset = xOffset;
+						// 	}
+						// 	if (FL::GuiCore::RenderFloatDragTableRow("##AnimatedyTextOffsetDrag", "Y Offset", yOffset, 0.1f, -FLT_MAX, -FLT_MAX))
+						// 	{
+						// 		text->yOffset = yOffset;
+						// 	}
+						// 	FL::GuiCore::PopTable();
+						// }
 						ImGui::EndDisabled();
 
 						FL::GuiCore::MoveScreenCursor(0, 8);

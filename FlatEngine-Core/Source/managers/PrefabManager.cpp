@@ -22,14 +22,25 @@ namespace FlatEngine
 			for (int i = 0; i < childIDs.size(); i++)
 			{
 				GameObject* child = SceneManager::loadedScene.GetObjectByID(childIDs[i]);
+
+				if (child == nullptr)
+					continue;
+
 				std::vector<long> grandchildIDs = child->GetChildren();
-				
+				long hierarchyPos = child->hierarchyPosition;
+				long parentedHierarchyPos = child->parentedHierarchyPosition;
+				child->hierarchyPosition = -1;
+				child->parentedHierarchyPosition = -1;
+
 				bool b_IDOverride = true;
 
 				json childJson = json::object({
 					{ "parent", child->GetData(b_IDOverride) },
 					{ "children", GetChildrenJson(grandchildIDs) }
 				});
+
+				child->hierarchyPosition = hierarchyPos;
+				child->parentedHierarchyPosition = parentedHierarchyPos;
 
 				childrenJson.push_back(childJson);
 			}
@@ -44,6 +55,10 @@ namespace FlatEngine
 			gameObject->SetName(prefabName);
 			gameObject->SetPrefabName(prefabName);
 			gameObject->SetIsPrefab(true);
+			long hierarchyPos = gameObject->hierarchyPosition;
+			long parentedHierarchyPos = gameObject->parentedHierarchyPosition;
+			gameObject->hierarchyPosition = -1;
+			gameObject->parentedHierarchyPosition = -1;
 
 			bool b_IDOverride = true;
 
@@ -56,6 +71,9 @@ namespace FlatEngine
 				{ "name", prefabName },
 				{ "prefab", parentJson }				
 			});
+
+			gameObject->hierarchyPosition = hierarchyPos;
+			gameObject->parentedHierarchyPosition = parentedHierarchyPos;
 
 			JsonHelper::WriteJsonToFile(prefabJson, path);
 
@@ -117,39 +135,36 @@ namespace FlatEngine
 			}
 		}
 
-		long InstantiateChildPrefab(Prefab prefab, long parentID)
+		GameObject* InstantiateChildPrefab(Prefab prefab, long parentID)
 		{
-			long nextHierarchyPosition = SceneManager::loadedScene.GetNextHierarchyPosition();
-			GameObject* childPtr = SceneManager::loadedScene.CreateEmptyGameObject(parentID);
-			childPtr->PutData(prefab.parent);					
-			childPtr->hierarchyPosition = nextHierarchyPosition;		
-			
-			long ID = childPtr->GetID();	
-			
+			GameObject* childPtr = SceneManager::loadedScene.AddSceneObject(prefab.parent, parentID);								
+			childPtr->SetIsPrefabChild(true);
+			long ID = childPtr->GetID();
+
 			for (Prefab grandchild : prefab.children)
 			{
-				childPtr->AddChild(InstantiateChildPrefab(grandchild, ID));
+				GameObject* grandChildObject = InstantiateChildPrefab(grandchild, ID);
+				SceneManager::loadedScene.GetObjectByID(ID)->AddChild(grandChildObject);
 			}
 
-			return ID;
+			return SceneManager::loadedScene.GetObjectByID(ID);
 		}
 
 		GameObject* Instantiate(std::string prefabName, Vector3 spawnLocation, long parentID, long ID)
 		{			
+			GameObject prefabObject = GameObject(parentID, ID);
 			GameObject* prefabPtr = nullptr;
 
 			if (prefabs.count(prefabName) > 0)
 			{
-				long nextHierarchyPosition = SceneManager::loadedScene.GetNextHierarchyPosition();
 				Prefab prefab = prefabs.at(prefabName);				
-				prefabPtr = SceneManager::loadedScene.CreateEmptyGameObject();
-				prefabPtr->PutData(prefab.parent);	
-				prefabPtr->hierarchyPosition = nextHierarchyPosition;
-				prefabPtr->parentedHierarchyPosition = 0;
-												
+				prefabPtr = SceneManager::loadedScene.AddSceneObject(prefab.parent, parentID, ID);								
+				ID = prefabPtr->GetID();
+
 				for (Prefab child : prefab.children)
 				{
-					prefabPtr->AddChild(InstantiateChildPrefab(child, prefabPtr->GetID()));
+					GameObject* childObject = InstantiateChildPrefab(child, ID);
+					SceneManager::loadedScene.GetObjectByID(ID)->AddChild(childObject);
 				}
 			}
 			else 
@@ -157,8 +172,13 @@ namespace FlatEngine
 				Logger::log.Err("PrefabManager::Instantiate() - Prefab {} was not found.", prefabName);				
 			}
 
-			SceneManager::loadedScene.SortSceneObjects();
+			prefabPtr = SceneManager::loadedScene.GetObjectByID(ID);
 
+			if (prefabPtr != nullptr)
+				prefabPtr->SortChildren();
+
+			prefabPtr->Get<Transform>()->SetPosition(spawnLocation);
+			
 			return prefabPtr;
 		}
 

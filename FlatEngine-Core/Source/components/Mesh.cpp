@@ -430,7 +430,7 @@ namespace FlatEngine
 		base.model = transform->GetAbsoluteRotationMatrix() * transform->GetScaleMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 
-		if (GetOwningObject() != nullptr && GetOwningObject()->GetName() == "UI" && viewportType != ViewportType_SceneView)
+		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasGameObject() && viewportType != ViewportType_SceneView)
 		{
 			bool b_orthographic = camera->b_orthographic;
 			camera->b_orthographic = true;

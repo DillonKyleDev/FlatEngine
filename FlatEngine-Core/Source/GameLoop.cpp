@@ -218,7 +218,7 @@ namespace FlatEngine
 		{
 			for (Button& hovered : m_hoveredButtons)
 			{
-				if (hovered.GetActiveLayer() >= GetFirstUnblockedLayer())
+				if (hovered.GetLayer() >= GetFirstUnblockedLayer())
 				{
 					GameObject* owner = hovered.GetOwningObject();
 					LuaManager::LuaParameter functionParams = hovered.GetFunctionParams();					
@@ -310,7 +310,7 @@ namespace FlatEngine
 
 				if (PhysicsManager::gamePhysics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
 				{
-					if (button.GetActiveLayer() >= GetFirstUnblockedLayer())
+					if (button.GetLayer() >= GetFirstUnblockedLayer())
 					{
 						m_hoveredButtons.push_back(button);
 						button.SetMouseIsOver(true);

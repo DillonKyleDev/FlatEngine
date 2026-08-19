@@ -41,6 +41,16 @@ namespace FlatEngine
 		std::vector<std::string> selectedFiles = std::vector<std::string>();
 		CURSOR_MODE cursorMode = CURSOR_MODE::CURSOR_MODE_TRANSLATE;
 		
+		void PushTableStyles();
+        void PopTableStyles();
+        // bool PushTable(std::string ID, int columns, ImGuiTableFlags flags = tableFlags, Vector2 outerSize = Vector2(0), std::vector<float> widths = std::vector<float>());
+        bool RenderFloatDragTableRow(std::string ID, std::string fieldName, float& value, float increment, float min, float max, std::string labelColor = "", std::string valueColor = "");
+        bool RenderIntSliderTableRow(std::string ID, std::string fieldName, int& value, int increment, int min, int max, std::string color = "");        
+        bool RenderIntDragTableRow(std::string ID, std::string fieldName, int& value, float speed, int min, int max);
+        bool RenderCheckboxTableRow(std::string ID, std::string fieldName, bool& _value);
+        void RenderSelectableTableRow(std::string ID, std::string fieldName, std::vector<std::string> options, int& currentOption);
+        bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles = false);        
+        // void PopTable();
 
 		void SetupImGui()
 		{
@@ -873,7 +883,7 @@ namespace FlatEngine
 			return b_isChanged;
 		}
 
-		bool RenderIntDragTableRow(std::string ID, std::string fieldName, int& value, float speed, int min, int max)
+		bool RenderIntDragTableRow(std::string ID, std::string fieldName, int& value, float increment, int min, int max)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, Vector2(0, 0));
 			ImGui::TableNextRow();
@@ -883,7 +893,7 @@ namespace FlatEngine
 			ImGui::TableSetColumnIndex(1);
 			ImGui::PopStyleVar();
 			ImGui::SetNextItemWidth(-1);
-			bool b_isChanged = RenderDragInt(ID.c_str(), 0, value, speed, min, max);
+			bool b_isChanged = RenderDragInt(ID.c_str(), 0, value, increment, min, max);
 			ImGui::PushID(ID.c_str());
 			ImGui::PopID();
 
@@ -1038,7 +1048,7 @@ namespace FlatEngine
 			ImGui::TableSetColumnIndex(valueIndex);	
 			if (tableProps.valueColor != "")						
 				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(tableProps.valueColor));	
-			return GuiCore::RenderDragFloat(tableProps.ID.c_str(), 0, value, tableProps.increment, tableProps.min, tableProps.max);
+			return GuiCore::RenderDragFloat(tableProps.ID.c_str(), 0, value, tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax);
 		}
 
 		bool RenderVector2Table(TableProps tableProps, Vector2& vec2)
@@ -1077,8 +1087,8 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 4, GuiCore::tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
 			{
 				ImGui::TableNextRow();			
-				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[0], valueColor, 16);				
-				TableProps floatColumn2Props = TableProps(column2Label, "Y", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[1], valueColor, 16);												
+				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[0], valueColor, 16);				
+				TableProps floatColumn2Props = TableProps(column2Label, "Y", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[1], valueColor, 16);												
 
 				b_changed |= RenderFloatTableColumns(floatColumn1Props, vec2.x, 0, 1);
 				b_changed |= RenderFloatTableColumns(floatColumn2Props, vec2.y, 2, 3);
@@ -1130,9 +1140,9 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 6, GuiCore::tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
 			{
 				ImGui::TableNextRow();					
-				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[0], valueColor, 16);				
-				TableProps floatColumn2Props = TableProps(column2Label, "Y", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[1], valueColor, 16);												
-				TableProps floatColumn3Props = TableProps(column3Label, "Z", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[2], valueColor, 16);												
+				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[0], valueColor, 16);				
+				TableProps floatColumn2Props = TableProps(column2Label, "Y", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[1], valueColor, 16);												
+				TableProps floatColumn3Props = TableProps(column3Label, "Z", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[2], valueColor, 16);												
 				b_changed |= RenderFloatTableColumns(floatColumn1Props, vec3.x, 0, 1);
 				b_changed |= RenderFloatTableColumns(floatColumn2Props, vec3.y, 2, 3);
 				b_changed |= RenderFloatTableColumns(floatColumn3Props, vec3.z, 4, 5);
@@ -1185,10 +1195,10 @@ namespace FlatEngine
 			if (GuiCore::PushTable("##" + tableProps.ID + "Table", 8, GuiCore::tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
 			{
 				ImGui::TableNextRow();			
-				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[0], valueColor, 16);				
-				TableProps floatColumn2Props = TableProps(column2Label, "Y", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[1], valueColor, 16);												
-				TableProps floatColumn3Props = TableProps(column3Label, "Z", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[2], valueColor, 16);	
-				TableProps floatColumn4Props = TableProps(column4Label, "W", Vector2(), tableProps.increment, tableProps.min, tableProps.max, tableProps.valueLabelColors[3], valueColor, 16);	
+				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[0], valueColor, 16);				
+				TableProps floatColumn2Props = TableProps(column2Label, "Y", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[1], valueColor, 16);												
+				TableProps floatColumn3Props = TableProps(column3Label, "Z", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[2], valueColor, 16);	
+				TableProps floatColumn4Props = TableProps(column4Label, "W", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[3], valueColor, 16);	
 				b_changed |= RenderFloatTableColumns(floatColumn1Props, vec4.x, 0, 1);
 				b_changed |= RenderFloatTableColumns(floatColumn2Props, vec4.y, 2, 3);
 				b_changed |= RenderFloatTableColumns(floatColumn3Props, vec4.z, 4, 5);
@@ -1238,7 +1248,7 @@ namespace FlatEngine
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, tableProps.increment, tableProps.min, tableProps.max);
+				b_changed = GuiCore::RenderDragFloat(column1Label.c_str(), 0, value, tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax);
 				ImGui::PushID(tableProps.ID.c_str());
 				ImGui::PopID();
 				GuiCore::PopTable();
@@ -1286,7 +1296,7 @@ namespace FlatEngine
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = GuiCore::RenderDragDouble(column1Label.c_str(), 0, value, 0.1f);
+				b_changed = GuiCore::RenderDragDouble(column1Label.c_str(), 0, value, tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax);
 				ImGui::PushID(tableProps.ID.c_str());
 				ImGui::PopID();
 				GuiCore::PopTable();
@@ -1334,7 +1344,7 @@ namespace FlatEngine
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = GuiCore::RenderDragInt(column1Label.c_str(), 0, value, 1, -INT_MAX, INT_MAX);
+				b_changed = GuiCore::RenderDragInt(column1Label.c_str(), 0, value, tableProps.intIncrement, tableProps.intMin, tableProps.intMax);
 				ImGui::PushID(tableProps.ID.c_str());
 				ImGui::PopID();
 				GuiCore::PopTable();
@@ -1382,7 +1392,7 @@ namespace FlatEngine
 				ImGui::TableSetColumnIndex(0);	
 				if (valueColor != "")						
 					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = GuiCore::RenderDragLong(column1Label.c_str(), 0, value);
+				b_changed = GuiCore::RenderDragLong(column1Label.c_str(), 0, value, tableProps.intIncrement, tableProps.intMin, tableProps.intMax);
 				ImGui::PushID(tableProps.ID.c_str());
 				ImGui::PopID();
 				GuiCore::PopTable();
@@ -2131,7 +2141,7 @@ namespace FlatEngine
 			return b_sliderChanged;
 		}
 
-		bool RenderDragDouble(std::string ID, float width, double& value, double increment, std::string bgColor)
+		bool RenderDragDouble(std::string ID, float width, double& value, double increment, float min, float max, std::string bgColor)
 		{
 			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor(bgColor));
 			ImGui::PushStyleColor(ImGuiCol_FrameBgHovered, Assets::assetManager.GetColor("dragHovered"));
@@ -2146,7 +2156,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 
-			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_Double, &value, increment, "%.3f", NULL, NULL, ImGuiSliderFlags_AlwaysClamp);			
+			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_Double, &value, increment, &min, &max, "%.3f", ImGuiSliderFlags_AlwaysClamp);			
 
 			if (ImGui::IsItemHovered())
 			{
@@ -2163,7 +2173,7 @@ namespace FlatEngine
 			return b_sliderChanged;
 		}
 
-		bool RenderDragInt(std::string ID, float width, int& value, float speed, int min, int max, ImGuiSliderFlags flags, std::string bgColor)
+		bool RenderDragInt(std::string ID, float width, int& value, int increment, int min, int max, ImGuiSliderFlags flags, std::string bgColor)
 		{
 			if (bgColor != "")
 			{
@@ -2185,7 +2195,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 			
-			bool b_sliderChanged = ImGui::DragInt(ID.c_str(), &value, speed, min, max, "%d", flags | ImGuiSliderFlags_AlwaysClamp);
+			bool b_sliderChanged = ImGui::DragInt(ID.c_str(), &value, increment, min, max, "%d", flags | ImGuiSliderFlags_AlwaysClamp);
 						
 			if (ImGui::IsItemHovered())
 			{				
@@ -2202,7 +2212,7 @@ namespace FlatEngine
 			return b_sliderChanged;
 		}
 
-		bool RenderDragLong(std::string ID, float width, long& value, std::string bgColor)
+		bool RenderDragLong(std::string ID, float width, long& value, int increment, int min, int max, std::string bgColor)
 		{
 			if (bgColor != "")
 			{
@@ -2224,7 +2234,7 @@ namespace FlatEngine
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 			}
 			
-			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_S64, &value, 1.0f, NULL, NULL, NULL, ImGuiSliderFlags_AlwaysClamp);			
+			bool b_sliderChanged = ImGui::DragScalar(ID.c_str(), ImGuiDataType_S64, &value, increment, &min, &max, NULL, ImGuiSliderFlags_AlwaysClamp);			
 			
 			if (ImGui::IsItemHovered())
 			{
@@ -2411,6 +2421,13 @@ namespace FlatEngine
 			GuiCore::RenderMenuSeparator();
 		}
 		
+		void RenderWarningText(std::string warning)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, FL::Assets::assetManager.GetColor("warningText"));
+			ImGui::TextWrapped("%s", warning.c_str());
+			ImGui::PopStyleColor();
+
+		}
 		void RenderTextToolTip(std::string text)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2(3, 3));

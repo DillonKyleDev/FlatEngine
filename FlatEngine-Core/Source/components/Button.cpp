@@ -16,11 +16,7 @@ namespace FlatEngine
 		SetOwnerID(ownerID);
 		m_b_mouseIsOver = false;
 		m_b_hasMouseOverFired = false;
-		m_activeWidth = 5;
-		m_activeHeight = 3;
-		m_activeOffset = Vector2(0, 0);
-		m_activeLayer = 0;
-		m_functionParams = LuaManager::LuaParameter();
+		m_dimensions = Vector2(5, 3);			
 		m_functionName = "";
 		m_b_luaFunction = true;
 		m_b_cppFunction = false;
@@ -42,11 +38,10 @@ namespace FlatEngine
 	json Button::GetData(bool b_IDOverride)
 	{
 		json componentJson = {
-			{ "activeWidth", m_activeWidth },
-			{ "activeHeight", m_activeHeight },
-			{ "activeOffsetX", m_activeOffset.x },
-			{ "activeOffsetY", m_activeOffset.y },
-			{ "activeLayer", m_activeLayer },
+			{ "width", m_dimensions.x },
+			{ "height", m_dimensions.y },
+			{ "offsetX", m_offset.x },
+			{ "offsetY", m_offset.y },			
 			{ "functionName", m_functionName },
 			{ "b_luaFunction", m_b_luaFunction },
 			{ "b_cppFunction", m_b_cppFunction },
@@ -74,9 +69,8 @@ namespace FlatEngine
 			parameter.PutData(componentJson.at("functionParameters"), objectName);
 		SetFunctionParams(parameter);
 
-		SetActiveDimensions(JsonHelper::CheckJsonFloat(componentJson, "activeWidth", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeHeight", objectName));
-		SetActiveOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "activeOffsetX", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeOffsetY", objectName)));
-		SetActiveLayer(JsonHelper::CheckJsonInt(componentJson, "activeLayer", objectName));
+		SetDimensions(Vector2(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName)));
+		m_offset = Vector2(JsonHelper::CheckJsonFloat(componentJson, "activeOffsetX", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeOffsetY", objectName));		
 		SetFunctionName(JsonHelper::CheckJsonString(componentJson, "functionName", objectName));
 		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "b_cppEvent", objectName));
 		SetIsLua(JsonHelper::CheckJsonBool(componentJson, "b_luaEvent", objectName));								
@@ -84,54 +78,38 @@ namespace FlatEngine
 		SetRightClick(JsonHelper::CheckJsonBool(componentJson, "b_rightClick", objectName));	
     }
 
-	void Button::SetActiveDimensions(float width, float height)
+	void Button::SetDimensions(Vector2 setDimensions)
 	{
-		if (width >= 0 && height >= 0)
+		if (setDimensions.x > 0 && setDimensions.y > 0)
 		{
-			m_activeWidth = width;
-			m_activeHeight = height;
+			m_dimensions = setDimensions;
 		}
 		else
 		{
-			Logger::log.Err("The active width and height must be larger than 0.");
+			Logger::log.Err("Button width and height must be larger than 0.");
 		}
 	}
 
-	void Button::SetActiveOffset(Vector2 offset)
+	void Button::SetOffset(Vector2 offset)
 	{
-		m_activeOffset = offset;
+		m_offset = offset;
 	}
 
-	void Button::SetActiveLayer(int layer)
+
+	int Button::GetLayer()
 	{
-		if (layer >= 0)
-		{
-			m_activeLayer = layer;
-		}
-		else
-		{
-			Logger::log.Err("Button active layer must be an larger than 0.");
-		}
+		// TODO
+		return 0;
 	}
 
-	int Button::GetActiveLayer()
+	Vector2 Button::GetDimensions()
 	{
-		return m_activeLayer;
+		return m_dimensions;
 	}
 
-	float Button::GetActiveWidth()
+	Vector2 Button::GetOffset()
 	{
-		return m_activeWidth;
-	}
-
-	float Button::GetActiveHeight()
-	{
-		return m_activeHeight;
-	}
-
-	Vector2 Button::GetActiveOffset()
-	{
-		return m_activeOffset;
+		return m_offset;
 	}
 
 	void Button::SetMouseIsOver(bool b_isOver)

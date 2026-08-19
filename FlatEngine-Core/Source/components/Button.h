@@ -19,13 +19,12 @@ namespace FlatEngine
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
-		void SetActiveDimensions(float width, float height);
-		void SetActiveOffset(Vector2 offset);
-		void SetActiveLayer(int layer);
-		int GetActiveLayer();
-		float GetActiveWidth();
-		float GetActiveHeight();
-		Vector2 GetActiveOffset();
+		void SetOffset(Vector2 offset);	
+		Vector2 GetOffset();	
+		int GetLayer();
+		Vector2 GetDimensions();
+		void SetDimensions(Vector2 dimensions);
+		
 		void SetMouseIsOver(bool b_isOver);
 		void SetIsOverFired(bool b_fired);
 		bool MouseIsOver();
@@ -62,16 +61,16 @@ namespace FlatEngine
 		void OnLeftClick();
 		void OnRightClick();
 
+		LuaManager::LuaParameterContainer parameterContainer;
+
 	private:
 		bool m_b_mouseIsOver;
 		bool m_b_hasMouseOverFired;
-		float m_activeWidth;
-		float m_activeHeight;
+		Vector2 m_dimensions;
 		Vector4 m_activeEdges;
-		Vector2 m_activeOffset;
-		int m_activeLayer;
-		LuaManager::LuaParameter m_functionParams;
+		Vector2 m_offset;		
 		std::string m_functionName;
+		LuaManager::LuaParameter m_functionParams;	
 		bool m_b_luaFunction;
 		bool m_b_cppFunction;
 		bool m_b_leftClick;

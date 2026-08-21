@@ -451,7 +451,7 @@ namespace FlatEngine
 				"GetButton", &GameObject::Get<Button>,
 				"GetCanvas", &GameObject::Get<Canvas>,
 				"GetText", &GameObject::Get<Text>,
-				"GetBody", &GameObject::Get<Body>,
+				"GetBody2D", &GameObject::Get<Body2D>,
 				"GetMesh", &GameObject::Get<Mesh>,
 				"GetCharacterController", &GameObject::Get<CharacterController>,		
 				"GetTileMap", &GameObject::Get<TileMap>,
@@ -692,16 +692,16 @@ namespace FlatEngine
 				"IsActive", &CharacterController::IsActive
 			);
 
-			lua.new_usertype<Controls::InputMapping>("InputMapping",
-				"KeyCode", &Controls::InputMapping::GetKeyCode
-				//"InputActionName", &InputMapping::GetActionName
+			lua.new_usertype<Controls::InputMapping>("InputMapping"
+				// "KeyCode", &Controls::InputMapping::GetKeyCode
+				//"InputActionName", &InputMapping::GetActionName				
 			);
 
 			lua.new_usertype<Controls::MappingContext>("MappingContext",			
 				"ActionPressed", &Controls::MappingContext::ActionPressed,
+				"GetAxis", &Controls::MappingContext::GetAxis,
 				"GetName", &Controls::MappingContext::GetName,
-				"GetInputMappings", &Controls::MappingContext::GetInputMappingsLua,
-				"GetInputMapping", &Controls::MappingContext::GetInputMapping
+				"GetInputMappings", &Controls::MappingContext::GetInputMappingsLua
 			);
 		}
 

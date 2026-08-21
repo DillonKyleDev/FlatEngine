@@ -20,7 +20,7 @@ F_Colors = {
 	red = Vector4:new(1.0, 0.0, 0.0, 1.0),
 	green = Vector4:new(0.0, 1.0, 0.0, 1.0),
 	blue = Vector4:new(0.0, 0.0, 1.0, 1.0),
-	textLight = Vector4:new(0.45, 0.45, 0.45, 1.0),
+	textLight = Vector4:new(0.65, 0.65, 0.65, 1.0),
 	warningText = Vector4:new(1.0, 0.15, 0.05, 1.0),
 	transparentLight = Vector4:new(1.0, 1.0, 1.0, 0.05),
 	----------------------
@@ -222,6 +222,10 @@ F_Colors = {
 	rectColor2 = Vector4:new(0.84, 0.03, 0.46, 0.4), -- Transform
 	rectColor3 = Vector4:new(0.33, 0.84, 0.03, 0.4), -- Sprite
 	rectColor4 = Vector4:new(0.06, 0.68, 0.89, 0.4), -- Text
+	-- Mapping Context Editor
+	mappingContextEditorBg = Vector4:new(0.22, 0.22, 0.26, 1.0),
+	mappingContextLabelColor = Vector4:new(0.45, 0.45, 0.51, 0.5),
+	mappingContextLabelTextColor = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	-- Docking
 	dockingPreview = Vector4:new(0.3, 0.3, 0.65, 1.0),
 	dockingPreviewEmpty = Vector4:new(0.3, 0.3, 0.65, 1.0),
@@ -270,7 +274,7 @@ F_Colors = {
 	tableCellDark = Vector4:new(0.19, 0.19, 0.21, 1.0),
 	tableBorderStrong = Vector4:new(0.35, 0.35, 0.38, 1.0),
 	tableBorderLight = Vector4:new(0.3, 0.3, 0.33, 1.0),
-	tableLabelVerticalSeparator = Vector4:new(1.0, 1.0, 1.0, 0.2),
+	tableLabelVerticalSeparator = Vector4:new(0.48, 0.48, 0.48, 1.0),
 	fileExplorerTableRowBg = Vector4:new(0.18, 0.18, 0.208, 1.0),
 	fileExplorerTableRowBgAlt = Vector4:new(0.2, 0.2, 0.23, 1.0),
 	-- Trees
@@ -280,7 +284,7 @@ F_Colors = {
 	treeSelectableSelected = Vector4:new(0.5, 0.5, 0.8, 0.7),
 	hierarchyChildObject = Vector4:new(0.3, 0.3, 0.7, 0.2),
 	-- Combos
-	comboBg = Vector4:new(0.29, 0.29, 0.31, 0.0),
+	comboBg = Vector4:new(0.1, 0.1, 0.12, 0.25),
 	comboHovered = Vector4:new(0.45, 0.45, 0.46, 1.0),
 	-- Selects
 	selectableSecondaryBg = Vector4:new(0.3, 0.3, 0.65, 1.0),
@@ -293,6 +297,7 @@ F_Colors = {
 	imageButtonHovered = Vector4:new(1.0, 1.0, 1.0, 0.3),
 	imageButtonActive = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	imageButtonTint = Vector4:new(1.0, 1.0, 1.0, 1.0),
+	imageButtonHoveredWaitingForInput = Vector4:new(1.0, 0.0, 0.0, 1.0),
 	-- Sliders/Drags
 	sliderBg = Vector4:new(0.3, 0.3, 0.33, 1.0),
 	sliderHovered =  Vector4:new(0.40, 0.40, 0.43, 1.0),

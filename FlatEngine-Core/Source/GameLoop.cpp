@@ -1,4 +1,3 @@
-#include "FlatEngine.h"
 #include "components/Animation.h"
 #include "components/CharacterController.h"
 #include "components/Transform.h"
@@ -60,21 +59,21 @@ namespace FlatEngine
 		for (std::string keybind : firedKeys)
 		{
 			for (Controls::MappingContext& context : Controls::mappingContexts)
-			{
+			{				
 				context.UnFireEvent(keybind);
 			}
 		}
 		firedKeys.clear();
 
-		for (SDL_Event event : events)
+		for (SDL_Event event : Controls::events)
 		{
 			for (Controls::MappingContext& context : Controls::mappingContexts)
 			{
-				HandleContextEvents(context, event, firedKeys);
+				HandleContextEvents(context, event);
 			}
 		}
 
-		events.clear();
+		Controls::events.clear();
 	}
 
 	void GameLoop::Update()

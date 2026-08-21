@@ -1,9 +1,12 @@
 #pragma once
+#include "tools/JsonHelper.h"
 
 #include "SDL.h"
+#include <SDL_keycode.h>
+#include <SDL_stdinc.h>
 #include <map>
-#include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 
@@ -12,7 +15,6 @@ namespace FlatEngine
     namespace Controls
     {
         enum PressType {
-            PressType_None,
             PressType_Down,
             PressType_Up,
             PressType_Hold,
@@ -20,9 +22,8 @@ namespace FlatEngine
             PressType_Size
         };	
 
-        const std::vector<std::string> pressTypeStrings =
+        const std::vector<std::string> PressTypeStrings =
         {
-            "None",
             "Down",
             "Up",
             "Hold",
@@ -60,6 +61,7 @@ namespace FlatEngine
             Keyboard_printScreen = SDLK_PRINTSCREEN,
             Keyboard_insert = SDLK_INSERT,
             Keyboard_home = SDLK_HOME,
+            Keyboard_end = SDLK_END,
             Keyboard_pageUp = SDLK_PAGEUP,
             Keyboard_pageDown = SDLK_PAGEDOWN,
             Keyboard_delete = SDLK_DELETE,
@@ -67,14 +69,15 @@ namespace FlatEngine
             Keyboard_backSlash = SDLK_BACKSLASH,
             Keyboard_forwardSlash = SDLK_SLASH,
             Keyboard_semicolin = SDLK_SEMICOLON,
-            Keyboard_apostrophe = SDL_SCANCODE_APOSTROPHE,
+            Keyboard_apostrophe = SDLK_QUOTE,
             Keyboard_rightBracket = SDLK_RIGHTBRACKET,
             Keyboard_leftBracket = SDLK_LEFTBRACKET,
             Keyboard_less = SDLK_LESS,
             Keyboard_greater = SDLK_GREATER,
-            Keyboard_graveAccent = SDL_SCANCODE_GRAVE,
+            Keyboard_backquote = SDLK_BACKQUOTE,
             Keyboard_asterisk = SDLK_ASTERISK,
             Keyboard_period = SDLK_PERIOD,
+            Keyboard_comma = SDLK_COMMA,
             Keyboard_enter = SDLK_RETURN,
             Keyboard_0 = SDLK_0,
             Keyboard_1 = SDLK_1,
@@ -88,6 +91,24 @@ namespace FlatEngine
             Keyboard_9 = SDLK_9,
             Keyboard_minus = SDLK_MINUS,
             Keyboard_plus = SDLK_PLUS,
+            Keyboard_equals = SDLK_EQUALS,
+
+            Keyboard_Numpad_0 = SDLK_KP_0,
+            Keyboard_Numpad_1 = SDLK_KP_1,
+            Keyboard_Numpad_2 = SDLK_KP_2,
+            Keyboard_Numpad_3 = SDLK_KP_3,
+            Keyboard_Numpad_4 = SDLK_KP_4,
+            Keyboard_Numpad_5 = SDLK_KP_5,
+            Keyboard_Numpad_6 = SDLK_KP_6,
+            Keyboard_Numpad_7 = SDLK_KP_7,
+            Keyboard_Numpad_8 = SDLK_KP_8,
+            Keyboard_Numpad_9 = SDLK_KP_9,
+            Keyboard_Numpad_decimal = SDLK_KP_DECIMAL,
+            Keyboard_Numpad_divide = SDLK_KP_DIVIDE,
+            Keyboard_Numpad_multiply = SDLK_KP_MULTIPLY,
+            Keyboard_Numpad_plus = SDLK_KP_PLUS,
+            Keyboard_Numpad_minus = SDLK_KP_MINUS,
+            Keyboard_Numpad_enter = SDLK_KP_ENTER,
 
             Keyboard_f1 = SDLK_F1,
             Keyboard_f2 = SDLK_F2,
@@ -140,8 +161,7 @@ namespace FlatEngine
             Start,
             LS,
             RS,
-            Home,
-            Tray,
+            Home
         };
         enum XInputHats {
             Hat_Up = 1,
@@ -151,12 +171,12 @@ namespace FlatEngine
 
         };
         enum XInputAxis {
-            LeftXAxis,
-            LeftYAxis,
-            RightXAxis,
-            RightYAxis,
-            LT,
-            RT
+            LeftXAxis,  
+            LeftYAxis,   
+            LT,          
+            RightXAxis,  
+            RightYAxis, 
+            RT          
         };
 
         const std::map<long, std::string> F_MappedMouseCodes =
@@ -191,6 +211,7 @@ namespace FlatEngine
             { Keyboard_printScreen, "Keyboard Print Screen" },
             { Keyboard_insert, "Keyboard: Insert" },
             { Keyboard_home, "Keyboard: Home" },
+            { Keyboard_end, "Keyboard: End" },
             { Keyboard_pageUp, "Keyboard: Page Up" },
             { Keyboard_pageDown, "Keyboard: Page Down" },
             { Keyboard_delete, "Keyboard: Delete" },
@@ -203,9 +224,10 @@ namespace FlatEngine
             { Keyboard_leftBracket, "Keyboard: [" },
             { Keyboard_less, "Keyboard: <" },
             { Keyboard_greater, "Keyboard: >" },
-            { Keyboard_graveAccent, "Keyboard: `" },
+            { Keyboard_backquote, "Keyboard: `" },
             { Keyboard_asterisk, "Keyboard: *" },
             { Keyboard_period, "Keyboard: ." },
+            { Keyboard_comma, "Keyboard: ," },
             { Keyboard_enter, "Keyboard: Enter" },
             { Keyboard_0, "Keyboard: 0" },
             { Keyboard_1, "Keyboard: 1" },
@@ -219,6 +241,24 @@ namespace FlatEngine
             { Keyboard_9, "Keyboard: 9" },
             { Keyboard_minus, "Keyboard: -" },
             { Keyboard_plus, "Keyboard: +" },
+            { Keyboard_equals, "Keyboard: =" },
+           
+            { Keyboard_Numpad_0, "Keyboard: numpad 0" },
+            { Keyboard_Numpad_1, "Keyboard: numpad 1" },
+            { Keyboard_Numpad_2, "Keyboard: numpad 2" },
+            { Keyboard_Numpad_3, "Keyboard: numpad 3" },
+            { Keyboard_Numpad_4, "Keyboard: numpad 4" },
+            { Keyboard_Numpad_5, "Keyboard: numpad 5" },
+            { Keyboard_Numpad_6, "Keyboard: numpad 6" },
+            { Keyboard_Numpad_7, "Keyboard: numpad 7" },
+            { Keyboard_Numpad_8, "Keyboard: numpad 8" },
+            { Keyboard_Numpad_9, "Keyboard: numpad 9" },
+            { Keyboard_Numpad_minus, "Keyboard: numpad -" },
+            { Keyboard_Numpad_plus, "Keyboard: numpad +" },
+            { Keyboard_Numpad_divide, "Keyboard: numpad /" },
+            { Keyboard_Numpad_multiply, "Keyboard: numpad *" },
+            { Keyboard_Numpad_decimal, "Keyboard: numpad ." },
+            { Keyboard_Numpad_enter, "Keyboard: Enter" },
 
             { Keyboard_f1, "Keyboard: F1" },
             { Keyboard_f2, "Keyboard: F2" },
@@ -272,8 +312,7 @@ namespace FlatEngine
             { Start, "XInput: Start" },
             { LS, "XInput: Left Stick Click" },
             { RS, "XInput: Right Stick Click" },
-            { Home, "XInput: Home" },
-            { Tray, "XInput: Tray" },
+            { Home, "XInput: Home" }            
         };
         const std::map<long, std::string> F_MappedXInputDPadCodes =
         {
@@ -292,94 +331,124 @@ namespace FlatEngine
             { RT, "XInput: Right Trigger" }
         };
 
-        struct ActionMapping {
-            std::string keyCode = "";
-            PressType pressType = PressType_None;
-            SDL_Event event = SDL_Event();
+        struct ActionMapping {           
             std::string actionName = "";
+            PressType pressType = PressType_Down;    
+            SDL_Event event = SDL_Event();            
             bool b_fired = false;
         };
 
-        struct PressTypeActions {
-            PressTypeActions()
-            {
-                downAction.pressType = PressType_Down;
-                upAction.pressType = PressType_Up;
-                holdAction.pressType = PressType_Hold;
-                doubleAction.pressType = PressType_Double;
-            };
-            ActionMapping downAction = ActionMapping();
-            ActionMapping upAction = ActionMapping();
-            ActionMapping holdAction = ActionMapping();
-            ActionMapping doubleAction = ActionMapping();
-        };
-
         struct InputMapping {
-            std::string keyCode = "";
-            PressTypeActions pressActions = PressTypeActions();
-            std::string GetKeyCode() { return keyCode; };
-            std::string GetDownActionName() { return pressActions.downAction.actionName; };
-            std::string GetUpActionName() { return pressActions.upAction.actionName; };
-            std::string GetHoldActionName() { return pressActions.holdAction.actionName; };
-            std::string GetDoublectionName() { return pressActions.doubleAction.actionName; };
+            std::string keycode = "";
+            std::vector<ActionMapping> actions;       
+
+            bool PressTypeTaken(PressType pressType)
+            {
+                for (ActionMapping action : actions)
+                {                
+                    if (action.pressType == pressType)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            ActionMapping* GetAction(PressType pressType)
+            {
+                for (int i = 0; i < actions.size(); i++)
+                {
+                    if (actions[i].pressType == pressType)
+                    {
+                        return &actions[i];
+                    }
+                }
+                return nullptr;
+            }
+            ActionMapping* GetAction(std::string actionName)
+            {
+                for (int i = 0; i < actions.size(); i++)
+                {
+                    if (actions[i].actionName == actionName)
+                    {
+                        return &actions[i];
+                    }
+                }
+                return nullptr;
+            }
+            uint16_t GetAxis(std::string actionName)
+            {
+                ActionMapping* action = GetAction(actionName);
+                uint16_t axis = 0;
+
+                if (action != nullptr)
+                {
+                    axis = (uint16_t)action->event.jaxis.axis;
+                }
+                return axis;
+            }
         };
 
         class MappingContext
         {
         public:
             MappingContext();
-            ~MappingContext();
-            std::string GetData();
+            json GetData();
+            void PutData(json jsonData, std::string name);
 
             void SetName(std::string name);
             std::string GetName();
             void SetPath(std::string path);
             std::string GetPath();
+            void ResetActiveActionMappings();
             void AddKeyBinding(std::string keyBinding, std::string actionName, PressType pressType);
+            void RemoveKeyBinding(std::string keycode, PressType pressType, std::string actionName = "");
             bool FireEvent(std::string actionName, SDL_Event event, PressType pressType);
             void UnFireEvent(std::string actionName);		
-            SDL_Event GetInputActionEvent(std::string actionName);
             bool ActionPressed(std::string actionName);		
-            std::map<std::string, std::shared_ptr<InputMapping>> GetInputActions();
-            std::vector<std::shared_ptr<InputMapping>> GetInputMappingsLua();
-            std::shared_ptr<InputMapping> GetInputMapping(std::string actionName);
-            void SetWaitingForRemap(bool b_waiting);
+            std::unordered_map<std::string, InputMapping>& GetInputMappings();
+            std::vector<InputMapping*> GetInputMappingsLua();
+            Sint16 GetAxis(std::string actionName);
+
+            void BeginRemap(std::string contextName, std::string actionToRemap);
             bool WaitingForRemap();
-            void SetActionToRemap(std::string actionToRemap);
-            std::string GetActionToRemap();
-            void SetRemapStartTime(Uint32 startTime);
             bool RemapTimedOut(Uint32 currentTime);
-            void SetRemapTimeoutTime(Uint32 timeoutTime);
-            Uint32 GetRemapTimeoutTime();
-            bool InputActionNameTaken(std::string actionName, std::string keyCode);
+
+            PressType tempPressType;
+            int tempKeycode;
+            std::string tempActionName;            
+            bool b_waitingForRemap;
+            bool b_waitingForInput;
 
         private:
+            void AddActiveAction(ActionMapping* actionMapping);
+            void RemoveActiveAction(ActionMapping* actionMapping);
             std::string m_name;
             std::string m_path;
-            std::map<std::string, std::shared_ptr<InputMapping>> m_inputsByBinding;
-            // Eventually: map<string, vector<shared_ptr<InputMapping>> so that the same action can be bound to more than one input, ie. Controller/Keyboard can both be used for the same actions
-            std::map<std::string, std::string> m_bindingsByInput;
-            Uint32 m_remapTimeoutTime;
+            std::unordered_map<std::string, InputMapping> m_bindings;  
+            std::vector<ActionMapping*> m_activeActionMappings;
             Uint32 m_remapStartTime;
             std::string m_actionToRemap;
-            bool m_b_waitingForRemap;
         };
 
 
-        extern std::vector<MappingContext> mappingContexts;
+        const int JOYSTICK_DEAD_ZONE = 5000;
+        const Uint32 REMAP_TIMEOUT_LENGTH = 6000;    
+        extern std::vector<MappingContext> mappingContexts;        
         extern std::string selectedMappingContextName;
-        extern std::vector<std::string> keyBindingsAvailable;
+        extern std::vector<std::string> KeyBindingsAvailable;
         extern std::vector<SDL_Joystick*> gamepads;
-        const int JOYSTICK_DEAD_ZONE = 4000;
-
-        extern void AddMappingContext(std::string path);
+        extern std::vector<SDL_Event> events;
+        extern std::vector<std::string> firedKeys;	 // only keys associated with InputMappings
+        extern std::vector<std::string> pressedKeys; // all keys	 
+        extern MappingContext engineContext;
+                        
         extern void CreateNewMappingContextFile(std::string fileName, std::string path = "");
         extern void CreateNewTileSetFile(std::string fileName, std::string path = "");
         extern void SaveMappingContext(std::string path, MappingContext context);
         extern void InitializeMappingContexts();
         extern void RemapInputAction(std::string contextName, std::string inputAction, Uint32 timeoutTime = 0);
         extern MappingContext* GetMappingContext(std::string contextName);
-        extern void HandleContextEvents(MappingContext& context, SDL_Event event, std::vector<std::string>& firedKeys);
+        extern void HandleContextEvents(MappingContext& context, SDL_Event event);
         extern void HandleControllerConnections();
     }
 }

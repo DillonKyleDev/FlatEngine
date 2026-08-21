@@ -19,6 +19,7 @@ namespace FlatEngine
         extern Vector2 mouseDelta;
         extern Vector2 mousePos;
         extern Vector2 lastMousePos;
+        const float TABLE_HEIGHT = 22.0f;
 
         extern ImGuiChildFlags childFlags;
         extern ImGuiChildFlags autoResizeChildFlags;
@@ -53,6 +54,7 @@ namespace FlatEngine
         extern void SetImGuiVars();  
         extern void QuitImGui();
 
+        extern void WarpMouseTo(Vector2 warpTo);        
         extern void CalculateMouseDelta();
 
         extern void BeginImGuiRender();
@@ -82,9 +84,10 @@ namespace FlatEngine
         struct TableProps {
             std::string ID;
             std::string label;
-            Vector2 tableSize = Vector2();
+            Vector2 tableSize = Vector2(0,TABLE_HEIGHT);
             int labelWidth = 0;
             std::string labelColor;
+            std::string labelTextColor = "noEditTableText";
             std::string valueColor;
             std::vector<std::string> valueLabelColors = std::vector<std::string>();            
             float floatIncrement;

@@ -34,8 +34,7 @@ namespace FlatEngine
 	std::string rootDir = "";
 	bool b_closeProgramQueued = false;
 	bool b_loadNewScene = false;
-	std::string sceneToBeLoaded = "";
-	std::vector<SDL_Event> events;	
+	std::string sceneToBeLoaded = "";	
 
 
 	bool Init(int windowWidth, int windowHeight)
@@ -139,26 +138,32 @@ namespace FlatEngine
 		SDL_Quit();
 	}
 
+	void HandleEngineEvents()
+	{
+		if (Controls::engineContext.ActionPressed("PauseGameLoop"))
+		{
+			FL::application->gameloop->TogglePauseGameLoop();
+		}
+	}
+	
 	void HandleEvents()
 	{
-		// Unfire all keybinds that were fired in the last frame then clear the saved keys
-		static std::vector<std::string> firedKeys = std::vector<std::string>();
-		static std::vector<std::string> firedLastFrameKeys = std::vector<std::string>();
-		firedLastFrameKeys = firedKeys;
-
-		for (std::string keybind : firedKeys)
-		{
-			for (Controls::MappingContext& context : Controls::mappingContexts)
-			{
-				context.UnFireEvent(keybind);
-			}
+		// Unfire all keybinds that were fired in the last frame then clear the saved keys	
+		for (Controls::MappingContext& context : Controls::mappingContexts)
+		{	
+			// for (std::string keybind : Controls::firedKeys)
+			// {			
+			// 	context.UnFireEvent(keybind);			
+			// }
+			context.ResetActiveActionMappings();
 		}
-		firedKeys.clear();
-
+		Controls::firedKeys.clear();
+		Controls::pressedKeys.clear();
+		
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
 		{
-			events.push_back(event);
+			Controls::events.push_back(event);			
 			
 			ImGui_ImplSDL2_ProcessEvent(&event);
 
@@ -180,33 +185,12 @@ namespace FlatEngine
 					}
 				}
 			}
-
-			// Key press events (should roll this into EngineContext.mpc below)
-			if (event.type == SDL_KEYDOWN)
-			{		
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_DELETE:											
-					break;
-				case SDLK_r:										
-					break;
-				case SDLK_HOME:					
-					break;				
-				case SDLK_SPACE:
-					FL::application->gameloop->TogglePauseGameLoop();
-					break;	
-				default:
-					break;
-				}
-			}
-
-			Controls::MappingContext* context = Controls::GetMappingContext("EngineContext");
-			if (context != nullptr)
-			{
-				HandleContextEvents(*context, event, firedKeys);
-			}				
+			
+			// Only doing EngineContext here because gameplay controls are handled in the GameLoop
+			HandleContextEvents(Controls::engineContext, event);						
 		}
 
+		Controls::HandleControllerConnections();
 		GuiCore::CalculateMouseDelta();
 	}
 }

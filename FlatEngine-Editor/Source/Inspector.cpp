@@ -398,14 +398,14 @@ namespace FlatGui
 					}
 				}
 
-				if (FL::GuiCore::RenderSelectable("##SelectLuaScript_" + std::to_string(scriptCounter), allScriptNames, currentScript, "selectableSecondaryBg", ImGui::GetContentRegionAvail().x - 23))
+				if (FL::GuiCore::RenderSelectable("##SelectLuaScript_" + std::to_string(scriptCounter), allScriptNames, currentScript, "selectableSecondaryBg", ImGui::GetContentRegionAvail().x - 24))
 				{
 					scriptData.SetAttachedScript(allScriptNames[currentScript]);
 				}
 				
 				ImGui::SameLine(0,2);
 				
-				if (FL::GuiCore::RenderImageButton("##deleteScriptData_" + std::to_string(scriptCounter), FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(15), 0.0f, FL::Vector2(3)))
+				if (FL::GuiCore::RenderImageButton("##deleteScriptData_" + std::to_string(scriptCounter), FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(16), 0.0f, FL::Vector2(3)))
 				{
 					scriptQueuedForDelete = &scriptData;
 				}
@@ -1407,11 +1407,10 @@ namespace FlatGui
 			FL::Vector2 linearVelocity = body->GetLinearVelocity();
 			float angularVelocity = body->GetAngularVelocity();			
 			int currentType = body->type;
-			std::vector<std::string> types = { "Static", "Kinematic", "Dynamic" };
-			std::string comboID = "##BoxBodyTypeCombo";
+			std::vector<std::string> types = { "Static", "Kinematic", "Dynamic" };			
 			bool b_light = true;
 
-			if (FL::GuiCore::RenderComboTable(FL::GuiCore::TableProps(comboID, "Body Type"), types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
+			if (FL::GuiCore::RenderComboTable(FL::GuiCore::TableProps("##BoxBodyTypeCombo", "Body Type"), types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyGravityScale" + std::to_string(ownerID), "Gravity Scale"), body->gravityScale)) body->SetGravityScale(body->gravityScale);	
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyLinearDamping" + std::to_string(ownerID), "Linear Damp", FL::Vector2(), 0.01f, 0.0f), body->linearDamping)) body->SetLinearDamping(body->linearDamping);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyAngularDamping" + std::to_string(ownerID), "Angular Damp", FL::Vector2(), 0.01f, 0.0f), body->angularDamping)) body->SetAngularDamping(body->angularDamping);			

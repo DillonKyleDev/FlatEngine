@@ -33,7 +33,7 @@ namespace FlatGui
         bool b_openPrefabModal = false;
         long gameObjectToPrefab = -1;
 
-        // Returns true if a valid input was retrieved. ***Remember to use static std::strings for inputValue***
+        // Returns true if a valid input was retrieved.
         bool RenderInputModal(std::string label, std::string description, std::string& inputValue, bool& b_openModal)
         {		
             if (b_openModal)

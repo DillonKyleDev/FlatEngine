@@ -144,7 +144,7 @@ F_Colors = {
 	selectedCursorModeButtonBg =  Vector4:new(0.4, 0.4, 0.4, 0.8),
 	buttonBorder =  Vector4:new(1.0, 1.0, 1.0, 0.4),
 	-- Modals
-	modalWindowDimBg = Vector4:new(0.1, 0.4, 0.1, 0.5),
+	modalWindowDimBg = Vector4:new(0.1, 0.1, 0.13, 0.6),
 	-- Project Hub
 	selectProjectBg = Vector4:new(0.08, 0.08, 0.10, 1.0),
 	projectHubButton = Vector4:new(0.3, 0.3, 0.55, 1.0),
@@ -257,8 +257,7 @@ F_Colors = {
 	popupBg = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	navWindowHighlight = Vector4:new(0.2, 0.2, 0.2, 1.0),
 	navHighlight = Vector4:new(0.2, 0.2, 0.2, 1.0),
-	navWindowDimBg = Vector4:new(0.2, 0.2, 0.2, 1.0),
-	modalWindowDimBg = Vector4:new(0.2, 0.2, 0.2, 1.0),
+	navWindowDimBg = Vector4:new(0.2, 0.2, 0.2, 1.0),	
 	dropTarget = Vector4:new(1.0, 0.95, 0.0, 1.0),
 	---------------------
 	--- Custom Colors ---

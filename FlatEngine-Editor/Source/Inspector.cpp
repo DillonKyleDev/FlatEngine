@@ -51,7 +51,7 @@ namespace FlatGui
 		{
 			FL::GuiCore::MoveScreenCursor(0, 3);
 			bool b_checked = FL::GuiCore::RenderCheckbox("Active", b_isActive);			
-			FL::GuiCore::RenderSeparator(3, 3);	
+			FL::GuiCore::RenderSeparator(0, 1);	
 
 			return b_checked;
 		}
@@ -64,7 +64,6 @@ namespace FlatGui
 			std::string componentType = component->GetTypeString();
 			std::string componentID = component->GetTypeString() + std::to_string(ownerID);
 
-			// Begin Component
 			ImGui::PushStyleColor(ImGuiCol_ChildBg, FL::Assets::assetManager.GetColor("componentBg"));			
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, FL::Vector2(0, 0));							
 			ImGui::BeginChild(componentID.c_str(), FL::Vector2(0, 0), FL::GuiCore::autoResizeChildFlags);		
@@ -128,7 +127,7 @@ namespace FlatGui
 			}
 			else 
 			{
-				FL::GuiCore::RenderSeparator(0,-1);
+				FL::GuiCore::RenderSeparator(-4, 4);
 			}
 		}
 
@@ -366,24 +365,26 @@ namespace FlatGui
 				allScriptNames.push_back(CPPScript);
 			}
 
-			if (FL::GuiCore::RenderButton("Add Script",FL::Vector2(80, 20)))
+			float halfWidth = (ImGui::GetContentRegionAvail().x - 3) / 2;			
+			if (FL::GuiCore::RenderButton("Add Script", FL::Vector2(halfWidth, 0)))
 			{
 				script->AddScript();
 			}
-			ImGui::SameLine();
-			ImGui::Text("CREATE NEW SCRIPTS:"); ImGui::SameLine(); 
-			if (FL::GuiCore::RenderButton("lua",FL::Vector2(30, 20)))
+			ImGui::SameLine(0, 3);
+			if (FL::GuiCore::RenderButton("New Script", FL::Vector2(halfWidth, 0)))
 			{
 				Modals::b_openLuaModal = true;
-			}
-			ImGui::SameLine(0,5); 			
-			if (FL::GuiCore::RenderButton("C++",FL::Vector2(30, 20)))
-			{
-				Modals::b_openCPPModal = true;
-			}
+			}			
+			// ImGui::SameLine(0,5); 			
+			// if (FL::GuiCore::RenderButton("C++",FL::Vector2(30, 20)))
+			// {
+			// 	Modals::b_openCPPModal = true;
+			// }
 
-			FL::GuiCore::RenderSectionHeader("", 3.0f, 3.0f, "sectionHeaderEmptyBg", "separator");			
+			
 
+			FL::GuiCore::RenderSectionHeader("", 0, 0, "sectionHeaderEmptyBg", "separator");			
+			FL::GuiCore::MoveScreenCursor(0, 1);
 			int scriptCounter = 0;
 			FL::ScriptData* scriptQueuedForDelete = nullptr;
 			for (FL::ScriptData& scriptData : script->GetScripts())
@@ -414,6 +415,9 @@ namespace FlatGui
 				{					
 					FL::GuiCore::RenderLuaParametersTable(std::to_string(scriptCounter), scriptData.name + " Parameters", scriptData.scriptParamContainer);
 				}
+
+				FL::GuiCore::RenderSectionHeader("", 0, 0, "sectionHeaderEmptyBg", "separator");			
+				FL::GuiCore::MoveScreenCursor(0, 1);
 
 				scriptCounter++;
 			}
@@ -555,7 +559,7 @@ namespace FlatGui
 			static std::string newAnimationName = "";
 			static std::string newAnimationPath = "";
 
-			ImGui::Text("ADD ANIMATIONS");
+			FL::GuiCore::RenderSectionHeader("New Animation");
 			FL::GuiCore::MoveScreenCursor(0, 3);
 
 			FL::GuiCore::RenderInput("##NewAnimationName", "Name", newAnimationName, false);
@@ -608,13 +612,6 @@ namespace FlatGui
 			ImGui::EndDisabled();
 
 
-			if (animations.size() > 0)
-			{
-				FL::GuiCore::RenderSeparator(4, 4);
-				ImGui::Text("ATTACHED ANIMATIONS");
-				FL::GuiCore::MoveScreenCursor(0, 3);
-			}
-
 			int IDCounter = 0;
 			int queuedAnimationForDelete = -1;
 			for (FL::AnimationData& animData : animations)
@@ -656,32 +653,27 @@ namespace FlatGui
 
 				FL::GuiCore::MoveScreenCursor(0, 4);
 
+				float quarterWidth = (ImGui::GetContentRegionAvail().x - 9) / 4;
 				ImGui::BeginDisabled(animData.path == "");
-				if (FL::GuiCore::RenderButton("Preview##" + std::to_string(IDCounter)))
+				if (FL::GuiCore::RenderButton("Preview##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
 				{
 					animation->Play(animData.name);
 				}
 				ImGui::EndDisabled();
 
-				if (animData.path != "")
-				{
-					ImGui::SameLine(0, 5);
-				}
-
+				ImGui::SameLine(0, 3);
+			
 				ImGui::BeginDisabled(animData.path == "" || !animData.b_playing);
-				if (FL::GuiCore::RenderButton("Stop##" + std::to_string(IDCounter)))
+				if (FL::GuiCore::RenderButton("Stop##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
 				{
 					animation->Stop(animData.name);
 				}
 				ImGui::EndDisabled();
 
-				if (animData.path != "")
-				{
-					ImGui::SameLine(0, 5);
-				}
+				ImGui::SameLine(0, 3);	
 
 				ImGui::BeginDisabled(animData.path == "");
-				if (FL::GuiCore::RenderButton("Edit##" + std::to_string(IDCounter)))
+				if (FL::GuiCore::RenderButton("Edit##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
 				{
 					FL::Settings::settings.b_showAnimator = true;
 					Animator::loadedAnimation = FL::AnimationManager::LoadAnimationFile(animData.path);
@@ -689,9 +681,9 @@ namespace FlatGui
 				}
 				ImGui::EndDisabled();
 
-				ImGui::SameLine(0, 10);
+				ImGui::SameLine(0, 3);
 
-				if (FL::GuiCore::RenderButton("Delete##" + std::to_string(IDCounter)))
+				if (FL::GuiCore::RenderButton("Delete##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
 				{
 					queuedAnimationForDelete = IDCounter;
 				}
@@ -1427,7 +1419,7 @@ namespace FlatGui
 				ImGui::TextWrapped("* WARNING *\n\nA Body without a shape attached has 0.0 mass and will not move.");
 			}		
 
-			FL::GuiCore::RenderButton("Add Shape",FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
+			FL::GuiCore::RenderButton("Add Shape");
 			if (ImGui::BeginPopupContextItem("##AddShape", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
@@ -1474,7 +1466,7 @@ namespace FlatGui
 				}
 			}
 			
-			FL::GuiCore::RenderButton("Add Joint", FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
+			FL::GuiCore::RenderButton("Add Joint");
 			if (ImGui::BeginPopupContextItem("##AddJoint", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				FL::GuiCore::PushMenuStyles();
@@ -2097,7 +2089,7 @@ namespace FlatGui
 
 			static FL::Vector2 mousePos = ImGui::GetCursorScreenPos();
 			FL::TagList &tagList = focusedObject->GetTagList();			
-			if (FL::GuiCore::RenderButton("Tags"))
+			if (FL::GuiCore::RenderButton("Tags", FL::Vector2(40, 0)))
 			{
 				mousePos = FL::Vector2(ImGui::GetIO().MousePos.x - 200, ImGui::GetIO().MousePos.y);
 				ImGui::SetNextWindowPos(mousePos);
@@ -2235,7 +2227,7 @@ namespace FlatGui
 
 			
 			FL::GuiCore::PushMenuStyles();
-			FL::GuiCore::RenderButton("Add Component",FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
+			FL::GuiCore::RenderButton("Add Component");
 			if (ImGui::BeginPopupContextItem("##AddComponent", ImGuiPopupFlags_MouseButtonLeft))
 			{
 				// Add all the component types you can add to this GameObject

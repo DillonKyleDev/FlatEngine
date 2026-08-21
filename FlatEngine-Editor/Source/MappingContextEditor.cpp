@@ -108,8 +108,8 @@ namespace FlatGui
 				ImGui::BeginDisabled(currentContext == nullptr);
 				// {
 							
-					FL::GuiCore::RenderSectionHeader("Create new Input Action");													
-					FL::GuiCore::MoveScreenCursor(0, 3);		
+					FL::GuiCore::RenderSectionHeader("New Action Mapping");													
+					FL::GuiCore::MoveScreenCursor(0, -3);		
 
 					FlatEngine::GuiCore::TableProps buttonProps("##InputButtonCombo", "Button", FL::Vector2(ImGui::GetContentRegionAvail().x - 22, 0));					
 					buttonProps.labelColor = "mappingContextLabelColor";
@@ -148,7 +148,7 @@ namespace FlatGui
 						b_timerStarted = false;					
 					
 					if (ImGui::IsItemHovered())					
-						FL::GuiCore::RenderTextToolTip("Start listening for key press");
+						FL::GuiCore::RenderTextToolTip("Start listening for button press.");
 	
 					FL::GuiCore::RenderSeparator(-4, -3);
 
@@ -157,7 +157,7 @@ namespace FlatGui
 					FL::GuiCore::MoveScreenCursor(0, 3);	
 					
 					ImGui::BeginDisabled(currentContext->tempActionName == "");
-					if (FL::GuiCore::RenderButton("Add Input", FL::Vector2(ImGui::GetContentRegionAvail().x, 0)))
+					if (FL::GuiCore::RenderButton("Add Action Mapping"))
 					{
 						currentContext->AddKeyBinding(FL::Controls::KeyBindingsAvailable[currentContext->tempKeycode], currentContext->tempActionName, (FL::Controls::PressType)currentContext->tempPressType);
 						currentContext->tempActionName = "";
@@ -165,7 +165,7 @@ namespace FlatGui
 					}
 					ImGui::EndDisabled();
 
-					FL::GuiCore::RenderSeparator(0,1);						
+					FL::GuiCore::RenderSeparator(6,3);						
 					
 					std::string keycodeToRemove = "";					
 					if (currentContext != nullptr)

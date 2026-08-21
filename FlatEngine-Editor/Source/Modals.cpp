@@ -47,8 +47,6 @@ namespace FlatGui
             // Always center this window when appearing
             ImVec2 center = ImGui::GetMainViewport()->GetCenter();
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));		
-            ImGuiStyle& style = ImGui::GetStyle();    
-            style.Colors[ImGuiCol_ModalWindowDimBg] = FL::Assets::assetManager.GetColor("modalWindowDimBg");  
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5);
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, FL::Vector2(10));
             ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, FL::Vector2(FL::GuiCore::childPadding));

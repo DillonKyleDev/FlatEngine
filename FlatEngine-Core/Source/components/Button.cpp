@@ -19,7 +19,6 @@ namespace FlatEngine
 		m_dimensions = Vector2(5, 3);			
 		m_functionName = "";
 		m_b_luaFunction = true;
-		m_b_cppFunction = false;
 		m_b_leftClick = true;
 		m_b_rightClick = false;
 
@@ -40,13 +39,13 @@ namespace FlatEngine
 		json componentJson = {
 			{ "width", m_dimensions.x },
 			{ "height", m_dimensions.y },
-			{ "offsetX", m_offset.x },
-			{ "offsetY", m_offset.y },			
+			{ "xOffset", m_offset.x },
+			{ "yOffset", m_offset.y },			
 			{ "functionName", m_functionName },
 			{ "b_luaFunction", m_b_luaFunction },
-			{ "b_cppFunction", m_b_cppFunction },
 			{ "b_leftClick", m_b_leftClick },
-			{ "b_rightClick", m_b_rightClick }
+			{ "b_rightClick", m_b_rightClick },
+			{ "canvasPlacement", m_canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
 
@@ -64,16 +63,18 @@ namespace FlatEngine
 		
         Component::PutData(componentJson, objectName);	
 
+		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
+			m_canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);		
+
 		LuaManager::LuaParameter parameter;
 		if (JsonHelper::JsonContains(componentJson, "functionParameters", objectName))
 			parameter.PutData(componentJson.at("functionParameters"), objectName);
 		SetFunctionParams(parameter);
 
 		SetDimensions(Vector2(JsonHelper::CheckJsonFloat(componentJson, "width", objectName), JsonHelper::CheckJsonFloat(componentJson, "height", objectName)));
-		m_offset = Vector2(JsonHelper::CheckJsonFloat(componentJson, "activeOffsetX", objectName), JsonHelper::CheckJsonFloat(componentJson, "activeOffsetY", objectName));		
+		m_offset = Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName));		
 		SetFunctionName(JsonHelper::CheckJsonString(componentJson, "functionName", objectName));
-		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "b_cppEvent", objectName));
-		SetIsLua(JsonHelper::CheckJsonBool(componentJson, "b_luaEvent", objectName));								
+		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "b_luaFunction", objectName));						
 		SetLeftClick(JsonHelper::CheckJsonBool(componentJson, "b_leftClick", objectName));
 		SetRightClick(JsonHelper::CheckJsonBool(componentJson, "b_rightClick", objectName));	
     }
@@ -83,6 +84,8 @@ namespace FlatEngine
 		if (setDimensions.x > 0 && setDimensions.y > 0)
 		{
 			m_dimensions = setDimensions;
+			m_canvasPlacement.dimensions = m_dimensions;
+			m_canvasPlacement.UpdatePivotOffset();
 		}
 		else
 		{
@@ -284,5 +287,10 @@ namespace FlatEngine
 	void Button::OnRightClick()
 	{
 		m_onRightClickCallback(GetOwningObject());
+	}
+
+	CanvasPlacement* Button::GetCanvasPlacement()
+	{
+		return &m_canvasPlacement;
 	}
 }

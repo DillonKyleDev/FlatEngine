@@ -1,4 +1,5 @@
 #pragma once
+#include "components/Canvas.h"
 #include "components/Component.h"
 #include "managers/LuaManager.h"
 #include "tools/JsonHelper.h"
@@ -43,6 +44,8 @@ namespace FlatEngine
 		void SetRightClick(bool b_rightClick);
 		bool GetRightClick();
 
+		CanvasPlacement* GetCanvasPlacement();
+
 		void SetOnMouseEnterCallback(void (*callback)(GameObject* caller));
 		void SetOnMouseLeaveCallback(void (*callback)(GameObject* caller));
 		void SetOnMouseOverCallback(void (*callback)(GameObject* caller));
@@ -64,6 +67,7 @@ namespace FlatEngine
 		LuaManager::LuaParameterContainer parameterContainer;
 
 	private:
+		CanvasPlacement m_canvasPlacement;
 		bool m_b_mouseIsOver;
 		bool m_b_hasMouseOverFired;
 		Vector2 m_dimensions;
@@ -72,7 +76,6 @@ namespace FlatEngine
 		std::string m_functionName;
 		LuaManager::LuaParameter m_functionParams;	
 		bool m_b_luaFunction;
-		bool m_b_cppFunction;
 		bool m_b_leftClick;
 		bool m_b_rightClick;
 		// for C++ scripting

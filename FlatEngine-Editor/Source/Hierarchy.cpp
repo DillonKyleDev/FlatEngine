@@ -175,9 +175,7 @@ namespace FlatGui
 				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Unpack prefab"))
 				{
-					currentObject->SetIsPrefab(false);
-					currentObject->SetPrefabName("");
-					currentObject->SetPrefabSpawnLocation(FL::Vector3());
+					FL::PrefabManager::UnpackPrefab(currentObject);
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderMenuSeparator();
@@ -277,9 +275,7 @@ namespace FlatGui
 				FL::GuiCore::RenderMenuSeparator();
 				if (FL::GuiCore::MenuItem("Unpack prefab"))
 				{
-					currentObject->SetIsPrefab(false);
-					currentObject->SetPrefabName("");
-					currentObject->SetPrefabSpawnLocation(FL::Vector3());
+					FL::PrefabManager::UnpackPrefab(currentObject);
 					ImGui::CloseCurrentPopup();
 				}
 				FL::GuiCore::RenderMenuSeparator();

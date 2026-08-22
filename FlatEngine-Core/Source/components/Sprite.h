@@ -1,7 +1,7 @@
 #pragma once
+#include "components/Canvas.h"
 #include "components/Component.h"
 #include "components/Mesh.h"
-#include "render/Texture.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
 
@@ -28,27 +28,20 @@ namespace FlatEngine
 		void SetOffset(Vector2 offset);
 		Vector2 GetOffset();
 		void RemoveTexture();
-		void SetPivotPoint(Pivot newPivot);
-		Pivot GetPivotPoint();
-		std::string GetPivotPointString();
-		void SetPivotOffset(Vector2 newPivotOffset);
-		void SetPivotPoint(std::string newPivot);
-		void UpdatePivotOffset();
-		Vector2 GetPivotOffset();
 		void SetTintColor(Vector4 newTintColor);
 		Vector4 GetTintColor();
 		void SetAlpha(float);
 		float GetAlpha();
+		CanvasPlacement* GetCanvasPlacement();
 		
 		Mesh mesh;
 
 	private:		
+		CanvasPlacement m_canvasPlacement;
 		int m_renderOrder;
 		int m_textureWidth;
 		int m_textureHeight;
 		Vector2 m_scale;
-		Pivot m_pivotPoint;
-		Vector2 m_pivotOffset;
 		Vector2 m_offset;
 		std::string m_path;
 		Vector4 m_tintColor;

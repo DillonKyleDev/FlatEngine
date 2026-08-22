@@ -1,6 +1,8 @@
+#include "components/Canvas.h"
 #include "components/Sprite.h"
 #include "managers/Assets.h"
 #include "tools/FileHelper.h"
+#include "tools/JsonHelper.h"
 #include "tools/Logger.h"
 
 
@@ -13,10 +15,7 @@ namespace FlatEngine
 		mesh = Mesh(ownerID);
 		m_textureWidth = 0;
 		m_textureHeight = 0;
-		m_scale = Vector2(1);
-		m_pivotPoint = Pivot::PivotCenter;
-		m_pivotOffset = Vector2();
-		m_offset = Vector2();
+		m_scale = Vector2(1);		
 		m_path = "";
 		m_tintColor = Vector4(1);
 		m_renderOrder = 0;
@@ -30,17 +29,17 @@ namespace FlatEngine
 	json Sprite::GetData(bool b_IDOverride)
 	{
 		json componentJson = { 
-			{ "path", m_path },
-			{ "xScale", m_scale.x },
-			{ "yScale", m_scale.y },
-			{ "pivotPoint", GetPivotPointString() },
-			{ "xOffset", m_offset.x },
-			{ "yOffset", m_offset.y },
-			{ "tintColorX", m_tintColor.x },
-			{ "tintColorY", m_tintColor.y },
-			{ "tintColorZ", m_tintColor.z },
-			{ "tintColorW", m_tintColor.w },
-			{ "renderOrder", m_renderOrder }			
+			{ "path",            m_path },
+			{ "xScale",          m_scale.x },
+			{ "yScale",          m_scale.y },			
+			{ "xOffset",         m_offset.x },
+			{ "yOffset",         m_offset.y },
+			{ "tintColorX",      m_tintColor.x },
+			{ "tintColorY",      m_tintColor.y },
+			{ "tintColorZ",      m_tintColor.z },
+			{ "tintColorW",      m_tintColor.w },
+			{ "renderOrder",     m_renderOrder },
+			{ "canvasPlacement", m_canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
 		
@@ -54,8 +53,9 @@ namespace FlatEngine
 		
         Component::PutData(componentJson, objectName);
 
-		std::string pivotPoint = "Center";
-		SetPivotPoint(JsonHelper::CheckJsonString(componentJson, "pivotPoint", objectName));
+		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
+			m_canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);		
+				
 		SetScale(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xScale", objectName), JsonHelper::CheckJsonFloat(componentJson, "yScale", objectName)));
 		SetRenderOrder(JsonHelper::CheckJsonInt(componentJson, "renderOrder", objectName));
 		SetTintColor(Vector4(
@@ -72,7 +72,8 @@ namespace FlatEngine
 		else
 		{
 			SetTexture(path);
-		}
+		}		
+		
 		SetOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName)));
     }
 
@@ -95,13 +96,12 @@ namespace FlatEngine
 				m_textureWidth = meshTextures.at(0).GetWidth();
 				m_textureHeight = meshTextures.at(0).GetHeight();
 
-				// Set pivot point to the center of the texture by default
-				m_offset = Vector2((float)m_textureWidth / 2, (float)m_textureHeight / 2);
-				m_pivotOffset = m_offset;				
+				m_offset = Vector2((float)m_textureWidth / 2, (float)m_textureHeight / 2);				
+				m_canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);			
 			}
 			else
 			{
-				// Set broken texture Texture
+				// Set broken texture
 				meshTextures.at(0).LoadFromFile(Assets::assetManager.GetFailedToLoadImagePath());				
 
 				if (m_textureWidth == 0 || m_textureHeight == 0)
@@ -109,17 +109,19 @@ namespace FlatEngine
 					m_textureWidth = 50;
 					m_textureHeight = 50;
 					SetOffset(Vector2(25, 25));
+					m_canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);	
 				}
 
 				Logger::log.Err("Sprite::SetTexture() - Texture could not be loaded.");
-			}							
+			}		
+			
+			m_canvasPlacement.UpdatePivotOffset();
 		}
 	}
 
 	void Sprite::SetOffset(Vector2 newOffset)
 	{
 		m_offset = newOffset;
-		SetScale(m_scale);
 	}
 
 	Vector2 Sprite::GetOffset()
@@ -134,17 +136,9 @@ namespace FlatEngine
 
 	void Sprite::SetScale(Vector2 newScale)
 	{		
-		Vector2 oldScale = m_scale;
-		m_scale = newScale;
-
-		if ((oldScale.x == 0 || oldScale.y == 0) && (newScale.x != 0 && newScale.y != 0))
+		if (newScale.x != 0 && newScale.y != 0)
 		{
-			SetTexture(m_path);
-		}
-
-		if (m_scale.x == 0 || m_scale.y == 0)
-		{
-			mesh.CleanupTextures();
+			m_scale = newScale;
 		}
 	}
 
@@ -184,110 +178,6 @@ namespace FlatEngine
 		// mesh.CleanupTextures();
 	}
 
-	void Sprite::SetPivotPoint(Pivot newPivot)
-	{
-		m_pivotPoint = newPivot;
-		UpdatePivotOffset();
-	}
-
-	void Sprite::SetPivotPoint(std::string newPivot)
-	{
-		for (int i = 0; i < F_PivotStrings->size(); i++)
-		{
-			if (newPivot == F_PivotStrings[i])
-			{
-				m_pivotPoint = Pivot(i);
-				UpdatePivotOffset();
-				return;
-			}
-		}
-
-		m_pivotPoint = Pivot::PivotCenter;
-		UpdatePivotOffset();
-	}
-
-	void Sprite::UpdatePivotOffset()
-	{
-		Vector2 centeredOffset = Vector2((float)m_textureWidth / 2, (float)m_textureHeight / 2);
-
-		switch (m_pivotPoint)
-		{
-		case Pivot::PivotCenter:
-		{
-			m_pivotOffset = centeredOffset;
-			break;
-		}
-		case Pivot::PivotLeft:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x - ((float)m_textureWidth / 2), centeredOffset.y);
-			break;
-		}
-		case Pivot::PivotRight:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x + ((float)m_textureWidth / 2), centeredOffset.y);
-			break;
-		}
-		case Pivot::PivotTop:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y - ((float)m_textureHeight / 2));
-			break;
-		}
-		case Pivot::PivotBottom:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y + ((float)m_textureHeight / 2));
-			break;
-		}
-
-		case Pivot::PivotTopLeft:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x - ((float)m_textureWidth / 2), centeredOffset.y - ((float)m_textureHeight / 2));
-			break;
-		}
-		case Pivot::PivotTopRight:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x + ((float)m_textureWidth / 2), centeredOffset.y - ((float)m_textureHeight / 2));
-			break;
-		}
-		case Pivot::PivotBottomLeft:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x - ((float)m_textureWidth / 2), centeredOffset.y + ((float)m_textureHeight / 2));
-			break;
-		}
-		case Pivot::PivotBottomRight:
-		{
-			m_pivotOffset = Vector2(centeredOffset.x + ((float)m_textureWidth / 2), centeredOffset.y + ((float)m_textureHeight / 2));
-			break;
-		}
-		default:
-		{
-			m_pivotOffset = m_offset;
-			break;
-		}
-		}
-
-		m_offset = m_pivotOffset;
-	}
-
-	Pivot Sprite::GetPivotPoint()
-	{
-		return m_pivotPoint;
-	}
-
-	std::string Sprite::GetPivotPointString()
-	{
-		return F_PivotStrings[m_pivotPoint];
-	}
-
-	void Sprite::SetPivotOffset(Vector2 newPivotOffset)
-	{
-		m_pivotOffset = newPivotOffset;
-	}
-
-	Vector2 Sprite::GetPivotOffset()
-	{
-		return m_pivotOffset;
-	}
-
 	// for r, g, b, a, enter floats between 0.0f - 1.0f
 	void Sprite::SetTintColor(Vector4 newTintColor)
 	{
@@ -313,5 +203,10 @@ namespace FlatEngine
 	float Sprite::GetAlpha()
 	{
 		return m_tintColor.w;
+	}
+
+	CanvasPlacement* Sprite::GetCanvasPlacement()
+	{
+		return &m_canvasPlacement;
 	}
 }

@@ -612,7 +612,7 @@ namespace FlatGui
 					}
 					FL::GuiCore::PopMenuStyles();	
 										
-					FL::GuiCore::RenderSectionHeader("", 3.0f, 3.0f, "sectionHeaderEmptyBg", "separator");	
+					FL::GuiCore::RenderSectionHeader("", 0, 0, "sectionHeaderEmptyBg", "separator");	
 
 					if (Animator::selectedKeyframe->type == FL::PropertyType_Event)
 					{
@@ -695,9 +695,12 @@ namespace FlatGui
 						FL::TransformProp* transformProp = static_cast<FL::TransformProp*>(Animator::selectedKeyframe);					
 						static ImGuiSliderFlags flags = ImGuiSliderFlags_::ImGuiSliderFlags_None;
 						
-						FL::GuiCore::RenderSectionHeader("Transform Property Settings", 0.0f, 5.0f, "sectionHeaderKeyframeEditor", "sectionHeaderSeparatorKeyframeEditor");
+						FL::GuiCore::RenderSectionHeader("Transform Property Settings", 0.0f, 0.0f, "sectionHeaderKeyframeEditor", "sectionHeaderSeparatorKeyframeEditor");
+						FL::GuiCore::MoveScreenCursor(0, 3);
 						FL::GuiCore::RenderCheckbox("Start At Origin##startAtOrigin", Animator::loadedAnimation.b_startAtOrigin);							
-						FL::GuiCore::RenderSectionHeader("Keyframe Property Settings", 5.0f, 5.0f, "sectionHeaderKeyframeEditor", "sectionHeaderSeparatorKeyframeEditor");											
+						FL::GuiCore::MoveScreenCursor(0, 3);
+						FL::GuiCore::RenderSectionHeader("Keyframe Property Settings", 0.0f, 0.0f, "sectionHeaderKeyframeEditor", "sectionHeaderSeparatorKeyframeEditor");											
+						FL::GuiCore::MoveScreenCursor(0, 3);
 						FL::GuiCore::RenderCheckbox("POSITION##b_posAnimated", transformProp->b_posAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("ROTATION##b_rotationAnimated", transformProp->b_rotationAnimated); ImGui::SameLine();
 						FL::GuiCore::RenderCheckbox("SCALE##b_scaleAnimated", transformProp->b_scaleAnimated);

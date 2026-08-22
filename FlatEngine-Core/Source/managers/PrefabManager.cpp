@@ -186,5 +186,23 @@ namespace FlatEngine
 		{
 			return prefabs;
 		}
+
+		void UnpackPrefab(GameObject* gameObject)
+		{
+			gameObject->SetIsPrefab(false);
+			gameObject->SetIsPrefabChild(false);
+			gameObject->SetPrefabName("");
+			gameObject->SetPrefabSpawnLocation(FL::Vector3());
+
+			for (long childID : gameObject->GetChildren())
+			{
+				GameObject* child = SceneManager::loadedScene.GetObjectByID(childID);
+
+				if (child != nullptr)
+				{
+					UnpackPrefab(child);
+				}
+			}
+		}
 	}
 }

@@ -29,9 +29,7 @@ namespace FlatEngine
 			loadedScenePath = "";
 			loadedAnimationPath = "";
 			currentFileDirectory = "../";
-			persistentScriptPath = "";
 			sceneToLoadAtRuntime = "";
-			persistentScript = Script();
 			b_autoSave = true;
 			m_musicVolume = 10;
 			m_effectsVolume = 10;
@@ -59,7 +57,8 @@ namespace FlatEngine
 				{ "musicVolume", GetMusicVolume() },
 				{ "effectsVolume", GetEffectsVolume() },
 				{ "currentFileDirectory", currentFileDirectory },				
-				{ "b_persistentScriptActive", persistentScript.IsActive() }
+				{ "b_persistentScriptActive", persistentScript.IsActive() },
+				{ "persistentScript", persistentScript.GetData() }
 			});
 
 			json focusedIDs = json::array();
@@ -105,22 +104,6 @@ namespace FlatEngine
 				{
 					Logger::log.Err("{}", e.what());
 				}
-			}
-		}
-
-		void Project::SavePersistentScript(std::string path)
-		{			
-			json persistentScriptJson = json::object({ {"Persistent Script", persistentScript.GetData() } });
-			JsonHelper::WriteJsonToFile(persistentScriptJson, path != "" ? path : persistentScriptPath);
-		}
-
-		void Project::LoadPersistentScript(std::string path)
-		{			
-			json fileContentJson = JsonHelper::LoadFileData(path != "" ? path : persistentScriptPath);
-
-			if (fileContentJson.contains("Persistent Script"))
-			{		
-				persistentScript.PutData(fileContentJson["Persistent Script"], "Persistant Script");
 			}
 		}
 
@@ -258,9 +241,7 @@ namespace FlatEngine
 				std::string projectFilePath = directoryPath + "/" + projectName + ".prj";
 				std::string persistentScriptPath = directoryPath + "/persistent_scripts_" + projectName + ".scn";
 
-				CreateProjectDirectory(directoryPath);
-
-				newProject.persistentScriptPath = persistentScriptPath;				
+				CreateProjectDirectory(directoryPath);	
 
 				SaveProject(&newProject, projectFilePath);
 				LoadProject(projectFilePath);

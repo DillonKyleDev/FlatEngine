@@ -37,6 +37,7 @@ namespace FlatEngine
 	void Scene::Unload()
 	{
 		m_sceneObjects.Clear();
+		m_sortedHierarchyObjects.clear();
 		m_Transforms.Clear();
 		m_Animations.Clear();
 		m_Audios.Clear();

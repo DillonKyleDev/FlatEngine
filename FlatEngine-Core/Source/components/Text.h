@@ -1,4 +1,5 @@
 #pragma once
+#include "components/Canvas.h"
 #include "components/Component.h"
 #include "render/Texture.h"
 #include "tools/Vector2.h"
@@ -35,16 +36,12 @@ namespace FlatEngine
 		std::string GetText();
 		void SetOffset(Vector2 offset);
 		Vector2 GetOffset();
-		void SetPivotPoint(Pivot newPivot);
-		void SetPivotPoint(std::string newPivot);
-		void SetPivotPointLua(std::string newPivot);
-		Pivot GetPivotPoint();
-		std::string GetPivotPointString();
-		void SetPivotOffset(Vector2 newPivotOffset);
-		Vector2 GetPivotOffset();
-		void UpdatePivotOffset();
+		CanvasPlacement* GetCanvasPlacement();
 		
 	private:
+		CanvasPlacement m_canvasPlacement;
+		int m_textureWidth;
+		int m_textureHeight;
 		TTF_Font* m_font;
 		std::string m_fontPath;
 		int m_fontSize;
@@ -52,8 +49,6 @@ namespace FlatEngine
 		Vector4 m_tintColor;
 		std::shared_ptr<Texture> m_texture;
 		Vector2 m_offset;
-		Pivot m_pivotPoint;
-		Vector2 m_pivotOffset;
 		int m_renderOrder;
 		SDL_Color m_white;
 		SDL_Color m_transparent;

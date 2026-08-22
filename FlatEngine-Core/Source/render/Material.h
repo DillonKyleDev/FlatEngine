@@ -3,6 +3,7 @@
 #include "render/GraphicsPipeline.h"
 #include "render/RenderPass.h"
 #include "render/Texture.h"
+#include "tools/JsonHelper.h"
 
 #include <string>
 #include <map>
@@ -16,8 +17,7 @@ namespace FlatEngine
 	public:
 		Material(std::string name, std::string vertexPath, std::string fragmentPath);
 		Material();
-		~Material();
-		std::string GetData();
+		json GetData();
 		void Init();
 		bool Initialized();	
 		void Cleanup();

@@ -14,29 +14,6 @@ namespace FlatEngine
 		VkDescriptorType descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	};
 
-	enum Pivot {
-		PivotCenter,
-		PivotLeft,
-		PivotRight,
-		PivotTop,
-		PivotBottom,
-		PivotTopLeft,
-		PivotTopRight,
-		PivotBottomRight,
-		PivotBottomLeft
-	};
-	const std::string F_PivotStrings[9] = {
-		"PivotCenter",
-		"PivotLeft",
-		"PivotRight",
-		"PivotTop",
-		"PivotBottom",
-		"PivotTopLeft",
-		"PivotTopRight",
-		"PivotBottomRight",
-		"PivotBottomLeft"
-	};
-
 	class Texture
 	{
 	public:

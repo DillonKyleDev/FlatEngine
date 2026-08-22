@@ -19,10 +19,6 @@ namespace FlatEngine
 		SetDefaultValues();
 	}
 
-	Material::~Material()
-	{
-	}
-
 	void Material::SetDefaultValues()
 	{		
 		m_texturePipelineData = std::map<uint32_t, TexturePipelineData>();		
@@ -62,7 +58,7 @@ namespace FlatEngine
 		m_graphicsPipeline.SetColorBlendAttachmentCreateInfos(m_colorBlendAttachment);
 	}
 
-	std::string Material::GetData()
+	json Material::GetData()
 	{
 		json inputAssemblyData = {
 			{ "topology", (int)m_inputAssembly.topology },
@@ -107,9 +103,7 @@ namespace FlatEngine
 			{ "texturePipelineData", texturesShaderData }
 		};
 
-		std::string data = jsonData.dump(4);
-		// Return dumped json object with required data for saving
-		return data;
+		return jsonData;
 	}
 
 	void Material::Init()

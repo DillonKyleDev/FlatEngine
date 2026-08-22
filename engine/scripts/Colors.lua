@@ -134,6 +134,8 @@ F_Colors = {
 	transformYBGDark   = Vector4:new(0.06, 0.14625, 0.3225, 1.0),
 	transformZBGDark   = Vector4:new(0.3075, 0.06, 0.06, 1.0),
 	transformWBGDark  = Vector4:new(0.435, 0.375, 0.06, 1.0),
+	canvasDemoBoxBg = Vector4:new(0.35, 0.35, 0.38, 1.0),
+	canvasDemoBoxSeparators = Vector4:new(0.45, 0.45, 0.45, 1.0),
 	-- Buttons container
 	cursorModeSelectBg = Vector4:new(0.9, 0.9, 0.9, 0.05),
 	cursorModeSelectBorder = Vector4:new(0.9, 0.9, 0.9, 0.2),
@@ -223,8 +225,8 @@ F_Colors = {
 	rectColor3 = Vector4:new(0.33, 0.84, 0.03, 0.4), -- Sprite
 	rectColor4 = Vector4:new(0.06, 0.68, 0.89, 0.4), -- Text
 	-- Mapping Context Editor
-	mappingContextEditorBg = Vector4:new(0.22, 0.22, 0.26, 1.0),
-	mappingContextLabelColor = Vector4:new(0.45, 0.45, 0.51, 0.5),
+	mappingContextEditorBg = Vector4:new(0.2, 0.2, 0.22, 1.0),
+	mappingContextLabelColor = Vector4:new(0.44, 0.44, 0.5, 0.5),
 	mappingContextLabelTextColor = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	-- Docking
 	dockingPreview = Vector4:new(0.3, 0.3, 0.65, 1.0),
@@ -293,7 +295,7 @@ F_Colors = {
 	buttonActive = Vector4:new(0.2, 0.2, 0.5, 0.8),
 	imageButton = Vector4:new(0.18, 0.18, 0.2, 1.0),
 	imageButtonDark = Vector4:new(0.15, 0.15, 0.15, 1.0),
-	imageButtonHovered = Vector4:new(1.0, 1.0, 1.0, 0.3),
+	imageButtonHovered = Vector4:new(0.35, 0.35, 0.75, 1.0),
 	imageButtonActive = Vector4:new(0.1, 0.1, 0.1, 1.0),
 	imageButtonTint = Vector4:new(1.0, 1.0, 1.0, 1.0),
 	imageButtonHoveredWaitingForInput = Vector4:new(1.0, 0.0, 0.0, 1.0),

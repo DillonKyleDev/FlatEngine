@@ -44,13 +44,13 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case JointType2D_Distance:  { jointData = DistanceJoint2DData();  break; }
-			case JointType2D_Revolute:  { jointData = PrismaticJoint2DData(); break; }
-			case JointType2D_Prismatic: { jointData = RevoluteJoint2DData();  break; }
-			case JointType2D_Mouse:     { jointData = MouseJoint2DData();     break; }
-			case JointType2D_Weld:      { jointData = WheelJoint2DData();     break; }
-			case JointType2D_Wheel:     { jointData = MotorJoint2DData();     break; }
-			case JointType2D_Motor:     { jointData = WeldJoint2DData();      break; }
+			case JointType2D_Distance:  jointData = DistanceJoint2DData();  break; 
+			case JointType2D_Revolute:  jointData = PrismaticJoint2DData(); break; 
+			case JointType2D_Prismatic: jointData = RevoluteJoint2DData();  break; 
+			case JointType2D_Mouse:     jointData = MouseJoint2DData();     break; 
+			case JointType2D_Weld:      jointData = WheelJoint2DData();     break; 
+			case JointType2D_Wheel:     jointData = MotorJoint2DData();     break; 
+			case JointType2D_Motor:     jointData = WeldJoint2DData();      break; 
 			default: break;
 		}
 		renderShapes.push_back(SceneView::CreateLineObject());

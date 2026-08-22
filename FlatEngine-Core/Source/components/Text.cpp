@@ -11,12 +11,11 @@ namespace FlatEngine
 	{
 		SetType(ComponentType_Text);
 		SetOwnerID(ownerID);
-		m_fontPath = Assets::assetManager.GetFilePath("cinzelBlack");
+		m_textureWidth = 0;
+		m_textureHeight = 0;		
 		m_fontSize = 40;
-		m_font = TTF_OpenFont(m_fontPath.c_str(), m_fontSize);
+		m_font = nullptr;
 		m_offset = Vector2(0, 0);
-		m_pivotPoint = PivotCenter;
-		m_pivotOffset = Vector2(0, 0); 
 		m_tintColor = Vector4(1,1,1,1);
 		m_text = "Sample Text";
 		m_renderOrder = 0;
@@ -35,17 +34,17 @@ namespace FlatEngine
 	json Text::GetData(bool b_IDOverride)
 	{
 		json componentJson = {
-			{ "fontPath", m_fontPath },
-			{ "text", m_text },
-			{ "fontSize", m_fontSize },
-			{ "pivotPoint", GetPivotPointString() },
-			{ "tintColorX", m_tintColor.x },
-			{ "tintColorY", m_tintColor.y },
-			{ "tintColorZ", m_tintColor.z },
-			{ "tintColorW", m_tintColor.w },
-			{ "xOffset", m_offset.x },
-			{ "yOffset", m_offset.y },
-			{ "renderOrder", m_renderOrder }
+			{ "fontPath",        m_fontPath },
+			{ "text",            m_text },
+			{ "fontSize",        m_fontSize },
+			{ "tintColorX",      m_tintColor.x },
+			{ "tintColorY",      m_tintColor.y },
+			{ "tintColorZ",      m_tintColor.z },
+			{ "tintColorW",      m_tintColor.w },
+			{ "xOffset",         m_offset.x },
+			{ "yOffset",         m_offset.y },
+			{ "renderOrder",     m_renderOrder },
+			{ "canvasPlacement", m_canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
 		
@@ -59,14 +58,11 @@ namespace FlatEngine
 		
         Component::PutData(componentJson, objectName);
 
-		std::string fontPath = JsonHelper::CheckJsonString(componentJson, "fontPath", objectName);
-		if (!FileHelper::DoesFileExist(fontPath))
-		{
-			Logger::log.Err("Font file not found for GameObject: {}. This may lead to unexpected behavior.  \npath: {}", objectName, fontPath);
-		}
-		SetFontPath(fontPath);
+		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
+			m_canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);		
+
+		SetFontPath(JsonHelper::CheckJsonString(componentJson, "fontPath", objectName));
 		SetFontSize(JsonHelper::CheckJsonInt(componentJson, "fontSize", objectName));
-		SetPivotPoint(JsonHelper::CheckJsonString(componentJson, "pivotPoint", objectName));
 		SetColor(Vector4(
 			JsonHelper::CheckJsonFloat(componentJson, "tintColorX", objectName),
 			JsonHelper::CheckJsonFloat(componentJson, "tintColorY", objectName),
@@ -76,28 +72,23 @@ namespace FlatEngine
 		SetText(JsonHelper::CheckJsonString(componentJson, "text", objectName));
 		SetRenderOrder(JsonHelper::CheckJsonInt(componentJson, "renderOrder", objectName));
 		SetOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName)));
+		
+		LoadText();
     }
 
 	void Text::LoadText()
 	{
-		if (m_text != "" && m_font != nullptr && m_fontSize > 0 && m_texture != nullptr)
+		if (m_text == "")
+			m_text = "Sample Text";
+
+		if (m_font != nullptr && m_texture != nullptr)
 		{
 			m_texture->LoadFromRenderedText(m_text, m_white, m_font);
-			m_pivotOffset = Vector2((float)m_texture->GetWidth() / 2, (float)m_texture->GetHeight() / 2.0f);
-		}
-		else if (m_texture != nullptr)
-		{
-			if (m_font == nullptr)
-			{
-				TTF_CloseFont(m_font);
-				Logger::log.Err("Font not valid in {} Text component.", GetOwningObject() != nullptr ? GetOwningObject()->GetName() : "nullptr");
-			}
-			m_texture->FreeTexture();
-			m_pivotOffset = Vector2(0,0);
-			m_offset = m_pivotOffset;
-		}
-
-		UpdatePivotOffset();
+			m_textureWidth = m_texture->GetWidth();
+			m_textureHeight = m_texture->GetHeight();
+			m_canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);
+			m_canvasPlacement.UpdatePivotOffset();
+		}		
 	}
 
 	void Text::SetRenderOrder(int order)
@@ -117,22 +108,12 @@ namespace FlatEngine
 
 	void Text::SetFontPath(std::string path)
 	{
-		m_fontPath = path;
-		if (path != "" && m_fontSize > 0)
-		{
-			m_font = TTF_OpenFont(m_fontPath.c_str(), m_fontSize);
-			LoadText();
-		}
-		else
-		{
-			TTF_CloseFont(m_font);
-			m_font = nullptr;
-			if (m_texture != nullptr)
-			{
-				m_texture->FreeTexture();
-			}
-			Logger::log.Err("Font not valid in {} Text component.", GetOwningObject() != nullptr ? GetOwningObject()->GetName() : "nullptr");
-		}
+		m_fontPath = FileHelper::DoesFileExist(path) ? path : Assets::assetManager.GetFilePath("mainFont");
+		if (m_fontSize <= 0)
+				m_fontSize = 40;
+		
+		m_font = TTF_OpenFont(m_fontPath.c_str(), m_fontSize);				
+		LoadText();
 	}
 
 	std::string Text::GetFontPath()
@@ -190,115 +171,8 @@ namespace FlatEngine
 		return m_offset;
 	}
 
-	void Text::SetPivotPoint(Pivot newPivot)
+	CanvasPlacement* Text::GetCanvasPlacement()
 	{
-		m_pivotPoint = newPivot;
-		UpdatePivotOffset();
-	}
-
-	void Text::SetPivotPoint(std::string newPivot)
-	{
-		for (int i = 0; i < F_PivotStrings->size(); i++)
-		{
-			if (newPivot == F_PivotStrings[i])
-			{
-				m_pivotPoint = Pivot(i);
-				return;
-			}
-		}
-
-		m_pivotPoint = Pivot::PivotCenter;	
-		Logger::log.Err("Pivot point string not valid. Use 'Pivot<Direction>': ie. PivotLeft, PivotRight, PivotCenter");
-		UpdatePivotOffset();
-	}
-
-	void Text::SetPivotPointLua(std::string newPivot)
-	{
-		SetPivotPoint(newPivot);
-	}
-
-	Pivot Text::GetPivotPoint()
-	{
-		return m_pivotPoint;
-	}
-
-	std::string Text::GetPivotPointString()
-	{
-		return F_PivotStrings[m_pivotPoint];
-	}
-
-	void Text::SetPivotOffset(Vector2 newPivotOffset)
-	{
-		m_pivotOffset = newPivotOffset;
-	}
-
-	Vector2 Text::GetPivotOffset()
-	{
-		return m_pivotOffset;
-	}
-
-	void Text::UpdatePivotOffset()
-	{
-		if (m_texture != nullptr)
-		{
-			Vector2 centeredOffset = Vector2((float)m_texture->GetWidth() / 2, (float)m_texture->GetHeight() / 2.0f);
-
-			switch (m_pivotPoint)
-			{
-			case Pivot::PivotCenter:
-			{
-				m_pivotOffset = centeredOffset;
-				break;
-			}
-			case Pivot::PivotLeft:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2.0f), centeredOffset.y);
-				break;
-			}
-			case Pivot::PivotRight:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2.0f), centeredOffset.y);
-				break;
-			}
-			case Pivot::PivotTop:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y - (m_texture->GetHeight() / 2.0f));
-				break;
-			}
-			case Pivot::PivotBottom:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x, centeredOffset.y + (m_texture->GetHeight() / 2.0f));
-				break;
-			}
-
-			case Pivot::PivotTopLeft:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2.0f), centeredOffset.y - (m_texture->GetHeight() / 2.0f));
-				break;
-			}
-			case Pivot::PivotTopRight:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2.0f), centeredOffset.y - (m_texture->GetHeight() / 2.0f));
-				break;
-			}
-			case Pivot::PivotBottomLeft:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x - (m_texture->GetWidth() / 2.0f), centeredOffset.y + (m_texture->GetHeight() / 2.0f));
-				break;
-			}
-			case Pivot::PivotBottomRight:
-			{
-				m_pivotOffset = Vector2(centeredOffset.x + (m_texture->GetWidth() / 2.0f), centeredOffset.y + (m_texture->GetHeight() / 2.0f));
-				break;
-			}
-			default:
-			{
-				m_pivotOffset = m_offset;
-				break;
-			}
-			}
-
-			m_offset = m_pivotOffset;
-		}
+		return &m_canvasPlacement;
 	}
 }

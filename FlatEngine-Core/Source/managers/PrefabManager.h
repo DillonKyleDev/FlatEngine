@@ -25,5 +25,6 @@ namespace FlatEngine
 		extern void InitializePrefabs();
 		extern GameObject* Instantiate(std::string prefabName, Vector3 spawnLocation = Vector3(), long parentID = -1, long ID = -1);
 		extern std::map<std::string, Prefab> GetPrefabs();
+		extern void UnpackPrefab(GameObject* gameObject);
 	}
 }

@@ -136,11 +136,11 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case ShapeType2D_Box:     { m_boxes.push_back(std::move(shape));    PhysicsManager::gamePhysics2D.CreateShape(&m_boxes.back(), this); break; }
-			case ShapeType2D_Circle:  { m_circles.push_back(std::move(shape));  PhysicsManager::gamePhysics2D.CreateShape(&m_circles.back(), this); break; }
-			case ShapeType2D_Capsule: { m_capsules.push_back(std::move(shape)); PhysicsManager::gamePhysics2D.CreateShape(&m_capsules.back(), this); break; }
-			case ShapeType2D_Polygon: { m_polygons.push_back(std::move(shape)); PhysicsManager::gamePhysics2D.CreateShape(&m_polygons.back(), this); break; }			
-			case ShapeType2D_Chain:   { m_chains.push_back(std::move(shape));   PhysicsManager::gamePhysics2D.CreateShape(&m_chains.back(), this); break; }
+			case ShapeType2D_Box:     m_boxes.push_back(std::move(shape));    PhysicsManager::gamePhysics2D.CreateShape(&m_boxes.back(), this); break; 
+			case ShapeType2D_Circle:  m_circles.push_back(std::move(shape));  PhysicsManager::gamePhysics2D.CreateShape(&m_circles.back(), this); break; 
+			case ShapeType2D_Capsule: m_capsules.push_back(std::move(shape)); PhysicsManager::gamePhysics2D.CreateShape(&m_capsules.back(), this); break; 
+			case ShapeType2D_Polygon: m_polygons.push_back(std::move(shape)); PhysicsManager::gamePhysics2D.CreateShape(&m_polygons.back(), this); break; 			
+			case ShapeType2D_Chain:   m_chains.push_back(std::move(shape));   PhysicsManager::gamePhysics2D.CreateShape(&m_chains.back(), this); break; 
 			default: break;
 		}
 	}
@@ -152,13 +152,13 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case JointType2D_Distance:  { m_distanceJoints.push_back(std::move(joint));  PhysicsManager::gamePhysics2D.CreateJoint(&m_distanceJoints.back()); break; }
-			case JointType2D_Prismatic: { m_prismaticJoints.push_back(std::move(joint)); PhysicsManager::gamePhysics2D.CreateJoint(&m_prismaticJoints.back()); break; }
-			case JointType2D_Revolute:  { m_revoluteJoints.push_back(std::move(joint));  PhysicsManager::gamePhysics2D.CreateJoint(&m_revoluteJoints.back()); break; }
-			case JointType2D_Mouse: 	{ m_mouseJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_mouseJoints.back()); break; }			
-			case JointType2D_Wheel: 	{ m_wheelJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_wheelJoints.back()); break; }
-			case JointType2D_Motor:     { m_motorJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_motorJoints.back()); break; }
-			case JointType2D_Weld:      { m_weldJoints.push_back(std::move(joint));      PhysicsManager::gamePhysics2D.CreateJoint(&m_weldJoints.back()); break; }
+			case JointType2D_Distance:  m_distanceJoints.push_back(std::move(joint));  PhysicsManager::gamePhysics2D.CreateJoint(&m_distanceJoints.back()); break; 
+			case JointType2D_Prismatic: m_prismaticJoints.push_back(std::move(joint)); PhysicsManager::gamePhysics2D.CreateJoint(&m_prismaticJoints.back()); break; 
+			case JointType2D_Revolute:  m_revoluteJoints.push_back(std::move(joint));  PhysicsManager::gamePhysics2D.CreateJoint(&m_revoluteJoints.back()); break; 
+			case JointType2D_Mouse: 	m_mouseJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_mouseJoints.back()); break; 		
+			case JointType2D_Wheel: 	m_wheelJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_wheelJoints.back()); break; 
+			case JointType2D_Motor:     m_motorJoints.push_back(std::move(joint));     PhysicsManager::gamePhysics2D.CreateJoint(&m_motorJoints.back()); break; 
+			case JointType2D_Weld:      m_weldJoints.push_back(std::move(joint));      PhysicsManager::gamePhysics2D.CreateJoint(&m_weldJoints.back()); break; 
 			default: break;
 		}		
 	}

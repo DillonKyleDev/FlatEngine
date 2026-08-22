@@ -514,8 +514,8 @@ namespace FlatEngine
 				"GetOwnerID", &Text::GetOwnerID,
 				"SetActive", &Text::SetActive,
 				"IsActive", &Text::IsActive,
-				"SetText", &Text::SetText,
-				"SetPivotPoint", &Text::SetPivotPointLua
+				"SetText", &Text::SetText
+				// "SetPivotPoint", &Text::SetPivotPointLua
 			);
 
 			lua.new_usertype<Audio>("Audio",

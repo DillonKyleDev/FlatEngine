@@ -15,11 +15,9 @@ namespace FlatEngine
 		{
 		public:
 			Project();
-			
 			json GetData();
 			void PutData(json projectJson);
-			void SavePersistentScript(std::string path = ""); // path for temp files when starting scene
-			void LoadPersistentScript(std::string path = "");			
+
 			void SetMusicVolume(int volume);
 			int GetMusicVolume();
 			void SetEffectsVolume(int volume);
@@ -32,7 +30,6 @@ namespace FlatEngine
 			void RefocusID(long withID);
 
 			std::string path;
-			std::string persistentScriptPath;
 			std::string buildPath;
 			std::string loadedScenePath;
 			std::string sceneToLoadAtRuntime;

@@ -19,7 +19,7 @@ namespace FlatGui
 		actionNameProps.labelColor = "mappingContextLabelColor";
 		actionNameProps.labelTextColor = "mappingContextLabelTextColor";
 		actionNameProps.labelWidth = 88;
-		actionNameProps.b_light = false;
+		actionNameProps.b_light = true;
 		actionNameProps.b_lightSet = true;		
 		FL::GuiCore::RenderStringTable(actionNameProps, actionName);
 	}
@@ -32,7 +32,7 @@ namespace FlatGui
 		pressTypeProps.labelColor = "mappingContextLabelColor";
 		pressTypeProps.labelTextColor = "mappingContextLabelTextColor";
 		pressTypeProps.labelWidth = 88;
-		pressTypeProps.b_light = true;
+		pressTypeProps.b_light = false;
 		pressTypeProps.b_lightSet = true;		
 		b_changed = FL::GuiCore::RenderComboTable(pressTypeProps, FL::Controls::PressTypeStrings[currentPressType], FL::Controls::PressTypeStrings, currentPressType);												
 
@@ -84,7 +84,7 @@ namespace FlatGui
 				comboTableProps.labelColor = "mappingContextLabelColor";
 				comboTableProps.labelTextColor = "mappingContextLabelTextColor";
 				comboTableProps.labelWidth = 120;
-				comboTableProps.b_light = false;
+				comboTableProps.b_light = true;
 				comboTableProps.b_lightSet = true;
 				if (FL::GuiCore::RenderComboTable(comboTableProps, FL::Controls::selectedMappingContextName, contextNames, currentContextNameIndex)) FL::Controls::selectedMappingContextName = contextNames[currentContextNameIndex];
 
@@ -115,7 +115,7 @@ namespace FlatGui
 					buttonProps.labelColor = "mappingContextLabelColor";
 					buttonProps.labelTextColor = "mappingContextLabelTextColor";
 					buttonProps.labelWidth = 88;
-					buttonProps.b_light = true;
+					buttonProps.b_light = false;
 					buttonProps.b_lightSet = true;	
 					FL::GuiCore::RenderComboTable(buttonProps, FL::Controls::KeyBindingsAvailable[currentContext->tempKeycode], FL::Controls::KeyBindingsAvailable, currentContext->tempKeycode);
 					ImGui::SameLine(0,0);

@@ -62,11 +62,11 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case ShapeType2D_Box:     { shapeData = BoxShape2DData();     renderShapes.push_back(SceneView::CreateQuadObject()); break; }
-			case ShapeType2D_Circle:  { shapeData = CircleShape2DData();  renderShapes.push_back(SceneView::CreateCircleObject());  break; }
-			case ShapeType2D_Capsule: { shapeData = CapsuleShape2DData(); renderShapes = SceneView::CreateCapsuleObject(); break; }
-			case ShapeType2D_Polygon: { shapeData = PolygonShape2DData(); renderShapes = SceneView::CreatePolygonObject(); break; }				
-			case ShapeType2D_Chain:   { shapeData = ChainShape2DData();   renderShapes = SceneView::CreateChainObject(); break; }
+			case ShapeType2D_Box:     shapeData = BoxShape2DData();     renderShapes.push_back(SceneView::CreateQuadObject()); break; 
+			case ShapeType2D_Circle:  shapeData = CircleShape2DData();  renderShapes.push_back(SceneView::CreateCircleObject());  break; 
+			case ShapeType2D_Capsule: shapeData = CapsuleShape2DData(); renderShapes = SceneView::CreateCapsuleObject(); break; 
+			case ShapeType2D_Polygon: shapeData = PolygonShape2DData(); renderShapes = SceneView::CreatePolygonObject(); break; 			
+			case ShapeType2D_Chain:   shapeData = ChainShape2DData();   renderShapes = SceneView::CreateChainObject(); break;
 			default: break;
 		}
 		std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData);

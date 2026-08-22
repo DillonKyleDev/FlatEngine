@@ -65,14 +65,10 @@ namespace FlatEngine
 			JsonHelper::CheckJsonFloat(componentJson, "tintColorW", objectName)
 		));
 		std::string path = JsonHelper::CheckJsonString(componentJson, "path", objectName);
-		if (!FileHelper::DoesFileExist(path))
-		{
-			Logger::log.Err("Sprite file not found for GameObject: {}. This may lead to unexpected behavior.  \npath: {}", objectName, path);
-		}
-		else
-		{
+		if (path != "" && !FileHelper::DoesFileExist(path))		
+			Logger::log.Err("Sprite file not found for GameObject: {}. This may lead to unexpected behavior.  \npath: {}", objectName, path);		
+		else if (path != "")		
 			SetTexture(path);
-		}		
 		
 		SetOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName)));
     }

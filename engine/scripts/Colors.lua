@@ -134,7 +134,7 @@ F_Colors = {
 	transformYBGDark   = Vector4:new(0.06, 0.14625, 0.3225, 1.0),
 	transformZBGDark   = Vector4:new(0.3075, 0.06, 0.06, 1.0),
 	transformWBGDark  = Vector4:new(0.435, 0.375, 0.06, 1.0),
-	canvasDemoBoxBg = Vector4:new(0.35, 0.35, 0.38, 1.0),
+	canvasDemoBoxBg = Vector4:new(0.38, 0.38, 0.4, 1.0),
 	canvasDemoBoxSeparators = Vector4:new(0.45, 0.45, 0.45, 1.0),
 	-- Buttons container
 	cursorModeSelectBg = Vector4:new(0.9, 0.9, 0.9, 0.05),

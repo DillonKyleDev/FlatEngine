@@ -157,9 +157,7 @@ namespace FlatGui
 
 		bool RenderPivotSelectionButtons(std::string ID, FL::CanvasPlacement* canvasPlacement)
 		{				
-			FL::GuiCore::MoveScreenCursor(4, 0);
-			std::string pivotString = "Pivot: " + FL::PivotStrings[canvasPlacement->pivot];
-			ImGui::Text("%s", pivotString.c_str());	
+			// FL::GuiCore::MoveScreenCursor(4, 0);
 
 			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
 			bool b_pivotChanged = false;
@@ -267,7 +265,7 @@ namespace FlatGui
 			if (boundsStart.x > end.x) boundsStart.x = end.x;
 			if (boundsStart.y > end.y) boundsStart.y = end.y;
 
-			if (boundsEnd.x < start.x) boundsEnd.x = start.y;	
+			if (boundsEnd.x < start.x) boundsEnd.x = start.x;	
 			if (boundsEnd.y < start.y) boundsEnd.y = start.y;	
 			if (boundsEnd.x > end.x) boundsEnd.x = end.x;
 			if (boundsEnd.y > end.y) boundsEnd.y = end.y;		
@@ -313,8 +311,13 @@ namespace FlatGui
 				default: break;
 			}		
 
-			FL::GuiCore::RenderSectionHeader("Canvas Placement");
-			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::RenderSectionHeader("Canvas Placement");			
+			FL::GuiCore::RenderSeparator(8, -3, "canvasDemoBoxSeparators");
+			FL::GuiCore::TableProps pivotTableProps("##Pivot" + IDString, "Pivot");
+			pivotTableProps.labelWidth = 60.0f;		
+			pivotTableProps.b_light = true;
+			pivotTableProps.b_lightSet = true;
+			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[canvasPlacement->pivot]});
 
 			if (RenderPivotSelectionButtons(IDString, canvasPlacement)) canvasPlacement->UpdatePivotOffset();	
 			
@@ -323,9 +326,10 @@ namespace FlatGui
 			FL::GuiCore::MoveScreenCursor(-96, 96);
 
 			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
+				
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Percent", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 60), canvasPlacement->percent);
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Pixel", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 60), canvasPlacement->pixel);			
-			FL::GuiCore::RenderSeparator(0, 5, "canvasDemoBoxSeparators");	
+			FL::GuiCore::RenderSeparator(0, 8, "canvasDemoBoxSeparators");	
 
 			FL::GuiCore::RenderSectionHeader(typeString + " Properties");		
 			FL::GuiCore::MoveScreenCursor(0, 3);

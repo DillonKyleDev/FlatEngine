@@ -433,10 +433,10 @@ namespace FlatEngine
 				return;
 						
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2());
-			
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, Vector2());					
+						
 			if (GuiCore::BeginWindow("Scene View", b_show, ImGuiWindowFlags_NoScrollWithMouse, "black"))
-			{				
+			{						
 				PositionTransformGizmo();				
 
 				Vector2 canvas_p0 = ImGui::GetCursorScreenPos();
@@ -449,16 +449,13 @@ namespace FlatEngine
 				// Set initial viewport dimensions for rendering scene view grid and objects
 				if (!b_firstSceneRenderPass)
 				{
-					// if (!b_sceneHasBeenSet)
-					// {
-						sceneViewDimensions = canvas_sz;											
-						b_sceneHasBeenSet = true;
-					// }
+					sceneViewDimensions = canvas_sz;											
+					b_sceneHasBeenSet = true;
 				}
-				b_firstSceneRenderPass = false;
-				
+				b_firstSceneRenderPass = false;						
+
 				sceneViewDimensions = canvas_p1 - canvas_p0;	
-				sceneViewportCenter = canvas_p0 + sceneViewDimensions;
+				sceneViewportCenter = canvas_p0 + sceneViewDimensions;					
 
 				ImGuiIO& inputOutput = ImGui::GetIO();
 				Vector2 currentPos = ImGui::GetCursorScreenPos();
@@ -473,7 +470,7 @@ namespace FlatEngine
 					Vector2 regionAvailable = ImGui::GetContentRegionAvail();
 					float targetAspect = 16.0f / 9.0f;
 					float regionAspect = regionAvailable.x / regionAvailable.y;
-
+					
 					if (regionAspect > targetAspect)
 					{
 						// Too wide — pillarbox

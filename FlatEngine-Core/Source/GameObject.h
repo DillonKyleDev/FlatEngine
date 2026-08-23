@@ -9,6 +9,8 @@
 
 namespace FlatEngine
 {
+	class Canvas;
+
 	class GameObject
 	{
 	public:
@@ -48,7 +50,8 @@ namespace FlatEngine
 		Component* AddComponent(ComponentType type, json componentJson = json::object());
 		void RemoveComponent(Component* component);		
 		Component* GetComponent(ComponentType type);		
-		bool IsCanvasGameObject();
+		bool IsCanvasChild();
+		Canvas* GetFirstCanvas();
 
 		void SetParentID(long parentID);
 		long GetParentID();

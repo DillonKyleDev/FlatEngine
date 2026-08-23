@@ -39,7 +39,7 @@ namespace FlatEngine
 			{ "tintColorZ",      m_tintColor.z },
 			{ "tintColorW",      m_tintColor.w },
 			{ "renderOrder",     m_renderOrder },
-			{ "canvasPlacement", m_canvasPlacement.GetData() }	
+			{ "canvasPlacement", mesh.canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
 		
@@ -54,7 +54,7 @@ namespace FlatEngine
         Component::PutData(componentJson, objectName);
 
 		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
-			m_canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);		
+			mesh.canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);		
 				
 		SetScale(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xScale", objectName), JsonHelper::CheckJsonFloat(componentJson, "yScale", objectName)));
 		SetRenderOrder(JsonHelper::CheckJsonInt(componentJson, "renderOrder", objectName));
@@ -81,7 +81,7 @@ namespace FlatEngine
 		{				
 			mesh.CreateUniformBuffers();
 			mesh.SetMaterial("fl_unlit");
-			mesh.SetModel("../engine/models/plane.obj");					
+			mesh.SetModel("../engine/models/quad.obj");					
 			mesh.CreateResources();	
 
 			m_path = newPath;
@@ -93,7 +93,7 @@ namespace FlatEngine
 				m_textureHeight = meshTextures.at(0).GetHeight();
 
 				m_offset = Vector2((float)m_textureWidth / 2, (float)m_textureHeight / 2);				
-				m_canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);			
+				mesh.canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);			
 			}
 			else
 			{
@@ -105,13 +105,13 @@ namespace FlatEngine
 					m_textureWidth = 50;
 					m_textureHeight = 50;
 					SetOffset(Vector2(25, 25));
-					m_canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);	
+					mesh.canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);	
 				}
 
 				Logger::log.Err("Sprite::SetTexture() - Texture could not be loaded.");
 			}		
 			
-			m_canvasPlacement.UpdatePivotOffset();
+			mesh.canvasPlacement.UpdatePivotOffset();
 		}
 	}
 
@@ -203,6 +203,6 @@ namespace FlatEngine
 
 	CanvasPlacement* Sprite::GetCanvasPlacement()
 	{
-		return &m_canvasPlacement;
+		return &mesh.canvasPlacement;
 	}
 }

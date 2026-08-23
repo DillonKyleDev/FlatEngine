@@ -1,6 +1,9 @@
+#include "Application.h"
+#include "FlatEngine.h"
 #include "render/DeviceManager.h"
 #include "render/Helper.h"
 #include "render/RenderWindow.h"
+#include "render/SceneView.h"
 #include "render/VulkanManager.h"
 
 #include <algorithm> // Necessary for std::clamp
@@ -9,6 +12,7 @@
 #include "SDL_vulkan.h"
 #define STB_IMAGE_IMPLEMENTATION // Image loading
 #include "stb_image.h"
+
 
 namespace FlatEngine
 {
@@ -220,12 +224,20 @@ namespace FlatEngine
 
         void Window::RecreateSwapChain()
         {
-            vkDeviceWaitIdle(DeviceManager::logicalDevice.GetDevice());
+            vkDeviceWaitIdle(DeviceManager::logicalDevice.GetDevice());            
 
-            int width = 0, height = 0;
-            while (width == 0 || height == 0)
+            if (FlatEngine::application->b_editorMode)
             {
-                SDL_GetWindowSize(m_window, &width, &height);
+                m_windowWidth = SceneView::finalImageSize.x;
+                m_windowHeight = SceneView::finalImageSize.y;
+            }
+            else 
+            {
+                int width = 0, height = 0;
+                while (width == 0 || height == 0)
+                {
+                    SDL_GetWindowSize(m_window, &width, &height);
+                }
             }
 
             CleanupDrawingResources();
@@ -408,8 +420,8 @@ namespace FlatEngine
 
             VkSamplerCreateInfo samplerInfo{};
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-            samplerInfo.magFilter = VK_FILTER_LINEAR; // VK_FILTER_NEAREST for pixel art; // VK_FILTER_LINEAR for non pixel art
-            samplerInfo.minFilter = VK_FILTER_LINEAR;
+            samplerInfo.magFilter = VK_FILTER_NEAREST;// VK_FILTER_LINEAR; // VK_FILTER_NEAREST for pixel art; // VK_FILTER_LINEAR for non pixel art
+            samplerInfo.minFilter = VK_FILTER_NEAREST; //VK_FILTER_LINEAR;
             samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // VK_SAMPLER_ADDRESS_MODE_REPEAT
             samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // VK_SAMPLER_ADDRESS_MODE_REPEAT
             samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // VK_SAMPLER_ADDRESS_MODE_REPEAT

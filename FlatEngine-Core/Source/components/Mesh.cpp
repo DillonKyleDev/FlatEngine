@@ -4,6 +4,7 @@
 #include "managers/Assets.h"
 #include "render/DeviceManager.h"
 #include "render/RenderWindow.h"
+#include "render/SceneView.h"
 #include "render/Structs.h"
 #include "render/VulkanManager.h"
 #include "tools/FileHelper.h"
@@ -421,26 +422,28 @@ namespace FlatEngine
 		std::map<uint32_t, std::string> materialVec4s = viewportType == ViewportType::ViewportType_SceneView ? m_sceneViewMaterial->GetUBOVec4Names() : m_gameViewMaterial->GetUBOVec4Names();			
 		glm::vec3 cameraPos = cameraTransform->GetPosition().GetGLMVec3();
 		glm::vec3 lookDir = glm::vec3(cameraTransform->GetLookDirection());
-		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);				
+		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);		
+				
 
 		CustomUBO ubo{};
-		BaseUBO base{};
-		base.meshPosition = transform->GetAbsolutePosition().GetGLMVec4();
+		BaseUBO base{};		
 		base.cameraPosition = glm::vec4(cameraPos, 0);
 		base.model = transform->GetAbsoluteRotationMatrix() * transform->GetScaleMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 
-		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasGameObject() && viewportType != ViewportType_SceneView)
-		{
-			bool b_orthographic = camera->b_orthographic;
-			camera->b_orthographic = true;
-			base.projection = camera->GetProjection(); // camera->GetOrthographicProjection() <-- make this function
-			camera->b_orthographic = b_orthographic;
+		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasChild() && viewportType != ViewportType_SceneView)
+		{			
+			Canvas* canvas = GetOwningObject()->GetFirstCanvas();
+			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize));						
+			base.projection = canvas->GetProjection();
+			// base.cameraPosition = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition().GetGLMVec4();
 		}
 		else
 		{
 			base.projection = camera->GetProjection();
 		}
+
+		base.meshPosition = transform->GetAbsolutePosition().GetGLMVec4();
 
 		ubo.baseUBO = base;
 		

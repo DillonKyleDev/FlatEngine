@@ -1,5 +1,6 @@
 #pragma once
 #include "components/Component.h"
+#include "render/Structs.h"
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
@@ -51,6 +52,7 @@ namespace FlatEngine
 		Vector2 pixel;
 		Vector2 dimensions;
 		Vector2 offset;
+		float zPosition = 0.01f;
 		
 		json GetData()
 		{
@@ -123,11 +125,14 @@ namespace FlatEngine
 		int GetLayerNumber();
 		void SetBlocksLayers(bool b_blocksLayers);
 		bool GetBlocksLayers();
+		Vector3 GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize);
+		glm::mat4 GetProjection();		
+		float pixelsPerGridSpace;	
 
 	private:
 		int m_layerNumber;
 		bool m_b_blocksLayers;
 		Vector2 m_dimensions;
-		Vector4 m_activeEdges;
+		Vector4 m_activeEdges;			
 	};
 }

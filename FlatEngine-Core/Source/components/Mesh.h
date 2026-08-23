@@ -1,4 +1,5 @@
 #pragma once
+#include "components/Canvas.h"
 #include "components/Component.h"
 #include "render/Model.h"
 #include "render/Material.h"
@@ -50,9 +51,9 @@ namespace FlatEngine
 		void SetUBOVec4(std::string name, Vector4 value);
 		void CreateUniformBuffers();
 
-	private:
-		
+		CanvasPlacement canvasPlacement;
 
+	private:				
 		std::shared_ptr<Model> m_model;
 		std::string m_materialName;
 		std::shared_ptr<Material> m_sceneViewMaterial;		

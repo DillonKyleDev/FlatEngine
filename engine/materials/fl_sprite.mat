@@ -7,7 +7,7 @@
         "b_primitiveRestartEnable": false,
         "topology": 3
     },
-    "name": "fl_unlit",
+    "name": "fl_sprite",
     "rasterizerData": {
         "cullMode": 2,
         "lineWidth": 1.0,

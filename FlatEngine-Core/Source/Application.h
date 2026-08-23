@@ -31,6 +31,7 @@ namespace FlatEngine
 		virtual void OnLoadScene(std::string sceneName) {};
 		
 		std::shared_ptr<FL::GameLoop> gameloop;
+		bool b_editorMode;
 		
 	private:
 		bool m_b_windowResized;

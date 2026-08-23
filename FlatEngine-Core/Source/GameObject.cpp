@@ -325,9 +325,21 @@ namespace FlatEngine
 	}
 
 	// This GameObject either has a Canvas Component or is a child of one that does.
-	bool GameObject::IsCanvasGameObject()
+	bool GameObject::IsCanvasChild()
 	{
-		return Get<Canvas>() != nullptr || (GetParent() != nullptr && GetParent()->IsCanvasGameObject());
+		return GetParent() != nullptr && (GetParent()->Get<Canvas>() != nullptr || GetParent()->IsCanvasChild());
+	}
+
+	Canvas* GameObject::GetFirstCanvas()
+	{
+		Canvas* canvas = Get<Canvas>();
+
+		if (canvas == nullptr && GetParent() != nullptr)
+		{
+			canvas = GetParent()->GetFirstCanvas();
+		}
+
+		return canvas;
 	}
 
 	void GameObject::SetParentID(long newParentID)

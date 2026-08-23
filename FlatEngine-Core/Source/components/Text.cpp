@@ -1,8 +1,6 @@
 #include "components/Text.h"
-#include "GameObject.h"
 #include "managers/Assets.h"
 #include "tools/FileHelper.h"
-#include "tools/Logger.h"
 
 
 namespace FlatEngine

@@ -36,8 +36,7 @@ namespace FlatEngine
 		
 		Mesh mesh;
 
-	private:		
-		CanvasPlacement m_canvasPlacement;
+	private:				
 		int m_renderOrder;
 		int m_textureWidth;
 		int m_textureHeight;

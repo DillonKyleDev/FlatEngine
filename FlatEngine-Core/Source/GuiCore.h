@@ -21,6 +21,8 @@ namespace FlatEngine
         extern Vector2 lastMousePos;
         const float TABLE_HEIGHT = 22.0f;
 
+        const float WORLD_PIXELS_PER_GRIDSPACE = 16.0f;
+
         extern ImGuiChildFlags childFlags;
         extern ImGuiChildFlags autoResizeChildFlags;
         extern ImGuiChildFlags resizeChildFlags;

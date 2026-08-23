@@ -26,6 +26,7 @@
 #include "physics/Joint2D.h"
 #include "physics/PhysicsManager.h"
 #include "physics/Shape2D.h"
+#include "render/SceneView.h"
 #include "render/VulkanManager.h"
 #include "scripting/CPPScriptMethods.h"
 #include "TagList.h"
@@ -156,9 +157,7 @@ namespace FlatGui
 		}
 
 		bool RenderPivotSelectionButtons(std::string ID, FL::CanvasPlacement* canvasPlacement)
-		{				
-			// FL::GuiCore::MoveScreenCursor(4, 0);
-
+		{							
 			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
 			bool b_pivotChanged = false;
 			FL::Vector2 cursorScreen = ImGui::GetCursorScreenPos();
@@ -223,8 +222,9 @@ namespace FlatGui
 			return b_pivotChanged;
 		}
 
-		void DrawCanvasDemoBox(FL::CanvasPlacement* canvasPlacement)
+		void DrawCanvasDemoBox(FL::CanvasPlacement* canvasPlacement, FL::Canvas* canvas)
 		{
+			float scale = canvas->pixelsPerGridSpace / FL::GuiCore::WORLD_PIXELS_PER_GRIDSPACE;
 			float width = ImGui::GetContentRegionAvail().x;
 			float height = 96.0f;			
 			float padding = 5.0f;			
@@ -234,22 +234,23 @@ namespace FlatGui
 			FL::Vector2 end = FL::Vector2(start.x + width, start.y + height);
 			FL::Vector2 center = start + FL::Vector2(width / 2.0f, height / 2.0f);
 			FL::Vector2 canvasStart = start + FL::Vector2(padding);
-			FL::Vector2 canvasEnd = end - FL::Vector2(padding);			
+			FL::Vector2 canvasEnd = end - FL::Vector2(padding);		
+			FL::Vector2 virtualRatio = FL::Vector2(width / FL::SceneView::finalImageSize.x, height / FL::SceneView::finalImageSize.y);
 
 			// Frame
 			ImGui::GetWindowDrawList()->AddRectFilled(start, end, FL::Assets::assetManager.GetColor32("canvasDemoBoxBg"));
 			
 			FL::Vector2 objectCenter = canvasStart + FL::Vector2(canvasWidth * canvasPlacement->percent.x, canvasHeight * canvasPlacement->percent.y);
 			FL::Vector2 renderStart;
-			FL::Vector2 dimensions = FL::Vector2(40, 15);
+			FL::Vector2 dimensions = canvasPlacement->dimensions * virtualRatio * scale;
 
 			switch (canvasPlacement->pivot)
 			{
 			case FL::Pivot_Center:      renderStart = objectCenter; break; 
 			case FL::Pivot_Left:        renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y);	break;
 			case FL::Pivot_Right:       renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y); break;
-			case FL::Pivot_Top:         renderStart = FL::Vector2(objectCenter.x,  objectCenter.y + (dimensions.y / 2)); break; 
-			case FL::Pivot_Bottom:      renderStart = FL::Vector2(objectCenter.x,  objectCenter.y - (dimensions.y / 2)); break; 
+			case FL::Pivot_Top:         renderStart = FL::Vector2(objectCenter.x                     , objectCenter.y + (dimensions.y / 2)); break; 
+			case FL::Pivot_Bottom:      renderStart = FL::Vector2(objectCenter.x                     , objectCenter.y - (dimensions.y / 2)); break; 
 			case FL::Pivot_TopLeft:     renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y + (dimensions.y / 2)); break; 
 			case FL::Pivot_TopRight:    renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y + (dimensions.y / 2)); break;	
 			case FL::Pivot_BottomLeft:  renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y - (dimensions.y / 2)); break; 
@@ -257,8 +258,8 @@ namespace FlatGui
 			default: break;
 			}
 			renderStart = renderStart - (dimensions * 0.5f); // because drawn rect starts at the top left position not the center
-			FL::Vector2 boundsStart = renderStart + canvasPlacement->pixel;
-			FL::Vector2 boundsEnd = renderStart + dimensions + canvasPlacement->pixel;
+			FL::Vector2 boundsStart = renderStart + (canvasPlacement->pixel * virtualRatio);
+			FL::Vector2 boundsEnd = renderStart + dimensions + (canvasPlacement->pixel * virtualRatio);
 
 			if (boundsStart.x < start.x) boundsStart.x = start.x;
 			if (boundsStart.y < start.y) boundsStart.y = start.y;
@@ -281,7 +282,7 @@ namespace FlatGui
 				ImGui::GetWindowDrawList()->AddLine(center + FL::Vector2(-20, 0), center + FL::Vector2(20, 0), FL::Assets::assetManager.GetColor32("col_8"));
 				ImGui::GetWindowDrawList()->AddLine(center + FL::Vector2(0, -20), center + FL::Vector2(0, 20), FL::Assets::assetManager.GetColor32("col_8"));
 			}
-
+ 
 			// Red center
 			ImGui::GetWindowDrawList()->AddRectFilled(objectCenter + FL::Vector2(-2), objectCenter + FL::Vector2(2), FL::Assets::assetManager.GetColor32("red"));
 		}
@@ -291,8 +292,9 @@ namespace FlatGui
 			long ownerID = component->GetOwnerID();
 			FL::GameObject* owner = FL::SceneManager::loadedScene.GetObjectByID(ownerID);
 			std::string typeString = FL::ComponentTypeStrings[component->GetType()];
+			FL::Canvas* canvas = owner->GetFirstCanvas();
 
-			if (owner == nullptr || (owner != nullptr && !owner->IsCanvasGameObject()))			
+			if (owner == nullptr || (owner != nullptr && !owner->IsCanvasChild()))			
 			{
 				FL::GuiCore::RenderWarningText("Warning: " + typeString + " GameObjects must also have a Canvas component or be nested inside a Canvas GameObject. It will not function properly otherwise.");					
 				FL::GuiCore::RenderSectionHeader(typeString + " Properties");
@@ -314,7 +316,7 @@ namespace FlatGui
 			FL::GuiCore::RenderSectionHeader("Canvas Placement");			
 			FL::GuiCore::RenderSeparator(8, -3, "canvasDemoBoxSeparators");
 			FL::GuiCore::TableProps pivotTableProps("##Pivot" + IDString, "Pivot");
-			pivotTableProps.labelWidth = 60.0f;		
+			pivotTableProps.labelWidth = 97.0f;		
 			pivotTableProps.b_light = true;
 			pivotTableProps.b_lightSet = true;
 			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[canvasPlacement->pivot]});
@@ -322,13 +324,14 @@ namespace FlatGui
 			if (RenderPivotSelectionButtons(IDString, canvasPlacement)) canvasPlacement->UpdatePivotOffset();	
 			
 			FL::GuiCore::MoveScreenCursor(96, -92);
-			DrawCanvasDemoBox(canvasPlacement);
+			DrawCanvasDemoBox(canvasPlacement, canvas);
 			FL::GuiCore::MoveScreenCursor(-96, 96);
 
 			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
 				
-			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Percent", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 60), canvasPlacement->percent);
-			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Pixel", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 60), canvasPlacement->pixel);			
+			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Percent", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 97), canvasPlacement->percent);
+			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Pixel", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->pixel);			
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ZPos" + IDString, "Z", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->zPosition);			
 			FL::GuiCore::RenderSeparator(0, 8, "canvasDemoBoxSeparators");	
 
 			FL::GuiCore::RenderSectionHeader(typeString + " Properties");		
@@ -349,7 +352,7 @@ namespace FlatGui
 			FL::Vector4 tintColor = sprite->GetTintColor();
 			long ownerID = sprite->GetOwnerID();		
 			
-			if (sprite->GetOwningObject()->IsCanvasGameObject())
+			if (sprite->GetOwningObject()->IsCanvasChild())
 				RenderCanvasPlacementComponent(sprite);
 
 			int droppedValue = -1;
@@ -632,9 +635,10 @@ namespace FlatGui
 		{
 			FL::Vector2 dimensions = canvas->GetDimensions();
 			int layerNumber = canvas->GetLayerNumber();
-			bool b_blocksLayers = canvas->GetBlocksLayers();
+			bool b_blocksLayers = canvas->GetBlocksLayers();			
 			long ownerID = canvas->GetOwnerID();
-
+			
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ScreenPixelsPerGridSpace" + std::to_string(ownerID), "Screen Pixels/Grid Space"), canvas->pixelsPerGridSpace);
 			FL::GuiCore::TableProps canvasLayerProps("##layerNumber" + std::to_string(ownerID), "Canvas layer");
 			canvasLayerProps.intMin = 0;
 			canvasLayerProps.intMax = FL::MAX_CANVAS_LAYERS;
@@ -2322,7 +2326,7 @@ namespace FlatGui
 				{
 					if (!focusedObject->GetComponent((FL::ComponentType)i))
 					{
-						if (((FL::ComponentType)i == FL::ComponentType_Button || (FL::ComponentType)i == FL::ComponentType_Text) && !focusedObject->IsCanvasGameObject())
+						if (((FL::ComponentType)i == FL::ComponentType_Button || (FL::ComponentType)i == FL::ComponentType_Text) && !focusedObject->IsCanvasChild())
 							continue;
 						
 						std::string componentTypeString = FL::ComponentTypeStrings[i];

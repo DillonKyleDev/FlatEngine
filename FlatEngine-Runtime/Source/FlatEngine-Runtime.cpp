@@ -25,6 +25,7 @@ public:
 	RuntimeApplication()
 	{
 		gameloop = std::make_shared<FL::GameLoop>();
+		b_editorMode = false;
 	}
 
 	void Init()

@@ -86,7 +86,7 @@ void EditorApplication::BeginRender()
 {
 	if (m_b_recreateWindow)
 	{
-		FL::RenderWindow::window.ResizeWindow(1920, 1080);		
+		FL::RenderWindow::window.ResizeWindow(1920, 1006);		
 		// FL::F_Window->SetFullscreen(true);
 		m_b_recreateWindow = false;
 	}

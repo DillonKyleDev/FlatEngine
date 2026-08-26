@@ -101,6 +101,7 @@ GENERATED += $(OBJDIR)/CPPScriptsHookup.o
 GENERATED += $(OBJDIR)/Camera.o
 GENERATED += $(OBJDIR)/Canvas.o
 GENERATED += $(OBJDIR)/CharacterController.o
+GENERATED += $(OBJDIR)/Collision2D.o
 GENERATED += $(OBJDIR)/Component.o
 GENERATED += $(OBJDIR)/Controls.o
 GENERATED += $(OBJDIR)/DeviceManager.o
@@ -183,6 +184,7 @@ OBJECTS += $(OBJDIR)/CPPScriptsHookup.o
 OBJECTS += $(OBJDIR)/Camera.o
 OBJECTS += $(OBJDIR)/Canvas.o
 OBJECTS += $(OBJDIR)/CharacterController.o
+OBJECTS += $(OBJDIR)/Collision2D.o
 OBJECTS += $(OBJDIR)/Component.o
 OBJECTS += $(OBJDIR)/Controls.o
 OBJECTS += $(OBJDIR)/DeviceManager.o
@@ -442,6 +444,9 @@ $(OBJDIR)/Settings.o: Source/managers/Settings.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/TileSetManager.o: Source/managers/TileSetManager.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Collision2D.o: Source/physics/Collision2D.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Joint.o: Source/physics/Joint.cpp

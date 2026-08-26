@@ -50,6 +50,8 @@ namespace FlatEngine
 		std::map<std::string, glm::vec4>& GetUBOVec4s();
 		void SetUBOVec4(std::string name, Vector4 value);
 		void CreateUniformBuffers();
+		Vector2 GetRenderScale();
+		void SetRenderScale(Vector2 renderScale);
 
 		CanvasPlacement canvasPlacement;
 
@@ -72,6 +74,7 @@ namespace FlatEngine
 		int m_allocationPoolIndex;
 		bool m_b_initialized;
 		bool m_b_missingTextures;
+		Vector2 m_renderScale;
 
 		// Uniform Buffer Data
 		std::map<std::string, glm::vec4> m_uboVec4s;

@@ -4,6 +4,7 @@
 #include "components/Mesh.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
+#include <memory>
 
 
 namespace FlatEngine
@@ -17,9 +18,7 @@ namespace FlatEngine
 		void PutData(json componentJson, std::string objectName);
 
 		void SetTexture(std::string path);
-		VkDescriptorSet GetTexture();
-		void SetScale(Vector2 newScale);
-		Vector2 GetScale();
+		VkDescriptorSet GetTexture();		
 		int GetTextureWidth();
 		int GetTextureHeight();
 		std::string GetPath();
@@ -33,14 +32,14 @@ namespace FlatEngine
 		void SetAlpha(float);
 		float GetAlpha();
 		CanvasPlacement* GetCanvasPlacement();
-		
-		Mesh mesh;
+		std::shared_ptr<Pivot> GetPivot();
+
+		Mesh mesh;		
 
 	private:				
-		int m_renderOrder;
+		std::shared_ptr<Pivot> m_pivot;
 		int m_textureWidth;
-		int m_textureHeight;
-		Vector2 m_scale;
+		int m_textureHeight;		
 		Vector2 m_offset;
 		std::string m_path;
 		Vector4 m_tintColor;

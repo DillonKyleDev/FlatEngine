@@ -1,26 +1,28 @@
 #pragma once
 #include "components/Component.h"
-#include "render/Structs.h"
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
 #include "Types.h"
+
+#include <ext/matrix_float4x4.hpp>
+#include <memory>
 
 
 namespace FlatEngine 
 {
 	const int MAX_CANVAS_LAYERS = 100;
 
-	enum Pivot {
-		Pivot_Center,
-		Pivot_Left,
-		Pivot_Right,
-		Pivot_Top,
-		Pivot_Bottom,
-		Pivot_TopLeft,
-		Pivot_TopRight,
-		Pivot_BottomRight,
-		Pivot_BottomLeft
+	enum PivotType {
+		PivotType_Center,
+		PivotType_Left,
+		PivotType_Right,
+		PivotType_Top,
+		PivotType_Bottom,
+		PivotType_TopLeft,
+		PivotType_TopRight,
+		PivotType_BottomRight,
+		PivotType_BottomLeft
 	};
 	const std::string PivotStrings[9] = {
 		"Center",
@@ -33,31 +35,62 @@ namespace FlatEngine
 		"Bottom Right",
 		"Bottom Left"
 	};
-	const std::unordered_map<std::string, Pivot> PivotFromString = {
-		{ "Center",       Pivot_Center },
-		{ "Left",         Pivot_Left },
-		{ "Right",        Pivot_Right },
-		{ "Top",          Pivot_Top },
-		{ "Bottom",       Pivot_Bottom },
-		{ "Top Left",     Pivot_TopLeft },
-		{ "Top Right",    Pivot_TopRight },
-		{ "Bottom Right", Pivot_BottomRight },
-		{ "Bottom Left",  Pivot_BottomLeft }
+	const std::unordered_map<std::string, PivotType> PivotFromString = {
+		{ "Center",       PivotType_Center },
+		{ "Left",         PivotType_Left },
+		{ "Right",        PivotType_Right },
+		{ "Top",          PivotType_Top },
+		{ "Bottom",       PivotType_Bottom },
+		{ "Top Left",     PivotType_TopLeft },
+		{ "Top Right",    PivotType_TopRight },
+		{ "Bottom Right", PivotType_BottomRight },
+		{ "Bottom Left",  PivotType_BottomLeft }
 	};
 
+	struct Pivot {
+		PivotType type = PivotType_Center;
+		Vector2 offset;
+		Vector2 dimensions;	
+
+		void SetPivot(PivotType newType)
+		{
+			type = newType;
+			UpdatePivotOffset();
+		}
+
+		void UpdatePivotOffset()
+		{
+			switch (type)
+			{
+			case PivotType_Center:      offset = Vector2(); break;
+			case PivotType_Left:        offset = Vector2( dimensions.x / 2,  0); break; 
+			case PivotType_Right:       offset = Vector2(-dimensions.x / 2,  0); break;	
+			case PivotType_Top:         offset = Vector2( 0               ,  dimensions.y / 2); break; 
+			case PivotType_Bottom: 	    offset = Vector2( 0               , -dimensions.y / 2); break; 
+			case PivotType_TopLeft: 	offset = Vector2( dimensions.x / 2,  dimensions.y / 2); break; 
+			case PivotType_TopRight:    offset = Vector2(-dimensions.x / 2,  dimensions.y / 2); break;	
+			case PivotType_BottomLeft:  offset = Vector2( dimensions.x / 2, -dimensions.y / 2); break; 
+			case PivotType_BottomRight: offset = Vector2(-dimensions.x / 2, -dimensions.y / 2); break; 
+			default: break;
+			}
+		}
+
+		std::string GetPivotString()
+		{
+			return PivotStrings[type];
+		}
+	};
 
 	struct CanvasPlacement {
-		Pivot pivot = Pivot_Center;		
+		std::shared_ptr<Pivot> pivot = std::make_shared<Pivot>();
 		Vector2 percent = Vector2(0.5f);
-		Vector2 pixel;
-		Vector2 dimensions;
-		Vector2 offset;
+		Vector2 pixel;			
 		float zPosition = 0.01f;
 		
 		json GetData()
 		{
 			json jsonData = { 
-				{ "pivot", PivotStrings[pivot] },
+				{ "pivotType", PivotStrings[pivot->type] },
 				{ "xPercent", percent.x },
 				{ "yPercent", percent.y },
 				{ "xPixel", pixel.x },		
@@ -72,41 +105,11 @@ namespace FlatEngine
 			if (jsonData.empty())
 				return;
 
-			pivot = GetTypeFromString(PivotFromString, JsonHelper::CheckJsonString(jsonData, "pivot", "Canvas Placement"));
+			pivot->type = GetTypeFromString(PivotFromString, JsonHelper::CheckJsonString(jsonData, "pivotType", "Canvas Placement"));
 			percent = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xPercent", name), JsonHelper::CheckJsonFloat(jsonData, "yPercent", name));
 			pixel = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xPixel", name), JsonHelper::CheckJsonFloat(jsonData, "yPixel", name));
 
-			UpdatePivotOffset();
-		}
-
-		void SetPivot(Pivot newPivot)
-		{
-			pivot = newPivot;
-			UpdatePivotOffset();
-		}
-
-		void UpdatePivotOffset()
-		{
-			Vector2 center = Vector2(dimensions.x / 2, dimensions.y / 2);
-
-			switch (pivot)
-			{
-			case Pivot_Center:      offset = center; break;
-			case Pivot_Left:        offset = Vector2(center.x - (dimensions.x / 2), center.y);	break; 
-			case Pivot_Right:       offset = Vector2(center.x + (dimensions.x / 2), center.y); break;	
-			case Pivot_Top:         offset = Vector2(center.x, center.y - (dimensions.y / 2)); break; 
-			case Pivot_Bottom: 	    offset = Vector2(center.x, center.y + (dimensions.y / 2)); break; 
-			case Pivot_TopLeft: 	offset = Vector2(center.x - (dimensions.x / 2), center.y - (dimensions.y / 2)); break; 
-			case Pivot_TopRight:    offset = Vector2(center.x + (dimensions.x / 2), center.y - (dimensions.y / 2)); break;	
-			case Pivot_BottomLeft:  offset = Vector2(center.x - (dimensions.x / 2), center.y + (dimensions.y / 2));	break; 
-			case Pivot_BottomRight: offset = Vector2(center.x + (dimensions.x / 2), center.y + (dimensions.y / 2));	break; 
-			default: break;
-			}
-		}
-
-		std::string GetPivotString()
-		{
-			return PivotStrings[pivot];
+			pivot->UpdatePivotOffset();
 		}
 	};
 
@@ -125,11 +128,13 @@ namespace FlatEngine
 		int GetLayerNumber();
 		void SetBlocksLayers(bool b_blocksLayers);
 		bool GetBlocksLayers();
-		Vector3 GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize);
-		glm::mat4 GetProjection();		
-		float pixelsPerGridSpace;	
+		Vector3 GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize, Vector2 textureScale);
+		glm::mat4 GetProjection();
+		float GetPixelsPerGridSpace();
+		void SetPixelsPerGridSpace(float pixels);				
 
 	private:
+		float m_pixelsPerGridSpace;	
 		int m_layerNumber;
 		bool m_b_blocksLayers;
 		Vector2 m_dimensions;

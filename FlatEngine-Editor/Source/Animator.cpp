@@ -40,7 +40,6 @@ namespace FlatGui
 
 		if (size.x > 0 && size.y > 0)
 		{
-			ImGuiIO& inputOutput = ImGui::GetIO();
 			FL::Vector2 endPos = FL::Vector2(startPos.x + size.x, startPos.y + size.y);
 
 			// For calculating scrolling mouse position and what vector to zoom to
@@ -96,8 +95,10 @@ namespace FlatGui
 				}
 			}
 
+			ImGuiIO& inputOutput = ImGui::GetIO();
+
 			// Get scroll amount for changing zoom level of scene view
-			FL::Vector2 mousePos = FL::Vector2(inputOutput.MousePos.x, inputOutput.MousePos.y);
+			FL::Vector2 mousePos = FL::Vector2(FL::GuiCore::mousePos.x, FL::GuiCore::mousePos.y);
 			float scrollInput = inputOutput.MouseWheel;
 			float weight = 0.01f;
 			float signedMousePosX = mousePos.x - centerPoint.x - (DYNAMIC_ANIMATOR_WIDTH / 2);
@@ -262,7 +263,7 @@ namespace FlatGui
 				}
 
 				if (b_isActive || b_isHovered)
-				{
+				{					
 					// Mouse Hover Tooltip - Mouse Over Tooltip
 					std::string keyTimeText = "Time: " + std::to_string(keyFrame->time / 1000) + " sec";
 					FL::Vector2 m = ImGui::GetIO().MousePos;
@@ -270,15 +271,15 @@ namespace FlatGui
 					ImGui::Begin("1", NULL, ImGuiWindowFlags_Tooltip | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoTitleBar);
 					ImGui::Text("%s", keyTimeText.c_str());
 					ImGui::End();
-				}
+				}				
 		
 				const float mouse_threshold_for_pan = 5.0f;
 				if (b_isActive && ImGui::IsMouseDragging(ImGuiMouseButton_Left, mouse_threshold_for_pan))
 				{
-					ImGuiIO& inputOutput = ImGui::GetIO();
-					if (keyFrame->time + inputOutput.MouseDelta.x / Animator::gridStep * 1000 >= 0)
+					FL::GuiCore::b_mouseDownCanWarp = true;
+					if (keyFrame->time + FL::GuiCore::mouseDelta.x / Animator::gridStep * 1000 >= 0)
 					{
-						keyFrame->time += inputOutput.MouseDelta.x / Animator::gridStep * 1000;
+						keyFrame->time += FL::GuiCore::mouseDelta.x / Animator::gridStep * 1000;
 					}
 				}
 
@@ -528,7 +529,7 @@ namespace FlatGui
 
 					FL::Vector2 topLeftCorner = FL::Vector2(canvasP0.x, topYPos);
 					FL::Vector2 bottomRightCorner = FL::Vector2(canvasP1.x, bottomYPos);
-					draw_list->AddRectFilled(topLeftCorner, bottomRightCorner, color);
+					draw_list->AddRectFilled(topLeftCorner, bottomRightCorner, color);					
 
 					for (auto& frame : Animator::loadedAnimation.props)
 					{

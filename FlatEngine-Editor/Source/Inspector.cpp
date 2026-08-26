@@ -39,6 +39,7 @@
 #include <X11/Xlib.h>
 #include <cstdint>
 #include <id.h>
+#include <memory>
 #include <string>
 
 namespace FL = FlatEngine;
@@ -150,72 +151,74 @@ namespace FlatGui
 			scaleProps.labelWidth = 68;
 			scaleProps.valueLabelColors = valueColors;
 			scaleProps.floatMin = 0;
-
-			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);		
+			
+			ImGui::BeginDisabled(transform->GetOwningObject()->IsCanvasChild());
+			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);	
+			ImGui::EndDisabled();	
 			if (FL::GuiCore::RenderVector3Table(rotationProps, rotation)) transform->SetRotation(rotation);			
 			if (FL::GuiCore::RenderVector3Table(scaleProps, scale)) transform->SetScale(scale);
 		}
 
-		bool RenderPivotSelectionButtons(std::string ID, FL::CanvasPlacement* canvasPlacement)
+		bool RenderPivotSelectionButtons(std::string ID, std::shared_ptr<FL::Pivot> pivot)
 		{							
 			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
 			bool b_pivotChanged = false;
 			FL::Vector2 cursorScreen = ImGui::GetCursorScreenPos();
-			FL::Vector2 rectSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 96);
+			FL::Vector2 rectSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 110);
 
 			ImGui::GetWindowDrawList()->AddRectFilled(cursorScreen,FL::Vector2(cursorScreen.x + rectSize.x, cursorScreen.y + rectSize.y), FL::Assets::assetManager.GetColor32("pivotSelectionBg"));
-			FL::GuiCore::MoveScreenCursor(8, 8);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotTopLeftButton", FL::Assets::assetManager.GetTexture("upLeft"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_TopLeft ? "buttonActive" : "button"))
+			FL::GuiCore::MoveScreenCursor(8, 15);
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotTopLeftButton", FL::Assets::assetManager.GetTexture("upLeft"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_TopLeft ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_TopLeft;
+				pivot->type = FL::PivotType::PivotType_TopLeft;
 				b_pivotChanged = true;
 			}
 			ImGui::SameLine(0, 3);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotTopButton", FL::Assets::assetManager.GetTexture("up"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_Top ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotTopButton", FL::Assets::assetManager.GetTexture("up"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_Top ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_Top;
+				pivot->type = FL::PivotType::PivotType_Top;
 				b_pivotChanged = true;
 			}
 			ImGui::SameLine(0, 3);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotTopRightButton", FL::Assets::assetManager.GetTexture("upRight"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_TopRight ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotTopRightButton", FL::Assets::assetManager.GetTexture("upRight"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_TopRight ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_TopRight;
+				pivot->type = FL::PivotType::PivotType_TopRight;
 				b_pivotChanged = true;
 			}
 			FL::GuiCore::MoveScreenCursor(8, 0);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotLeftButton", FL::Assets::assetManager.GetTexture("left"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_Left ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotLeftButton", FL::Assets::assetManager.GetTexture("left"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_Left ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_Left;
+				pivot->type = FL::PivotType::PivotType_Left;
 				b_pivotChanged = true;
 			}
 			ImGui::SameLine(0, 3);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotCenterButton", FL::Assets::assetManager.GetTexture("center"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_Center ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotCenterButton", FL::Assets::assetManager.GetTexture("center"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_Center ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_Center;
+				pivot->type = FL::PivotType::PivotType_Center;
 				b_pivotChanged = true;
 			}
 			ImGui::SameLine(0, 3);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotRightButton", FL::Assets::assetManager.GetTexture("right"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_Right ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotRightButton", FL::Assets::assetManager.GetTexture("right"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_Right ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_Right;
+				pivot->type = FL::PivotType::PivotType_Right;
 				b_pivotChanged = true;
 			}
 			FL::GuiCore::MoveScreenCursor(8, 0);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotBottomLeftButton", FL::Assets::assetManager.GetTexture("downLeft"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_BottomLeft ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotBottomLeftButton", FL::Assets::assetManager.GetTexture("downLeft"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_BottomLeft ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_BottomLeft;
+				pivot->type = FL::PivotType::PivotType_BottomLeft;
 				b_pivotChanged = true;
 			}
 			ImGui::SameLine(0, 3);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotBottomButton", FL::Assets::assetManager.GetTexture("down"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_Bottom ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotBottomButton", FL::Assets::assetManager.GetTexture("down"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_Bottom ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_Bottom;
+				pivot->type = FL::PivotType::PivotType_Bottom;
 				b_pivotChanged = true;
 			}
 			ImGui::SameLine(0, 3);
-			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotBottomRightButton", FL::Assets::assetManager.GetTexture("downRight"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", canvasPlacement->pivot == FL::Pivot_BottomRight ? "buttonActive" : "button"))
+			if (FL::GuiCore::RenderImageButton("##" + ID + "PivotBottomRightButton", FL::Assets::assetManager.GetTexture("downRight"), FL::Vector2(24), 0, FL::Vector2(0), "col_4", pivot->type == FL::PivotType_BottomRight ? "buttonActive" : "button"))
 			{
-				canvasPlacement->pivot = FL::Pivot::Pivot_BottomRight;
+				pivot->type = FL::PivotType::PivotType_BottomRight;
 				b_pivotChanged = true;
 			}
 					
@@ -224,9 +227,9 @@ namespace FlatGui
 
 		void DrawCanvasDemoBox(FL::CanvasPlacement* canvasPlacement, FL::Canvas* canvas)
 		{
-			float scale = canvas->pixelsPerGridSpace / FL::GuiCore::WORLD_PIXELS_PER_GRIDSPACE;
+			float scale = canvas->GetPixelsPerGridSpace() / FL::GuiCore::WORLD_PIXELS_PER_GRIDSPACE;
 			float width = ImGui::GetContentRegionAvail().x;
-			float height = 96.0f;			
+			float height = 110.0f;			
 			float padding = 5.0f;			
 			float canvasWidth = width - padding * 2.0f;
 			float canvasHeight = height - padding * 2.0f;
@@ -242,19 +245,19 @@ namespace FlatGui
 			
 			FL::Vector2 objectCenter = canvasStart + FL::Vector2(canvasWidth * canvasPlacement->percent.x, canvasHeight * canvasPlacement->percent.y);
 			FL::Vector2 renderStart;
-			FL::Vector2 dimensions = canvasPlacement->dimensions * virtualRatio * scale;
+			FL::Vector2 dimensions = canvasPlacement->pivot->dimensions * virtualRatio * scale;
 
-			switch (canvasPlacement->pivot)
+			switch (canvasPlacement->pivot->type)
 			{
-			case FL::Pivot_Center:      renderStart = objectCenter; break; 
-			case FL::Pivot_Left:        renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y);	break;
-			case FL::Pivot_Right:       renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y); break;
-			case FL::Pivot_Top:         renderStart = FL::Vector2(objectCenter.x                     , objectCenter.y + (dimensions.y / 2)); break; 
-			case FL::Pivot_Bottom:      renderStart = FL::Vector2(objectCenter.x                     , objectCenter.y - (dimensions.y / 2)); break; 
-			case FL::Pivot_TopLeft:     renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y + (dimensions.y / 2)); break; 
-			case FL::Pivot_TopRight:    renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y + (dimensions.y / 2)); break;	
-			case FL::Pivot_BottomLeft:  renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y - (dimensions.y / 2)); break; 
-			case FL::Pivot_BottomRight: renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y - (dimensions.y / 2)); break; 
+			case FL::PivotType_Center:      renderStart = objectCenter; break; 
+			case FL::PivotType_Left:        renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y);	break;
+			case FL::PivotType_Right:       renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y); break;
+			case FL::PivotType_Top:         renderStart = FL::Vector2(objectCenter.x                     , objectCenter.y + (dimensions.y / 2)); break; 
+			case FL::PivotType_Bottom:      renderStart = FL::Vector2(objectCenter.x                     , objectCenter.y - (dimensions.y / 2)); break; 
+			case FL::PivotType_TopLeft:     renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y + (dimensions.y / 2)); break; 
+			case FL::PivotType_TopRight:    renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y + (dimensions.y / 2)); break;	
+			case FL::PivotType_BottomLeft:  renderStart = FL::Vector2(objectCenter.x + (dimensions.x / 2), objectCenter.y - (dimensions.y / 2)); break; 
+			case FL::PivotType_BottomRight: renderStart = FL::Vector2(objectCenter.x - (dimensions.x / 2), objectCenter.y - (dimensions.y / 2)); break; 
 			default: break;
 			}
 			renderStart = renderStart - (dimensions * 0.5f); // because drawn rect starts at the top left position not the center
@@ -314,24 +317,23 @@ namespace FlatGui
 			}		
 
 			FL::GuiCore::RenderSectionHeader("Canvas Placement");			
-			FL::GuiCore::RenderSeparator(8, -3, "canvasDemoBoxSeparators");
+			FL::GuiCore::MoveScreenCursor(0, 5);
+			// FL::GuiCore::RenderSeparator(8, -3, "canvasDemoBoxSeparators");
+
+			if (RenderPivotSelectionButtons(IDString, canvasPlacement->pivot)) canvasPlacement->pivot->UpdatePivotOffset();	
+			
+			FL::GuiCore::MoveScreenCursor(96, -99);
+			DrawCanvasDemoBox(canvasPlacement, canvas);
+			FL::GuiCore::MoveScreenCursor(-96, 110);
+			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");	
 			FL::GuiCore::TableProps pivotTableProps("##Pivot" + IDString, "Pivot");
 			pivotTableProps.labelWidth = 97.0f;		
 			pivotTableProps.b_light = true;
 			pivotTableProps.b_lightSet = true;
-			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[canvasPlacement->pivot]});
-
-			if (RenderPivotSelectionButtons(IDString, canvasPlacement)) canvasPlacement->UpdatePivotOffset();	
-			
-			FL::GuiCore::MoveScreenCursor(96, -92);
-			DrawCanvasDemoBox(canvasPlacement, canvas);
-			FL::GuiCore::MoveScreenCursor(-96, 96);
-
-			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
-				
-			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Percent", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 97), canvasPlacement->percent);
-			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Pixel", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->pixel);			
-			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ZPos" + IDString, "Z", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->zPosition);			
+			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[canvasPlacement->pivot->type]});			
+			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Offset %", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 97), canvasPlacement->percent);
+			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Offset Px.", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->pixel);			
+			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ZPos" + IDString, "Depth", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->zPosition);			
 			FL::GuiCore::RenderSeparator(0, 8, "canvasDemoBoxSeparators");	
 
 			FL::GuiCore::RenderSectionHeader(typeString + " Properties");		
@@ -343,18 +345,22 @@ namespace FlatGui
 			std::string path = FL::FileHelper::GetFilenameFromPath(sprite->GetPath(), true);
 			int textureWidth = sprite->GetTextureWidth();
 			int textureHeight = sprite->GetTextureHeight();
-			FL::Vector2 textureScale = sprite->GetScale();
-			int renderOrder = sprite->GetRenderOrder();
 			FL::Vector2 offset = sprite->GetOffset();
 			std::string pathString = "Path: ";
 			std::string textureWidthString = std::to_string(textureWidth) + "px";
 			std::string textureHeightString = std::to_string(textureHeight) + "px";
 			FL::Vector4 tintColor = sprite->GetTintColor();
+			std::shared_ptr<FL::Pivot> pivot = sprite->GetPivot();
 			long ownerID = sprite->GetOwnerID();		
 			
 			if (sprite->GetOwningObject()->IsCanvasChild())
 				RenderCanvasPlacementComponent(sprite);
 
+			ImGui::BeginDisabled(sprite->GetOwningObject()->IsCanvasChild());
+			if (RenderPivotSelectionButtons(std::to_string(ownerID), pivot)) pivot->UpdatePivotOffset();			
+			ImGui::EndDisabled();
+
+			FL::GuiCore::MoveScreenCursor(96, -99);
 			int droppedValue = -1;
 			std::string openedPath = "";
 			if (FL::GuiCore::DropInputCanOpenFiles("##InputSpritePath", "File", FL::FileHelper::GetFilenameFromPath(path, true), FL::GuiCore::fileExplorerTarget, droppedValue, openedPath, "Drop images here from File Explorer"))
@@ -380,21 +386,29 @@ namespace FlatGui
 					sprite->SetTexture(openedPath);
 				}
 			}
-
-			FL::GuiCore::RenderSeparator(2, 3);			
-			if (FL::GuiCore::RenderInt32Table(FL::GuiCore::TableProps("##renderOrder" + std::to_string(ownerID), "Render Order"), renderOrder)) sprite->SetRenderOrder(renderOrder);		
-			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##xSpriteOffsetDrag" + std::to_string(ownerID), "X Offset"), offset)) sprite->SetOffset(offset);			
+			FL::GuiCore::MoveScreenCursor(96, 0);
+			FL::GuiCore::TableProps pivotTableProps("##Pivot" + std::to_string(ownerID), "Pivot");	
+			pivotTableProps.b_light = true;
+			pivotTableProps.b_lightSet = true;
+			ImGui::BeginDisabled(sprite->GetOwningObject()->IsCanvasChild());
+			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[pivot->type]});
+			FL::GuiCore::MoveScreenCursor(96, 0);			
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##SpriteOffsetDrag" + std::to_string(ownerID), "Offset Px."), offset)) sprite->SetOffset(offset);			
+			ImGui::EndDisabled();
+			FL::GuiCore::MoveScreenCursor(96, 0);
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureWidth" + std::to_string(ownerID), "Texture width"), {textureWidthString});
+			FL::GuiCore::MoveScreenCursor(96, 0);
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});
-
-			// Tint color picker
-			std::string tintID = "##SpriteTintColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);		
-			if (ImGui::ColorEdit4(tintID.c_str(), (float*)&tintColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
-			{
-				sprite->SetTintColor(tintColor);
-			}
-			ImGui::SameLine(0, 5);
-			ImGui::Text("%s", "Tint color");
+			FL::GuiCore::RenderSeparator(0, -2, "canvasDemoBoxSeparators");	
+			
+			// // Tint color picker
+			// std::string tintID = "##SpriteTintColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);		
+			// if (ImGui::ColorEdit4(tintID.c_str(), (float*)&tintColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
+			// {
+			// 	sprite->SetTintColor(tintColor);
+			// }
+			// ImGui::SameLine(0, 5);
+			// ImGui::Text("%s", "Tint color");
 		}
 
 		void RenderCameraComponent(FL::Camera* camera)
@@ -637,8 +651,9 @@ namespace FlatGui
 			int layerNumber = canvas->GetLayerNumber();
 			bool b_blocksLayers = canvas->GetBlocksLayers();			
 			long ownerID = canvas->GetOwnerID();
+			float pixelsPerGridSpace = canvas->GetPixelsPerGridSpace();
 			
-			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ScreenPixelsPerGridSpace" + std::to_string(ownerID), "Screen Pixels/Grid Space"), canvas->pixelsPerGridSpace);
+			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ScreenPixelsPerGridSpace" + std::to_string(ownerID), "Screen Pixels/Grid Space"), pixelsPerGridSpace)) canvas->SetPixelsPerGridSpace(pixelsPerGridSpace);
 			FL::GuiCore::TableProps canvasLayerProps("##layerNumber" + std::to_string(ownerID), "Canvas layer");
 			canvasLayerProps.intMin = 0;
 			canvasLayerProps.intMax = FL::MAX_CANVAS_LAYERS;
@@ -974,7 +989,7 @@ namespace FlatGui
 			std::shared_ptr<FL::Texture> texture = text->GetTexture();
 			float textureWidth = (float)texture->GetWidth();
 			float textureHeight = (float)texture->GetHeight();
-			int renderOrder = text->GetRenderOrder();
+			// int renderOrder = text->GetRenderOrder();
 			int fontSize = text->GetFontSize();
 			FL::Vector4 color = text->GetColor();
 			FL::Vector2 offset = text->GetOffset();
@@ -1030,7 +1045,7 @@ namespace FlatGui
 			FL::GuiCore::TableProps renderOrderTableProps("##TextRenderOrder" + std::to_string(ownerID), "Render Order");
 			renderOrderTableProps.intMin = 0;
 			renderOrderTableProps.intMax = (int)FL::VulkanManager::maxSpriteLayers;
-			if (FL::GuiCore::RenderInt32Table(renderOrderTableProps, renderOrder)) text->SetRenderOrder(renderOrder);
+			// if (FL::GuiCore::RenderInt32Table(renderOrderTableProps, renderOrder)) text->SetRenderOrder(renderOrder);
 
 			// Tint color picker
 			std::string tintID = "##TextColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);

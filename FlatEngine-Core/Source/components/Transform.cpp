@@ -49,7 +49,7 @@ namespace FlatEngine
 		SetRotation(Vector3(JsonHelper::CheckJsonFloat(componentJson, "xRotation", objectName), JsonHelper::CheckJsonFloat(componentJson, "yRotation", objectName), JsonHelper::CheckJsonFloat(componentJson, "zRotation", objectName)));										
 	}
 
-	Vector3 Transform::GetAbsolutePosition()
+	Vector3 Transform::GetAbsolutePosition(Vector3 offset)
 	{
 		if (GetOwningObject() != nullptr)
 		{
@@ -63,7 +63,7 @@ namespace FlatEngine
 				m_position.y = body2DPos.y;
 			}
 
-			glm::vec4 rotatedPosition = glm::vec4(m_position.x, m_position.y, m_position.z, 1);
+			glm::vec4 rotatedPosition = glm::vec4(m_position.x + offset.x, m_position.y + offset.y, m_position.z + offset.z, 1);
 			Vector3 parentAbsPosition;
 			GameObject* parent = owner->GetParent();
 

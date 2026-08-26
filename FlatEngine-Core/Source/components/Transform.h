@@ -27,7 +27,7 @@ namespace FlatEngine
 		Vector3 GetCleanPosition();
 		Vector3 GetCleanRotation();
 		Vector3 GetPosition();
-		Vector3 GetAbsolutePosition();		
+		Vector3 GetAbsolutePosition(Vector3 offset = Vector3());		
 		Vector3 GetRotation();		
 		Vector3 GetAbsoluteRotation();
 		glm::mat4 GetRotationMatrix();	

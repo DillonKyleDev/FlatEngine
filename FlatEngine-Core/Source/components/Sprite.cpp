@@ -1,9 +1,11 @@
 #include "components/Canvas.h"
 #include "components/Sprite.h"
+#include "GuiCore.h"
 #include "managers/Assets.h"
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
 #include "tools/Logger.h"
+#include <memory>
 
 
 namespace FlatEngine
@@ -13,12 +15,13 @@ namespace FlatEngine
 		SetType(ComponentType_Sprite);
 		SetOwnerID(ownerID);
 		mesh = Mesh(ownerID);
+		m_offset = Vector2();
 		m_textureWidth = 0;
 		m_textureHeight = 0;
-		m_scale = Vector2(1);		
 		m_path = "";
-		m_tintColor = Vector4(1);
-		m_renderOrder = 0;
+		m_tintColor = Vector4(1);	
+		m_pivot = std::make_shared<Pivot>();	
+		mesh.canvasPlacement.pivot = m_pivot;
 	}
 
 	Sprite::~Sprite()
@@ -29,16 +32,14 @@ namespace FlatEngine
 	json Sprite::GetData(bool b_IDOverride)
 	{
 		json componentJson = { 
-			{ "path",            m_path },
-			{ "xScale",          m_scale.x },
-			{ "yScale",          m_scale.y },			
+			{ "path",            m_path },	
 			{ "xOffset",         m_offset.x },
 			{ "yOffset",         m_offset.y },
 			{ "tintColorX",      m_tintColor.x },
 			{ "tintColorY",      m_tintColor.y },
 			{ "tintColorZ",      m_tintColor.z },
 			{ "tintColorW",      m_tintColor.w },
-			{ "renderOrder",     m_renderOrder },
+			{ "pivotType",     	 m_pivot->GetPivotString() },
 			{ "canvasPlacement", mesh.canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
@@ -51,13 +52,12 @@ namespace FlatEngine
 		if (componentJson.empty())		
 			return;	
 		
-        Component::PutData(componentJson, objectName);
+        Component::PutData(componentJson, objectName);		
 
 		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
 			mesh.canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);		
-				
-		SetScale(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xScale", objectName), JsonHelper::CheckJsonFloat(componentJson, "yScale", objectName)));
-		SetRenderOrder(JsonHelper::CheckJsonInt(componentJson, "renderOrder", objectName));
+		m_pivot->type = GetTypeFromString(PivotFromString, JsonHelper::CheckJsonString(componentJson, "pivotType", objectName));
+					
 		SetTintColor(Vector4(
 			JsonHelper::CheckJsonFloat(componentJson, "tintColorX", objectName),
 			JsonHelper::CheckJsonFloat(componentJson, "tintColorY", objectName),
@@ -68,7 +68,7 @@ namespace FlatEngine
 		if (path != "" && !FileHelper::DoesFileExist(path))		
 			Logger::log.Err("Sprite file not found for GameObject: {}. This may lead to unexpected behavior.  \npath: {}", objectName, path);		
 		else if (path != "")		
-			SetTexture(path);
+			SetTexture(path);						
 		
 		SetOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName)));
     }
@@ -91,9 +91,8 @@ namespace FlatEngine
 				mesh.CreateResources();	
 				m_textureWidth = meshTextures.at(0).GetWidth();
 				m_textureHeight = meshTextures.at(0).GetHeight();
-
-				m_offset = Vector2((float)m_textureWidth / 2, (float)m_textureHeight / 2);				
-				mesh.canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);			
+				m_pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);
+				mesh.SetRenderScale(Vector2(m_textureWidth / GuiCore::WORLD_PIXELS_PER_GRIDSPACE, m_textureHeight / GuiCore::WORLD_PIXELS_PER_GRIDSPACE));
 			}
 			else
 			{
@@ -104,14 +103,14 @@ namespace FlatEngine
 				{
 					m_textureWidth = 50;
 					m_textureHeight = 50;
-					SetOffset(Vector2(25, 25));
-					mesh.canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);	
+					m_pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);	
+					mesh.SetRenderScale(Vector2(m_textureWidth / GuiCore::WORLD_PIXELS_PER_GRIDSPACE, m_textureHeight / GuiCore::WORLD_PIXELS_PER_GRIDSPACE));
 				}
 
 				Logger::log.Err("Sprite::SetTexture() - Texture could not be loaded.");
 			}		
 			
-			mesh.canvasPlacement.UpdatePivotOffset();
+			m_pivot->UpdatePivotOffset();
 		}
 	}
 
@@ -130,19 +129,6 @@ namespace FlatEngine
 		return mesh.GetTextures().at(0).GetTexture();
 	}
 
-	void Sprite::SetScale(Vector2 newScale)
-	{		
-		if (newScale.x != 0 && newScale.y != 0)
-		{
-			m_scale = newScale;
-		}
-	}
-
-	Vector2 Sprite::GetScale()
-	{
-		return m_scale;
-	}
-
 	int Sprite::GetTextureWidth()
 	{
 		return m_textureWidth;
@@ -156,16 +142,6 @@ namespace FlatEngine
 	std::string Sprite::GetPath()
 	{
 		return m_path;
-	}
-
-	void Sprite::SetRenderOrder(int order)
-	{
-		m_renderOrder = order;
-	}
-
-	int Sprite::GetRenderOrder()
-	{
-		return m_renderOrder;
 	}
 
 	void Sprite::RemoveTexture()
@@ -204,5 +180,10 @@ namespace FlatEngine
 	CanvasPlacement* Sprite::GetCanvasPlacement()
 	{
 		return &mesh.canvasPlacement;
+	}
+
+	std::shared_ptr<Pivot> Sprite::GetPivot()
+	{
+		return m_pivot;
 	}
 }

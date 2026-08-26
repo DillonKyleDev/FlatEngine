@@ -20,7 +20,7 @@ namespace FlatEngine
 		m_b_blocksLayers = true;
 		m_dimensions = Vector2(20, 10);
 		m_activeEdges = Vector4();
-		pixelsPerGridSpace = 64.0f;
+		m_pixelsPerGridSpace = 64.0f;
 	}
 
 	json Canvas::GetData(bool b_IDOverride)
@@ -104,28 +104,14 @@ namespace FlatEngine
 		return m_b_blocksLayers;
 	}
 
-	Vector3 Canvas::GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize)
+	Vector3 Canvas::GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize, Vector2 textureScale)
 	{		
-		float scale = pixelsPerGridSpace / GuiCore::WORLD_PIXELS_PER_GRIDSPACE;
+		Vector2 scale = textureScale * (m_pixelsPerGridSpace / GuiCore::WORLD_PIXELS_PER_GRIDSPACE);
 		Vector2 pixelPos  = Vector2(imageSize.x * canvasPlacement->percent.x, imageSize.y * canvasPlacement->percent.y) + canvasPlacement->pixel;
 
-		switch (canvasPlacement->pivot)
-		{
-		case Pivot_Center:      break; 
-		case Pivot_Left:        pixelPos = Vector2(pixelPos.x + (canvasPlacement->dimensions.x * scale / 2), pixelPos.y); break;
-		case Pivot_Right:       pixelPos = Vector2(pixelPos.x - (canvasPlacement->dimensions.x * scale / 2), pixelPos.y); break;
-		case Pivot_Top:         pixelPos = Vector2(pixelPos.x,  pixelPos.y + (canvasPlacement->dimensions.y * scale / 2)); break; 
-		case Pivot_Bottom:      pixelPos = Vector2(pixelPos.x,  pixelPos.y - (canvasPlacement->dimensions.y * scale / 2)); break; 
-		case Pivot_TopLeft:     pixelPos = Vector2(pixelPos.x + (canvasPlacement->dimensions.x * scale / 2), pixelPos.y + (canvasPlacement->dimensions.y * scale / 2)); break; 
-		case Pivot_TopRight:    pixelPos = Vector2(pixelPos.x - (canvasPlacement->dimensions.x * scale / 2), pixelPos.y + (canvasPlacement->dimensions.y * scale / 2)); break;	
-		case Pivot_BottomLeft:  pixelPos = Vector2(pixelPos.x + (canvasPlacement->dimensions.x * scale / 2), pixelPos.y - (canvasPlacement->dimensions.y * scale / 2)); break; 
-		case Pivot_BottomRight: pixelPos = Vector2(pixelPos.x - (canvasPlacement->dimensions.x * scale / 2), pixelPos.y - (canvasPlacement->dimensions.y * scale / 2)); break; 
-		default: break;
-		}
-
-		Vector2 gridAdd   = pixelPos * (1.0f / pixelsPerGridSpace);
+		Vector2 gridAdd   = pixelPos * (1.0f / m_pixelsPerGridSpace);
 		gridAdd.y        *= -1;
-		Vector2 startGrid = imageSize * (-0.5f) * (1.0f / pixelsPerGridSpace);
+		Vector2 startGrid = imageSize * (-0.5f) * (1.0f / m_pixelsPerGridSpace);
 		startGrid.y      *= -1;
 		Vector2 gridPos   = startGrid + gridAdd;			
 		
@@ -136,11 +122,21 @@ namespace FlatEngine
 	{
 		glm::mat4 projection;			
 		
-		float halfWidth  = SceneView::finalImageSize.x / pixelsPerGridSpace / 2.0f;
-		float halfHeight = SceneView::finalImageSize.y / pixelsPerGridSpace / 2.0f;
+		float halfWidth  = SceneView::finalImageSize.x / m_pixelsPerGridSpace / 2.0f;
+		float halfHeight = SceneView::finalImageSize.y / m_pixelsPerGridSpace / 2.0f;
 		projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -2000.0f, 1000.0f);			
 		projection[1][1] *= -1;
 
 		return projection;
+	}
+
+	float Canvas::GetPixelsPerGridSpace()
+	{
+		return m_pixelsPerGridSpace;
+	}
+
+	void Canvas::SetPixelsPerGridSpace(float pixels)
+	{
+		m_pixelsPerGridSpace = pixels;
 	}
 }

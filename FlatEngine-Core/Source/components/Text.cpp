@@ -84,8 +84,8 @@ namespace FlatEngine
 			m_texture->LoadFromRenderedText(m_text, m_white, m_font);
 			m_textureWidth = m_texture->GetWidth();
 			m_textureHeight = m_texture->GetHeight();
-			m_canvasPlacement.dimensions = Vector2(m_textureWidth, m_textureHeight);
-			m_canvasPlacement.UpdatePivotOffset();
+			m_canvasPlacement.pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);
+			m_canvasPlacement.pivot->UpdatePivotOffset();
 		}		
 	}
 

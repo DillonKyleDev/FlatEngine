@@ -84,8 +84,8 @@ namespace FlatEngine
 		if (setDimensions.x > 0 && setDimensions.y > 0)
 		{
 			m_dimensions = setDimensions;
-			m_canvasPlacement.dimensions = m_dimensions;
-			m_canvasPlacement.UpdatePivotOffset();
+			m_canvasPlacement.pivot->dimensions = m_dimensions;
+			m_canvasPlacement.pivot->UpdatePivotOffset();
 		}
 		else
 		{

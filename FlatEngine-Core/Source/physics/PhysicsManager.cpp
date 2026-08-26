@@ -532,21 +532,5 @@ namespace FlatEngine
 			DestroyJoint(joint);
 			CreateJoint(joint);
 		}
-
-		// For Mouse button collisions - Vector4 objectA(top, right, bottom, left), Vector4 objectB(top, right, bottom, left)
-		bool Physics2D::AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB)
-		{
-			float A_TopEdge = ObjectA.z;
-			float A_RightEdge = ObjectA.y;
-			float A_BottomEdge = ObjectA.x;
-			float A_LeftEdge = ObjectA.w;
-
-			float B_TopEdge = ObjectB.x;
-			float B_RightEdge = ObjectB.y;
-			float B_BottomEdge = ObjectB.z;
-			float B_LeftEdge = ObjectB.w;
-
-			return (A_LeftEdge < B_RightEdge && A_RightEdge > B_LeftEdge && A_TopEdge > B_BottomEdge && A_BottomEdge < B_TopEdge);
-		}
 	}
 }

@@ -1,6 +1,8 @@
 #include "components/Camera.h"
+#include "components/Sprite.h"
 #include "components/Transform.h"
 #include "components/Mesh.h"
+#include "GuiCore.h"
 #include "managers/Assets.h"
 #include "render/DeviceManager.h"
 #include "render/RenderWindow.h"
@@ -11,6 +13,7 @@
 #include "tools/Logger.h"
 #include "tools/Vector3.h"
 
+#include <ext/vector_float3.hpp>
 #include <glm/gtx/string_cast.hpp>
 
 
@@ -32,6 +35,7 @@ namespace FlatEngine
 		m_allocationPoolIndex = -1;
 		m_b_initialized = false;
 		m_b_missingTextures = false;
+		m_renderScale = Vector2(1);
 		
 		m_uboVec4s = std::map<std::string, glm::vec4>();
 	}
@@ -424,26 +428,57 @@ namespace FlatEngine
 		glm::vec3 lookDir = glm::vec3(cameraTransform->GetLookDirection());
 		glm::vec4 up = glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);		
 				
-
 		CustomUBO ubo{};
 		BaseUBO base{};		
 		base.cameraPosition = glm::vec4(cameraPos, 0);
-		base.model = transform->GetAbsoluteRotationMatrix() * transform->GetScaleMatrix();
+		base.model = transform->GetAbsoluteRotationMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 
-		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasChild() && viewportType != ViewportType_SceneView)
+		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasChild())
 		{			
 			Canvas* canvas = GetOwningObject()->GetFirstCanvas();
-			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize));						
-			base.projection = canvas->GetProjection();
-			// base.cameraPosition = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition().GetGLMVec4();
+			Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();
+			Vector3 textureScale = transform->GetScale();				
+			// Set actual position based on percent and pixel positioning.	
+			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize, Vector2(textureScale.x, textureScale.y)));						
+			// Then use the position based on the new position + the pivot offset but don't actually set that as the position
+			Transform transformCopy = Transform(*transform);
+			Vector2 pivotOffset = canvasPlacement.pivot->offset;
+			pivotOffset = Vector2(pivotOffset.x * textureScale.x / GuiCore::WORLD_PIXELS_PER_GRIDSPACE, pivotOffset.y * textureScale.y / GuiCore::WORLD_PIXELS_PER_GRIDSPACE);				
+			pivotOffset.y *= -1;
+			Vector3 pos = transformCopy.GetPosition();				
+			transformCopy.SetScale(Vector3(textureScale.x * m_renderScale.x, textureScale.y * m_renderScale.y, textureScale.z));
+			Vector3 renderOffset = Vector3(pivotOffset, pos.z);
+			
+			base.projection = viewportType != ViewportType_SceneView ? canvas->GetProjection() : camera->GetProjection();
+			base.view = viewportType != ViewportType_SceneView ? glm::lookAt(canvasPos.GetGLMVec3(), glm::vec3(0,0,-1), glm::vec3(up)) : glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
+			base.meshPosition = transformCopy.GetAbsolutePosition(renderOffset).GetGLMVec4();
+			base.model = base.model * transformCopy.GetScaleMatrix();
+		}
+		else if (GetOwningObject() != nullptr && GetOwningObject()->Get<Sprite>() != nullptr)
+		{			
+			Transform transformCopy = Transform(*transform);
+			Vector3 pos = transformCopy.GetPosition();			
+			Vector3 textureScale = transformCopy.GetScale();
+			Sprite* sprite = GetOwningObject()->Get<Sprite>();
+			Vector2 spriteOffset = sprite->GetOffset();
+			Vector2 pivotOffset = sprite->GetPivot()->offset;
+			pivotOffset = Vector2(pivotOffset.x * textureScale.x, pivotOffset.y * textureScale.y);			
+			Vector2 pixelOffset = spriteOffset + pivotOffset;
+			pixelOffset.y *= -1;
+			transformCopy.SetScale(Vector3(textureScale.x * m_renderScale.x, textureScale.y * m_renderScale.y, textureScale.z));
+			Vector3 renderOffset = Vector3(pixelOffset * (1.0f / GuiCore::WORLD_PIXELS_PER_GRIDSPACE), pos.z);
+
+			base.meshPosition = transformCopy.GetAbsolutePosition(renderOffset).GetGLMVec4();
+			base.projection = camera->GetProjection();
+			base.model = base.model * transformCopy.GetScaleMatrix();
 		}
 		else
-		{
+		{			
+			base.meshPosition = transform->GetAbsolutePosition().GetGLMVec4();
 			base.projection = camera->GetProjection();
+			base.model = base.model * transform->GetScaleMatrix();
 		}
-
-		base.meshPosition = transform->GetAbsolutePosition().GetGLMVec4();
 
 		ubo.baseUBO = base;
 		
@@ -499,5 +534,15 @@ namespace FlatEngine
 		{
 			m_uboVec4s.emplace(name, glm::vec4(value.x, value.y, value.z, value.w));
 		}
+	}
+
+	Vector2 Mesh::GetRenderScale()
+	{
+		return m_renderScale;
+	}
+
+	void Mesh::SetRenderScale(Vector2 renderScale)
+	{
+		m_renderScale = renderScale;
 	}
 }

@@ -116,7 +116,7 @@ namespace FlatEngine
 			style.Colors[ImGuiCol_SeparatorHovered]     = Assets::assetManager.GetColor("buttonHovered");
 			style.Colors[ImGuiCol_ButtonHovered]        = Assets::assetManager.GetColor("buttonHovered");
 			style.Colors[ImGuiCol_ButtonActive]         = Assets::assetManager.GetColor("buttonActive");
-			style.Colors[ImGuiCol_Button]               = Assets::assetManager.GetColor("button");
+			style.Colors[ImGuiCol_Button]               = Assets::assetManager.GetColor("button");			
 			// Tables
 			style.Colors[ImGuiCol_TableRowBg]           = Assets::assetManager.GetColor("tableCellDark");
 			style.Colors[ImGuiCol_TableRowBgAlt]        = Assets::assetManager.GetColor("tableCellLight");
@@ -152,6 +152,7 @@ namespace FlatEngine
 			style.ItemSpacing = Vector2(8,4);
 			style.SeparatorTextAlign = Vector2(0.5f, 0.0f);
 			style.SeparatorTextBorderSize = 1;
+			style.DisabledAlpha = 0.3f;
 		}
 
 		void QuitImGui()
@@ -1464,7 +1465,7 @@ namespace FlatEngine
 			float tableWidth = ImGui::GetContentRegionAvail().x;
 
 			if (tableProps.labelWidth == 0) 
-				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableWidth / 2 ? tableWidth / 2 : ImGui::CalcTextSize(values[0].c_str()).x + 10;
+				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableWidth / 2 ? tableWidth / 2 : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
 
 			TableProps labelTableProps = TableProps("##labelTable" + tableProps.ID, tableProps.label);
 			labelTableProps.labelWidth = tableProps.labelWidth;
@@ -1787,34 +1788,25 @@ namespace FlatEngine
 				strcpy(newPath, openedFileValue.c_str());
 			#endif
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			ImGui::AlignTextToFramePadding();
-
 			if (label != "")
 			{
 				label += ":";
-				ImGui::Text("%s", label.c_str());
-				ImGui::SameLine(0, 5);			
+				TableProps labelTable = TableProps("##DropInputLabelTable" + ID, label);
+				labelTable.labelColor = "col_2";
+				labelTable.labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
+				RenderLabelTable(labelTable);
+				ImGui::SameLine(0, 0);			
 			}
 
-			if (inputWidth == -1)
-			{
-				inputWidth = ImGui::GetContentRegionAvail().x - 24;
-			}
-			else
-			{
-				inputWidth -= 24;
-			}
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
+			inputWidth = inputWidth == 0 ? ImGui::GetContentRegionAvail().x - 22 : inputWidth - 22;
+		
 			Vector2 inputStart = ImGui::GetCursorScreenPos();
-			Vector2 inputSize = Vector2(inputWidth, ImGui::GetFontSize() * 1.65f);
+			Vector2 inputSize = Vector2(inputWidth, TABLE_HEIGHT);
 			ImGui::GetWindowDrawList()->AddRectFilled(inputStart, Vector2(inputStart.x + inputSize.x, inputStart.y + inputSize.y), Assets::assetManager.GetColor32("input"), 0);
-			ImGui::SetCursorScreenPos(Vector2(inputStart.x + 3, inputStart.y));
-			ImGui::Text("%s", displayValue.c_str());
+			ImGui::SetCursorScreenPos(Vector2(inputStart.x + 3, inputStart.y));			
 
 			RenderInvisibleButton("##DropInputOpenFilesdropTarget" + ID, inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
-			ImGui::PopStyleVar();
+	
 			if (toolTip != "" && ImGui::IsItemHovered())
 			{
 				RenderTextToolTip(toolTip);
@@ -1848,10 +1840,10 @@ namespace FlatEngine
 				ImGui::EndPopup();
 			}
 
-			ImGui::SameLine(0,3);
+			ImGui::SameLine(0,0);
 
 			std::string buttonId = ID + "openFileButton";		
-			if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(15), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
+			if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(16), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
 			{
 				std::string assetPath = FileHelper::OpenLoadFileExplorer();		
 
@@ -1869,7 +1861,7 @@ namespace FlatEngine
 				openedFileValue = newPath;
 			}
 
-			ImGui::PopStyleVar();
+			MoveScreenCursor(0, -4);
 
 			return b_editedButton || b_dragTargeted;
 		}

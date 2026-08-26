@@ -23,8 +23,7 @@ namespace FlatEngine
 		public:
 			Physics2D();			
 
-			static bool CanCollide(TagList tagList1, TagList tagList2);
-			static bool AreCollidingViewport(Vector4 ObjectA, Vector4 ObjectB);
+			static bool CanCollide(TagList tagList1, TagList tagList2);			
 			static b2CastOutput CastRay(Vector2 initialPos, Vector2 direction, float increment, TagList tagList, Body& hit, bool b_visible = false);
 
 			void Init();

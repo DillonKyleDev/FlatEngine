@@ -6,6 +6,7 @@
 #include "managers/Controls.h"
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
+#include "physics/Collision2D.h"
 #include "physics/PhysicsManager.h"
 #include "tools/Time.h"
 
@@ -307,7 +308,7 @@ namespace FlatEngine
 				Vector4 activeEdges = button.GetActiveEdges();
 				Vector2 mousePos = ImGui::GetIO().MousePos;
 
-				if (PhysicsManager::gamePhysics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
+				if (Collision2D::AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
 				{
 					if (button.GetLayer() >= GetFirstUnblockedLayer())
 					{
@@ -408,7 +409,7 @@ namespace FlatEngine
 			bool b_blocksLayers = canvas.GetBlocksLayers();
 			int layerNumber = canvas.GetLayerNumber();
 
-			if (PhysicsManager::gamePhysics2D.AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
+			if (Collision2D::AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)) && b_blocksLayers && layerNumber >= lowestUnblockedLayer)
 			{
 				lowestUnblockedCanvas = canvas;
 				lowestUnblockedLayer = canvas.GetLayerNumber();

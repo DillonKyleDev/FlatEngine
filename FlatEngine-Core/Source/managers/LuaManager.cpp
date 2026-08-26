@@ -499,8 +499,6 @@ namespace FlatEngine
 				"GetOwnerID", &Sprite::GetOwnerID,
 				"SetTexture", &Sprite::SetTexture,
 				"GetPath", &Sprite::GetPath,
-				"SetScale", &Sprite::SetScale,
-				"GetScale", &Sprite::GetScale,
 				"GetTextureWidth", &Sprite::GetTextureWidth,
 				"GetTextureHeight", &Sprite::GetTextureHeight,			
 				"SetTintColor", &Sprite::SetTintColor,

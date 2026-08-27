@@ -317,8 +317,8 @@ namespace FlatEngine
 					Vector2 colliderStart = Vector2(collisionArea.startCoord.x + 1, collisionArea.startCoord.y + 1);
 					Vector2 colliderEnd = Vector2(collisionArea.endCoord.x + 1, collisionArea.endCoord.y + 1);
 
-					float gridWidthsInATile = m_tileWidth / VulkanManager::pixelsPerGridSpace;
-					float gridHeightsInATile = m_tileHeight / VulkanManager::pixelsPerGridSpace;
+					float gridWidthsInATile = m_tileWidth / 16.0f;//  VulkanManager::pixelsPerGridSpace;
+					float gridHeightsInATile = m_tileHeight / 16.0f;//  VulkanManager::pixelsPerGridSpace;
 
 					Vector2 offset = Vector2();
 

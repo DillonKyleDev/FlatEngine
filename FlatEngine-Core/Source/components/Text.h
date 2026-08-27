@@ -23,8 +23,6 @@ namespace FlatEngine
 		void PutData(json componentJson, std::string objectName);
 
 		void LoadText();
-		void SetRenderOrder(int order);
-		int GetRenderOrder();
 		std::shared_ptr<Texture> GetTexture();
 		void SetFontPath(std::string path);
 		std::string GetFontPath();
@@ -49,7 +47,6 @@ namespace FlatEngine
 		Vector4 m_tintColor;
 		std::shared_ptr<Texture> m_texture;
 		Vector2 m_offset;
-		int m_renderOrder;
 		SDL_Color m_white;
 		SDL_Color m_transparent;
 	};

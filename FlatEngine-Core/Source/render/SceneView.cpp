@@ -738,17 +738,10 @@ namespace FlatEngine
 			if (sceneViewCamera.b_orthographic)
 			{					
 				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridH].mesh.SetActive(false);
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].mesh.SetActive(true);	
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].transform.SetPosition(Vector3(0,0,-1)); // Check in the shader
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_XAxis].transform.SetPosition(Vector3(0,0,-1));
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_YAxis].transform.SetPosition(Vector3(0,0,-1));				
-				// sceneViewCamera.orthoHorizontalViewAngle = 180;
-				// sceneViewCamera.orthoVerticalViewAngle = 0;
+				persistentSceneRenderObjects[PersistentSceneObjectIndex_GridV].mesh.SetActive(true);				
 			}
 			else
-			{				
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_XAxis].transform.SetPosition(Vector3(0,0,0));
-				persistentSceneRenderObjects[PersistentSceneObjectIndex_YAxis].transform.SetPosition(Vector3(0,0,0));				
+			{							
 				SetGridHorizontal(b_gridHorizontal); // Handles activation/deactivation logic
 			} 
         }
@@ -894,19 +887,6 @@ namespace FlatEngine
 
 		void RenderViewObject(FL::GameObject &self, FL::Vector2 centerPoint, FL::Vector2 canvasP0, FL::Vector2 canvasSize, float gridStep, ImDrawList* drawList, ImDrawListSplitter* drawSplitter)
 		{
-			FL::Transform* transform = self.Get<FL::Transform>();
-			FL::Animation* animation = self.Get<FL::Animation>();
-			FL::Sprite* sprite = self.Get<FL::Sprite>();
-			FL::CharacterController* characterController = self.Get<FL::CharacterController>();
-			FL::Camera* camera = self.Get<FL::Camera>();
-			FL::Button* button = self.Get<FL::Button>();
-			FL::Canvas* canvas = self.Get<FL::Canvas>();
-			FL::Text* text = self.Get<FL::Text>();
-			FL::Body* body = self.Get<FL::Body>();
-			FL::TileMap* tileMap = self.Get<FL::TileMap>();
-
-			bool b_spriteButtonAdded = false;
-
 			/*
 
 			if (transform != nullptr)
@@ -1954,30 +1934,6 @@ namespace FlatEngine
 			}
 
 			*/
-		}
-		
-		void RenderViewObjects(std::map<long, FL::GameObject>& objects, FL::Vector2 centerPoint, FL::Vector2 canvasP0, FL::Vector2 canvasSize, float gridStep)
-		{
-			// Split our drawlist into multiple channels for different rendering orders
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			ImDrawListSplitter* drawSplitter = new ImDrawListSplitter();
-
-			// 4 channels for now in this scene view. 0 = scene objects, 1 & 2 = other UI (camera icon, etc), 4 = transform arrow
-			drawSplitter->Split(drawList, FL::VulkanManager::maxSpriteLayers + 5);
-			
-
-			for (std::pair<long, FL::GameObject> object : objects)
-			{
-				if (object.second.IsActive())
-				{
-					RenderViewObject(object.second, centerPoint, canvasP0, canvasSize, gridStep, drawList, drawSplitter);
-				}
-			}
-
-
-			drawSplitter->Merge(drawList);
-			delete drawSplitter;
-			drawSplitter = nullptr;
 		}
 
 		// bool RenderAddPointWidget(Body* body, Shape* shape, FL::Vector2 midPoint, int startIndex)

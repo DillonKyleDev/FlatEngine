@@ -1,3 +1,4 @@
+#include "GuiCore.h"
 #include "components/Body2D.h"
 #include "components/Sprite.h"
 #include "Types.h"
@@ -27,21 +28,12 @@ namespace FlatEngine
 {
     namespace VulkanManager
     {
-        // TODO: Remove PipelineManager class and move RenderPasses into Materials alongside GraphicsPipeline to be controlled by each Material. 
-        
         Vulkan vulkan = Vulkan();	
         std::string selectedMaterialName = "";
         ValidationLayers validationLayers = ValidationLayers();
         uint32_t currentFrame = 0;
         uint32_t imageCount = 0;
         int MAX_FRAMES_IN_FLIGHT = 2;
-        // sprite size * 0.1f brings sprite down from 1 sprite pixel per 1 grid block to 10 sprite pixels per 1 grid block
-        // then to make an 8x8 sprite fit properly into a 10px by 10px grid block
-        // take the ratio of 10px / 8px and multiply it by our now scaled down sprite size to get:  0.1 * (10 / 8) = 0.125 = the scale multiplier
-        // Now our 8x8, 16x16, 32x32, etc, pixel art fits nicely inside the grid space blocks
-        float pixelsPerGridSpace = 8.0f;
-        float spriteScaleMultiplier = 0.1f * (10.0f / pixelsPerGridSpace);
-        int maxSpriteLayers = 55;
 
 
         void Vulkan::check_vk_result(VkResult err)
@@ -1596,74 +1588,6 @@ namespace FlatEngine
         VkCommandPool& Vulkan::GetCommandPool()
         {
             return m_systemCommandPool;
-        }
-
-        Vector2 AddImageToDrawList(VkDescriptorSet texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offsetPx, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation, ImU32 addColor, Vector2 uvStart, Vector2 uvEnd)
-        {
-            // Changing the scale here because sprites render too large
-            Vector2 newScale = Vector2(scale.x * spriteScaleMultiplier, scale.y * spriteScaleMultiplier);
-
-            float scalingXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - (offsetPx.x * newScale.x * zoomMultiplier);
-            float scalingYStart = relativeCenterPoint.y - (positionInGrid.y * zoomMultiplier) - (offsetPx.y * newScale.y * zoomMultiplier);
-            float scalingXEnd = scalingXStart + (textureWidthPx * newScale.x * zoomMultiplier);
-            float scalingYEnd = scalingYStart + (textureHeightPx * newScale.y * zoomMultiplier);
-
-            float unscaledXStart = relativeCenterPoint.x + (positionInGrid.x * zoomMultiplier) - offsetPx.x * scale.x;
-            float unscaledYStart = relativeCenterPoint.y + (-positionInGrid.y * zoomMultiplier) - offsetPx.y * scale.y;
-
-            Vector2 renderStart;
-            Vector2 renderEnd;
-
-            if (b_scalesWithZoom)
-            {
-                renderStart = Vector2(scalingXStart, scalingYStart);
-                renderEnd = Vector2(scalingXEnd, scalingYEnd);
-
-                // FOR DEBUGGING - draw white box around where the texture should be
-                //DrawRectangle(renderStart, renderEnd, Vector2(0,0), Vector2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), F_whiteColor, 2, draw_list);
-            }
-            else
-            {
-                renderStart = Vector2(unscaledXStart, unscaledYStart);
-                renderEnd = Vector2(renderStart.x + textureWidthPx * scale.x, renderStart.y + textureHeightPx * scale.y);
-            }
-
-            if (rotation != 0)
-            {
-                float x = (renderEnd.x - renderStart.x) / 2.0f;
-                float y = (renderEnd.y - renderStart.y) / 2.0f;
-                
-                Vector2 topLeft =     Vector2::Rotate(Vector2(-x, -y), rotation);
-                Vector2 topRight =    Vector2::Rotate(Vector2(+x, -y), rotation);
-                Vector2 bottomRight = Vector2::Rotate(Vector2(+x, +y), rotation);
-                Vector2 bottomLeft =  Vector2::Rotate(Vector2(-x, +y), rotation);
-
-                Vector2 center = Vector2(renderStart.x + ((renderEnd.x - renderStart.x) / 2), renderStart.y + ((renderEnd.y - renderStart.y) / 2));
-                Vector2 pos[4] =
-                {
-                    Vector2(center.x + topLeft.x, center.y + topLeft.y),
-                    Vector2(center.x + topRight.x, center.y + topRight.y),
-                    Vector2(center.x + bottomRight.x, center.y + bottomRight.y),
-                    Vector2(center.x + bottomLeft.x, center.y + bottomLeft.y),
-                };
-                Vector2 uvs[4] =
-                {
-                    Vector2(0.0f, 0.0f),
-                    Vector2(1.0f, 0.0f),
-                    Vector2(1.0f, 1.0f),
-                    Vector2(0.0f, 1.0f)
-                };
-
-                // Render sprite to viewport
-                drawList->AddImageQuad(texture, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], addColor);
-            }
-            else
-            {
-                // Render sprite to viewport
-                drawList->AddImage((void*)texture, renderStart, renderEnd, uvStart, uvEnd, addColor);
-            }
-
-            return renderStart;
         }
     }
 }

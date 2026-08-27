@@ -525,57 +525,6 @@ namespace FlatEngine
 			
 		}
 
-		void RenderGameViewObjects(Vector2 canvasP0, Vector2 canvasSize)
-		{		
-			std::vector<FL::GameObject> sceneObjects = SceneManager::loadedScene.GetSceneObjects();	
-			FL::Camera* primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();
-			FL::Transform* cameraTransform = nullptr;	
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			ImDrawListSplitter* drawSplitter = new ImDrawListSplitter();
-			// 3 channels for now in this scene view. 0 = scene objects, 1 = other UI (camera icon, etc), 2 = transform arrow
-			drawSplitter->Split(drawList, VulkanManager::maxSpriteLayers + 5);
-
-			FL::Vector2 cameraPosition = FL::Vector2();
-			float cameraWidth = 50;
-			float cameraHeight = 30;		
-			FL::Vector4 frustrumColor = FL::Vector4(1);	
-			float cameraStartTime = (float)FL::Time::Time();
-			
-			if (primaryCamera != nullptr)
-			{
-				FL::GameObject* owner = primaryCamera->GetOwningObject();
-				if (owner != nullptr)
-				{
-					cameraTransform = owner->Get<FL::Transform>();
-				}
-				
-				if (cameraTransform != nullptr)
-				{
-					cameraPosition = cameraTransform->GetAbsolutePosition();
-				}
-				else
-				{
-					cameraPosition = FL::Vector2();
-				}
-			}
-			
-			gameViewCenter = FL::Vector2((GAME_VIEWPORT_WIDTH / 2) - (cameraPosition.x * gameViewGridStep) + canvasP0.x, (GAME_VIEWPORT_HEIGHT / 2) + (cameraPosition.y * gameViewGridStep) + canvasP0.y);
-			FL::Vector2 viewportCenterPoint = FL::Vector2((GAME_VIEWPORT_WIDTH / 2) + canvasP0.x, (GAME_VIEWPORT_HEIGHT / 2) + canvasP0.y);
-			
-			float renderStartTime = 0;
-			renderStartTime = (float)FL::Time::Time();
-
-			for (FL::GameObject& sceneObject : sceneObjects)
-			{
-				if (sceneObject.IsActive())
-				{
-					RenderGameViewObject(sceneObject, canvasP0, canvasSize, drawList, drawSplitter, cameraPosition, cameraWidth, cameraHeight);
-				}
-			}
-
-			drawSplitter->Merge(drawList);
-		}
-
 		// Converts from world grid space in Game View to screen space
 		Vector2 ConvertWorldToScreen(Vector2 positionInWorld)
 		{

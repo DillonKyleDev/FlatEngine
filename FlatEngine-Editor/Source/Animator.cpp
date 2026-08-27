@@ -683,10 +683,8 @@ namespace FlatGui
 
 						if (b_luaEvent)
 						{
-							if (FL::GuiCore::RenderInput("##AnimationEventName", "Function Name", functionName))
-							{
-								event->functionName = functionName;
-							}
+							FL::GuiCore::TableProps textTableProps("##AnimationEventName", "Function Name");
+							FL::GuiCore::RenderStringTable(textTableProps, event->functionName);						
 						}
 
 						FL::GuiCore::RenderLuaParametersTable("##EventPropLuaParams", "Event Property Parameters", event->eventParamContainer);
@@ -814,32 +812,20 @@ namespace FlatGui
 
 						// Sprite path
 						ImGui::BeginDisabled(!sprite->b_pathAnimated);
-						int droppedValue = -1;
-						std::string openedPath = "";
-						if (FL::GuiCore::DropInputCanOpenFiles("##spritePathKeyFrameEditor", "Path", path, FL::GuiCore::fileExplorerTarget, droppedValue, openedPath, "Drop image files here from the File Explorer"))
+						FL::GuiCore::InputProps spriteInputProps("##spritePathKeyFrameEditor", "Path");
+						spriteInputProps.displayValue = path;
+						spriteInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+						spriteInputProps.requiredExtensions = { ".png", ".jpg", ".tif", ".webp", ".jxl" };					
+						spriteInputProps.tipMessage = "Drop images here from File Explorer";
+						if (FL::GuiCore::RenderDropInputTable(spriteInputProps))							
 						{
-							if (openedPath != "")
+							sprite->path = spriteInputProps.value;
+							FL::Texture texture = FL::Texture();
+							texture.LoadFromFile(sprite->path);
+							if (texture.GetTexture() != nullptr)
 							{
-								sprite->path = openedPath;
-							}
-							else if (droppedValue != -1)
-							{
-								std::filesystem::path fs_path(FL::GuiCore::selectedFiles[droppedValue - 1]);
-								if (fs_path.extension() == ".png")
-								{
-									sprite->path = fs_path.string();
-									FL::Texture texture = FL::Texture();
-									texture.LoadFromFile(fs_path.string());
-									if (texture.GetTexture() != nullptr)
-									{
-										sprite->xOffset = (float)(texture.GetWidth() / 2.0f);
-										sprite->yOffset = (float)(texture.GetHeight() / 2.0f);
-									}
-								}
-								else
-								{
-									FL::Logger::log.Err("File must be of type .png to drop here.");
-								}
+								sprite->xOffset = (float)(texture.GetWidth() / 2.0f);
+								sprite->yOffset = (float)(texture.GetHeight() / 2.0f);
 							}
 						}
 						ImGui::EndDisabled();
@@ -902,10 +888,8 @@ namespace FlatGui
 						ImGui::SameLine();
 
 						ImGui::BeginDisabled(!text->b_textAnimated);
-						if (FL::GuiCore::RenderInput("##AnimationTextStringKeyFrameEditor", "Text", textString, false))
-						{
-							text->text = textString;
-						}
+						FL::GuiCore::TableProps textTableProps("##AnimationTextStringKeyFrameEditor", "Text");
+						FL::GuiCore::RenderStringTable(textTableProps, text->text);						
 						ImGui::EndDisabled();
 
 						FL::GuiCore::MoveScreenCursor(0, 4);
@@ -913,35 +897,23 @@ namespace FlatGui
 						FL::GuiCore::RenderCheckbox("##fontPathAnimated", text->b_fontPathAnimated);
 						ImGui::SameLine();
 
-						ImGui::BeginDisabled(!text->b_fontPathAnimated);
-						int droppedValue = -1;
-						std::string openedPath = "";
-						if (FL::GuiCore::DropInputCanOpenFiles("##TextPathKeyFrameEditor", "File", path, FL::GuiCore::fileExplorerTarget, droppedValue, openedPath, "Drop font files here from the File Explorer"))
+						ImGui::BeginDisabled(!text->b_fontPathAnimated);						
+						FL::GuiCore::InputProps spriteInputProps("##TextPathKeyFrameEditor", "File");
+						spriteInputProps.displayValue = path;
+						spriteInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+						spriteInputProps.requiredExtensions = { ".ttf" };					
+						spriteInputProps.tipMessage = "Drop font files here from File Explorer";
+						if (FL::GuiCore::RenderDropInputTable(spriteInputProps))						
 						{
-							if (openedPath != "")
-							{
-								text->fontPath = openedPath;
-							}
-							else if (droppedValue != -1)
-							{
-								std::filesystem::path fs_path(FL::GuiCore::selectedFiles[droppedValue - 1]);
-								if (fs_path.extension() == ".ttf")
-								{
-									text->fontPath = fs_path.string();
-									FL::Text tempText = FL::Text();
-									tempText.SetFontPath(fs_path.string());
-									tempText.SetText(text->text);
+							text->fontPath = spriteInputProps.value;
+							FL::Text tempText = FL::Text();
+							tempText.SetFontPath(text->fontPath);
+							tempText.SetText(text->text);
 
-									if (tempText.GetTexture() != nullptr)
-									{
-										text->xOffset = (float)(tempText.GetTexture()->GetWidth() / 2.0f);
-										text->yOffset = (float)(tempText.GetTexture()->GetHeight() / 2.0f);
-									}
-								}
-								else
-								{
-									FL::Logger::log.Err("File must be a font file (.ttf) to drop here.");
-								}
+							if (tempText.GetTexture() != nullptr)
+							{
+								text->xOffset = (float)(tempText.GetTexture()->GetWidth() / 2.0f);
+								text->yOffset = (float)(tempText.GetTexture()->GetHeight() / 2.0f);
 							}
 						}
 						ImGui::EndDisabled();

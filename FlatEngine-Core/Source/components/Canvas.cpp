@@ -1,7 +1,6 @@
 #include "components/Canvas.h"
 #include "components/Transform.h"
 #include "GameObject.h"
-#include "GuiCore.h"
 #include "render/GameView.h"
 #include "render/SceneView.h"
 #include "tools/Logger.h"
@@ -104,9 +103,8 @@ namespace FlatEngine
 		return m_b_blocksLayers;
 	}
 
-	Vector3 Canvas::GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize, Vector2 textureScale)
+	Vector3 Canvas::GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize)
 	{		
-		Vector2 scale = textureScale * (m_pixelsPerGridSpace / GuiCore::WORLD_PIXELS_PER_GRIDSPACE);
 		Vector2 pixelPos  = Vector2(imageSize.x * canvasPlacement->percent.x, imageSize.y * canvasPlacement->percent.y) + canvasPlacement->pixel;
 
 		Vector2 gridAdd   = pixelPos * (1.0f / m_pixelsPerGridSpace);
@@ -115,7 +113,7 @@ namespace FlatEngine
 		startGrid.y      *= -1;
 		Vector2 gridPos   = startGrid + gridAdd;			
 		
-		return Vector3(gridPos, canvasPlacement->zPosition);
+		return Vector3(gridPos, 0);
 	}
 
 	glm::mat4 Canvas::GetProjection()

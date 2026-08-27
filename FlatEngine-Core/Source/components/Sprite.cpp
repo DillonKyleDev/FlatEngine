@@ -66,7 +66,7 @@ namespace FlatEngine
 		));
 		std::string path = JsonHelper::CheckJsonString(componentJson, "path", objectName);
 		if (path != "" && !FileHelper::DoesFileExist(path))		
-			Logger::log.Err("Sprite file not found for GameObject: {}. This may lead to unexpected behavior.  \npath: {}", objectName, path);		
+			Logger::log.Err("Sprite file at \"{}\" not found for GameObject: {}.", path, objectName);		
 		else if (path != "")		
 			SetTexture(path);						
 		
@@ -147,7 +147,7 @@ namespace FlatEngine
 	void Sprite::RemoveTexture()
 	{
 		m_path = "";
-		// mesh.CleanupTextures();
+		mesh.Cleanup();
 	}
 
 	// for r, g, b, a, enter floats between 0.0f - 1.0f

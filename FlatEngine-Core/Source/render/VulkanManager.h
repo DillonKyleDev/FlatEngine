@@ -142,11 +142,5 @@ namespace FlatEngine
         extern uint32_t currentFrame;
         extern uint32_t imageCount;
         extern int MAX_FRAMES_IN_FLIGHT; // Max number of frames that are not currently being presented, but are being prepared
-
-        extern int maxSpriteLayers;
-        extern float spriteScaleMultiplier;
-        extern float pixelsPerGridSpace;      
-
-	    extern Vector2 AddImageToDrawList(VkDescriptorSet texture, Vector2 positionInGrid, Vector2 relativeCenterPoint, float textureWidthPx, float textureHeightPx, Vector2 offset, Vector2 scale, bool b_scalesWithZoom, float zoomMultiplier, ImDrawList* drawList, float rotation = 0, ImU32 addColor = 1, Vector2 uvStart = Vector2(), Vector2 uvEnd = Vector2(1));
     }
 }

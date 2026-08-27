@@ -173,12 +173,15 @@ namespace FlatEngine
 
 	void Mesh::CleanupUniformBuffers()
 	{
-		for (size_t i = 0; i < VulkanManager::MAX_FRAMES_IN_FLIGHT; i++)
-		{
-			VulkanManager::vulkan.QueueBufferDeletion(m_sceneViewUniformBuffers[i]);
-			VulkanManager::vulkan.QueueDeviceMemoryDeletion(m_sceneViewUniformBuffersMemory[i]);
-			VulkanManager::vulkan.QueueBufferDeletion(m_gameViewUniformBuffers[i]);
-			VulkanManager::vulkan.QueueDeviceMemoryDeletion(m_gameViewUniformBuffersMemory[i]);
+		if (m_b_initialized)
+		{	
+			for (size_t i = 0; i < VulkanManager::MAX_FRAMES_IN_FLIGHT; i++)
+			{
+				VulkanManager::vulkan.QueueBufferDeletion(m_sceneViewUniformBuffers[i]);
+				VulkanManager::vulkan.QueueDeviceMemoryDeletion(m_sceneViewUniformBuffersMemory[i]);
+				VulkanManager::vulkan.QueueBufferDeletion(m_gameViewUniformBuffers[i]);
+				VulkanManager::vulkan.QueueDeviceMemoryDeletion(m_gameViewUniformBuffersMemory[i]);
+			}
 		}
 	}
 
@@ -440,7 +443,7 @@ namespace FlatEngine
 			Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();
 			Vector3 textureScale = transform->GetScale();				
 			// Set actual position based on percent and pixel positioning.	
-			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize, Vector2(textureScale.x, textureScale.y)));						
+			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize));						
 			// Then use the position based on the new position + the pivot offset but don't actually set that as the position
 			Transform transformCopy = Transform(*transform);
 			Vector2 pivotOffset = canvasPlacement.pivot->offset;
@@ -448,10 +451,10 @@ namespace FlatEngine
 			pivotOffset.y *= -1;
 			Vector3 pos = transformCopy.GetPosition();				
 			transformCopy.SetScale(Vector3(textureScale.x * m_renderScale.x, textureScale.y * m_renderScale.y, textureScale.z));
-			Vector3 renderOffset = Vector3(pivotOffset, pos.z);
+			Vector3 renderOffset = Vector3(pivotOffset, canvasPlacement.zPosition);
 			
 			base.projection = viewportType != ViewportType_SceneView ? canvas->GetProjection() : camera->GetProjection();
-			base.view = viewportType != ViewportType_SceneView ? glm::lookAt(canvasPos.GetGLMVec3(), glm::vec3(0,0,-1), glm::vec3(up)) : glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
+			base.view = viewportType != ViewportType_SceneView ? glm::lookAt(canvasPos.GetGLMVec3(), glm::vec3(0,0,1), glm::vec3(up)) : glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 			base.meshPosition = transformCopy.GetAbsolutePosition(renderOffset).GetGLMVec4();
 			base.model = base.model * transformCopy.GetScaleMatrix();
 		}

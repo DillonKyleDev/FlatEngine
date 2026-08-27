@@ -107,15 +107,10 @@ namespace FlatGui
 					static bool b_combinedImageSampler = true;
 					static bool b_depthImage = false;
 
-					if (FL::GuiCore::RenderInput("##VertexShaderPathInput", "Vertex Shader Path", vertexInputText))
-					{					
-						FL::VulkanManager::vulkan.SetMaterialVertexPath(currentMaterial->GetName(), vertexInputText);
-					}
-
-					if (FL::GuiCore::RenderInput("##FragmentShaderPathInput", "Fragment Shader Path", fragmentInputText))
-					{					
-						FL::VulkanManager::vulkan.SetMaterialFragmentPath(currentMaterial->GetName(), fragmentInputText);
-					}
+					FL::GuiCore::TableProps vertexShaderTableProps("##VertexShaderPathInput", "Vertex Shader Path");
+					if (FL::GuiCore::RenderStringTable(vertexShaderTableProps, vertexInputText)) FL::VulkanManager::vulkan.SetMaterialVertexPath(currentMaterial->GetName(), vertexInputText);
+					FL::GuiCore::TableProps fragmentShaderTableProps("##FragmentShaderPathInput", "Fragment Shader Path");
+					if (FL::GuiCore::RenderStringTable(fragmentShaderTableProps, fragmentInputText)) FL::VulkanManager::vulkan.SetMaterialFragmentPath(currentMaterial->GetName(), fragmentInputText);			
 
 					if (FL::GuiCore::RenderCheckbox("Vertex Sampler", b_vertexSampler))
 					{
@@ -212,7 +207,8 @@ namespace FlatGui
 
 					static std::string vec4Name = "";
 
-					FL::GuiCore::RenderInput("##NewVec4Name", "Name", vec4Name);
+					FL::GuiCore::TableProps uboTableProps("##NewVec4Name", "Name");
+					FL::GuiCore::RenderStringTable(uboTableProps, vec4Name);
 				
 					if (FL::GuiCore::RenderButton("Add Vec4") && vec4Name != "")
 					{

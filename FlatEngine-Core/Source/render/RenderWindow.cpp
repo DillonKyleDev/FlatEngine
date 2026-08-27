@@ -420,8 +420,8 @@ namespace FlatEngine
 
             VkSamplerCreateInfo samplerInfo{};
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-            samplerInfo.magFilter = VK_FILTER_NEAREST;// VK_FILTER_LINEAR; // VK_FILTER_NEAREST for pixel art; // VK_FILTER_LINEAR for non pixel art
-            samplerInfo.minFilter = VK_FILTER_NEAREST; //VK_FILTER_LINEAR;
+            samplerInfo.magFilter = VK_FILTER_LINEAR; // VK_FILTER_NEAREST for pixel art; // VK_FILTER_LINEAR for non pixel art
+            samplerInfo.minFilter = VK_FILTER_LINEAR; // VK_FILTER_NEAREST for pixel art; // VK_FILTER_LINEAR for non pixel art
             samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // VK_SAMPLER_ADDRESS_MODE_REPEAT
             samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // VK_SAMPLER_ADDRESS_MODE_REPEAT
             samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE; // VK_SAMPLER_ADDRESS_MODE_REPEAT

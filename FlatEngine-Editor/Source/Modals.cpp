@@ -61,8 +61,7 @@ namespace FlatGui
                     inputWidth = 245;
                 }
                 
-                std::string inputLabel = "##" + label;
-                FL::GuiCore::RenderInput(inputLabel.c_str(), "", inputValue, false, inputWidth);
+                FL::GuiCore::RenderInput("##" + label, inputValue, inputWidth);
 
                 if (ImGui::IsKeyPressed(ImGuiKey_Enter))
                 {

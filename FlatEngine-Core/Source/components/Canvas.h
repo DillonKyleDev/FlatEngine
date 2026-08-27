@@ -11,7 +11,7 @@
 
 namespace FlatEngine 
 {
-	const int MAX_CANVAS_LAYERS = 100;
+	const int MAX_CANVAS_LAYERS = 1000;
 
 	enum PivotType {
 		PivotType_Center,
@@ -128,7 +128,7 @@ namespace FlatEngine
 		int GetLayerNumber();
 		void SetBlocksLayers(bool b_blocksLayers);
 		bool GetBlocksLayers();
-		Vector3 GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize, Vector2 textureScale);
+		Vector3 GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize);
 		glm::mat4 GetProjection();
 		float GetPixelsPerGridSpace();
 		void SetPixelsPerGridSpace(float pixels);				

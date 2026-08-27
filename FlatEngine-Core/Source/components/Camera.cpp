@@ -21,11 +21,13 @@ namespace FlatEngine
 		b_orthographic = true;		
 		gridStep = 20;
 		m_b_isPrimaryCamera = false;		
-		m_lookDirection = Vector3(0.0f, 0.0f, 1.0f);
 		
 		Transform* transform = SceneManager::loadedScene.Get<Transform>(ownerID);
 		if (transform != nullptr)
+		{	
 			SceneView::AddSceneViewCameraGizmo(*transform, ownerID);
+			transform->SetRotation(Vector3(0.0f, 180.0f, 0.0f));
+		}
 	}
 
 	json Camera::GetData(bool b_IDOverride)

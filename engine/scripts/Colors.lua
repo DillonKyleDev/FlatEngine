@@ -135,7 +135,7 @@ F_Colors = {
 	transformZBGDark   = Vector4:new(0.3075, 0.06, 0.06, 1.0),
 	transformWBGDark  = Vector4:new(0.435, 0.375, 0.06, 1.0),
 	canvasDemoBoxBg = Vector4:new(0.38, 0.38, 0.4, 1.0),
-	canvasDemoBoxSeparators = Vector4:new(0.45, 0.45, 0.45, 1.0),
+	canvasDemoBoxSeparators = Vector4:new(1.0, 1.0, 1.0, 0.15),
 	-- Buttons container
 	cursorModeSelectBg = Vector4:new(0.9, 0.9, 0.9, 0.05),
 	cursorModeSelectBorder = Vector4:new(0.9, 0.9, 0.9, 0.2),
@@ -266,7 +266,10 @@ F_Colors = {
 	---------------------
 	separator = Vector4:new(0.35, 0.35, 0.35, 1.0),
 	-- Inputs
-	input = Vector4:new(0.28, 0.28, 0.3, 1.0),
+	input = Vector4:new(0.4, 0.4, 0.44, 1.0),
+	inputBorder = Vector4:new(0.55, 0.55, 0.59, 1.0),
+	inputBorderTop = Vector4:new(0.55, 0.55, 0.59, 1.0),
+	inputBorderBottom = Vector4:new(0.45, 0.45, 0.52, 1.0),
 	-- Tables
 	noEditTableText = Vector4:new(0.75, 0.75, 0.81, 1.0),
 	noEditTableRowFieldBg = Vector4:new(0.24, 0.24, 0.37, 1.0),
@@ -274,10 +277,16 @@ F_Colors = {
 	tableCellLight = Vector4:new(0.24, 0.24, 0.27, 1.0),
 	tableCellDark = Vector4:new(0.19, 0.19, 0.21, 1.0),
 	tableBorderStrong = Vector4:new(0.35, 0.35, 0.38, 1.0),
-	tableBorderLight = Vector4:new(0.3, 0.3, 0.33, 1.0),
-	tableLabelVerticalSeparator = Vector4:new(0.48, 0.48, 0.48, 1.0),
+	tableBorderLight = Vector4:new(0.3, 0.3, 0.33, 1.0),	
 	fileExplorerTableRowBg = Vector4:new(0.18, 0.18, 0.208, 1.0),
 	fileExplorerTableRowBgAlt = Vector4:new(0.2, 0.2, 0.23, 1.0),
+	tableLabelVerticalSeparator = Vector4:new(0.33, 0.33, 0.33, 1.0),
+	tableBorderLeft = Vector4:new(0.35, 0.35, 0.39, 1.0),
+	tableBorderRight = Vector4:new(0.35, 0.35, 0.39, 1.0),
+	tableLabelBorderTop = Vector4:new(0.32, 0.32, 0.35, 1.0),
+	tableLabelBorderBottom = Vector4:new(0.25, 0.25, 0.27, 1.0),
+	tableValueBorderTop = Vector4:new(0.32, 0.32, 0.35, 1.0),
+	tableValueBorderBottom = Vector4:new(0.25, 0.25, 0.27, 1.0),
 	-- Trees
 	treeSelectable = Vector4:new(0.15, 0.15, 0.15, 0.7),
 	treeSelectableHovered = Vector4:new(0.3, 0.35, 0.65, 0.7),

@@ -101,6 +101,18 @@ namespace FlatEngine
             bool b_light = true;
             bool b_lightSet = false;
             bool b_vertSeperator = true;
+            bool b_topBorderLabel = false;
+            bool b_bottomBorderLabel = false;
+            bool b_topBorderValue = true;
+            bool b_bottomBorderValue = true;
+            bool b_leftBorder = true;
+            bool b_rightBorder = true;
+            std::string tableBorderLeft = "tableBorderLeft";
+            std::string tableBorderRight = "tableBorderRight";
+            std::string tableLabelBorderTop = "tableLabelBorderTop";
+            std::string tableLabelBorderBottom = "tableLabelBorderBottom";
+            std::string tableValueBorderTop = "tableValueBorderTop";
+            std::string tableValueBorderBottom = "tableValueBorderBottom";
             ImGuiTableFlags flags = ImGuiTableFlags_RowBg;         
 
             TableProps(std::string setID, std::string setLabel, Vector2 setTableSize = Vector2(), float setFloatIncrement = 0.1f, float setFloatMin = -FLT_MAX, float setFloatMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
@@ -114,6 +126,40 @@ namespace FlatEngine
                 labelColor = setLabelColor;
                 valueColor = setValueColor;
                 labelWidth = setLableWidth;
+            }
+
+            TableProps(TableProps& tableProps, std::string setID, std::string setLabel)
+            {
+                ID = setID;
+                label = setLabel;
+                tableSize = tableProps.tableSize;
+                labelWidth = tableProps.labelWidth;
+                labelColor = tableProps.labelColor;
+                labelTextColor = tableProps.labelTextColor;
+                valueColor = tableProps.valueColor;
+                valueLabelColors = tableProps.valueLabelColors;      
+                floatIncrement = tableProps.floatIncrement;
+                intIncrement = tableProps.intIncrement;
+                floatMin = tableProps.floatMin;
+                floatMax = tableProps.floatMax;
+                intMin = tableProps.intMin;
+                intMax = tableProps.intMax;
+                b_light = tableProps.b_light;
+                b_lightSet = tableProps.b_lightSet;
+                b_vertSeperator = tableProps.b_vertSeperator;
+                b_topBorderLabel = tableProps.b_topBorderLabel;
+                b_bottomBorderLabel = tableProps.b_bottomBorderLabel;
+                b_topBorderValue = tableProps.b_topBorderValue;
+                b_bottomBorderValue = tableProps.b_bottomBorderValue;
+                b_leftBorder = tableProps.b_leftBorder;
+                b_rightBorder = tableProps.b_rightBorder;
+                tableBorderLeft = tableProps.tableBorderLeft;
+                tableBorderRight = tableProps.tableBorderRight;
+                tableLabelBorderTop = tableProps.tableLabelBorderTop;
+                tableLabelBorderBottom = tableProps.tableLabelBorderBottom;
+                tableValueBorderTop = tableProps.tableValueBorderTop;
+                tableValueBorderBottom = tableProps.tableValueBorderBottom;
+                flags = tableProps.flags;
             }
         };
         extern void RenderLabelTable(TableProps tableProps);
@@ -130,9 +176,27 @@ namespace FlatEngine
         extern bool RenderComboTable(TableProps tableProps, std::string displayedValue, std::vector<std::string> options, int& currentOption);
         extern void RenderLuaParametersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);
 
-        extern bool RenderInput(std::string ID, std::string label, std::string& value, bool b_canOpenFiles = false, float inputWidth = -1, ImGuiInputTextFlags flags = 0);
-        extern bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string tooltip = "", float inputWidth = -1);
-        extern bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string tooltip = "", float inputWidth = 0);
+        struct InputProps {
+            std::string ID;
+            std::string label;
+            int droppedObjectID = -1;
+            bool b_canOpenFiles;
+            std::string displayValue = ""; 
+            std::string dropTargetID = "";
+            std::string tipMessage = "";
+            std::string value = "";  
+            float inputWidth = 0;   
+            std::vector<std::string> requiredExtensions;                 
+
+            InputProps(std::string setID, std::string newLabel, bool b_setCanOpenFiles = false)
+            {
+                ID = setID;
+                label = newLabel;
+                b_canOpenFiles = b_setCanOpenFiles;
+            }
+        };
+        extern bool RenderInput(std::string ID, std::string& value, float inputWidth = 0);
+        extern bool RenderDropInputTable(InputProps& inputProps);
 
         extern bool RenderButton(std::string text, Vector2 size = Vector2(0), float rounding = 0, std::string color = "button", std::string hoverColor = "buttonHovered", std::string activeColor = "buttonActive", Vector2 framePadding = Vector2(5, 3));
         extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(0), std::string borderColor = "buttonBorder", std::string bgColor = "transparent", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));

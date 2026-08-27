@@ -11,6 +11,7 @@
 #include "imgui_internal.h"
 #include "tools/Vector2.h"
 #include <imgui.h>
+#include <optional>
 #include <string>
 
 
@@ -49,7 +50,6 @@ namespace FlatEngine
         bool RenderIntDragTableRow(std::string ID, std::string fieldName, int& value, float speed, int min, int max);
         bool RenderCheckboxTableRow(std::string ID, std::string fieldName, bool& _value);
         void RenderSelectableTableRow(std::string ID, std::string fieldName, std::vector<std::string> options, int& currentOption);
-        bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles = false);        
         // void PopTable();
 
 		void SetupImGui()
@@ -80,13 +80,11 @@ namespace FlatEngine
 			style.Colors[ImGuiCol_TitleBg]               = Assets::assetManager.GetColor("viewportTitleBg");
 			style.Colors[ImGuiCol_TitleBgActive]         = Assets::assetManager.GetColor("viewportTitleBgActive");
 			style.Colors[ImGuiCol_Border]  				 = Assets::assetManager.GetColor("viewportBorder");
-		
 			style.Colors[ImGuiCol_FrameBg]               = Assets::assetManager.GetColor("frameBg");
 			style.Colors[ImGuiCol_FrameBgActive]         = Assets::assetManager.GetColor("frameBgActive");
 			style.Colors[ImGuiCol_FrameBgHovered]        = Assets::assetManager.GetColor("frameBgHovered");
 			style.Colors[ImGuiCol_TitleBgCollapsed]      = Assets::assetManager.GetColor("titleBgCollapsed");
-			style.Colors[ImGuiCol_TextSelectedBg]        = Assets::assetManager.GetColor("textSelectedBg");
-			// style.Colors[ImGuiCol_PopupBg]               = Assets::assetManager.GetColor("popupBg");
+			style.Colors[ImGuiCol_TextSelectedBg]        = Assets::assetManager.GetColor("textSelectedBg");			
 			style.Colors[ImGuiCol_NavWindowingHighlight] = Assets::assetManager.GetColor("navWindowHighlight");
 			style.Colors[ImGuiCol_NavHighlight]          = Assets::assetManager.GetColor("navHighlight");
 			style.Colors[ImGuiCol_NavWindowingDimBg]     = Assets::assetManager.GetColor("navWindowDimBg");
@@ -274,6 +272,7 @@ namespace FlatEngine
 			ImGui::SetCursorScreenPos(Vector2(ImGui::GetCursorScreenPos().x + x, ImGui::GetCursorScreenPos().y + y));
 		}
 
+		// Grabbed from Imgui file to edit directly to use ImGui's own FramePadding var as menu padding.
 		bool IsRootOfOpenMenuSet()
 		{
 			ImGuiContext& g = *GImGui;
@@ -281,17 +280,6 @@ namespace FlatEngine
 			if ((g.OpenPopupStack.Size <= g.BeginPopupStack.Size) || (window->Flags & ImGuiWindowFlags_ChildMenu))
 				return false;
 
-			// Initially we used 'upper_popup->OpenParentId == window->IDStack.back()' to differentiate multiple menu sets from each others
-			// (e.g. inside menu bar vs loose menu items) based on parent ID.
-			// This would however prevent the use of e.g. PushID() user code submitting menus.
-			// Previously this worked between popup and a first child menu because the first child menu always had the _ChildWindow flag,
-			// making hovering on parent popup possible while first child menu was focused - but this was generally a bug with other side effects.
-			// Instead we don't treat Popup specifically (in order to consistently support menu features in them), maybe the first child menu of a Popup
-			// doesn't have the _ChildWindow flag, and we rely on this IsRootOfOpenMenuSet() check to allow hovering between root window/popup and first child menu.
-			// In the end, lack of ID check made it so we could no longer differentiate between separate menu sets. To compensate for that, we at least check parent window nav layer.
-			// This fixes the most common case of menu opening on hover when moving between window content and menu bar. Multiple different menu sets in same nav layer would still
-			// open on hover, but that should be a lesser problem, because if such menus are close in proximity in window content then it won't feel weird and if they are far apart
-			// it likely won't be a problem anyone runs into.
 			const ImGuiPopupData* upper_popup = &g.OpenPopupStack[g.BeginPopupStack.Size];
 			if (window->DC.NavLayerCurrent != upper_popup->ParentNavLayer)
 				return false;
@@ -306,11 +294,9 @@ namespace FlatEngine
 				return false;
 
 			IM_ASSERT(!window->DC.MenuBarAppending);
-			ImGui::BeginGroup(); // Backup position on layer 0 // FIXME: Misleading to use a group for that backup/restore
+			ImGui::BeginGroup();
 			ImGui::PushID("##MenuBar");
 
-			// We don't clip with current window clipping rectangle as it is already set to the area below. However we clip with window full rect.
-			// We remove 1 worth of rounding to Max.x to that text in long menus and small windows don't tend to display over the lower-right rounded area, which looks particularly glitchy.
 			const float border_top = ImMax(IM_ROUND(window->WindowBorderSize * 0.5f - window->TitleBarHeight), 0.0f);
 			const float border_half = IM_ROUND(window->WindowBorderSize * 0.5f);
 			ImRect bar_rect = window->MenuBarRect();
@@ -319,7 +305,6 @@ namespace FlatEngine
 			clip_rect.ClipWith(window->OuterRectClipped);
 			ImGui::PushClipRect(clip_rect.Min, clip_rect.Max, false);
 
-			// We overwrite CursorMaxPos because BeginGroup sets it to CursorPos (essentially the .EmitItem hack in EndMenuBar() would need something analogous here, maybe a BeginGroupEx() with flags).
 			window->DC.CursorPos = window->DC.CursorMaxPos = ImVec2(bar_rect.Min.x + window->DC.MenuBarOffset.x, bar_rect.Min.y + window->DC.MenuBarOffset.y);
 			window->DC.LayoutType = ImGuiLayoutType_Horizontal;
 			window->DC.IsSameLine = false;
@@ -332,14 +317,9 @@ namespace FlatEngine
 		{
 			ImGuiContext& g = *GImGui;
 			ImGuiViewportP* viewport = (ImGuiViewportP*)(void*)ImGui::GetMainViewport();
-
-			// Notify of viewport change so GetFrameHeight() can be accurate in case of DPI change
 			ImGui::SetCurrentViewport(NULL, viewport);
 			
 			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
-			// For the main menu bar, which cannot be moved, we honor g.Style.DisplaySafeAreaPadding to ensure text can be visible on a TV set.
-			// FIXME: This could be generalized as an opt-in way to clamp window->DC.CursorStartPos to avoid SafeArea?
-			// FIXME: Consider removing support for safe area down the line... it's messy. Nowadays consoles have support for TV calibration in OS settings.
 			g.NextWindowData.MenuBarOffsetMinVal = ImVec2(g.Style.DisplaySafeAreaPadding.x, ImMax(g.Style.DisplaySafeAreaPadding.y - g.Style.FramePadding.y, 0.0f));
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_MenuBar;
 			float height = ImGui::GetFrameHeight() + cellPadding.y * 2;
@@ -350,8 +330,6 @@ namespace FlatEngine
 				ImGui::End();
 				return false;
 			}
-
-			// Temporarily disable _NoSavedSettings, in the off-chance that tables or child windows submitted within the menu-bar may want to use settings. (#8356)
 			g.CurrentWindow->Flags &= ~ImGuiWindowFlags_NoSavedSettings;
 			BeginMenuBar();
 			return is_open;
@@ -361,15 +339,11 @@ namespace FlatEngine
 			ImGuiContext& g = *GImGui;
 			if (!g.CurrentWindow->DC.MenuBarAppending)
 			{
-				IM_ASSERT_USER_ERROR(0, "Calling EndMainMenuBar() not from a menu-bar!"); // Not technically testing that it is the main menu bar
+				IM_ASSERT_USER_ERROR(0, "Calling EndMainMenuBar() not from a menu-bar!");
 				return;
 			}
-
 			ImGui::EndMenuBar();
-			g.CurrentWindow->Flags |= ImGuiWindowFlags_NoSavedSettings; // Restore _NoSavedSettings (#8356)
-
-			// When the user has left the menu layer (typically: closed menus through activation of an item), we restore focus to the previous window
-			// FIXME: With this strategy we won't be able to restore a NULL focus.
+			g.CurrentWindow->Flags |= ImGuiWindowFlags_NoSavedSettings;
 			if (g.CurrentWindow == g.NavWindow && g.NavLayer == ImGuiNavLayer_Main && !g.NavAnyRequest && g.ActiveId == 0)
 				ImGui::FocusTopMostWindowUnderOne(g.NavWindow, NULL, NULL, ImGuiFocusRequestFlags_UnlessBelowModal | ImGuiFocusRequestFlags_RestoreFocusedChild);
 
@@ -391,36 +365,24 @@ namespace FlatEngine
 			label_size.x += cellPadding.x * 2;
 			label_size.y += cellPadding.y * 2;
 
-			// Sub-menus are ChildWindow so that mouse can be hovering across them (otherwise top-most popup menu would steal focus and not allow hovering on parent menu)
-			// The first menu in a hierarchy isn't so hovering doesn't get across (otherwise e.g. resizing borders with ImGuiButtonFlags_FlattenChildren would react), but top-most BeginMenu() will bypass that limitation.
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_ChildMenu | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus;
 			if (window->Flags & ImGuiWindowFlags_ChildMenu)
 				window_flags |= ImGuiWindowFlags_ChildWindow;
 
-			// If a menu with same the ID was already submitted, we will append to it, matching the behavior of Begin().
-			// We are relying on a O(N) search - so O(N log N) over the frame - which seems like the most efficient for the expected small amount of BeginMenu() calls per frame.
-			// If somehow this is ever becoming a problem we can switch to use e.g. ImGuiStorage mapping key to last frame used.
 			if (g.MenusIdSubmittedThisFrame.contains(id))
 			{
 				if (menu_is_open)
-					menu_is_open = ImGui::BeginPopupMenuEx(id, label, window_flags); // menu_is_open can be 'false' when the popup is completely clipped (e.g. zero size display)
+					menu_is_open = ImGui::BeginPopupMenuEx(id, label, window_flags);
 				else
-					g.NextWindowData.ClearFlags();          // we behave like Begin() and need to consume those values
+					g.NextWindowData.ClearFlags();
 				return menu_is_open;
 			}
-
-			// Tag menu as used. Next time BeginMenu() with same ID is called it will append to existing menu
+			
 			g.MenusIdSubmittedThisFrame.push_back(id);		
-
-			// Odd hack to allow hovering across menus of a same menu-set (otherwise we wouldn't be able to hover parent without always being a Child window)
-			// This is only done for items for the menu set and not the full parent window.
 			const bool menuset_is_open = IsRootOfOpenMenuSet();
 			if (menuset_is_open)
 				ImGui::PushItemFlag(ImGuiItemFlags_NoWindowHoverableCheck, true);
 
-			// The reference position stored in popup_pos will be used by Begin() to find a suitable position for the child menu,
-			// However the final position is going to be different! It is chosen by FindBestWindowPosForPopup().
-			// e.g. Menus tend to overlap each other horizontally to amplify relative Z-ordering.
 			ImVec2 popup_pos, pos = window->DC.CursorPos;
 			ImGui::PushID(label);
 			if (!enabled)
@@ -428,33 +390,24 @@ namespace FlatEngine
 			const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
 			bool pressed;
 
-			// We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
 			const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_NoHoldingActiveID | ImGuiSelectableFlags_NoSetKeyOwner | ImGuiSelectableFlags_SelectOnClick | ImGuiSelectableFlags_NoAutoClosePopups;
 			if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
 			{
-				// Menu inside a horizontal menu bar
-				// Selectable extend their highlight by half ItemSpacing in each direction.
-				// For ChildMenu, the popup position will be overwritten by the call to FindBestWindowPosForPopup() in Begin()
 				popup_pos = ImVec2(pos.x - 1.0f - IM_TRUNC(style.ItemSpacing.x * 0.5f), pos.y + label_size.y - style.FramePadding.y + window->MenuBarHeight);
 				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * 0.5f);
-				// PushStyleVarX(ImGuiStyleVar_ItemSpacing, style.ItemSpacing.x * 2.0f);
 				float w = label_size.x;
 				ImVec2 text_pos(window->DC.CursorPos.x + cellPadding.x + offsets->OffsetLabel, window->DC.CursorPos.y + cellPadding.y + window->DC.CurrLineTextBaseOffset);
 				pressed = ImGui::Selectable("", menu_is_open, selectable_flags, ImVec2(w, label_size.y));
 				ImGui::LogSetNextTextDecoration("[", "]");
 				ImGui::RenderText(text_pos, label);
-				// PopStyleVar();
-				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f));
 			}
 			else
 			{
-				// Menu inside a regular/vertical menu
-				// (In a typical menu window where all items are BeginMenu() or MenuItem() calls, extra_w will always be 0.0f.
-				//  Only when they are other items sticking out we're going to add spacing, yet only register minimum width into the layout system.
 				popup_pos = ImVec2(pos.x, pos.y - style.WindowPadding.y);
 				float icon_w = (icon && icon[0]) ? ImGui::CalcTextSize(icon, NULL).x : 0.0f;
 				float checkmark_w = IM_TRUNC(g.FontSize * 1.20f);
-				float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, 0.0f, checkmark_w); // Feedback to next frame
+				float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, 0.0f, checkmark_w);
 				float extra_w = ImMax(0.0f, ImGui::GetContentRegionAvail().x - min_w);
 				ImVec2 text_pos(window->DC.CursorPos.x + cellPadding.x + offsets->OffsetLabel, window->DC.CursorPos.y + cellPadding.y + window->DC.CurrLineTextBaseOffset);
 				pressed = ImGui::Selectable("", menu_is_open, selectable_flags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, label_size.y));
@@ -474,10 +427,8 @@ namespace FlatEngine
 			bool want_open = false;
 			bool want_open_nav_init = false;
 			bool want_close = false;
-			if (window->DC.LayoutType == ImGuiLayoutType_Vertical) // (window->Flags & (ImGuiWindowFlags_Popup|ImGuiWindowFlags_ChildMenu))
+			if (window->DC.LayoutType == ImGuiLayoutType_Vertical)
 			{
-				// Close menu when not hovering it anymore unless we are moving roughly in the direction of the menu
-				// Implement http://bjk5.com/post/44698559168/breaking-down-amazons-mega-dropdown to avoid using timers, so menus feels more reactive.
 				bool moving_toward_child_menu = false;
 				ImGuiPopupData* child_popup = (g.BeginPopupStack.Size < g.OpenPopupStack.Size) ? &g.OpenPopupStack[g.BeginPopupStack.Size] : NULL; // Popup candidate (testing below)
 				ImGuiWindow* child_menu_window = (child_popup && child_popup->Window && child_popup->Window->ParentWindow == window) ? child_popup->Window : NULL;
@@ -489,31 +440,25 @@ namespace FlatEngine
 					ImVec2 ta = ImVec2(g.IO.MousePos.x - g.IO.MouseDelta.x, g.IO.MousePos.y - g.IO.MouseDelta.y);
 					ImVec2 tb = (child_dir > 0.0f) ? next_window_rect.GetTL() : next_window_rect.GetTR();
 					ImVec2 tc = (child_dir > 0.0f) ? next_window_rect.GetBL() : next_window_rect.GetBR();
-					const float pad_farmost_h = ImClamp(ImFabs(ta.x - tb.x) * 0.30f, ref_unit * 0.5f, ref_unit * 2.5f); // Add a bit of extra slack.
+					const float pad_farmost_h = ImClamp(ImFabs(ta.x - tb.x) * 0.30f, ref_unit * 0.5f, ref_unit * 2.5f);
 					ta.x += child_dir * -0.5f;
 					tb.x += child_dir * ref_unit;
 					tc.x += child_dir * ref_unit;
-					tb.y = ta.y + ImMax((tb.y - pad_farmost_h) - ta.y, -ref_unit * 8.0f); // Triangle has maximum height to limit the slope and the bias toward large sub-menus
+					tb.y = ta.y + ImMax((tb.y - pad_farmost_h) - ta.y, -ref_unit * 8.0f); 
 					tc.y = ta.y + ImMin((tc.y + pad_farmost_h) - ta.y, +ref_unit * 8.0f);
-					moving_toward_child_menu = ImTriangleContainsPoint(ta, tb, tc, g.IO.MousePos);
-					//GetForegroundDrawList()->AddTriangleFilled(ta, tb, tc, moving_toward_child_menu ? IM_COL32(0,128,0,128) : IM_COL32(128,0,0,128)); // [DEBUG]
+					moving_toward_child_menu = ImTriangleContainsPoint(ta, tb, tc, g.IO.MousePos);		 
 				}
 
-				// The 'HovereWindow == window' check creates an inconsistency (e.g. moving away from menu slowly tends to hit same window, whereas moving away fast does not)
-				// But we also need to not close the top-menu menu when moving over void. Perhaps we should extend the triangle check to a larger polygon.
-				// (Remember to test this on BeginPopup("A")->BeginMenu("B") sequence which behaves slightly differently as B isn't a Child of A and hovering isn't shared.)
 				if (menu_is_open && !hovered && g.HoveredWindow == window && !moving_toward_child_menu && !g.NavHighlightItemUnderNav && g.ActiveId == 0)
 					want_close = true;
 
-				// Open
-				// (note: at this point 'hovered' actually includes the NavDisableMouseHover == false test)
-				if (!menu_is_open && pressed) // Click/activate to open
+				if (!menu_is_open && pressed)
 					want_open = true;
-				else if (!menu_is_open && hovered && !moving_toward_child_menu) // Hover to open
+				else if (!menu_is_open && hovered && !moving_toward_child_menu)
 					want_open = true;
-				else if (!menu_is_open && hovered && g.HoveredIdTimer >= 0.30f && g.MouseStationaryTimer >= 0.30f) // Hover to open (timer fallback)
+				else if (!menu_is_open && hovered && g.HoveredIdTimer >= 0.30f && g.MouseStationaryTimer >= 0.30f) 
 					want_open = true;
-				if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right) // Nav-Right to open
+				if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right)
 				{
 					want_open = want_open_nav_init = true;
 					ImGui::NavMoveRequestCancel();
@@ -522,24 +467,23 @@ namespace FlatEngine
 			}
 			else
 			{
-				// Menu bar
-				if (menu_is_open && pressed && menuset_is_open) // Click an open menu again to close it
+				if (menu_is_open && pressed && menuset_is_open)
 				{
 					want_close = true;
 					want_open = menu_is_open = false;
 				}
-				else if (pressed || (hovered && menuset_is_open && !menu_is_open)) // First click to open, then hover to open others
+				else if (pressed || (hovered && menuset_is_open && !menu_is_open)) 
 				{
 					want_open = true;
 				}
-				else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down) // Nav-Down to open
+				else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down)
 				{
 					want_open = true;
 					ImGui::NavMoveRequestCancel();
 				}
 			}
 
-			if (!enabled) // explicitly close if an open menu becomes disabled, facilitate users code a lot in pattern such as 'if (BeginMenu("options", has_object)) { ..use object.. }'
+			if (!enabled) 
 				want_close = true;
 			if (want_close && ImGui::IsPopupOpen(id, ImGuiPopupFlags_None))
 				ImGui::ClosePopupToLevel(g.BeginPopupStack.Size, true);
@@ -549,34 +493,29 @@ namespace FlatEngine
 
 			if (want_open && !menu_is_open && g.OpenPopupStack.Size > g.BeginPopupStack.Size)
 			{
-				// Don't reopen/recycle same menu level in the same frame if it is a different menu ID, first close the other menu and yield for a frame.
 				ImGui::OpenPopup(label);
 			}
 			else if (want_open)
 			{
 				menu_is_open = true;
-				ImGui::OpenPopup(label, ImGuiPopupFlags_NoReopen);// | (want_open_nav_init ? ImGuiPopupFlags_NoReopenAlwaysNavInit : 0));
+				ImGui::OpenPopup(label, ImGuiPopupFlags_NoReopen);
 			}
 
 			if (menu_is_open)
 			{
 				ImGuiLastItemData last_item_in_parent = g.LastItemData;
-				ImGui::SetNextWindowPos(popup_pos, ImGuiCond_Always);                  // Note: misleading: the value will serve as reference for FindBestWindowPosForPopup(), not actual pos.
-				ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, style.PopupRounding); // First level will use _PopupRounding, subsequent will use _ChildRounding
-				menu_is_open = ImGui::BeginPopupMenuEx(id, label, window_flags); // menu_is_open may be 'false' when the popup is completely clipped (e.g. zero size display)
+				ImGui::SetNextWindowPos(popup_pos, ImGuiCond_Always);                  
+				ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, style.PopupRounding); 
+				menu_is_open = ImGui::BeginPopupMenuEx(id, label, window_flags); 
 				ImGui::PopStyleVar();
 				if (menu_is_open)
 				{
-					// Implement what ImGuiPopupFlags_NoReopenAlwaysNavInit would do:
-					// Perform an init request in the case the popup was already open (via a previous mouse hover)
 					if (want_open && want_open_nav_init && !g.NavInitRequest)
 					{
 						ImGui::FocusWindow(g.CurrentWindow, ImGuiFocusRequestFlags_UnlessBelowModal);
 						ImGui::NavInitWindow(g.CurrentWindow, false);
 					}
 
-					// Restore LastItemData so IsItemXXXX functions can work after BeginMenu()/EndMenu()
-					// (This fixes using IsItemClicked() and IsItemHovered(), but IsItemHovered() also relies on its support for ImGuiItemFlags_NoWindowHoverableCheck)
 					g.LastItemData = last_item_in_parent;
 					if (g.HoveredWindow == window)
 						g.LastItemData.StatusFlags |= ImGuiItemStatusFlags_HoveredWindow;
@@ -584,7 +523,7 @@ namespace FlatEngine
 			}
 			else
 			{
-				g.NextWindowData.ClearFlags(); // We behave like Begin() and need to consume those values
+				g.NextWindowData.ClearFlags();
 			}
 
 			return menu_is_open;
@@ -595,11 +534,10 @@ namespace FlatEngine
 		}
 		void EndMenu()
 		{
-			// Nav: When a left move request our menu failed, close ourselves.
 			ImGuiContext& g = *GImGui;
 			ImGuiWindow* window = g.CurrentWindow;
-			IM_ASSERT(window->Flags & ImGuiWindowFlags_Popup);  // Mismatched BeginMenu()/EndMenu() calls
-			ImGuiWindow* parent_window = window->ParentWindow;  // Should always be != NULL is we passed assert.
+			IM_ASSERT(window->Flags & ImGuiWindowFlags_Popup);  
+			ImGuiWindow* parent_window = window->ParentWindow;  
 			if (window->BeginCount == window->BeginCountPreviousFrame)
 				if (g.NavMoveDir == ImGuiDir_Left && ImGui::NavMoveRequestButNoResultYet())
 					if (g.NavWindow && (g.NavWindow->RootWindowForNav == window) && parent_window->DC.LayoutType == ImGuiLayoutType_Vertical)
@@ -624,44 +562,33 @@ namespace FlatEngine
 			label_size.x += cellPadding.x * 2;
 			label_size.y += cellPadding.y * 2;
 
-			// See BeginMenuEx() for comments about this.
 			const bool menuset_is_open = IsRootOfOpenMenuSet();
 			if (menuset_is_open)
 				ImGui::PushItemFlag(ImGuiItemFlags_NoWindowHoverableCheck, true);
 
-			// We've been using the equivalent of ImGuiSelectableFlags_SetNavIdOnHover on all Selectable() since early Nav system days (commit 43ee5d73),
-			// but I am unsure whether this should be kept at all. For now moved it to be an opt-in feature used by menus only.
 			bool pressed;
 			ImGui::PushID(label);
 			if (!enabled)
 				ImGui::BeginDisabled();
 
-			// We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
 			const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_SelectOnRelease | ImGuiSelectableFlags_NoSetKeyOwner | ImGuiSelectableFlags_SetNavIdOnHover;
 			const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
 			if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
 			{
-				// Mimic the exact layout spacing of BeginMenu() to allow MenuItem() inside a menu bar, which is a little misleading but may be useful
-				// Note that in this situation: we don't render the shortcut, we render a highlight instead of the selected tick mark.
 				float w = label_size.x;
 				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * 0.5f);
 				ImVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
-				// PushStyleVarX(ImGuiStyleVar_ItemSpacing, style.ItemSpacing.x * 2.0f);
 				pressed = ImGui::Selectable("", selected, selectable_flags, ImVec2(w, 0.0f));
-				// PopStyleVar();
 				if (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_Visible)
 					ImGui::RenderText(text_pos, label);
-				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+				window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f)); 
 			}
 			else
 			{
-				// Menu item inside a vertical menu
-				// (In a typical menu window where all items are BeginMenu() or MenuItem() calls, extra_w will always be 0.0f.
-				//  Only when they are other items sticking out we're going to add spacing, yet only register minimum width into the layout system.
 				float icon_w = (icon && icon[0]) ? ImGui::CalcTextSize(icon, NULL).x : 0.0f;
 				float shortcut_w = (shortcut && shortcut[0]) ? ImGui::CalcTextSize(shortcut, NULL).x : 0.0f;
 				float checkmark_w = IM_TRUNC(g.FontSize * 1.20f);
-				float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, shortcut_w, checkmark_w); // Feedback for next frame
+				float min_w = window->DC.MenuColumns.DeclColumns(icon_w, label_size.x, shortcut_w, checkmark_w); 
 				float stretch_w = ImMax(0.0f, ImGui::GetContentRegionAvail().x - min_w);
 				pressed = ImGui::Selectable("", false, selectable_flags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(min_w, label_size.y));
 				if (g.LastItemData.StatusFlags & ImGuiItemStatusFlags_Visible)
@@ -929,28 +856,26 @@ namespace FlatEngine
 			ImGui::PopID();
 		}
 
-		bool RenderInputTableRow(std::string ID, std::string fieldName, std::string& value, bool b_canOpenFiles)
-		{
-			bool b_edited = false;
-			ImGui::TableNextRow();
-			ImGui::TableSetColumnIndex(0);
-			MoveScreenCursor(0, 2);
-			ImGui::Text("%s", fieldName.c_str());
-			ImGui::TableSetColumnIndex(1);
-			b_edited = RenderInput(ID, "", value, b_canOpenFiles);
-			ImGui::PushID(ID.c_str());
-			ImGui::PopID();
-
-			return b_edited;
-		}
-
 		void PopTable()
 		{
 			ImGui::EndTable();
 			PopTableStyles();
 		}
 
-		// Newer table functions
+		// Newer table functions		
+		void RenderTableBorders(TableProps tableProps, Vector2 labelTopStart)
+		{
+			Vector2 valueTopStart = labelTopStart + Vector2(tableProps.labelWidth - 1, 0);			
+			Vector2 valueBottomStart = valueTopStart + Vector2(0, TABLE_HEIGHT - 1);
+			
+			if (tableProps.b_topBorderValue)
+				ImGui::GetWindowDrawList()->AddLine(valueTopStart, Vector2(valueTopStart.x + tableProps.tableSize.x + 1, valueTopStart.y), Assets::assetManager.GetColor32(tableProps.tableValueBorderTop), 1.0f);				
+			if (tableProps.b_bottomBorderValue)
+				ImGui::GetWindowDrawList()->AddLine(valueBottomStart, Vector2(valueBottomStart.x + tableProps.tableSize.x + 1, valueBottomStart.y), Assets::assetManager.GetColor32(tableProps.tableValueBorderBottom), 1.0f);	
+			if (tableProps.b_rightBorder)
+				ImGui::GetWindowDrawList()->AddLine(valueTopStart + Vector2(tableProps.tableSize.x, 0), valueBottomStart + Vector2(tableProps.tableSize.x, 0), Assets::assetManager.GetColor32(tableProps.tableBorderRight), 1.0f);	
+		}
+
 		void RenderLabelTable(TableProps tableProps)
 		{
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;
@@ -959,6 +884,9 @@ namespace FlatEngine
 			if (!b_light)
 				color *= 0.75f;
 
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();			
+			Vector2 labelBottomStart = labelTopStart + Vector2(0, TABLE_HEIGHT - 1);			
+					
 			if (PushTable(tableProps.ID, 1, tableProps.flags, Vector2(tableProps.labelWidth, 0)))			
 			{						 	
 				ImGui::PushStyleColor(ImGuiCol_Text, Assets::assetManager.GetColor(tableProps.labelTextColor));
@@ -974,6 +902,13 @@ namespace FlatEngine
 				ImGui::PopStyleColor();				
 				PopTable();
 			}
+
+			if (tableProps.b_leftBorder)
+				ImGui::GetWindowDrawList()->AddLine(labelTopStart, labelBottomStart + Vector2(0, 1), Assets::assetManager.GetColor32(tableProps.tableBorderLeft), 1.0f);	
+			if (tableProps.b_topBorderLabel)
+				ImGui::GetWindowDrawList()->AddLine(labelTopStart, Vector2(labelTopStart.x + tableProps.labelWidth, labelTopStart.y), Assets::assetManager.GetColor32(tableProps.tableLabelBorderTop), 1.0f);	
+			if (tableProps.b_bottomBorderLabel)
+				ImGui::GetWindowDrawList()->AddLine(labelBottomStart, Vector2(labelBottomStart.x + tableProps.labelWidth, labelBottomStart.y), Assets::assetManager.GetColor32(tableProps.tableLabelBorderBottom), 1.0f);	
 		}
 
 		void RenderVerticalSeparator(bool b_show)
@@ -984,49 +919,6 @@ namespace FlatEngine
 				Vector2 p1 = Vector2(p0.x, p0.y + TABLE_HEIGHT);
 				ImGui::GetWindowDrawList()->AddLine(p0, p1, Assets::assetManager.GetColor32("tableLabelVerticalSeparator"), 1.0f);				
 			}
-		}
-
-		bool RenderStringTable(TableProps tableProps, std::string& value)
-		{
-			bool b_changed = false;	
-			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;	
-
-			std::string column0Label = tableProps.ID + std::to_string(0);
-			std::string column1Label = tableProps.ID + std::to_string(1);
-						
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-
-			if (tableProps.labelWidth == 0) 
-				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableProps.tableSize.x / 2 ? tableProps.tableSize.x / 2 : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
-			TableProps labelTableProps = tableProps;
-			labelTableProps.ID = column0Label;
-			labelTableProps.labelWidth = tableProps.labelWidth;
-			RenderLabelTable(tableProps);
-
-			ImGui::SameLine(0,0);
-
-			RenderVerticalSeparator(tableProps.b_vertSeperator);
-
-			Vector2 innerTableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), TABLE_HEIGHT);
-			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, innerTableSize))
-			{
-				ImGui::TableNextRow(TABLE_HEIGHT);	
-				ImGui::TableSetColumnIndex(0);	
-				if (valueColor != "")						
-					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
-				b_changed = RenderInput(column1Label.c_str(), "", value);
-				ImGui::PushID(tableProps.ID.c_str());
-				ImGui::PopID();
-				PopTable();
-			}
-
-			MoveScreenCursor(0, -4);
-
-			b_currentTableLight = !b_light;
-
-			return b_changed;
 		}
 
 		bool RenderFloatTableColumns(TableProps tableProps, float& value, int labelIndex, int valueIndex)
@@ -1051,25 +943,103 @@ namespace FlatEngine
 			return RenderDragFloat(tableProps.ID.c_str(), 0, value, tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax);
 		}
 
+		bool RenderInput(std::string ID, std::string& value, float inputWidth)
+		{
+			bool b_editedInput = false;
+			char newPath[1024] = {};
+
+			#ifdef _WINDOWS
+				strcpy_s(newPath, value.c_str());
+			#elif _LINUX
+				strcpy(newPath, value.c_str());
+			#endif
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4.5));
+			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor("input"));
+			ImGui::SetNextItemWidth(inputWidth != 0 ? inputWidth : ImGui::GetContentRegionAvail().x);
+			b_editedInput = ImGui::InputText(ID.c_str(), newPath, IM_ARRAYSIZE(newPath));			
+			ImGui::PopStyleColor();
+			ImGui::PopStyleVar();
+
+			if (newPath[0] != '\0')
+			{
+				value = newPath;
+			}
+			return b_editedInput;
+		}
+
+		bool RenderStringTable(TableProps tableProps, std::string& value)
+		{
+			bool b_changed = false;	
+			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;	
+
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();
+
+			std::string column0Label = tableProps.ID + std::to_string(0);
+			std::string column1Label = tableProps.ID + std::to_string(1);
+						
+			if (tableProps.tableSize.x == 0)
+				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
+
+			if (tableProps.labelWidth == 0) 
+				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableProps.tableSize.x / 2 ? tableProps.tableSize.x / 2 : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+
+			TableProps labelTableProps = tableProps;
+			labelTableProps.ID = column0Label;
+			labelTableProps.labelWidth = tableProps.labelWidth;
+			RenderLabelTable(tableProps);
+
+			ImGui::SameLine(0,0);
+
+			RenderVerticalSeparator(tableProps.b_vertSeperator);
+
+			tableProps.tableSize.x -= tableProps.labelWidth;
+			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
+			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, tableProps.tableSize))
+			{
+				ImGui::TableNextRow(TABLE_HEIGHT);	
+				ImGui::TableSetColumnIndex(0);	
+				if (valueColor != "")						
+					ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, Assets::assetManager.GetColor32(valueColor));	
+				b_changed = RenderInput(column1Label.c_str(), value);
+				ImGui::PushID(tableProps.ID.c_str());
+				ImGui::PopID();
+				PopTable();
+			}
+
+			tableProps.tableValueBorderTop = "inputBorderTop";
+			tableProps.tableValueBorderBottom = "inputBorderBottom";
+			RenderTableBorders(tableProps, labelTopStart);
+			MoveScreenCursor(0, -4);
+			b_currentTableLight = !b_light;
+
+			return b_changed;
+		}
+
+
 		bool RenderVector2Table(TableProps tableProps, Vector2& vec2)
 		{						
 			bool b_changed = false;	
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;					
+
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();
 
 			if (tableProps.valueLabelColors.size() == 0)
 				tableProps.valueLabelColors = { "transformXBGLight", "transformYBGLight" };
 			
 			std::string column0Label = tableProps.ID + std::to_string(0);
 			std::string column1Label = tableProps.ID + std::to_string(1);
-			std::string column2Label = tableProps.ID + std::to_string(2);
-						
-			Vector2 regionAvailable = tableProps.tableSize.x != 0 ? tableProps.tableSize : ImGui::GetContentRegionAvail();						
+			std::string column2Label = tableProps.ID + std::to_string(2);					
+
+			if (tableProps.tableSize.x == 0)
+				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
+
 			if (tableProps.labelWidth == 0) 
 			{
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
-				if (tableProps.labelWidth < regionAvailable.x / 3.0f)
+				if (tableProps.labelWidth < tableProps.tableSize.x / 3.0f)
 				{
-					tableProps.labelWidth = regionAvailable.x / 3.0f;
+					tableProps.labelWidth = tableProps.tableSize.x / 3.0f;
 				}
 			}
 
@@ -1083,8 +1053,9 @@ namespace FlatEngine
 
 			std::vector<float> widths { 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
-						
-			if (PushTable("##" + tableProps.ID + "Table", 4, tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
+
+			tableProps.tableSize.x -= tableProps.labelWidth;
+			if (PushTable("##" + tableProps.ID + "Table", 4, tableFlags, tableProps.tableSize, widths))
 			{
 				ImGui::TableNextRow();			
 				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[0], valueColor, 16);				
@@ -1095,8 +1066,8 @@ namespace FlatEngine
 				PopTable();
 			}
 			
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;	
 
 			return b_changed;
@@ -1107,6 +1078,8 @@ namespace FlatEngine
 			bool b_changed = false;	
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
 
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();
+
 			if (tableProps.valueLabelColors.size() == 0)
 				tableProps.valueLabelColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight" };
 
@@ -1115,13 +1088,15 @@ namespace FlatEngine
 			std::string column2Label = tableProps.ID + std::to_string(2);
 			std::string column3Label = tableProps.ID + std::to_string(3);
 
-			Vector2 regionAvailable = tableProps.tableSize.x != 0 ? tableProps.tableSize : ImGui::GetContentRegionAvail();						
+			if (tableProps.tableSize.x == 0)
+				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
+			
 			if (tableProps.labelWidth == 0) 
 			{
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
-				if (tableProps.labelWidth < regionAvailable.x / 4.0f)
+				if (tableProps.labelWidth < tableProps.tableSize.x / 4.0f)
 				{
-					tableProps.labelWidth = regionAvailable.x / 4.0f;
+					tableProps.labelWidth = tableProps.tableSize.x / 4.0f;
 				}
 			}
 
@@ -1136,7 +1111,8 @@ namespace FlatEngine
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			
-			if (PushTable("##" + tableProps.ID + "Table", 6, tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
+			tableProps.tableSize.x -= tableProps.labelWidth;
+			if (PushTable("##" + tableProps.ID + "Table", 6, tableFlags, tableProps.tableSize, widths))
 			{
 				ImGui::TableNextRow();					
 				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[0], valueColor, 16);				
@@ -1148,8 +1124,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1160,6 +1136,8 @@ namespace FlatEngine
 			bool b_changed = false;	
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
 
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();
+
 			if (tableProps.valueLabelColors.size() == 0)
 				tableProps.valueLabelColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };
 
@@ -1168,14 +1146,16 @@ namespace FlatEngine
 			std::string column2Label = tableProps.ID + std::to_string(2);
 			std::string column3Label = tableProps.ID + std::to_string(3);
 			std::string column4Label = tableProps.ID + std::to_string(4);
+			
+			if (tableProps.tableSize.x == 0)
+				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
 
-			Vector2 regionAvailable = tableProps.tableSize.x != 0 ? tableProps.tableSize : ImGui::GetContentRegionAvail();						
 			if (tableProps.labelWidth == 0) 
 			{
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
-				if (tableProps.labelWidth < regionAvailable.x / 5.0f)
+				if (tableProps.labelWidth < tableProps.tableSize.x / 5.0f)
 				{
-					tableProps.labelWidth = regionAvailable.x / 5.0f;
+					tableProps.labelWidth = tableProps.tableSize.x / 5.0f;
 				}
 			}
 						
@@ -1190,7 +1170,8 @@ namespace FlatEngine
 			std::vector<float> widths { 16, 0, 16, 0, 16, 0, 16, 0 };
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";
 			
-			if (PushTable("##" + tableProps.ID + "Table", 8, tableFlags, Vector2(regionAvailable.x - tableProps.labelWidth, 0), widths))
+			tableProps.tableSize.x -= tableProps.labelWidth;
+			if (PushTable("##" + tableProps.ID + "Table", 8, tableFlags, tableProps.tableSize, widths))
 			{
 				ImGui::TableNextRow();			
 				TableProps floatColumn1Props = TableProps(column1Label, "X", Vector2(), tableProps.floatIncrement, tableProps.floatMin, tableProps.floatMax, tableProps.valueLabelColors[0], valueColor, 16);				
@@ -1204,8 +1185,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 			
 			return b_changed;
@@ -1216,14 +1197,17 @@ namespace FlatEngine
 			bool b_changed = false;
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
 
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
+
 			std::string column0Label = tableProps.ID + std::to_string(0);
-			std::string column1Label = tableProps.ID + std::to_string(1);
+			std::string column1Label = tableProps.ID + std::to_string(1);			
 						
 			if (tableProps.tableSize.x == 0)
 				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
 
 			if (tableProps.labelWidth == 0) 
-				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableProps.tableSize.x / 2.0f ? tableProps.tableSize.x / 2.0f : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableProps.tableSize.x / 2.0f ? tableProps.tableSize.x / 2.0f : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;					
+
 			TableProps labelTableProps = tableProps;
 			labelTableProps.ID = column0Label;
 			labelTableProps.labelWidth = tableProps.labelWidth;
@@ -1233,11 +1217,7 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
 
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
-
+			tableProps.tableSize.x -= tableProps.labelWidth;
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, tableProps.tableSize))
 			{
@@ -1251,8 +1231,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1263,6 +1243,8 @@ namespace FlatEngine
 			bool b_changed = false;
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
 
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
+
 			std::string column0Label = tableProps.ID + std::to_string(0);
 			std::string column1Label = tableProps.ID + std::to_string(1);
 						
@@ -1271,6 +1253,7 @@ namespace FlatEngine
 
 			if (tableProps.labelWidth == 0) 
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableProps.tableSize.x / 2 ? tableProps.tableSize.x / 2 : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+
 			TableProps labelTableProps = tableProps;
 			labelTableProps.ID = column0Label;
 			labelTableProps.labelWidth = tableProps.labelWidth;
@@ -1280,11 +1263,7 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
 
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
-
+			tableProps.tableSize.x -= tableProps.labelWidth;
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, tableProps.tableSize))
 			{
@@ -1298,8 +1277,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1309,6 +1288,8 @@ namespace FlatEngine
 		{
 			bool b_changed = false;
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
+
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
 
 			std::string column0Label = tableProps.ID + std::to_string(0);
 			std::string column1Label = tableProps.ID + std::to_string(1);
@@ -1327,11 +1308,7 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
 
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
-
+			tableProps.tableSize.x -= tableProps.labelWidth;
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, tableProps.tableSize))
 			{
@@ -1345,8 +1322,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1356,6 +1333,8 @@ namespace FlatEngine
 		{
 			bool b_changed = false;
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
+
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
 
 			std::string column0Label = tableProps.ID + std::to_string(0);
 			std::string column1Label = tableProps.ID + std::to_string(1);
@@ -1374,11 +1353,7 @@ namespace FlatEngine
 
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
 
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
-
+			tableProps.tableSize.x -= tableProps.labelWidth;
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, tableProps.tableSize))
 			{
@@ -1392,8 +1367,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1403,6 +1378,8 @@ namespace FlatEngine
 		{
 			bool b_changed = false;
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
+
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
 
 			std::string column0Label = tableProps.ID + std::to_string(0);
 			std::string column1Label = tableProps.ID + std::to_string(1);
@@ -1420,16 +1397,12 @@ namespace FlatEngine
 			ImGui::SameLine(0,0);
 
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
-
-			if (tableProps.tableSize.x == 0)
-				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
-			else
-			 	tableProps.tableSize = Vector2((tableProps.tableSize.x - tableProps.labelWidth), tableProps.tableSize.y);
-
+			
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";			
 			std::vector<std::string> trueFalse = { "false", "true" };
 			int currentBool = value ? 1 : 0;
-			
+		
+			tableProps.tableSize.x -= tableProps.labelWidth;
 			if (PushTable("##" + tableProps.ID + "Table", 1, tableFlags, tableProps.tableSize))
 			{
 				ImGui::TableNextRow();	
@@ -1447,8 +1420,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1461,25 +1434,27 @@ namespace FlatEngine
 
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;						
 
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
+
 			ImGuiTableFlags flags = ImGuiTableFlags_RowBg;
 			float tableWidth = ImGui::GetContentRegionAvail().x;
+
+			if (tableProps.tableSize.x == 0)
+				tableProps.tableSize.x = ImGui::GetContentRegionAvail().x;
 
 			if (tableProps.labelWidth == 0) 
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableWidth / 2 ? tableWidth / 2 : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
 
-			TableProps labelTableProps = TableProps("##labelTable" + tableProps.ID, tableProps.label);
-			labelTableProps.labelWidth = tableProps.labelWidth;
-			labelTableProps.b_light = b_light;
-			labelTableProps.b_lightSet = tableProps.b_lightSet;
-			labelTableProps.flags = flags;
+			TableProps labelTableProps = TableProps(tableProps, "##labelTable" + tableProps.ID, tableProps.label);
 			RenderLabelTable(labelTableProps);
 			
 			ImGui::SameLine(0,0);
 
 			RenderVerticalSeparator(tableProps.b_vertSeperator);
 
+			tableProps.tableSize.x -= tableProps.labelWidth;
 			std::string valueColor = b_light ? "tableCellLight" : "tableCellDark";				
-			if (PushTable(tableProps.ID, values.size(), flags))
+			if (PushTable(tableProps.ID, values.size(), flags, tableProps.tableSize))
 			{			
 				ImGui::TableNextRow(0, TABLE_HEIGHT);	
 				ImGui::PushStyleColor(ImGuiCol_Text, Assets::assetManager.GetColor("noEditTableText"));				
@@ -1498,8 +1473,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;			
 		}
 
@@ -1507,6 +1482,8 @@ namespace FlatEngine
 		{
 			bool b_changed = false;
 			bool b_light = tableProps.b_lightSet ? tableProps.b_light : b_currentTableLight;			
+
+			Vector2 labelTopStart = ImGui::GetCursorScreenPos();	
 
 			std::string column0Label = tableProps.ID + std::to_string(0);
 			std::string column1Label = tableProps.ID + std::to_string(1);
@@ -1516,6 +1493,7 @@ namespace FlatEngine
 
 			if (tableProps.labelWidth == 0) 
 				tableProps.labelWidth = ImGui::CalcTextSize(tableProps.label.c_str()).x + 9 < tableProps.tableSize.x / 2 ? tableProps.tableSize.x / 2 : ImGui::CalcTextSize(tableProps.label.c_str()).x + 10;
+
 			TableProps labelTableProps = tableProps;
 			labelTableProps.ID = column0Label;
 			labelTableProps.labelWidth = tableProps.labelWidth;
@@ -1542,8 +1520,8 @@ namespace FlatEngine
 				PopTable();
 			}
 
+			RenderTableBorders(tableProps, labelTopStart);
 			MoveScreenCursor(0, -4);
-
 			b_currentTableLight = !b_light;
 
 			return b_changed;
@@ -1561,10 +1539,10 @@ namespace FlatEngine
 				newParam.type = (LuaManager::ParameterType)paramContainer.tempParameterType;
 			}
 
-			ImGui::SameLine(0,3);
-			RenderInput("##newScriptParamInputLuaScript_" + ID, "", paramContainer.tempParameterName, false, ImGui::GetContentRegionAvail().x - 38);			
+			ImGui::SameLine(0,0);
+			RenderInput("##newScriptParamInputLuaScript_" + ID, paramContainer.tempParameterName, ImGui::GetContentRegionAvail().x - 35);			
 
-			ImGui::SameLine(0,3);
+			ImGui::SameLine(0,0);
 			ImGui::BeginDisabled(paramContainer.tempParameterName == "" || paramContainer.tempParameterType == LuaManager::ParameterType_None);
 			if (RenderButton("ADD##LuaScript_" + ID, Vector2(35, TABLE_HEIGHT)))
 			{
@@ -1632,65 +1610,86 @@ namespace FlatEngine
 				paramContainer.Remove(paramQueuedForDelete);
 				paramQueuedForDelete = "";
 			}
+
+			MoveScreenCursor(0, -5);
 		}
 
-
-		bool RenderInput(std::string ID, std::string label, std::string& value, bool b_canOpenFiles, float inputWidth, ImGuiInputTextFlags flags)
+		bool RenderDropInputTable(InputProps& inputProps)
 		{
 			bool b_editedButton = false;
-			bool b_editedInput = false;
 			bool b_dragTargeted = false;
-			char newPath[1024] = {};
+			char newPath[1024];		
 
 			#ifdef _WINDOWS
-				strcpy_s(newPath, value.c_str());
+				strcpy_s(newPath, openedFileValue.c_str());
 			#elif _LINUX
-				strcpy(newPath, value.c_str());
+				strcpy(newPath, inputProps.value.c_str());
 			#endif
 
-			std::string pathString = label;
+			TableProps labelTable = TableProps("##DropInputLabelTable" + inputProps.ID, inputProps.label);
+			labelTable.labelColor = "col_2";
+			labelTable.labelWidth = ImGui::CalcTextSize(inputProps.label.c_str()).x + 9;
+			labelTable.b_topBorderLabel = true;
+			labelTable.b_bottomBorderLabel = true;
+			RenderLabelTable(labelTable);
+			ImGui::SameLine(0, 0);			
+
+			RenderVerticalSeparator(true);
 			
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5,3));
-
-			if (pathString != "")
-			{
-				pathString += ":";
-				ImGui::AlignTextToFramePadding();
-				ImGui::TextUnformatted(pathString.c_str());
-				ImGui::SameLine(0, 5);			
-			}
-
-			if (b_canOpenFiles && inputWidth == -1)
-			{
-				inputWidth = ImGui::GetContentRegionAvail().x - 23;
-			}
-			else if (b_canOpenFiles)
-			{
-				inputWidth -= 23;
-			}
-			else if (inputWidth == -1)
-			{
-				inputWidth = ImGui::GetContentRegionAvail().x;
-			}
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4.5));
-			ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0);
+			if (inputProps.inputWidth == 0) inputProps.inputWidth = ImGui::GetContentRegionAvail().x;
+			if (inputProps.b_canOpenFiles)  inputProps.inputWidth -= 22;
+		
 			Vector2 inputStart = ImGui::GetCursorScreenPos();
-			ImGui::PushStyleColor(ImGuiCol_FrameBg, Assets::assetManager.GetColor("input"));
-			ImGui::SetNextItemWidth(inputWidth);
-			b_editedInput = ImGui::InputText(ID.c_str(), newPath, IM_ARRAYSIZE(newPath), flags);
-			ImGui::PopStyleColor();
-			Vector2 inputSize = Vector2(inputWidth, ImGui::GetCursorScreenPos().y - inputStart.y);
-			ImGui::PopStyleVar(2);
+			Vector2 inputSize = Vector2(inputProps.inputWidth, TABLE_HEIGHT);
+			ImGui::GetWindowDrawList()->AddRectFilled(inputStart, Vector2(inputStart.x + inputSize.x, inputStart.y + inputSize.y), Assets::assetManager.GetColor32("input"), 0);
+			// inputStart.x -= 1;
+			ImGui::GetWindowDrawList()->AddRect(inputStart, Vector2(inputStart.x + inputSize.x, inputStart.y + inputSize.y), Assets::assetManager.GetColor32("inputBorder"), 0);			
+			ImGui::SetCursorScreenPos(Vector2(inputStart.x + 6, inputStart.y + 4));	
+			ImGui::Text("%s", inputProps.displayValue.c_str());
 
-			if (b_canOpenFiles)
+			RenderInvisibleButton("##DropInputOpenFilesdropTarget" + inputProps.ID, inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
+	
+			if (inputProps.tipMessage != "" && ImGui::IsItemHovered())			
+				RenderTextToolTip(inputProps.tipMessage);			
+
+			// Drop Target
+			if (ImGui::BeginDragDropTarget())
 			{
-				ImGui::SameLine();
-
-				std::string buttonId = ID + "openFileButton";
-				if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(15), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(inputProps.dropTargetID.c_str()))
 				{
-					std::string assetPath = FileHelper::OpenLoadFileExplorer();				
+					IM_ASSERT(payload->DataSize == sizeof(int));
+					inputProps.droppedObjectID = *(const int*)payload->Data;
+					b_dragTargeted = true;
+				}
+				ImGui::EndDragDropTarget();
+			}
+
+			// Right click menu
+			std::string dropTargetRightClickID = "##DropInputOpenFilesdropTarget##" + inputProps.ID;
+			if (ImGui::BeginPopupContextItem(dropTargetRightClickID.c_str()))
+			{
+				PushMenuStyles();
+				if (ImGui::MenuItem("Remove reference"))
+				{
+					inputProps.value = "";
+					inputProps.droppedObjectID = -1;
+					b_dragTargeted = true;
+					ImGui::CloseCurrentPopup();
+				}
+				PopMenuStyles();
+
+				ImGui::EndPopup();
+			}
+
+			// Open file button
+			if (inputProps.b_canOpenFiles)
+			{
+				ImGui::SameLine(0,0);
+
+				std::string buttonId = inputProps.ID + "openFileButton";		
+				if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(16), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
+				{
+					std::string assetPath = FileHelper::OpenLoadFileExplorer();		
 
 					#ifdef _WINDOWS
 						strcpy_s(newPath, assetPath.c_str());
@@ -1700,165 +1699,36 @@ namespace FlatEngine
 
 					b_editedButton = true;
 				}
+
+				if (newPath[0] != '\0')				
+					inputProps.value = newPath;				
 			}
 
-			ImGui::PopStyleVar();
-
-			if (newPath[0] != '\0')
+			// Handle file drops
+			if (inputProps.dropTargetID == fileExplorerTarget && inputProps.droppedObjectID < FL::GuiCore::selectedFiles.size())
 			{
-				value = newPath;
-			}
-			return b_editedButton || b_editedInput || b_dragTargeted;
-		}
-
-		bool DropInput(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string toolTip, float inputWidth)
-		{		
-			bool b_dragTargeted = false;
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 3));
-
-			if (label != "")
-			{
-				label += ":";
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("%s", label.c_str());
-				ImGui::SameLine(0, 5);			
-			}
-
-			if (inputWidth == -1)
-			{
-				inputWidth = ImGui::GetContentRegionAvail().x;
-			}
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, Vector2(5, 4));
-			Vector2 inputStart = ImGui::GetCursorScreenPos();
-			Vector2 inputSize = Vector2(inputWidth, ImGui::GetFontSize() * 1.65f);
-			ImGui::GetWindowDrawList()->AddRectFilled(inputStart, Vector2(inputStart.x + inputSize.x, inputStart.y + inputSize.y), Assets::assetManager.GetColor32("input"), 0);
-			ImGui::SetCursorScreenPos(Vector2(inputStart.x + 3, inputStart.y + 1));
-			ImGui::Text("%s", displayValue.c_str());
-
-			RenderInvisibleButton("##DropInputdropTarget" + ID, inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
-			ImGui::PopStyleVar();
-			if (toolTip != "" && ImGui::IsItemHovered())
-			{
-				RenderTextToolTip(toolTip);
-			}
-
-			// Drop Target
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(dropTargetID.c_str()))
+				std::filesystem::path fsPath(FL::GuiCore::selectedFiles[inputProps.droppedObjectID - 1]);
+				bool b_extensionCorrect = false;
+				for (std::string ext : inputProps.requiredExtensions)
 				{
-					IM_ASSERT(payload->DataSize == sizeof(int));
-					droppedValue = *(const int*)payload->Data;
-					b_dragTargeted = true;
+					if (fsPath.extension() == ext)
+					{
+						b_extensionCorrect = true;
+						inputProps.value = fsPath.string();
+					}
 				}
-				ImGui::EndDragDropTarget();
-			}
-
-			// Right click menu
-			if (ImGui::BeginPopupContextItem("##DropInputdropTarget"))
-			{
-				PushMenuStyles();
-				if (ImGui::MenuItem("Remove reference"))
+				
+				if (!b_extensionCorrect)
 				{
-					droppedValue = -1;
-					b_dragTargeted = true;
-					ImGui::CloseCurrentPopup();
+					std::string extensions;
+					for (std::string ext : inputProps.requiredExtensions)
+					{
+						extensions += ext + " ";
+					}
+
+					FL::Logger::log.Err("File must be of type {} to drop here.", extensions);
+					return false;
 				}
-				PopMenuStyles();
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopStyleVar();
-
-			return b_dragTargeted;
-		}
-
-		bool DropInputCanOpenFiles(std::string ID, std::string label, std::string displayValue, std::string dropTargetID, int& droppedValue, std::string& openedFileValue, std::string toolTip, float inputWidth)
-		{
-			bool b_editedButton = false;
-			bool b_dragTargeted = false;
-			char newPath[1024];		
-
-			#ifdef _WINDOWS
-				strcpy_s(newPath, openedFileValue.c_str());
-			#elif _LINUX
-				strcpy(newPath, openedFileValue.c_str());
-			#endif
-
-			if (label != "")
-			{
-				label += ":";
-				TableProps labelTable = TableProps("##DropInputLabelTable" + ID, label);
-				labelTable.labelColor = "col_2";
-				labelTable.labelWidth = ImGui::CalcTextSize(label.c_str()).x + 9;
-				RenderLabelTable(labelTable);
-				ImGui::SameLine(0, 0);			
-			}
-
-			inputWidth = inputWidth == 0 ? ImGui::GetContentRegionAvail().x - 22 : inputWidth - 22;
-		
-			Vector2 inputStart = ImGui::GetCursorScreenPos();
-			Vector2 inputSize = Vector2(inputWidth, TABLE_HEIGHT);
-			ImGui::GetWindowDrawList()->AddRectFilled(inputStart, Vector2(inputStart.x + inputSize.x, inputStart.y + inputSize.y), Assets::assetManager.GetColor32("input"), 0);
-			ImGui::SetCursorScreenPos(Vector2(inputStart.x + 3, inputStart.y));			
-
-			RenderInvisibleButton("##DropInputOpenFilesdropTarget" + ID, inputStart, inputSize, true, false, ImGuiButtonFlags_MouseButtonLeft | ImGuiButtonFlags_MouseButtonRight | 4096);
-	
-			if (toolTip != "" && ImGui::IsItemHovered())
-			{
-				RenderTextToolTip(toolTip);
-			}
-
-			// Drop Target
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(dropTargetID.c_str()))
-				{
-					IM_ASSERT(payload->DataSize == sizeof(int));
-					droppedValue = *(const int*)payload->Data;
-					b_dragTargeted = true;
-				}
-				ImGui::EndDragDropTarget();
-			}
-
-			// Right click menu
-			std::string dropTargetRightClickID = "##DropInputOpenFilesdropTarget##" + ID;
-			if (ImGui::BeginPopupContextItem(dropTargetRightClickID.c_str()))
-			{
-				PushMenuStyles();
-				if (ImGui::MenuItem("Remove reference"))
-				{
-					droppedValue = -2;
-					b_dragTargeted = true;
-					ImGui::CloseCurrentPopup();
-				}
-				PopMenuStyles();
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::SameLine(0,0);
-
-			std::string buttonId = ID + "openFileButton";		
-			if (RenderImageButton(buttonId.c_str(), Assets::assetManager.GetTexture("openFile"), Vector2(16), 1, Vector2(3), "buttonBorder", "openFileButtonBg", "imageButtonTint", "openFileButtonHovered", "imageButtonActive"))
-			{
-				std::string assetPath = FileHelper::OpenLoadFileExplorer();		
-
-				#ifdef _WINDOWS
-					strcpy_s(newPath, assetPath.c_str());
-				#elif _LINUX
-					strcpy(newPath, assetPath.c_str());
-				#endif
-
-				b_editedButton = true;
-			}
-
-			if (newPath[0] != '\0')
-			{
-				openedFileValue = newPath;
 			}
 
 			MoveScreenCursor(0, -4);

@@ -16,7 +16,6 @@ namespace FlatEngine
 		m_offset = Vector2(0, 0);
 		m_tintColor = Vector4(1,1,1,1);
 		m_text = "Sample Text";
-		m_renderOrder = 0;
 		m_texture = std::make_shared<Texture>();
 		m_white = { (Uint8)255, (Uint8)255, (Uint8)255, (Uint8)255 };
 		m_transparent = { (Uint8)0, (Uint8)0, (Uint8)0, (Uint8)0 };
@@ -41,7 +40,6 @@ namespace FlatEngine
 			{ "tintColorW",      m_tintColor.w },
 			{ "xOffset",         m_offset.x },
 			{ "yOffset",         m_offset.y },
-			{ "renderOrder",     m_renderOrder },
 			{ "canvasPlacement", m_canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
@@ -68,7 +66,6 @@ namespace FlatEngine
 			JsonHelper::CheckJsonFloat(componentJson, "tintColorW", objectName)
 		));
 		SetText(JsonHelper::CheckJsonString(componentJson, "text", objectName));
-		SetRenderOrder(JsonHelper::CheckJsonInt(componentJson, "renderOrder", objectName));
 		SetOffset(Vector2(JsonHelper::CheckJsonFloat(componentJson, "xOffset", objectName), JsonHelper::CheckJsonFloat(componentJson, "yOffset", objectName)));
 		
 		LoadText();
@@ -87,16 +84,6 @@ namespace FlatEngine
 			m_canvasPlacement.pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);
 			m_canvasPlacement.pivot->UpdatePivotOffset();
 		}		
-	}
-
-	void Text::SetRenderOrder(int order)
-	{
-		m_renderOrder = order;
-	}
-
-	int Text::GetRenderOrder()
-	{
-		return m_renderOrder;
 	}
 
 	std::shared_ptr<Texture> Text::GetTexture()

@@ -114,7 +114,7 @@ namespace FlatGui
 		{
 			if (!component->IsCollapsed())
 			{
-				FL::GuiCore::MoveScreenCursor(0, 3); // Bottom component padding
+				// FL::GuiCore::MoveScreenCursor(0, 6); // Bottom component padding
 			}
 
 			// }
@@ -144,6 +144,7 @@ namespace FlatGui
 			FL::GuiCore::TableProps positionProps = FL::GuiCore::TableProps("##TransformComponentTable", "Position", tableSize);
 			positionProps.labelWidth = 68;
 			positionProps.valueLabelColors = valueColors;
+			positionProps.b_topBorderLabel = true;
 			FL::GuiCore::TableProps rotationProps = FL::GuiCore::TableProps("##TransformComponentTable", "Rotation", tableSize);
 			rotationProps.labelWidth = 68;
 			rotationProps.valueLabelColors = valueColors;
@@ -151,6 +152,7 @@ namespace FlatGui
 			scaleProps.labelWidth = 68;
 			scaleProps.valueLabelColors = valueColors;
 			scaleProps.floatMin = 0;
+			scaleProps.b_bottomBorderLabel = true;
 			
 			ImGui::BeginDisabled(transform->GetOwningObject()->IsCanvasChild());
 			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);	
@@ -161,7 +163,6 @@ namespace FlatGui
 
 		bool RenderPivotSelectionButtons(std::string ID, std::shared_ptr<FL::Pivot> pivot)
 		{							
-			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");
 			bool b_pivotChanged = false;
 			FL::Vector2 cursorScreen = ImGui::GetCursorScreenPos();
 			FL::Vector2 rectSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 110);
@@ -299,9 +300,9 @@ namespace FlatGui
 
 			if (owner == nullptr || (owner != nullptr && !owner->IsCanvasChild()))			
 			{
-				FL::GuiCore::RenderWarningText("Warning: " + typeString + " GameObjects must also have a Canvas component or be nested inside a Canvas GameObject. It will not function properly otherwise.");					
+				FL::GuiCore::RenderWarningText(typeString + " GameObjects must be a decendant of a Canvas GameObject. It will not function properly otherwise.");					
 				FL::GuiCore::RenderSectionHeader(typeString + " Properties");
-				FL::GuiCore::MoveScreenCursor(0, 3);
+				FL::GuiCore::MoveScreenCursor(0, -3);
 				return;
 			}
 
@@ -317,27 +318,28 @@ namespace FlatGui
 			}		
 
 			FL::GuiCore::RenderSectionHeader("Canvas Placement");			
-			FL::GuiCore::MoveScreenCursor(0, 5);
-			// FL::GuiCore::RenderSeparator(8, -3, "canvasDemoBoxSeparators");
+			FL::GuiCore::MoveScreenCursor(0, -3);
 
 			if (RenderPivotSelectionButtons(IDString, canvasPlacement->pivot)) canvasPlacement->pivot->UpdatePivotOffset();	
 			
 			FL::GuiCore::MoveScreenCursor(96, -99);
 			DrawCanvasDemoBox(canvasPlacement, canvas);
 			FL::GuiCore::MoveScreenCursor(-96, 110);
-			FL::GuiCore::RenderSeparator(0, -3, "canvasDemoBoxSeparators");	
 			FL::GuiCore::TableProps pivotTableProps("##Pivot" + IDString, "Pivot");
 			pivotTableProps.labelWidth = 97.0f;		
 			pivotTableProps.b_light = true;
 			pivotTableProps.b_lightSet = true;
+			pivotTableProps.b_topBorderLabel = true;
 			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[canvasPlacement->pivot->type]});			
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Offset %", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 97), canvasPlacement->percent);
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Offset Px.", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->pixel);			
-			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ZPos" + IDString, "Depth", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->zPosition);			
-			FL::GuiCore::RenderSeparator(0, 8, "canvasDemoBoxSeparators");	
-
-			FL::GuiCore::RenderSectionHeader(typeString + " Properties");		
-			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::TableProps zPositionTableProps("##ZPos" + IDString, "Depth", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97);
+			zPositionTableProps.b_bottomBorderLabel = true;
+			FL::GuiCore::RenderFloatTable(zPositionTableProps, canvasPlacement->zPosition);						
+			
+			FL::GuiCore::MoveScreenCursor(0, 10);
+			FL::GuiCore::RenderSectionHeader(typeString + " Properties");	
+			FL::GuiCore::MoveScreenCursor(0, -3);
 		}
 
 		void RenderSpriteComponent(FL::Sprite* sprite)
@@ -361,35 +363,21 @@ namespace FlatGui
 			ImGui::EndDisabled();
 
 			FL::GuiCore::MoveScreenCursor(96, -99);
-			int droppedValue = -1;
-			std::string openedPath = "";
-			if (FL::GuiCore::DropInputCanOpenFiles("##InputSpritePath", "File", FL::FileHelper::GetFilenameFromPath(path, true), FL::GuiCore::fileExplorerTarget, droppedValue, openedPath, "Drop images here from File Explorer"))
+			
+			FL::GuiCore::InputProps spriteInputProps("##InputSpritePath", "File");
+			spriteInputProps.displayValue = FL::FileHelper::GetFilenameFromPath(path, true);
+			spriteInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+			spriteInputProps.requiredExtensions = { ".png", ".jpg", ".tif", ".webp", ".jxl" };					
+			spriteInputProps.tipMessage = "Drop images here from File Explorer";
+			if (FL::GuiCore::RenderDropInputTable(spriteInputProps))						
 			{
-				if (droppedValue >= 0)
-				{
-					std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedValue - 1]);
-					if (fsPath.extension() == ".png" || fsPath.extension() == ".jpg" || fsPath.extension() == ".tif" || fsPath.extension() == ".webp" || fsPath.extension() == ".jxl")
-					{
-						sprite->SetTexture(fsPath.string());
-					}
-					else
-					{
-						FL::Logger::log.Err("File must be of type .png to drop here.");
-					}
-				}
-				else if (droppedValue == -2)
-				{
-					sprite->RemoveTexture();
-				}
-				else if (openedPath != "")
-				{
-					sprite->SetTexture(openedPath);
-				}
+				sprite->SetTexture(spriteInputProps.value);
 			}
 			FL::GuiCore::MoveScreenCursor(96, 0);
 			FL::GuiCore::TableProps pivotTableProps("##Pivot" + std::to_string(ownerID), "Pivot");	
 			pivotTableProps.b_light = true;
 			pivotTableProps.b_lightSet = true;
+			pivotTableProps.b_topBorderLabel = true;
 			ImGui::BeginDisabled(sprite->GetOwningObject()->IsCanvasChild());
 			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[pivot->type]});
 			FL::GuiCore::MoveScreenCursor(96, 0);			
@@ -399,7 +387,6 @@ namespace FlatGui
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureWidth" + std::to_string(ownerID), "Texture width"), {textureWidthString});
 			FL::GuiCore::MoveScreenCursor(96, 0);
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});
-			FL::GuiCore::RenderSeparator(0, -2, "canvasDemoBoxSeparators");	
 			
 			// // Tint color picker
 			// std::string tintID = "##SpriteTintColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);		
@@ -433,8 +420,9 @@ namespace FlatGui
 				camera->toFollowID = -1;
 			}
 			
-
-			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##orthonearClip" + std::to_string(ownerID), "Near Clip (Ortho)"), camera->orthoNearClippingDistance);
+			FL::GuiCore::TableProps nearClipTableProps("##orthonearClip" + std::to_string(ownerID), "Near Clip (Ortho)");
+			nearClipTableProps.b_topBorderLabel = true;
+			FL::GuiCore::RenderFloatTable(nearClipTableProps, camera->orthoNearClippingDistance);
 			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##orthofarClip" + std::to_string(ownerID), "Far Clip (Ortho)"), camera->orthoFarClippingDistance);
 			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##nearClip" + std::to_string(ownerID), "Near Clip"), camera->nearClippingDistance);				
 			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##farClip" + std::to_string(ownerID), "Far Clip"), camera->farClippingDistance);								
@@ -443,36 +431,17 @@ namespace FlatGui
 			int gridStep = (int)camera->gridStep;			
 			if (FL::GuiCore::RenderInt32Table(FL::GuiCore::TableProps("##gridStep" + std::to_string(ownerID), "Pixels/Grid Square", FL::Vector2(), 1, FL::SceneView::minGridStep, FL::SceneView::maxGridStep), gridStep)) { if (gridStep > 0) camera->gridStep = (uint32_t)gridStep;}							
 			FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##Orthographic" + std::to_string(ownerID), "Orthographic"), camera->b_orthographic);
-
-			FL::GuiCore::RenderSeparator(3, 3);
-
-			int droppedValue = -1;
-			if (FL::GuiCore::DropInput("##CameraFollowObject", "Following", followingName, "DND_HIERARCHY_OBJECT", droppedValue, "Drag a GameObject here from the Hierarchy"))
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##PrimaryCamera" + std::to_string(ownerID), "Primary Camera"), camera->b_orthographic)) camera->SetPrimaryCamera(b_isPrimary);
+			FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##Follow" + std::to_string(ownerID), "Follow"), camera->b_shouldFollow);	
+			FL::GuiCore::InputProps followingInputProps("##CameraFollowObject", "Following");
+			followingInputProps.displayValue = followingName;
+			followingInputProps.dropTargetID = FL::GuiCore::hierarchyTarget;			
+			followingInputProps.tipMessage = "Drag a GameObject here from the Hierarchy";
+			if (FL::GuiCore::RenderDropInputTable(followingInputProps))
 			{
-				if (FL::SceneManager::loadedScene.GetObjectByID(droppedValue) != nullptr || droppedValue == -1)
-				{
-					camera->toFollowID = droppedValue;
-				}
-			}
-
-			ImGui::BeginDisabled(toFollowID == -1);
-			FL::GuiCore::RenderCheckbox("Follow", camera->b_shouldFollow);
-			ImGui::EndDisabled();
-
-			FL::GuiCore::RenderSeparator(3, 3);
-				
-			if (FL::GuiCore::RenderCheckbox("Is Primary Camera", b_isPrimary))
-			{
-				camera->SetPrimaryCamera(b_isPrimary);
-			}		
-
-			// Frustrum color picker
-			// std::string frustrumID = "##FrustrumColor" + std::to_string(ownerID);
-			// ImVec4 color = ImVec4(frustrumColor.x / 255.0f, frustrumColor.y / 255.0f, frustrumColor.z / 255.0f, frustrumColor.w / 255.0f);
-			// ImGui::ColorEdit4(frustrumID.c_str(), (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
-			// ImGui::SameLine(0, 5);
-			// ImGui::Text("%s", "Frustrum color");
-			// camera->SetFrustrumColor(ImVec4(color.x * 255.0f, color.y * 255.0f, color.z * 255.0f, color.w * 255.0f));
+				camera->toFollowID = followingInputProps.droppedObjectID;
+			}					
+			FL::GuiCore::MoveScreenCursor(0,-1);
 		}
 
 		void RenderScriptComponent(FL::Script* script)
@@ -562,14 +531,21 @@ namespace FlatGui
 			// bool b_luaEvent = functionParams.b_luaEvent;		
 
 			RenderCanvasPlacementComponent(button);
-
-			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click"), b_leftClick)) button->SetLeftClick(b_leftClick);
+			FL::GuiCore::TableProps leftClickTableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click");
+			leftClickTableProps.b_topBorderLabel = true;
+			if (FL::GuiCore::RenderBoolTable(leftClickTableProps, b_leftClick)) button->SetLeftClick(b_leftClick);
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_leftClick)) button->SetRightClick(b_rightClick);	
-			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) button->SetDimensions(dimensions);	
-			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##offset" + std::to_string(ownerID), "Offset"), offset)) button->SetOffset(offset);	
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) button->SetDimensions(dimensions);				
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##offset" + std::to_string(ownerID), "Offset"), offset)) button->SetOffset(offset);
+			FL::GuiCore::TableProps callbackFuncTableProps("##ButtonEventName", "Callback Function");
+			callbackFuncTableProps.b_bottomBorderLabel = true;
+			FL::GuiCore::RenderStringTable(callbackFuncTableProps, button->parameterContainer.name);			
 
-			std::string choices[2] = { "C++", "Lua" };
-			std::string currentChoice = "";
+			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::RenderLuaParametersTable("##ButtonEventParameters", "On Click Parameters", button->parameterContainer);	
+
+			// std::string choices[2] = { "C++", "Lua" };
+			// std::string currentChoice = "";
 
 			// if (b_cppEvent)
 			// {
@@ -580,8 +556,8 @@ namespace FlatGui
 			// 	currentChoice = "Lua";
 			// }
 
-			std::string cppRadioID = "C++ Function##" + std::to_string(ownerID);
-			std::string luaRadioID = "Lua Function##" + std::to_string(ownerID);
+			// std::string cppRadioID = "C++ Function##" + std::to_string(ownerID);
+			// std::string luaRadioID = "Lua Function##" + std::to_string(ownerID);
 
 			// if (ImGui::RadioButton(cppRadioID.c_str(), currentChoice == choices[0]))
 			// {
@@ -595,8 +571,6 @@ namespace FlatGui
 			// 	functionParams->b_cppEvent = false;
 			// 	functionParams->b_luaEvent = true;
 			// }
-
-			FL::GuiCore::RenderSeparator(1, 1);
 
 			// if (functionParams->b_cppEvent)
 			// {
@@ -635,14 +609,6 @@ namespace FlatGui
 			// 		ImGui::TextWrapped("Add C++ callback functions using AddCPPAnimationEventFunction() in attached C++ script.");
 			// 	}
 			// }
-
-			// if (functionParams->b_luaEvent)
-			// {
-				FL::GuiCore::RenderInput("##ButtonEventName", "Callback Function", button->parameterContainer.name);
-			// }
-			FL::GuiCore::RenderLuaParametersTable("##ButtonEventParameters", "On Click Parameters", button->parameterContainer);
-
-			FL::GuiCore::MoveScreenCursor(0, 3);								
 		}
 
 		void RenderCanvasComponent(FL::Canvas* canvas)
@@ -654,18 +620,12 @@ namespace FlatGui
 			float pixelsPerGridSpace = canvas->GetPixelsPerGridSpace();
 			
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ScreenPixelsPerGridSpace" + std::to_string(ownerID), "Screen Pixels/Grid Space"), pixelsPerGridSpace)) canvas->SetPixelsPerGridSpace(pixelsPerGridSpace);
-			FL::GuiCore::TableProps canvasLayerProps("##layerNumber" + std::to_string(ownerID), "Canvas layer");
+			FL::GuiCore::TableProps canvasLayerProps("##layerNumber" + std::to_string(ownerID), "Canvas Layer");
 			canvasLayerProps.intMin = 0;
 			canvasLayerProps.intMax = FL::MAX_CANVAS_LAYERS;
 			if (FL::GuiCore::RenderInt32Table(canvasLayerProps, layerNumber)) canvas->SetLayerNumber(layerNumber);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##BlocksLayersBool", "Blocks Layers"), b_blocksLayers)) canvas->SetBlocksLayers(b_blocksLayers);			
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Canvas Dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) canvas->SetDimensions(dimensions);
-
-			FL::GuiCore::RenderSeparator(3, 3);
-
-			if (FL::GuiCore::RenderCheckbox("Blocks Layers", b_blocksLayers))
-			{
-				canvas->SetBlocksLayers(b_blocksLayers);
-			}
 		}
 
 		void RenderAnimationComponent(FL::Animation* animation)
@@ -673,40 +633,24 @@ namespace FlatGui
 			long ownerID = animation->GetOwnerID();
 			std::vector<FL::AnimationData> &animations = animation->GetAnimations();
 
-			int droppedAnimValue = -1;
-			std::string openedAnimPath = "";
 			static std::string newAnimationName = "";
 			static std::string newAnimationPath = "";
 
 			FL::GuiCore::RenderSectionHeader("New Animation");
-			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::MoveScreenCursor(0, 3);	
 
-			FL::GuiCore::RenderInput("##NewAnimationName", "Name", newAnimationName, false);
+			FL::GuiCore::TableProps newAnimationNameTableProps("##NewAnimationName", "Name");
+			newAnimationNameTableProps.b_topBorderLabel = true;
+			FL::GuiCore::RenderStringTable(newAnimationNameTableProps, newAnimationName);		
 
-			FL::GuiCore::MoveScreenCursor(0, 3);
-
-			if (FL::GuiCore::DropInputCanOpenFiles("##AnimationPathInspectorwindow-" + std::to_string(ownerID), "File", FL::FileHelper::GetFilenameFromPath(newAnimationPath, true), FL::GuiCore::fileExplorerTarget, droppedAnimValue, openedAnimPath, "Drop animation files here from the File Explorer"))
+			FL::GuiCore::InputProps newAnimationPathInputProps("##AnimationPathInspectorWindow-" + std::to_string(ownerID), "File");
+			newAnimationPathInputProps.displayValue = newAnimationPath;
+			newAnimationPathInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;	
+			newAnimationPathInputProps.requiredExtensions = { ".anm" };
+			newAnimationPathInputProps.tipMessage = "Drop animation files here from the File Explorer";
+			if (FL::GuiCore::RenderDropInputTable(newAnimationPathInputProps))			
 			{
-				if (droppedAnimValue >= 0)
-				{
-					std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedAnimValue - 1]);
-					if (fsPath.extension() == ".anm")
-					{
-						newAnimationPath = fsPath.string();
-					}
-					else
-					{
-						FL::Logger::log.Err("File must be of type .anm to drop here.");
-					}
-				}
-				else if (droppedAnimValue == -2)
-				{
-					newAnimationPath = "";
-				}
-				else if (openedAnimPath != "")
-				{
-					newAnimationPath = openedAnimPath;
-				}
+				newAnimationPath = newAnimationPathInputProps.value;
 			}
 
 			FL::GuiCore::MoveScreenCursor(0, 3);
@@ -737,42 +681,21 @@ namespace FlatGui
 			{
 				std::string currentAnimationName = animData.name;
 
-				if (FL::GuiCore::RenderInput("##NewAnimationName" + std::to_string(IDCounter), "Name", currentAnimationName, false))
+				FL::GuiCore::TableProps animationNameTableProps("##NewAnimationName" + std::to_string(IDCounter), "Name");
+				animationNameTableProps.b_topBorderLabel = true;
+				FL::GuiCore::RenderStringTable(animationNameTableProps, newAnimationName);	
+				
+				FL::GuiCore::InputProps animationPathInputProps("##AnimationPathInspectorWindow-" + std::to_string(IDCounter), "File");
+				animationPathInputProps.displayValue = animData.path;
+				animationPathInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;				
+				animationPathInputProps.requiredExtensions = { ".anm" };			
+				animationPathInputProps.tipMessage = "Drop animation files here from the File Explorer";
+				if (FL::GuiCore::RenderDropInputTable(animationPathInputProps))
 				{
-					animData.name = currentAnimationName;
+					animData.path = animationPathInputProps.value;
 				}
 
-				FL::GuiCore::MoveScreenCursor(0, 3);
-
-				int droppedAnimDataValue = -1;
-				std::string openedAnimDataPath = animData.path;
-				if (FL::GuiCore::DropInputCanOpenFiles("##AnimationPathInspectorWindow-" + std::to_string(IDCounter), "File", FL::FileHelper::GetFilenameFromPath(openedAnimDataPath, true), FL::GuiCore::fileExplorerTarget, droppedAnimDataValue, openedAnimDataPath, "Drop animation files here from the File Explorer"))
-				{
-					if (droppedAnimDataValue >= 0)
-					{
-						std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedAnimDataValue - 1]);
-						if (fsPath.extension() == ".anm")
-						{
-							animData.path = fsPath.string();
-						}
-						else
-						{
-							FL::Logger::log.Err("File must be of type .anm to drop here.");
-						}
-					}
-					else if (droppedAnimDataValue == -2)
-					{
-						animData.path = "";
-					}
-					else if (openedAnimDataPath != "")
-					{
-						animData.path = openedAnimDataPath;
-					}
-				}
-
-				FL::GuiCore::MoveScreenCursor(0, 4);
-
-				float quarterWidth = (ImGui::GetContentRegionAvail().x - 9) / 4;
+				float quarterWidth = (ImGui::GetContentRegionAvail().x - 3) / 4;
 				ImGui::BeginDisabled(animData.path == "");
 				if (FL::GuiCore::RenderButton("Preview##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
 				{
@@ -780,7 +703,7 @@ namespace FlatGui
 				}
 				ImGui::EndDisabled();
 
-				ImGui::SameLine(0, 3);
+				ImGui::SameLine(0, 1);
 			
 				ImGui::BeginDisabled(animData.path == "" || !animData.b_playing);
 				if (FL::GuiCore::RenderButton("Stop##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
@@ -789,7 +712,7 @@ namespace FlatGui
 				}
 				ImGui::EndDisabled();
 
-				ImGui::SameLine(0, 3);	
+				ImGui::SameLine(0, 1);	
 
 				ImGui::BeginDisabled(animData.path == "");
 				if (FL::GuiCore::RenderButton("Edit##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
@@ -800,7 +723,7 @@ namespace FlatGui
 				}
 				ImGui::EndDisabled();
 
-				ImGui::SameLine(0, 3);
+				ImGui::SameLine(0, 1);
 
 				if (FL::GuiCore::RenderButton("Delete##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
 				{
@@ -838,34 +761,18 @@ namespace FlatGui
 
 			FL::GuiCore::RenderSectionHeader("Add Audio");
 
-			FL::GuiCore::RenderInput("##NameNewAudioDataObject", "Name", name, false);
-
+			FL::GuiCore::TableProps audioDataTableProps("##NameNewAudioDataObject", "Name");
+			FL::GuiCore::RenderStringTable(audioDataTableProps, name);			
 			FL::GuiCore::MoveScreenCursor(0, 3);
 
-			int droppedValue = -1;
-			std::string openedPath = "";
-			if (FL::GuiCore::DropInputCanOpenFiles("##AddAudioFile", "File", FL::FileHelper::GetFilenameFromPath(path, true), FL::GuiCore::fileExplorerTarget, droppedValue, openedPath, "Drop font files here from File Explorer"))
+			FL::GuiCore::InputProps audioFileInputProps("##AudioFilePath", "File");
+			audioFileInputProps.displayValue = FL::FileHelper::GetFilenameFromPath(path, true);
+			audioFileInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+			audioFileInputProps.requiredExtensions = { ".mp3", ".wav" };					
+			audioFileInputProps.tipMessage = "Drop Audio files here from File Explorer";
+			if (FL::GuiCore::RenderDropInputTable(audioFileInputProps))					
 			{
-				if (droppedValue >= 0)
-				{
-					std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedValue - 1]);
-					if (fsPath.extension() == ".wav" || fsPath.extension() == ".mp3")
-					{
-						path = FL::GuiCore::selectedFiles[droppedValue - 1];
-					}
-					else
-					{
-						FL::Logger::log.Err("File must be of type audio to drop here.");
-					}
-				}
-				else if (droppedValue == -2)
-				{
-					path = "";
-				}
-				else if (openedPath != "")
-				{
-					path = openedPath;
-				}
+				path = audioFileInputProps.value;
 			}
 			FL::GuiCore::MoveScreenCursor(0, 4);
 
@@ -900,38 +807,21 @@ namespace FlatGui
 			{
 				FL::SoundData& sound = (*soundIter);
 				std::string audioPath = sound.path;
-				std::string audioName = sound.name;
-				std::string newName = audioName;			
-				int newDroppedValue = -1;
 				std::string inputId = "##audioPath_" + std::to_string(ownerID) + sound.name + std::to_string(IDCounter);
 
-				if (FL::GuiCore::RenderInput("##NameExistingAudioDataObject" + std::to_string(IDCounter), "Name", audioName, false))
-				{				
-					sound.name = audioName;
-				}
+				FL::GuiCore::TableProps audioTableProps("##NameExistingAudioDataObject" + std::to_string(IDCounter), "Name");
+				FL::GuiCore::RenderStringTable(audioTableProps, sound.name);
 				FL::GuiCore::MoveScreenCursor(0, 4);
 
-				if (FL::GuiCore::DropInput(inputId, "File", FL::FileHelper::GetFilenameFromPath(audioPath, true), FL::GuiCore::fileExplorerTarget, newDroppedValue, "Drop audio files here from the Explorer window"))
+				FL::GuiCore::InputProps audioFileInputProps(inputId, "File");
+				audioFileInputProps.displayValue = FL::FileHelper::GetFilenameFromPath(audioPath, true);
+				audioFileInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;	
+				audioFileInputProps.requiredExtensions = { ".mp3", ".wav" };
+				audioFileInputProps.tipMessage = "Drop audio files here from the Explorer window";
+				if (FL::GuiCore::RenderDropInputTable(audioFileInputProps))						
 				{
-					if (newDroppedValue != -1 && FL::GuiCore::selectedFiles.size() >= newDroppedValue)
-					{
-						std::filesystem::path fsPath(FL::GuiCore::selectedFiles[newDroppedValue - 1]);
-						if (fsPath.extension() == ".wav" || fsPath.extension() == ".mp3")
-						{
-							audioPath = FL::GuiCore::selectedFiles[newDroppedValue - 1];
-							sound.path = audioPath;
-							audio->LoadAudio(sound);
-						}
-						else
-						{
-							FL::Logger::log.Err("File must be of type audio to drop here.");
-						}
-					}
-					else if (newDroppedValue == -1)
-					{
-						audioPath = "";
-						sound.path = "";					
-					}
+					sound.path = audioFileInputProps.value;
+					audio->LoadAudio(sound);
 				}
 				FL::GuiCore::MoveScreenCursor(0, 4);
 				
@@ -1000,7 +890,8 @@ namespace FlatGui
 			RenderCanvasPlacementComponent(text);
 
 			std::string textText = text->GetText();
-			if (FL::GuiCore::RenderInput("##TextContent" + std::to_string(ownerID), "Text", textText))
+			FL::GuiCore::TableProps textTableProps("##TextContent" + std::to_string(ownerID), "Text");
+			if (FL::GuiCore::RenderStringTable(textTableProps, textText))
 			{
 				text->SetText(textText);
 				text->LoadText();
@@ -1008,30 +899,14 @@ namespace FlatGui
 
 			FL::GuiCore::MoveScreenCursor(0, 3);
 			
-			std::string fontPath = text->GetFontPath();
-			int droppedValue = -1;		
-			if (FL::GuiCore::DropInputCanOpenFiles("##InputFontPath", "Font", FL::FileHelper::GetFilenameFromPath(fontPath, true), FL::GuiCore::fileExplorerTarget, droppedValue, fontPath, "Drop font files here from File Explorer"))
+			FL::GuiCore::InputProps fontPathInputProps("##InputFontPath", "Font");
+			fontPathInputProps.displayValue = FL::FileHelper::GetFilenameFromPath(text->GetFontPath(), true);
+			fontPathInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+			fontPathInputProps.requiredExtensions = { ".ttf" };					
+			fontPathInputProps.tipMessage = "Drop font files here from File Explorer";
+			if (FL::GuiCore::RenderDropInputTable(fontPathInputProps))					
 			{
-				if (droppedValue >= 0)
-				{
-					std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedValue - 1]);
-					if (fsPath.extension() == ".ttf")
-					{
-						text->SetFontPath(fsPath.string());
-					}
-					else
-					{
-						FL::Logger::log.Err("File must be of type .ttf to drop here.");
-					}
-				}
-				else if (droppedValue == -2)
-				{
-					text->SetFontPath("");
-				}
-				else if (fontPath != "")
-				{
-					text->SetFontPath(fontPath);
-				}
+				text->SetFontPath(fontPathInputProps.value);
 			}
 
 			FL::GuiCore::RenderSeparator(3, 3);
@@ -1043,9 +918,6 @@ namespace FlatGui
 			if (FL::GuiCore::RenderInt32Table(fontSizeTableProps, fontSize)) text->SetFontSize(fontSize);
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##TextOffset" + std::to_string(ownerID), "Offset"), offset)) text->SetOffset(FL::Vector2(xOffset, yOffset));
 			FL::GuiCore::TableProps renderOrderTableProps("##TextRenderOrder" + std::to_string(ownerID), "Render Order");
-			renderOrderTableProps.intMin = 0;
-			renderOrderTableProps.intMax = (int)FL::VulkanManager::maxSpriteLayers;
-			// if (FL::GuiCore::RenderInt32Table(renderOrderTableProps, renderOrder)) text->SetRenderOrder(renderOrder);
 
 			// Tint color picker
 			std::string tintID = "##TextColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);
@@ -1457,9 +1329,13 @@ namespace FlatGui
 
 			FL::GuiCore::MoveScreenCursor(0, 6.0f);
 
-			if (FL::GuiCore::DropInput("##InputBodyB" + ID, "Connected Body2D", bodyBName, FL::GuiCore::hierarchyTarget, droppedObjectID, "Drag and drop Body2D GameObjects from the Hierarchy."))
+			FL::GuiCore::InputProps jointBodyBInputProps("##InputBodyB" + ID, "Connected Body2D");
+			jointBodyBInputProps.displayValue = bodyBName;
+			jointBodyBInputProps.dropTargetID = FL::GuiCore::hierarchyTarget;							
+			jointBodyBInputProps.tipMessage = "Drag and drop Body2D GameObjects from the Hierarchy.";
+			if (FL::GuiCore::RenderDropInputTable(jointBodyBInputProps))					
 			{
-				if (droppedObjectID >= 0)
+				if (jointBodyBInputProps.droppedObjectID >= 0)
 				{
 					joint->SetBodyBID(droppedObjectID);
 				}
@@ -1507,8 +1383,9 @@ namespace FlatGui
 			int currentType = body->type;
 			std::vector<std::string> types = { "Static", "Kinematic", "Dynamic" };			
 			bool b_light = true;
-
-			if (FL::GuiCore::RenderComboTable(FL::GuiCore::TableProps("##BoxBodyTypeCombo", "Body Type"), types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
+			FL::GuiCore::TableProps bodyTypeTableProps("##BoxBodyTypeCombo", "Body Type");
+			bodyTypeTableProps.b_topBorderLabel = true;
+			if (FL::GuiCore::RenderComboTable(bodyTypeTableProps, types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyGravityScale" + std::to_string(ownerID), "Gravity Scale"), body->gravityScale)) body->SetGravityScale(body->gravityScale);	
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyLinearDamping" + std::to_string(ownerID), "Linear Damp", FL::Vector2(), 0.01f, 0.0f), body->linearDamping)) body->SetLinearDamping(body->linearDamping);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyAngularDamping" + std::to_string(ownerID), "Angular Damp", FL::Vector2(), 0.01f, 0.0f), body->angularDamping)) body->SetAngularDamping(body->angularDamping);			
@@ -1517,8 +1394,12 @@ namespace FlatGui
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockY-Axis" + std::to_string(ownerID), "Lock Y-Axis"), body->b_lockedYAxis)) body->SetLockedYAxis(body->b_lockedYAxis);
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityX" + std::to_string(ownerID), "X Vel."), { std::to_string(linearVelocity.x) });								
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityY" + std::to_string(ownerID), "Y Vel."), { std::to_string(linearVelocity.y) });			
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##AngularVelocity" + std::to_string(ownerID), "Angular Vel."), { std::to_string(angularVelocity) });						
-			FL::GuiCore::RenderSeparator(4, 3);		
+			FL::GuiCore::TableProps angularVelocityTableProps("##AngularVelocity" + std::to_string(ownerID), "Angular Vel.");
+			angularVelocityTableProps.b_bottomBorderLabel = true;
+			angularVelocityTableProps.tableLabelBorderBottom = "tableValueBorderTop";
+			angularVelocityTableProps.tableValueBorderBottom = "tableValueBorderTop";
+			FL::GuiCore::RenderTextTable(angularVelocityTableProps, { std::to_string(angularVelocity) });									
+			FL::GuiCore::MoveScreenCursor(0, 3);
 
 			if (body->GetShapes().size() == 0)
 			{		
@@ -1952,67 +1833,30 @@ namespace FlatGui
 				}
 			}
 
-			int droppedObjValue = -1;
-			std::string openedObjPath = "";
-			if (FL::GuiCore::DropInputCanOpenFiles("##InputObjFilePath", "Model   ", modelFileName, FL::GuiCore::fileExplorerTarget, droppedObjValue, openedObjPath, "Drop .obj files here from File Explorer"))
+			FL::GuiCore::InputProps modelFileInputProps("##InputObjFilePath", "Model");
+			modelFileInputProps.displayValue = modelFileName;
+			modelFileInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;				
+			modelFileInputProps.requiredExtensions = { ".obj" };
+			modelFileInputProps.tipMessage = "Drop .obj files here from File Explorer";
+			if (FL::GuiCore::RenderDropInputTable(modelFileInputProps))						
 			{
-				if (droppedObjValue >= 0)
+				mesh->SetModel(modelFileInputProps.value);
+				if (material != nullptr)
 				{
-					std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedObjValue - 1]);
-					if (fsPath.extension() == ".obj")
-					{
-						mesh->SetModel(fsPath.string());
-						if (material != nullptr)
-						{
-							mesh->CreateResources();
-						}
-					}
-					else
-					{
-						FL::Logger::log.Err("File must be of type .obj to drop here.");
-					}
-				}
-				else if (droppedObjValue == -2)
-				{
-					mesh->SetModel("");
-				}
-				else if (openedObjPath != "")
-				{
-					mesh->SetModel(openedObjPath);
-					if (material != nullptr)
-					{
-						mesh->CreateResources();
-					}
+					mesh->CreateResources();
 				}
 			}
 
-			int droppedMaterialValue = -1;
-			std::string openedMaterialPath = "";
-			if (FL::GuiCore::DropInputCanOpenFiles("##InputMaterialFilePath", "Material", materialName, FL::GuiCore::fileExplorerTarget, droppedMaterialValue, openedMaterialPath, "Drop .mat files here from File Explorer"))
+			FL::GuiCore::InputProps materialInputProps("##InputMaterialFilePath", "Material");
+			materialInputProps.displayValue = materialName;
+			materialInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+			materialInputProps.requiredExtensions = { ".mat" };					
+			materialInputProps.tipMessage = "Drop .mat files here from File Explorer";
+			if (FL::GuiCore::RenderDropInputTable(materialInputProps))				
 			{
-				if (droppedMaterialValue >= 0)
-				{
-					std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedMaterialValue - 1]);
-					if (fsPath.extension() == ".mat")
-					{					
-						mesh->SetMaterial(FL::FileHelper::GetFilenameFromPath(fsPath.string()));
-						mesh->CreateResources();
-						material = mesh->GetSceneViewMaterial();
-					}
-					else
-					{
-						FL::Logger::log.Err("File must be of type .obj to drop here.");
-					}
-				}
-				else if (droppedMaterialValue == -2)
-				{
-					// Remove reference
-				}
-				else if (openedMaterialPath != "")
-				{				
-					mesh->SetMaterial(FL::FileHelper::GetFilenameFromPath(openedMaterialPath));
-					mesh->CreateResources();
-				}
+				mesh->SetMaterial(FL::FileHelper::GetFilenameFromPath(materialInputProps.value));
+				mesh->CreateResources();
+				material = mesh->GetSceneViewMaterial();
 			}
 
 			if (material != nullptr)
@@ -2051,47 +1895,17 @@ namespace FlatGui
 						break;
 					}
 
-					ImGui::Text("%s", shaderStageString.c_str());
-					if (FL::GuiCore::DropInputCanOpenFiles("##InputMaterialTextureFilePath" + std::to_string(textureCounter), "", textureName, FL::GuiCore::fileExplorerTarget, droppedTextureValue, openedTexturePath, "Drop image files here from File Explorer"))
-					{
-						if (droppedTextureValue >= 0)
+					FL::GuiCore::InputProps meshImageInputProps("##InputMaterialTextureFilePath" + std::to_string(textureCounter), shaderStageString.c_str());
+					meshImageInputProps.displayValue = textureName;
+					meshImageInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
+					meshImageInputProps.requiredExtensions = { ".png", ".jpg" };					
+					meshImageInputProps.tipMessage = "Drop image files here from File Explorer";
+					if (FL::GuiCore::RenderDropInputTable(meshImageInputProps))							
+					{	
+						if (meshTextures.count(iter->first) && meshTextures.at(iter->first).LoadFromFile(meshImageInputProps.value))
 						{
-							std::filesystem::path fsPath(FL::GuiCore::selectedFiles[droppedTextureValue - 1]);
-							if (fsPath.extension() == ".png" || fsPath.extension() == ".jpg")
-							{							
-								if (meshTextures.count(iter->first) && meshTextures.at(iter->first).LoadFromFile(fsPath.string()))
-								{
-									mesh->CreateResources();
-								}
-							}
-							else
-							{
-								FL::Logger::log.Err("File must be of type .png or .jpg to drop here.");
-							}
-						}
-						else if (droppedTextureValue == -2)
-						{
-							// Remove reference
-							if (meshTextures.at(iter->first).LoadFromFile(FL::Assets::assetManager.GetTextureObject("resourceNotPresent")->GetTexturePath()))
-							{
-								mesh->CreateResources();
-							}
-						}
-						else if (openedTexturePath != "")
-						{
-							std::filesystem::path fsPath(openedTexturePath);
-							if (fsPath.extension() == ".png" || fsPath.extension() == ".jpg")
-							{
-								if (meshTextures.at(iter->first).LoadFromFile(openedTexturePath))
-								{
-									mesh->CreateResources();
-								}
-							}	
-							else
-							{
-								FL::Logger::log.Err("File must be of type .png or .jpg to drop here.");
-							}
-						}
+							mesh->CreateResources();
+						}				
 					}
 					textureCounter++;
 				}
@@ -2177,12 +1991,11 @@ namespace FlatGui
 
 			FL::GameObject* focusedObject = FL::SceneManager::loadedScene.GetObjectByID(focusedID);
 			
-			std::string nameLabel = "Name";
 			std::string objectName = focusedObject->GetName();
-			if (FL::GuiCore::RenderInput("##GameObjectName", nameLabel, objectName))
-			{
-				focusedObject->SetName(objectName);
-			}
+			FL::GuiCore::MoveScreenCursor(7,4);
+			ImGui::Text("Name:"); ImGui::SameLine(0,5);
+			FL::GuiCore::MoveScreenCursor(0,-4);
+			if (FL::GuiCore::RenderInput("##GameObjectName", objectName)) focusedObject->SetName(objectName);
 
 			bool b_isActive = focusedObject->IsActive();
 			FL::GuiCore::MoveScreenCursor(3, 2);
@@ -2193,11 +2006,11 @@ namespace FlatGui
 			ImGui::SameLine(ImGui::GetContentRegionAvail().x - 90, 5);
 			FL::GuiCore::MoveScreenCursor(0, -2);
 
-			static FL::Vector2 mousePos = ImGui::GetCursorScreenPos();
+			FL::Vector2 mousePos = ImGui::GetCursorScreenPos();
 			FL::TagList &tagList = focusedObject->GetTagList();			
 			if (FL::GuiCore::RenderButton("Tags", FL::Vector2(40, 0)))
 			{
-				mousePos = FL::Vector2(ImGui::GetIO().MousePos.x - 200, ImGui::GetIO().MousePos.y);
+				mousePos = FL::Vector2(mousePos.x - 200, ImGui::GetIO().MousePos.y);
 				ImGui::SetNextWindowPos(mousePos);
 			}
 

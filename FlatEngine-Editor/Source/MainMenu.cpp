@@ -1,4 +1,3 @@
-#include "Types.h"
 #include "components/Body2D.h"
 #include "components/Component.h"
 #include "FileManager.h"
@@ -364,6 +363,15 @@ namespace FlatGui
 				if (FL::GuiCore::MenuItem("Reload Shaders"))
 				{
 					FL::VulkanManager::vulkan.ReloadShaders();
+				}
+				FL::GuiCore::RenderMenuSeparator(false);				
+				if (FL::GuiCore::BeginMenu("Texture Pixels/Grid Space"))
+				{					
+					if (FL::GuiCore::RenderDragFloat("##texturePixelsPerGridSpace", 100.0f, FL::GuiCore::texturePixelsPerGridSpace, 1.0f, 0.1f, FLT_MAX))
+						FL::Settings::settings.SaveSettings();	
+					ImGui::SameLine(0,0);
+					FL::GuiCore::RenderInfoButton("Number of Sprite texture pixels\nthat span 1 world grid square.\n\ni.e. 16.0f means that a 16x16 pixel\ntexture takes up exactly 1 world\ngrid square.");
+					ImGui::EndMenu();
 				}
 				FL::GuiCore::RenderMenuSeparator(false);
 				if (FL::GuiCore::BeginMenu("Scene Viewport"))

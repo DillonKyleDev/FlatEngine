@@ -21,7 +21,7 @@ namespace FlatEngine
         extern Vector2 lastMousePos;
         const float TABLE_HEIGHT = 22.0f;
 
-        const float WORLD_PIXELS_PER_GRIDSPACE = 16.0f;
+        extern float texturePixelsPerGridSpace; // Number of texture pixels that span 1 world grid square.. 16.0f means a 16x16 pixel texture takes up 1 entire world grid square.
 
         extern ImGuiChildFlags childFlags;
         extern ImGuiChildFlags autoResizeChildFlags;
@@ -101,18 +101,19 @@ namespace FlatEngine
             bool b_light = true;
             bool b_lightSet = false;
             bool b_vertSeperator = true;
-            bool b_topBorderLabel = false;
-            bool b_bottomBorderLabel = false;
-            bool b_topBorderValue = true;
-            bool b_bottomBorderValue = true;
+            bool b_topLabelBorder = false;
+            bool b_bottomLabelBorder = false;
+            bool b_topValueBorder = true;
+            bool b_bottomValueBorder = true;
             bool b_leftBorder = true;
             bool b_rightBorder = true;
-            std::string tableBorderLeft = "tableBorderLeft";
-            std::string tableBorderRight = "tableBorderRight";
-            std::string tableLabelBorderTop = "tableLabelBorderTop";
-            std::string tableLabelBorderBottom = "tableLabelBorderBottom";
-            std::string tableValueBorderTop = "tableValueBorderTop";
-            std::string tableValueBorderBottom = "tableValueBorderBottom";
+            std::string borderLeft = "tableBorderLeft";
+            std::string borderRight = "tableBorderRight";
+            std::string labelBorderTop = "tableLabelBorderTop";
+            std::string labelBorderBottom = "tableLabelBorderBottom";
+            std::string valueBorderTop = "tableValueBorderTop";
+            std::string valueBorderBottom = "tableValueBorderBottom";
+            std::string verticalSeparator = "tableVerticalSeparator";
             ImGuiTableFlags flags = ImGuiTableFlags_RowBg;         
 
             TableProps(std::string setID, std::string setLabel, Vector2 setTableSize = Vector2(), float setFloatIncrement = 0.1f, float setFloatMin = -FLT_MAX, float setFloatMax = FLT_MAX, std::string setLabelColor = "noEditTableRowFieldBg", std::string setValueColor = "", int setLableWidth = 0)
@@ -147,18 +148,19 @@ namespace FlatEngine
                 b_light = tableProps.b_light;
                 b_lightSet = tableProps.b_lightSet;
                 b_vertSeperator = tableProps.b_vertSeperator;
-                b_topBorderLabel = tableProps.b_topBorderLabel;
-                b_bottomBorderLabel = tableProps.b_bottomBorderLabel;
-                b_topBorderValue = tableProps.b_topBorderValue;
-                b_bottomBorderValue = tableProps.b_bottomBorderValue;
+                b_topLabelBorder = tableProps.b_topLabelBorder;
+                b_bottomLabelBorder = tableProps.b_bottomLabelBorder;
+                b_topValueBorder = tableProps.b_topValueBorder;
+                b_bottomValueBorder = tableProps.b_bottomValueBorder;
                 b_leftBorder = tableProps.b_leftBorder;
                 b_rightBorder = tableProps.b_rightBorder;
-                tableBorderLeft = tableProps.tableBorderLeft;
-                tableBorderRight = tableProps.tableBorderRight;
-                tableLabelBorderTop = tableProps.tableLabelBorderTop;
-                tableLabelBorderBottom = tableProps.tableLabelBorderBottom;
-                tableValueBorderTop = tableProps.tableValueBorderTop;
-                tableValueBorderBottom = tableProps.tableValueBorderBottom;
+                borderLeft = tableProps.borderLeft;
+                borderRight = tableProps.borderRight;
+                labelBorderTop = tableProps.labelBorderTop;
+                labelBorderBottom = tableProps.labelBorderBottom;
+                valueBorderTop = tableProps.valueBorderTop;
+                valueBorderBottom = tableProps.valueBorderBottom;
+                verticalSeparator = tableProps.verticalSeparator;
                 flags = tableProps.flags;
             }
         };
@@ -174,7 +176,7 @@ namespace FlatEngine
         extern bool RenderBoolTable(TableProps tableProps, bool& value);
         extern void RenderTextTable(TableProps tableProps, std::vector<std::string> values);
         extern bool RenderComboTable(TableProps tableProps, std::string displayedValue, std::vector<std::string> options, int& currentOption);
-        extern void RenderLuaParametersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);
+        extern void RenderLuaParametersTable(std::string ID, std::string headerString, LuaManager::LuaParameterContainer& paramContainer);       
 
         struct InputProps {
             std::string ID;
@@ -197,6 +199,8 @@ namespace FlatEngine
         };
         extern bool RenderInput(std::string ID, std::string& value, float inputWidth = 0);
         extern bool RenderDropInputTable(InputProps& inputProps);
+
+        extern bool RenderColorPicker(std::string ID, Vector4& color);
 
         extern bool RenderButton(std::string text, Vector2 size = Vector2(0), float rounding = 0, std::string color = "button", std::string hoverColor = "buttonHovered", std::string activeColor = "buttonActive", Vector2 framePadding = Vector2(5, 3));
         extern bool RenderImageButton(std::string ID, VkDescriptorSet texture, Vector2 size = Vector2(16), float rounding = 0, Vector2 padding = Vector2(0), std::string borderColor = "buttonBorder", std::string bgColor = "transparent", std::string tint = "imageButtonTint", std::string hoverColor = "imageButtonHovered", std::string activeColor = "imageButtonActive", Vector2 uvStart = Vector2(0), Vector2 uvEnd = Vector2(1));
@@ -229,7 +233,8 @@ namespace FlatEngine
         extern void RenderTreeLeaf(std::string name, std::string& nodeClicked);
         extern void PopTreeList();       
 
-        extern void RenderWarningText(std::string warning);
+        extern void RenderInfoButton(std::string infoText);
+        extern void RenderColoredText(std::string text, std::string color);
         extern void RenderTextToolTip(std::string text);
         extern void BeginToolTip(std::string title);
         extern void EndToolTip();

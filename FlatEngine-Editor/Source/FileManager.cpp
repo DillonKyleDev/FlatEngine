@@ -426,7 +426,7 @@ namespace FlatGui
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceNoHoldToOpenOthers))
 			{
 				// Just saves the number of files selected and passes it to the drop source to query F_SelectedFiles
-				int numSelectedFiles = (int)FL::GuiCore::selectedFiles.size();
+				int numSelectedFiles = (int)FL::GuiCore::selectedFiles.size() - 1;
 				ImGui::SetDragDropPayload(FL::GuiCore::fileExplorerTarget.c_str(), &numSelectedFiles, sizeof(int));
 				ImGui::Text("Use this file");
 				ImGui::EndDragDropSource();

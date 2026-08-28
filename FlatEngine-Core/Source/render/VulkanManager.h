@@ -1,10 +1,8 @@
 #pragma once
 #include "Types.h"
-#include "components/Mesh.h"
 #include "render/Material.h"
 #include "render/RenderPass.h"
 #include "render/ValidationLayers.h"
-#include "tools/Vector2.h"
 
 #include <map>
 #include <memory>

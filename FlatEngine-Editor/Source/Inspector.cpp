@@ -27,7 +27,6 @@
 #include "physics/PhysicsManager.h"
 #include "physics/Shape2D.h"
 #include "render/SceneView.h"
-#include "render/VulkanManager.h"
 #include "scripting/CPPScriptMethods.h"
 #include "TagList.h"
 #include "tools/FileHelper.h"
@@ -36,6 +35,7 @@
 
 #include "imgui.h"
 #include "tools/Vector2.h"
+#include "tools/Vector4.h"
 #include <X11/Xlib.h>
 #include <cstdint>
 #include <id.h>
@@ -138,13 +138,19 @@ namespace FlatGui
 			FL::Vector3 position = transform->GetPosition();
 			FL::Vector3 rotation = transform->GetRotation();
 			FL::Vector3 scale = transform->GetScale();
+			bool b_isCanvasChild = transform->GetOwningObject()->IsCanvasChild();
+
+			FL::Vector2 transformTableSize;
+
+			if (b_isCanvasChild)
+				transformTableSize.x = ImGui::GetContentRegionAvail().x - 22;
 			
 			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
 			FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
-			FL::GuiCore::TableProps positionProps = FL::GuiCore::TableProps("##TransformComponentTable", "Position", tableSize);
+			FL::GuiCore::TableProps positionProps = FL::GuiCore::TableProps("##TransformComponentTable", "Position", transformTableSize);			
 			positionProps.labelWidth = 68;
 			positionProps.valueLabelColors = valueColors;
-			positionProps.b_topBorderLabel = true;
+			positionProps.b_topLabelBorder = true;
 			FL::GuiCore::TableProps rotationProps = FL::GuiCore::TableProps("##TransformComponentTable", "Rotation", tableSize);
 			rotationProps.labelWidth = 68;
 			rotationProps.valueLabelColors = valueColors;
@@ -152,11 +158,16 @@ namespace FlatGui
 			scaleProps.labelWidth = 68;
 			scaleProps.valueLabelColors = valueColors;
 			scaleProps.floatMin = 0;
-			scaleProps.b_bottomBorderLabel = true;
-			
-			ImGui::BeginDisabled(transform->GetOwningObject()->IsCanvasChild());
+			scaleProps.b_bottomLabelBorder = true;					
+
+			ImGui::BeginDisabled(b_isCanvasChild);
 			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);	
 			ImGui::EndDisabled();	
+			if (b_isCanvasChild)
+			{	
+				ImGui::SameLine(0, 0);
+				FL::GuiCore::RenderInfoButton("Canvas children can only be positioned\nvia \"Canvas Placement\" on the following\ncomponents:\n\nButton - Sprite - Text");				
+			}
 			if (FL::GuiCore::RenderVector3Table(rotationProps, rotation)) transform->SetRotation(rotation);			
 			if (FL::GuiCore::RenderVector3Table(scaleProps, scale)) transform->SetScale(scale);
 		}
@@ -226,9 +237,9 @@ namespace FlatGui
 			return b_pivotChanged;
 		}
 
-		void DrawCanvasDemoBox(FL::CanvasPlacement* canvasPlacement, FL::Canvas* canvas)
+		void DrawCanvasDemoBox(FL::CanvasPlacement* canvasPlacement, FL::Vector2 transformScale, FL::Canvas* canvas)
 		{
-			float scale = canvas->GetPixelsPerGridSpace() / FL::GuiCore::WORLD_PIXELS_PER_GRIDSPACE;
+			FL::Vector2 pixelScale = FL::Vector2(canvas->GetPixelsPerGridSpace() / FL::GuiCore::texturePixelsPerGridSpace);			
 			float width = ImGui::GetContentRegionAvail().x;
 			float height = 110.0f;			
 			float padding = 5.0f;			
@@ -239,14 +250,14 @@ namespace FlatGui
 			FL::Vector2 center = start + FL::Vector2(width / 2.0f, height / 2.0f);
 			FL::Vector2 canvasStart = start + FL::Vector2(padding);
 			FL::Vector2 canvasEnd = end - FL::Vector2(padding);		
-			FL::Vector2 virtualRatio = FL::Vector2(width / FL::SceneView::finalImageSize.x, height / FL::SceneView::finalImageSize.y);
+			FL::Vector2 virtualRatio = FL::SceneView::finalImageSize.x != 0 && FL::SceneView::finalImageSize.y != 0 ? FL::Vector2(canvasWidth / FL::SceneView::finalImageSize.x, canvasHeight / FL::SceneView::finalImageSize.y) : FL::Vector2();
 
 			// Frame
 			ImGui::GetWindowDrawList()->AddRectFilled(start, end, FL::Assets::assetManager.GetColor32("canvasDemoBoxBg"));
 			
 			FL::Vector2 objectCenter = canvasStart + FL::Vector2(canvasWidth * canvasPlacement->percent.x, canvasHeight * canvasPlacement->percent.y);
 			FL::Vector2 renderStart;
-			FL::Vector2 dimensions = canvasPlacement->pivot->dimensions * virtualRatio * scale;
+			FL::Vector2 dimensions = canvasPlacement->pivot->dimensions * virtualRatio * transformScale * pixelScale;
 
 			switch (canvasPlacement->pivot->type)
 			{
@@ -300,7 +311,7 @@ namespace FlatGui
 
 			if (owner == nullptr || (owner != nullptr && !owner->IsCanvasChild()))			
 			{
-				FL::GuiCore::RenderWarningText(typeString + " GameObjects must be a decendant of a Canvas GameObject. It will not function properly otherwise.");					
+				FL::GuiCore::RenderColoredText(typeString + " GameObjects must be a decendant of a Canvas GameObject. It will not function properly otherwise.", "err");					
 				FL::GuiCore::RenderSectionHeader(typeString + " Properties");
 				FL::GuiCore::MoveScreenCursor(0, -3);
 				return;
@@ -322,19 +333,20 @@ namespace FlatGui
 
 			if (RenderPivotSelectionButtons(IDString, canvasPlacement->pivot)) canvasPlacement->pivot->UpdatePivotOffset();	
 			
+			FL::Vector3 scale = component->GetOwningObject()->Get<FL::Transform>()->GetScale();
 			FL::GuiCore::MoveScreenCursor(96, -99);
-			DrawCanvasDemoBox(canvasPlacement, canvas);
+			DrawCanvasDemoBox(canvasPlacement, FL::Vector2(scale.x, scale.y), canvas);
 			FL::GuiCore::MoveScreenCursor(-96, 110);
 			FL::GuiCore::TableProps pivotTableProps("##Pivot" + IDString, "Pivot");
 			pivotTableProps.labelWidth = 97.0f;		
 			pivotTableProps.b_light = true;
 			pivotTableProps.b_lightSet = true;
-			pivotTableProps.b_topBorderLabel = true;
+			pivotTableProps.b_topLabelBorder = true;
 			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[canvasPlacement->pivot->type]});			
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Percent" + IDString, "Offset %", FL::Vector2(), 0.001f, 0, 1.0f, "noEditTableRowFieldBg", "", 97), canvasPlacement->percent);
 			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##Pixel" + IDString, "Offset Px.", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97), canvasPlacement->pixel);			
 			FL::GuiCore::TableProps zPositionTableProps("##ZPos" + IDString, "Depth", FL::Vector2(), 1.0f, -FLT_MAX, FLT_MAX, "noEditTableRowFieldBg", "", 97);
-			zPositionTableProps.b_bottomBorderLabel = true;
+			zPositionTableProps.b_bottomLabelBorder = true;
 			FL::GuiCore::RenderFloatTable(zPositionTableProps, canvasPlacement->zPosition);						
 			
 			FL::GuiCore::MoveScreenCursor(0, 10);
@@ -359,43 +371,26 @@ namespace FlatGui
 				RenderCanvasPlacementComponent(sprite);
 
 			ImGui::BeginDisabled(sprite->GetOwningObject()->IsCanvasChild());
-			if (RenderPivotSelectionButtons(std::to_string(ownerID), pivot)) pivot->UpdatePivotOffset();			
+			if (RenderPivotSelectionButtons(std::to_string(ownerID), pivot)) pivot->UpdatePivotOffset();					
 			ImGui::EndDisabled();
-
 			FL::GuiCore::MoveScreenCursor(96, -99);
-			
 			FL::GuiCore::InputProps spriteInputProps("##InputSpritePath", "File");
 			spriteInputProps.displayValue = FL::FileHelper::GetFilenameFromPath(path, true);
 			spriteInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
 			spriteInputProps.requiredExtensions = { ".png", ".jpg", ".tif", ".webp", ".jxl" };					
 			spriteInputProps.tipMessage = "Drop images here from File Explorer";
-			if (FL::GuiCore::RenderDropInputTable(spriteInputProps))						
-			{
-				sprite->SetTexture(spriteInputProps.value);
-			}
-			FL::GuiCore::MoveScreenCursor(96, 0);
-			FL::GuiCore::TableProps pivotTableProps("##Pivot" + std::to_string(ownerID), "Pivot");	
-			pivotTableProps.b_light = true;
-			pivotTableProps.b_lightSet = true;
-			pivotTableProps.b_topBorderLabel = true;
-			ImGui::BeginDisabled(sprite->GetOwningObject()->IsCanvasChild());
-			FL::GuiCore::RenderTextTable(pivotTableProps, {FL::PivotStrings[pivot->type]});
-			FL::GuiCore::MoveScreenCursor(96, 0);			
+			if (FL::GuiCore::RenderDropInputTable(spriteInputProps))									
+				sprite->SetTexture(spriteInputProps.value);			
+			FL::GuiCore::MoveScreenCursor(96, 0);				
+			ImGui::BeginDisabled(sprite->GetOwningObject()->IsCanvasChild());	
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##SpriteOffsetDrag" + std::to_string(ownerID), "Offset Px."), offset)) sprite->SetOffset(offset);			
+			FL::GuiCore::MoveScreenCursor(96, 0);							
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##Pivot" + std::to_string(ownerID), "Pivot"), {FL::PivotStrings[pivot->type]});
 			ImGui::EndDisabled();
 			FL::GuiCore::MoveScreenCursor(96, 0);
 			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureWidth" + std::to_string(ownerID), "Texture width"), {textureWidthString});
 			FL::GuiCore::MoveScreenCursor(96, 0);
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});
-			
-			// // Tint color picker
-			// std::string tintID = "##SpriteTintColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);		
-			// if (ImGui::ColorEdit4(tintID.c_str(), (float*)&tintColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel))
-			// {
-			// 	sprite->SetTintColor(tintColor);
-			// }
-			// ImGui::SameLine(0, 5);
-			// ImGui::Text("%s", "Tint color");
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textureHeight" + std::to_string(ownerID), "Texture height"), {textureHeightString});	
 		}
 
 		void RenderCameraComponent(FL::Camera* camera)
@@ -421,7 +416,7 @@ namespace FlatGui
 			}
 			
 			FL::GuiCore::TableProps nearClipTableProps("##orthonearClip" + std::to_string(ownerID), "Near Clip (Ortho)");
-			nearClipTableProps.b_topBorderLabel = true;
+			nearClipTableProps.b_topLabelBorder = true;
 			FL::GuiCore::RenderFloatTable(nearClipTableProps, camera->orthoNearClippingDistance);
 			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##orthofarClip" + std::to_string(ownerID), "Far Clip (Ortho)"), camera->orthoFarClippingDistance);
 			FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##nearClip" + std::to_string(ownerID), "Near Clip"), camera->nearClippingDistance);				
@@ -532,13 +527,13 @@ namespace FlatGui
 
 			RenderCanvasPlacementComponent(button);
 			FL::GuiCore::TableProps leftClickTableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click");
-			leftClickTableProps.b_topBorderLabel = true;
+			leftClickTableProps.b_topLabelBorder = true;
 			if (FL::GuiCore::RenderBoolTable(leftClickTableProps, b_leftClick)) button->SetLeftClick(b_leftClick);
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_leftClick)) button->SetRightClick(b_rightClick);	
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) button->SetDimensions(dimensions);				
 			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##offset" + std::to_string(ownerID), "Offset"), offset)) button->SetOffset(offset);
 			FL::GuiCore::TableProps callbackFuncTableProps("##ButtonEventName", "Callback Function");
-			callbackFuncTableProps.b_bottomBorderLabel = true;
+			callbackFuncTableProps.b_bottomLabelBorder = true;
 			FL::GuiCore::RenderStringTable(callbackFuncTableProps, button->parameterContainer.name);			
 
 			FL::GuiCore::MoveScreenCursor(0, 3);
@@ -619,7 +614,12 @@ namespace FlatGui
 			long ownerID = canvas->GetOwnerID();
 			float pixelsPerGridSpace = canvas->GetPixelsPerGridSpace();
 			
-			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ScreenPixelsPerGridSpace" + std::to_string(ownerID), "Screen Pixels/Grid Space"), pixelsPerGridSpace)) canvas->SetPixelsPerGridSpace(pixelsPerGridSpace);
+			FL::GuiCore::TableProps pixelsPerGridTableProps("##ScreenPixelsPerGridSpace" + std::to_string(ownerID), "Screen Pixels/Grid Space");
+			pixelsPerGridTableProps.b_topLabelBorder = true;
+			pixelsPerGridTableProps.tableSize.x = ImGui::GetContentRegionAvail().x - 22;
+			if (FL::GuiCore::RenderFloatTable(pixelsPerGridTableProps, pixelsPerGridSpace)) canvas->SetPixelsPerGridSpace(pixelsPerGridSpace);
+			ImGui::SameLine(0,0);
+			FL::GuiCore::RenderInfoButton("Changes how many world grid spaces stretch\nacross the canvas view.\n\nSet it equal to \"Texture Pixels/Grid Space\"\n(in the Settings menu) for a 1:1 pixel\nrepresentation in the Canvas view.");
 			FL::GuiCore::TableProps canvasLayerProps("##layerNumber" + std::to_string(ownerID), "Canvas Layer");
 			canvasLayerProps.intMin = 0;
 			canvasLayerProps.intMax = FL::MAX_CANVAS_LAYERS;
@@ -640,7 +640,9 @@ namespace FlatGui
 			FL::GuiCore::MoveScreenCursor(0, 3);	
 
 			FL::GuiCore::TableProps newAnimationNameTableProps("##NewAnimationName", "Name");
-			newAnimationNameTableProps.b_topBorderLabel = true;
+			newAnimationNameTableProps.b_topLabelBorder = true;
+			newAnimationNameTableProps.b_light = true;
+			newAnimationNameTableProps.b_lightSet = true;
 			FL::GuiCore::RenderStringTable(newAnimationNameTableProps, newAnimationName);		
 
 			FL::GuiCore::InputProps newAnimationPathInputProps("##AnimationPathInspectorWindow-" + std::to_string(ownerID), "File");
@@ -682,7 +684,9 @@ namespace FlatGui
 				std::string currentAnimationName = animData.name;
 
 				FL::GuiCore::TableProps animationNameTableProps("##NewAnimationName" + std::to_string(IDCounter), "Name");
-				animationNameTableProps.b_topBorderLabel = true;
+				animationNameTableProps.b_topLabelBorder = true;
+				animationNameTableProps.b_light = true;
+				animationNameTableProps.b_lightSet = true;
 				FL::GuiCore::RenderStringTable(animationNameTableProps, newAnimationName);	
 				
 				FL::GuiCore::InputProps animationPathInputProps("##AnimationPathInspectorWindow-" + std::to_string(IDCounter), "File");
@@ -1384,7 +1388,7 @@ namespace FlatGui
 			std::vector<std::string> types = { "Static", "Kinematic", "Dynamic" };			
 			bool b_light = true;
 			FL::GuiCore::TableProps bodyTypeTableProps("##BoxBodyTypeCombo", "Body Type");
-			bodyTypeTableProps.b_topBorderLabel = true;
+			bodyTypeTableProps.b_topLabelBorder = true;
 			if (FL::GuiCore::RenderComboTable(bodyTypeTableProps, types[body->type], types, currentType)) body->SetBodyType((b2BodyType)currentType);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyGravityScale" + std::to_string(ownerID), "Gravity Scale"), body->gravityScale)) body->SetGravityScale(body->gravityScale);	
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##BodyLinearDamping" + std::to_string(ownerID), "Linear Damp", FL::Vector2(), 0.01f, 0.0f), body->linearDamping)) body->SetLinearDamping(body->linearDamping);
@@ -1392,18 +1396,18 @@ namespace FlatGui
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockRotation" + std::to_string(ownerID), "Lock Rotation"), body->b_lockedRotation)) body->SetLockedRotation(body->b_lockedRotation);
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockX-Axis" + std::to_string(ownerID), "Lock X-Axis"), body->b_lockedXAxis)) body->SetLockedXAxis(body->b_lockedXAxis);
 			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##LockY-Axis" + std::to_string(ownerID), "Lock Y-Axis"), body->b_lockedYAxis)) body->SetLockedYAxis(body->b_lockedYAxis);
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityX" + std::to_string(ownerID), "X Vel."), { std::to_string(linearVelocity.x) });								
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityY" + std::to_string(ownerID), "Y Vel."), { std::to_string(linearVelocity.y) });			
-			FL::GuiCore::TableProps angularVelocityTableProps("##AngularVelocity" + std::to_string(ownerID), "Angular Vel.");
-			angularVelocityTableProps.b_bottomBorderLabel = true;
-			angularVelocityTableProps.tableLabelBorderBottom = "tableValueBorderTop";
-			angularVelocityTableProps.tableValueBorderBottom = "tableValueBorderTop";
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityX" + std::to_string(ownerID), "X Velocity"), { std::to_string(linearVelocity.x) });								
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##VelocityY" + std::to_string(ownerID), "Y Velocity"), { std::to_string(linearVelocity.y) });			
+			FL::GuiCore::TableProps angularVelocityTableProps("##AngularVelocity" + std::to_string(ownerID), "Angular Velocity");
+			angularVelocityTableProps.b_bottomLabelBorder = true;
+			angularVelocityTableProps.labelBorderBottom = "tableValueBorderTop";
+			angularVelocityTableProps.valueBorderBottom = "tableValueBorderTop";
 			FL::GuiCore::RenderTextTable(angularVelocityTableProps, { std::to_string(angularVelocity) });									
 			FL::GuiCore::MoveScreenCursor(0, 3);
 
 			if (body->GetShapes().size() == 0)
 			{		
-				ImGui::TextWrapped("* WARNING *\n\nA Body without a shape attached has 0.0 mass and will not move.");
+				FL::GuiCore::RenderColoredText("A Body without a shape attached has 0.0 mass and will not be moved by forces.", "warn");
 			}		
 
 			FL::GuiCore::RenderButton("Add Shape");
@@ -1934,8 +1938,9 @@ namespace FlatGui
 			long ownerID = light->GetOwnerID();		
 			FL::Vector3 direction = light->GetDirection();
 			FL::Vector4 color = light->GetColor();
-
-			if (FL::GuiCore::RenderVector3Table(FL::GuiCore::TableProps("##LightDirection" + std::to_string(ownerID), "Direction"), direction)) light->SetDirection(direction);
+			FL::GuiCore::TableProps lightTableProps("##LightDirection" + std::to_string(ownerID), "Direction");
+			lightTableProps.b_topLabelBorder = true;
+			if (FL::GuiCore::RenderVector3Table(lightTableProps, direction)) light->SetDirection(direction);
 			if (FL::GuiCore::RenderVector4Table(FL::GuiCore::TableProps("##LightColor" + std::to_string(ownerID), "Color"), color)) light->SetColor(color);
 		}
 	}

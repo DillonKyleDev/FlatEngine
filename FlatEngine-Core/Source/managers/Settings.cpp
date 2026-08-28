@@ -1,5 +1,6 @@
 #include "components/Camera.h"
 #include "components/Transform.h"
+#include "GuiCore.h"
 #include "managers/Settings.h"
 #include "render/SceneView.h"
 #include "tools/JsonHelper.h"
@@ -91,6 +92,7 @@ namespace FlatEngine
                 b_vsyncEnabled = JsonHelper::CheckJsonBool(settings, "b_vsyncEnabled", name);
                 fileExplorerThumbnailSize = JsonHelper::CheckJsonFloat(settings, "fileExplorerThumbnailSize", name);
                 SceneView::SetGridHorizontal(JsonHelper::CheckJsonBool(settings, "b_gridHorizontal", name));
+                GuiCore::texturePixelsPerGridSpace = JsonHelper::CheckJsonFloat(settings, "texturePixelsPerGridSpace", name);
                 // Scene View Camera
                 SceneView::sceneViewCameraTransform.SetPosition(FL::Vector3(JsonHelper::CheckJsonFloat(settings, "sceneCameraPosX", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosY", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraPosZ", name)));
                 SceneView::sceneViewCameraTransform.SetRotation(FL::Vector3(JsonHelper::CheckJsonFloat(settings, "sceneCameraRotX", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraRotY", name), JsonHelper::CheckJsonFloat(settings, "sceneCameraRotZ", name)));
@@ -153,7 +155,8 @@ namespace FlatEngine
                 { "b_fullscreen",                       b_fullscreen },
                 { "b_vsyncEnabled",                     b_vsyncEnabled },
                 { "fileExplorerThumbnailSize",          fileExplorerThumbnailSize },     
-                { "b_gridHorizontal",                   SceneView::IsGridHorizontal() },       
+                { "b_gridHorizontal",                   SceneView::IsGridHorizontal() }, 
+                { "texturePixelsPerGridSpace",          GuiCore::texturePixelsPerGridSpace },           
                 // Scene View Camera
                 { "sceneCameraPosX",                    sceneViewPos.x },
                 { "sceneCameraPosY",                    sceneViewPos.y },

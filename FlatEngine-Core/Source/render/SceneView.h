@@ -1,11 +1,10 @@
 #pragma once
-#include "Types.h"
 #include "components/Camera.h"
 #include "components/Mesh.h"
 #include "components/Transform.h"
-#include "render/Line.h"
-#include "tools/JsonHelper.h"
 #include "tools/Pool.h"
+#include "render/Line.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/Vector2.h"
 
 #include <cstdint>
@@ -37,19 +36,6 @@ namespace FlatEngine
             DebugSceneObjectType_Cube
         };
 
-        struct SceneRenderObject {
-            long ID = -1;
-            Transform transform = Transform();
-            Mesh mesh = Mesh();
-
-            void PutData(json jsonData)
-            {
-                ID = (long)JsonHelper::CheckJsonLong(jsonData, "id", "SceneRenderObject");	
-                mesh.PutData(jsonData.at("mesh"), "SceneRenderObject");
-                transform.PutData(jsonData.at("transform"), "SceneRenderObject");
-            }
-        };
-
         extern std::vector<SceneRenderObject> persistentSceneRenderObjects;
         extern std::vector<PoolObject<SceneRenderObject>> debugDrawSceneRenderObjects;
         extern UMapVector<SceneRenderObject> cameraSceneRenderObjects;		
@@ -77,12 +63,6 @@ namespace FlatEngine
 
         extern void RenderSceneView(bool& b_show);         
                
-        extern SceneRenderObject CreateLineObject();
-        extern SceneRenderObject CreateQuadObject();
-        extern SceneRenderObject CreateCircleObject();
-        extern std::vector<SceneRenderObject> CreateCapsuleObject();
-		extern std::vector<SceneRenderObject> CreatePolygonObject();
-		extern std::vector<SceneRenderObject> CreateChainObject();
         extern void ClearDebugDrawObjects();
         extern Transform GetLineTransformForStartEndPos(Vector3 startPos, Vector3 endPos);
         extern void DebugDrawLine(Vector3 startPos, Vector3 endPos, std::string color = "debugDraw");

@@ -138,6 +138,7 @@ GENERATED += $(OBJDIR)/RenderPass.o
 GENERATED += $(OBJDIR)/RenderWindow.o
 GENERATED += $(OBJDIR)/Scene.o
 GENERATED += $(OBJDIR)/SceneManager.o
+GENERATED += $(OBJDIR)/SceneRenderObject.o
 GENERATED += $(OBJDIR)/SceneView.o
 GENERATED += $(OBJDIR)/Script.o
 GENERATED += $(OBJDIR)/Settings.o
@@ -221,6 +222,7 @@ OBJECTS += $(OBJDIR)/RenderPass.o
 OBJECTS += $(OBJDIR)/RenderWindow.o
 OBJECTS += $(OBJDIR)/Scene.o
 OBJECTS += $(OBJDIR)/SceneManager.o
+OBJECTS += $(OBJDIR)/SceneRenderObject.o
 OBJECTS += $(OBJDIR)/SceneView.o
 OBJECTS += $(OBJDIR)/Script.o
 OBJECTS += $(OBJDIR)/Settings.o
@@ -522,6 +524,9 @@ $(OBJDIR)/CPPScriptMethods.o: Source/scripting/CPPScriptMethods.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/CPPScriptsHookup.o: Source/scripting/CPPScriptsHookup.cpp
+	@echo "$(notdir $<)"
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/SceneRenderObject.o: Source/structs/SceneRenderObject.cpp
 	@echo "$(notdir $<)"
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Easing.o: Source/tools/Easing.cpp

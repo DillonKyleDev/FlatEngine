@@ -37,56 +37,6 @@ namespace FlatEngine
 		SceneRenderObject orientationGizmoRenderObject;
 		Vector2 finalImageSize;
 
-		SceneRenderObject CreateLineObject()
-		{
-			SceneRenderObject object;
-			object.mesh.CreateUniformBuffers();
-			object.mesh.SetMaterial("fl_debugDraw");
-			object.mesh.SetModel("../engine/models/line.obj", false);	
-			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
-			object.mesh.CreateResources();
-			return object;
-		}
-		SceneRenderObject CreateQuadObject()
-		{
-			SceneRenderObject object;
-			object.mesh.CreateUniformBuffers();
-			object.mesh.SetMaterial("fl_debugDraw");
-			object.mesh.SetModel("../engine/models/quadLines.obj", false);	
-			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
-			object.mesh.CreateResources();
-			return object;
-		}
-		SceneRenderObject CreateCircleObject()
-		{
-			SceneRenderObject object;
-			object.mesh.CreateUniformBuffers();
-			object.mesh.SetMaterial("fl_debugDraw");
-			object.mesh.SetModel("../engine/models/circle.obj", false);	
-			object.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("debug")); 				          
-			object.mesh.CreateResources();
-			return object;
-		}
-		std::vector<SceneRenderObject> CreateCapsuleObject()
-		{
-			std::vector<SceneRenderObject> capsuleShapes = { CreateCircleObject(), CreateCircleObject() };			
-			for (int i = 0; i < 6; i++)
-			{
-				capsuleShapes.push_back(CreateLineObject());
-			}
-			return capsuleShapes;
-		}
-		std::vector<SceneRenderObject> CreatePolygonObject()
-		{
-			std::vector<SceneRenderObject> polygonShapes = { CreateLineObject(), CreateLineObject(), CreateLineObject() };			
-			return polygonShapes;
-		}
-		std::vector<SceneRenderObject> CreateChainObject()
-		{
-			std::vector<SceneRenderObject> chainShapes = { CreateLineObject(), CreateLineObject(), CreateLineObject(), CreateLineObject() };			
-			return chainShapes;
-		}
-
 		void CleanupPoolObject(SceneRenderObject& object)
 		{
 			object.mesh.Cleanup();
@@ -404,23 +354,17 @@ namespace FlatEngine
 
 		void RenderSceneView(bool& b_show)
 		{		
-			if (!debugLinePool.Initialized())
-			{
+			if (!debugLinePool.Initialized())			
 				debugLinePool.Init();
-			}
-			if (!debugQuadPool.Initialized())
-			{
-				debugQuadPool.Init();
-			}
-			if (!debugCirclePool.Initialized())
-			{
-				debugCirclePool.Init();
-			}	
+			if (!debugQuadPool.Initialized())		
+				debugQuadPool.Init();			
+			if (!debugCirclePool.Initialized())			
+				debugCirclePool.Init();			
 			
-			for (Body2D& body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
-			{
-				body2D.UpdateRenderShapes();
-			}
+			for (Body2D& body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())			
+				body2D.UpdateRenderShapes();			
+			for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())			
+				canvas.UpdateRenderShapes();			
 			for (SceneRenderObject& renderCamera : cameraSceneRenderObjects.GetAll())
 			{
 				Transform* transform = SceneManager::loadedScene.Get<Transform>(renderCamera.ID);
@@ -604,6 +548,7 @@ namespace FlatEngine
 			return ref->ID;
 		}
 
+		// This probably belongs somewhere else
 		Transform GetLineTransformForStartEndPos(Vector3 startPos, Vector3 endPos)
 		{
 			Transform transform;
@@ -663,14 +608,12 @@ namespace FlatEngine
 					break;
 				}
 				case DebugSceneObjectType_Sphere: 
-				{					
-					
+				{										
 					// AddDebugDrawObject(DebugSceneObjectType_Circle, transform);
 					break;
 				}
 				case DebugSceneObjectType_Cube: 
-				{					
-					
+				{										
 					break;
 				}
 				default: break;

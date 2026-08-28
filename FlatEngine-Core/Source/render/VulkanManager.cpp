@@ -1,5 +1,5 @@
-#include "GuiCore.h"
 #include "components/Body2D.h"
+#include "components/Canvas.h"
 #include "components/Sprite.h"
 #include "Types.h"
 #include "managers/Assets.h"
@@ -10,16 +10,15 @@
 #include "render/RenderWindow.h"
 #include "render/SceneView.h"
 #include "render/VulkanManager.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
 #include "tools/Logger.h"
-#include "tools/Pool.h"
 
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_vulkan.h>
 #include <list>
 #include "SDL_vulkan.h"
-#include "tools/Pool.h"
 
 namespace FL = FlatEngine;
 
@@ -1165,7 +1164,7 @@ namespace FlatEngine
 
                 if (SceneView::ShouldShowSceneViewGridObjects())
                 {
-                    for (SceneView::SceneRenderObject& renderObject : SceneView::persistentSceneRenderObjects)                        
+                    for (SceneRenderObject& renderObject : SceneView::persistentSceneRenderObjects)                        
                     {                                                        
                         std::shared_ptr<Material> material = renderObject.mesh.GetSceneViewMaterial();
                         if (renderObject.mesh.Initialized() && material != nullptr)
@@ -1228,7 +1227,7 @@ namespace FlatEngine
                 }
                 
                 // LUA DEBUG DRAW SHAPES
-                for (PoolObject<SceneView::SceneRenderObject>& poolRenderObject : SceneView::debugDrawSceneRenderObjects)                        
+                for (PoolObject<SceneRenderObject>& poolRenderObject : SceneView::debugDrawSceneRenderObjects)                        
                 {                                                        
                     std::shared_ptr<Material> material = poolRenderObject.object->mesh.GetSceneViewMaterial();
                     if (poolRenderObject.object->mesh.Initialized() && material != nullptr)
@@ -1307,11 +1306,11 @@ namespace FlatEngine
                 }
 
                 // BODY2D DRAW SHAPES
-                for (Body2D body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
+                for (Body2D& body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())
                 {
                     for (Shape2D* shape : body2D.GetShapes())
                     {
-                        for (SceneView::SceneRenderObject& renderShape : shape->renderShapes)                        
+                        for (SceneRenderObject& renderShape : shape->renderShapes)                        
                         {                 
                             std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
                             if (renderShape.mesh.Initialized() && material != nullptr)
@@ -1329,7 +1328,7 @@ namespace FlatEngine
                     }
                     for (Joint2D* joint : body2D.GetJoints())
                     {
-                        for (SceneView::SceneRenderObject& renderShape : joint->renderShapes)                        
+                        for (SceneRenderObject& renderShape : joint->renderShapes)                        
                         {                 
                             std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
                             if (renderShape.mesh.Initialized() && material != nullptr)
@@ -1343,6 +1342,24 @@ namespace FlatEngine
                                     m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                                 }
                             }
+                        }
+                    }
+                }
+
+                // CANVAS OUTLINE
+                for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())
+                {              
+                    SceneRenderObject* renderShape = canvas.GetRenderObject();              
+                    std::shared_ptr<Material> material = renderShape->mesh.GetSceneViewMaterial();
+                    if (renderShape->mesh.Initialized() && material != nullptr)
+                    {                                                  
+                        if (renderShape->mesh.IsActive())
+                        {                                               
+                            m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                            renderShape->mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &renderShape->transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
+                            m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape->mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                            m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape->mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                            m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape->mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                         }
                     }
                 }

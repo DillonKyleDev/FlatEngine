@@ -1,8 +1,10 @@
 #include "components/Canvas.h"
 #include "components/Transform.h"
 #include "GameObject.h"
+#include "managers/Assets.h"
 #include "render/GameView.h"
 #include "render/SceneView.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/Logger.h"
 #include "tools/Vector2.h"
 
@@ -19,7 +21,9 @@ namespace FlatEngine
 		m_b_blocksLayers = true;
 		m_dimensions = Vector2(20, 10);
 		m_activeEdges = Vector4();
-		m_pixelsPerGridSpace = 64.0f;
+		m_screenPixelsPerGridSpace = 64.0f;
+		m_renderOutline = CreateQuadObject();
+		m_renderOutline.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("canvasOutline"));
 	}
 
 	json Canvas::GetData(bool b_IDOverride)
@@ -107,9 +111,9 @@ namespace FlatEngine
 	{		
 		Vector2 pixelPos  = Vector2(imageSize.x * canvasPlacement->percent.x, imageSize.y * canvasPlacement->percent.y) + canvasPlacement->pixel;
 
-		Vector2 gridAdd   = pixelPos * (1.0f / m_pixelsPerGridSpace);
+		Vector2 gridAdd   = pixelPos * (1.0f / m_screenPixelsPerGridSpace);
 		gridAdd.y        *= -1;
-		Vector2 startGrid = imageSize * (-0.5f) * (1.0f / m_pixelsPerGridSpace);
+		Vector2 startGrid = imageSize * (-0.5f) * (1.0f / m_screenPixelsPerGridSpace);
 		startGrid.y      *= -1;
 		Vector2 gridPos   = startGrid + gridAdd;			
 		
@@ -120,8 +124,8 @@ namespace FlatEngine
 	{
 		glm::mat4 projection;			
 		
-		float halfWidth  = SceneView::finalImageSize.x / m_pixelsPerGridSpace / 2.0f;
-		float halfHeight = SceneView::finalImageSize.y / m_pixelsPerGridSpace / 2.0f;
+		float halfWidth  = SceneView::finalImageSize.x / m_screenPixelsPerGridSpace / 2.0f;
+		float halfHeight = SceneView::finalImageSize.y / m_screenPixelsPerGridSpace / 2.0f;
 		projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -2000.0f, 1000.0f);			
 		projection[1][1] *= -1;
 
@@ -130,11 +134,22 @@ namespace FlatEngine
 
 	float Canvas::GetPixelsPerGridSpace()
 	{
-		return m_pixelsPerGridSpace;
+		return m_screenPixelsPerGridSpace;
 	}
 
 	void Canvas::SetPixelsPerGridSpace(float pixels)
 	{
-		m_pixelsPerGridSpace = pixels;
+		m_screenPixelsPerGridSpace = pixels;
+	}
+
+	SceneRenderObject* Canvas::GetRenderObject()
+	{
+		return &m_renderOutline;
+	}
+
+	void Canvas::UpdateRenderShapes()
+	{
+		m_renderOutline.transform.SetScale(Vector3(SceneView::finalImageSize.x / m_screenPixelsPerGridSpace, SceneView::finalImageSize.y / m_screenPixelsPerGridSpace, 1));
+		m_renderOutline.transform.SetPosition(GetOwningObject()->Get<Transform>()->GetPosition() + Vector3(0,0,-0.0001f));
 	}
 }

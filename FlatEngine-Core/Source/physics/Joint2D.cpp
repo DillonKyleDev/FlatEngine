@@ -2,6 +2,7 @@
 #include "managers/SceneManager.h"
 #include "physics/Joint2D.h"
 #include "physics/PhysicsManager.h"
+#include "structs/SceneRenderObject.h"
 
 
 namespace FlatEngine
@@ -53,7 +54,7 @@ namespace FlatEngine
 			case JointType2D_Motor:     jointData = WeldJoint2DData();      break; 
 			default: break;
 		}
-		renderShapes.push_back(SceneView::CreateLineObject());
+		renderShapes.push_back(CreateLineObject());
 		std::visit([jointDataJson, name](auto&& jData) { jData.PutData(jointDataJson, name); }, jointData);
 
 		if (jointJson.empty())
@@ -76,7 +77,7 @@ namespace FlatEngine
 	void Joint2D::Cleanup()
 	{
 		PhysicsManager::gamePhysics2D.DestroyJoint(this);
-		for (SceneView::SceneRenderObject renderShape : renderShapes)
+		for (SceneRenderObject renderShape : renderShapes)
 		{
 			renderShape.mesh.Cleanup();
 		}

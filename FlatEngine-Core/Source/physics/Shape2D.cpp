@@ -4,6 +4,7 @@
 #include "managers/SceneManager.h"
 #include "physics/PhysicsManager.h"
 #include "physics/Shape2D.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/JsonHelper.h"
 #include <box2d.h>
 
@@ -62,11 +63,11 @@ namespace FlatEngine
 
 		switch (type)
 		{
-			case ShapeType2D_Box:     shapeData = BoxShape2DData();     renderShapes.push_back(SceneView::CreateQuadObject()); break; 
-			case ShapeType2D_Circle:  shapeData = CircleShape2DData();  renderShapes.push_back(SceneView::CreateCircleObject());  break; 
-			case ShapeType2D_Capsule: shapeData = CapsuleShape2DData(); renderShapes = SceneView::CreateCapsuleObject(); break; 
-			case ShapeType2D_Polygon: shapeData = PolygonShape2DData(); renderShapes = SceneView::CreatePolygonObject(); break; 			
-			case ShapeType2D_Chain:   shapeData = ChainShape2DData();   renderShapes = SceneView::CreateChainObject(); break;
+			case ShapeType2D_Box:     shapeData = BoxShape2DData();     renderShapes.push_back(CreateQuadObject()); break; 
+			case ShapeType2D_Circle:  shapeData = CircleShape2DData();  renderShapes.push_back(CreateCircleObject());  break; 
+			case ShapeType2D_Capsule: shapeData = CapsuleShape2DData(); renderShapes = CreateCapsuleObject(); break; 
+			case ShapeType2D_Polygon: shapeData = PolygonShape2DData(); renderShapes = CreatePolygonObject(); break; 			
+			case ShapeType2D_Chain:   shapeData = ChainShape2DData();   renderShapes = CreateChainObject(); break;
 			default: break;
 		}
 		std::visit([shapeDataJson, name](auto&& sData) { sData.PutData(shapeDataJson, name); }, shapeData);

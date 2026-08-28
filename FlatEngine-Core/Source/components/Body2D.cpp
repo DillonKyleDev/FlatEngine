@@ -8,6 +8,7 @@
 #include "physics/PhysicsManager.h"
 #include "physics/Shape2D.h"
 #include "render/SceneView.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/Numbers.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
@@ -449,7 +450,7 @@ namespace FlatEngine
 						int diff = sData.points.size() - shape->renderShapes.size();
 						for (int i = 0; i < diff; i++)
 						{
-							shape->renderShapes.push_back(SceneView::CreateLineObject());
+							shape->renderShapes.push_back(CreateLineObject());
 						}
 					}
 
@@ -471,7 +472,7 @@ namespace FlatEngine
 						int diff = sData.points.size() - shape->renderShapes.size();
 						for (int i = 0; i < diff; i++)
 						{
-							shape->renderShapes.push_back(SceneView::CreateLineObject());
+							shape->renderShapes.push_back(CreateLineObject());
 						}
 					}
 
@@ -553,9 +554,9 @@ namespace FlatEngine
 		}
 	}
 
-	std::vector<SceneView::SceneRenderObject> CreateCapsuleRenderObjects()
+	std::vector<SceneRenderObject> CreateCapsuleRenderObjects()
 	{
-		return std::vector<SceneView::SceneRenderObject>();
+		return std::vector<SceneRenderObject>();
 	}
 
 	void Body2D::SetPosition(Vector2 newPosition)

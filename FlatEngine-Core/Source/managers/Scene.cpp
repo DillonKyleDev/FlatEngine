@@ -1,4 +1,3 @@
-#include "Types.h"
 #include "components/Animation.h"
 #include "components/Body.h"
 #include "components/Component.h"
@@ -6,7 +5,9 @@
 #include "components/Transform.h"
 #include "managers/SceneManager.h"
 #include "physics/PhysicsManager.h"
+#include "render/SceneView.h"
 #include "tools/Logger.h"
+#include "Types.h"
 
 
 namespace FlatEngine

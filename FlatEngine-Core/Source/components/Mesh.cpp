@@ -34,8 +34,7 @@ namespace FlatEngine
 		m_texturesByIndex = std::map<uint32_t, Texture>();
 		m_allocationPoolIndex = -1;
 		m_b_initialized = false;
-		m_b_missingTextures = false;
-		m_renderScale = Vector2(1);
+		m_b_missingTextures = false;		
 		
 		m_uboVec4s = std::map<std::string, glm::vec4>();
 	}
@@ -437,6 +436,8 @@ namespace FlatEngine
 		base.model = transform->GetAbsoluteRotationMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 
+		Vector2 renderScale = GetRenderScale();
+
 		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasChild())
 		{			
 			Canvas* canvas = GetOwningObject()->GetFirstCanvas();
@@ -447,10 +448,10 @@ namespace FlatEngine
 			// Then use the position based on the new position + the pivot offset but don't actually set that as the position
 			Transform transformCopy = Transform(*transform);
 			Vector2 pivotOffset = canvasPlacement.pivot->offset;
-			pivotOffset = Vector2(pivotOffset.x * textureScale.x / GuiCore::WORLD_PIXELS_PER_GRIDSPACE, pivotOffset.y * textureScale.y / GuiCore::WORLD_PIXELS_PER_GRIDSPACE);				
+			pivotOffset = Vector2(pivotOffset.x * textureScale.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y * textureScale.y / GuiCore::texturePixelsPerGridSpace);				
 			pivotOffset.y *= -1;
 			Vector3 pos = transformCopy.GetPosition();				
-			transformCopy.SetScale(Vector3(textureScale.x * m_renderScale.x, textureScale.y * m_renderScale.y, textureScale.z));
+			transformCopy.SetScale(Vector3(textureScale.x * renderScale.x, textureScale.y * renderScale.y, textureScale.z));
 			Vector3 renderOffset = Vector3(pivotOffset, canvasPlacement.zPosition);
 			
 			base.projection = viewportType != ViewportType_SceneView ? canvas->GetProjection() : camera->GetProjection();
@@ -469,8 +470,8 @@ namespace FlatEngine
 			pivotOffset = Vector2(pivotOffset.x * textureScale.x, pivotOffset.y * textureScale.y);			
 			Vector2 pixelOffset = spriteOffset + pivotOffset;
 			pixelOffset.y *= -1;
-			transformCopy.SetScale(Vector3(textureScale.x * m_renderScale.x, textureScale.y * m_renderScale.y, textureScale.z));
-			Vector3 renderOffset = Vector3(pixelOffset * (1.0f / GuiCore::WORLD_PIXELS_PER_GRIDSPACE), pos.z);
+			transformCopy.SetScale(Vector3(textureScale.x * renderScale.x, textureScale.y * renderScale.y, textureScale.z));
+			Vector3 renderOffset = Vector3(pixelOffset * (1.0f / GuiCore::texturePixelsPerGridSpace), pos.z);
 
 			base.meshPosition = transformCopy.GetAbsolutePosition(renderOffset).GetGLMVec4();
 			base.projection = camera->GetProjection();
@@ -541,11 +542,11 @@ namespace FlatEngine
 
 	Vector2 Mesh::GetRenderScale()
 	{
-		return m_renderScale;
+		return m_textureDimensions * (1.0f / GuiCore::texturePixelsPerGridSpace);
 	}
 
-	void Mesh::SetRenderScale(Vector2 renderScale)
+	void Mesh::SetTextureDimensions(Vector2 dimensions)
 	{
-		m_renderScale = renderScale;
+		m_textureDimensions = dimensions;
 	}
 }

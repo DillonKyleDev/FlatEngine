@@ -91,6 +91,7 @@ F_Textures = {
 	zoomIn = "../engine/images/icons/zoom_in.png",
 	zoomOut = "../engine/images/icons/zoom_out.png",
 	search = "../engine/images/icons/search.png",
+	info = "../engine/images/icons/info.png",
 	-- Components
 	Transform = "../engine/images/icons/components/transform.png",
 	Animation = "../engine/images/icons/components/animation2.png",

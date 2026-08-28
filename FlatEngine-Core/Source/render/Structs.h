@@ -9,6 +9,8 @@
 #include "vulkan/vulkan_core.h"
 
 
+// TODO: Break these out into individual struct .h files and put them in structs/ folder
+
 namespace FlatEngine
 {   
     enum ViewportType {

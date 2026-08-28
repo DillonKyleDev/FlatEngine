@@ -1,5 +1,5 @@
 #pragma once
-#include "components/Canvas.h"
+#include "structs/CanvasPlacement.h"
 #include "components/Component.h"
 #include "render/Model.h"
 #include "render/Material.h"
@@ -51,7 +51,7 @@ namespace FlatEngine
 		void SetUBOVec4(std::string name, Vector4 value);
 		void CreateUniformBuffers();
 		Vector2 GetRenderScale();
-		void SetRenderScale(Vector2 renderScale);
+		void SetTextureDimensions(Vector2 dimensions);
 
 		CanvasPlacement canvasPlacement;
 
@@ -74,7 +74,7 @@ namespace FlatEngine
 		int m_allocationPoolIndex;
 		bool m_b_initialized;
 		bool m_b_missingTextures;
-		Vector2 m_renderScale;
+		Vector2 m_textureDimensions;
 
 		// Uniform Buffer Data
 		std::map<std::string, glm::vec4> m_uboVec4s;

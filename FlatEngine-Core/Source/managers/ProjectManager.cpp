@@ -10,7 +10,6 @@
 #include "tools/Logger.h"
 #include "tools/Time.h"
 
-
 namespace FL = FlatEngine;
 
 

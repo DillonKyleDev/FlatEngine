@@ -1,6 +1,5 @@
 #include "components/Canvas.h"
 #include "components/Sprite.h"
-#include "GuiCore.h"
 #include "managers/Assets.h"
 #include "tools/FileHelper.h"
 #include "tools/JsonHelper.h"
@@ -92,7 +91,7 @@ namespace FlatEngine
 				m_textureWidth = meshTextures.at(0).GetWidth();
 				m_textureHeight = meshTextures.at(0).GetHeight();
 				m_pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);
-				mesh.SetRenderScale(Vector2(m_textureWidth / GuiCore::WORLD_PIXELS_PER_GRIDSPACE, m_textureHeight / GuiCore::WORLD_PIXELS_PER_GRIDSPACE));
+				mesh.SetTextureDimensions(Vector2(m_textureWidth, m_textureHeight));
 			}
 			else
 			{
@@ -104,7 +103,7 @@ namespace FlatEngine
 					m_textureWidth = 50;
 					m_textureHeight = 50;
 					m_pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);	
-					mesh.SetRenderScale(Vector2(m_textureWidth / GuiCore::WORLD_PIXELS_PER_GRIDSPACE, m_textureHeight / GuiCore::WORLD_PIXELS_PER_GRIDSPACE));
+					mesh.SetTextureDimensions(Vector2(m_textureWidth, m_textureHeight));
 				}
 
 				Logger::log.Err("Sprite::SetTexture() - Texture could not be loaded.");

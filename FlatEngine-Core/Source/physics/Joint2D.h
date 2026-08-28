@@ -1,6 +1,6 @@
 #pragma once
 #include "physics/PhysicsManager.h"
-#include "render/SceneView.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 
@@ -421,7 +421,7 @@ namespace FlatEngine
 		float GetConstraintTorque();
 
 		JointType2D type;
-		std::vector<SceneView::SceneRenderObject> renderShapes;
+		std::vector<SceneRenderObject> renderShapes;
 		std::variant<DistanceJoint2DData, MotorJoint2DData, MouseJoint2DData, PrismaticJoint2DData, RevoluteJoint2DData, WeldJoint2DData, WheelJoint2DData> jointData;
 		long bodyAID;
 		long bodyBID;		

@@ -8,6 +8,7 @@
 #include "managers/Settings.h"
 #include "physics/Collision2D.h"
 #include "physics/PhysicsManager.h"
+#include "render/SceneView.h"
 #include "tools/Time.h"
 
 #ifdef _WINDOWS

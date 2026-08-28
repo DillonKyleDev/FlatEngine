@@ -1,7 +1,8 @@
 #pragma once
 #include "physics/PhysicsManager.h"
-#include "render/SceneView.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/JsonHelper.h"
+#include "tools/Logger.h"
 #include "tools/Numbers.h"
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
@@ -362,7 +363,7 @@ namespace FlatEngine
 		b2Polygon polygon;
 		b2Circle circle;
 		b2Capsule capsule;		
-		std::vector<SceneView::SceneRenderObject> renderShapes;
+		std::vector<SceneRenderObject> renderShapes;
 		std::variant<BoxShape2DData, CircleShape2DData, PolygonShape2DData, CapsuleShape2DData, ChainShape2DData> shapeData;
 		bool b_enableContactEvents;
 		bool b_enableSensorEvents;

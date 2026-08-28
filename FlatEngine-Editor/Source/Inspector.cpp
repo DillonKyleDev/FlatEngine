@@ -287,7 +287,7 @@ namespace FlatGui
 			if (boundsEnd.y > end.y) boundsEnd.y = end.y;		
 
 			// Rendered Canvas object
-			ImGui::GetWindowDrawList()->AddRectFilled(boundsStart, boundsEnd, FL::Assets::assetManager.GetColor32("col_7"));			
+			ImGui::GetWindowDrawList()->AddRectFilled(boundsStart, boundsEnd, FL::Assets::assetManager.GetColor32("canvasDemoObjectBg"));			
 			
 			if (width >= 50)
 			{

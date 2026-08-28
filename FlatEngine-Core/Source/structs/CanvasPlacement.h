@@ -22,7 +22,8 @@ namespace FlatEngine
 				{ "xPercent", percent.x },
 				{ "yPercent", percent.y },
 				{ "xPixel", pixel.x },		
-				{ "yPixel", pixel.y }
+				{ "yPixel", pixel.y },
+				{ "zPosition", zPosition },
 			};
 		
 			return jsonData;
@@ -36,7 +37,7 @@ namespace FlatEngine
 			pivot->type = GetTypeFromString(PivotFromString, JsonHelper::CheckJsonString(jsonData, "pivotType", "Canvas Placement"));
 			percent = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xPercent", name), JsonHelper::CheckJsonFloat(jsonData, "yPercent", name));
 			pixel = Vector2(JsonHelper::CheckJsonFloat(jsonData, "xPixel", name), JsonHelper::CheckJsonFloat(jsonData, "yPixel", name));
-
+			zPosition = JsonHelper::CheckJsonFloat(jsonData, "zPosition", name);
 			pivot->UpdatePivotOffset();
 		}
 	};

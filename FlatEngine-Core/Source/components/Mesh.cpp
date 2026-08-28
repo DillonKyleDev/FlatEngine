@@ -455,7 +455,7 @@ namespace FlatEngine
 			Vector3 renderOffset = Vector3(pivotOffset, canvasPlacement.zPosition);
 			
 			base.projection = viewportType != ViewportType_SceneView ? canvas->GetProjection() : camera->GetProjection();
-			base.view = viewportType != ViewportType_SceneView ? glm::lookAt(canvasPos.GetGLMVec3(), glm::vec3(0,0,1), glm::vec3(up)) : glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
+			base.view = viewportType != ViewportType_SceneView ? glm::lookAt(canvasPos.GetGLMVec3(), canvasPos.GetGLMVec3() + glm::vec3(0,0,-1), glm::vec3(up)) : glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 			base.meshPosition = transformCopy.GetAbsolutePosition(renderOffset).GetGLMVec4();
 			base.model = base.model * transformCopy.GetScaleMatrix();
 		}

@@ -31,6 +31,7 @@ namespace FlatEngine
 		bool GetBlocksLayers();
 		Vector3 GetCanvasPlacementPosition(CanvasPlacement* canvasPlacement, Vector2 imageSize);
 		glm::mat4 GetProjection();
+		Vector2 GetMousePosOnCanvas(Vector2 mousePos);
 		float GetPixelsPerGridSpace();
 		void SetPixelsPerGridSpace(float pixels);
 		SceneRenderObject* GetRenderObject();		

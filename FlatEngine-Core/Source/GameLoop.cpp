@@ -3,6 +3,7 @@
 #include "components/Transform.h"
 #include "GameLoop.h"
 #include "GameObject.h"
+#include "GuiCore.h"
 #include "managers/Controls.h"
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
@@ -222,10 +223,9 @@ namespace FlatEngine
 				if (hovered.GetLayer() >= GetFirstUnblockedLayer())
 				{
 					GameObject* owner = hovered.GetOwningObject();
-					LuaManager::LuaParameter functionParams = hovered.GetFunctionParams();					
-					std::string functionName = hovered.GetFunctionName();
+					LuaManager::LuaParameter functionParams;// = hovered.GetFunctionParams();										
 
-					if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !b_hasLeftClicked)
+					if (ImGui::IsKeyDown(ImGuiKey_MouseLeft) && !b_hasLeftClicked)
 					{
 						// For OnButtonLeftClick() event function in Lua and user defined function in C++ Scripts
 						b_hasLeftClicked = true;
@@ -239,7 +239,7 @@ namespace FlatEngine
 						
 
 						// For Button On Click events in Button Inspector Component
-						if (hovered.GetLeftClick() && functionName != "")
+						if (hovered.GetLeftClick() && hovered.functionName != "")
 						{													
 							// if (functionParams->b_cppEvent)
 							// {
@@ -250,7 +250,7 @@ namespace FlatEngine
 							// }
 							// else if (functionParams->b_luaEvent)
 							// {
-								CallLuaButtonOnClickFunction(owner, functionName, functionParams);
+								CallLuaButtonOnClickFunction(owner, hovered.functionName, functionParams);
 							// }
 						}
 					}					
@@ -272,7 +272,7 @@ namespace FlatEngine
 						CallLuaButtonEventFunction(owner, LuaManager::LuaEventFunction::OnButtonRightClick);
 
 						// Inspector
-						if (hovered.GetRightClick() && functionName != "")
+						if (hovered.GetRightClick() && hovered.functionName != "")
 						{
 							// if (functionParams->b_cppEvent)
 							// {
@@ -283,7 +283,7 @@ namespace FlatEngine
 							// }
 							// else if (functionParams->b_luaEvent)
 							// {						
-								CallLuaButtonOnClickFunction(owner, functionName, functionParams);
+								CallLuaButtonOnClickFunction(owner, hovered.functionName, functionParams);
 							// }							
 						}
 					}					
@@ -305,13 +305,11 @@ namespace FlatEngine
 		{
 			if (button.IsActive() && button.GetOwningObject()->IsActive())
 			{
-				Transform* transform = button.GetOwningObject()->Get<Transform>();
-				Vector4 activeEdges = button.GetActiveEdges();
-				Vector2 mousePos = ImGui::GetIO().MousePos;
+				Canvas* canvas = button.GetOwningObject()->GetFirstCanvas();
 
-				if (Collision2D::AreCollidingViewport(activeEdges, Vector4(mousePos.y, mousePos.x, mousePos.y, mousePos.x)))
+				if (button.CheckForMouseOver(GuiCore::mousePos))
 				{
-					if (button.GetLayer() >= GetFirstUnblockedLayer())
+					if (canvas->GetLayerNumber() >= GetFirstUnblockedLayer())
 					{
 						m_hoveredButtons.push_back(button);
 						button.SetMouseIsOver(true);

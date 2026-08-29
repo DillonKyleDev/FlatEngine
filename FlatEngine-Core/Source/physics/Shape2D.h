@@ -331,6 +331,8 @@ namespace FlatEngine
 		}
 	};
 
+	using Shape2DDataVariant = std::variant<BoxShape2DData, CircleShape2DData, PolygonShape2DData, CapsuleShape2DData, ChainShape2DData>;
+
 	class Shape2D
 	{
 	public:
@@ -364,7 +366,7 @@ namespace FlatEngine
 		b2Circle circle;
 		b2Capsule capsule;		
 		std::vector<SceneRenderObject> renderShapes;
-		std::variant<BoxShape2DData, CircleShape2DData, PolygonShape2DData, CapsuleShape2DData, ChainShape2DData> shapeData;
+		Shape2DDataVariant shapeData;
 		bool b_enableContactEvents;
 		bool b_enableSensorEvents;
 		bool b_isSensor;

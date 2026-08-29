@@ -435,7 +435,7 @@ namespace FlatEngine
 		base.cameraPosition = glm::vec4(cameraPos, 0);
 		base.model = transform->GetAbsoluteRotationMatrix();
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
-
+		
 		Vector2 renderScale = GetRenderScale();
 
 		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasChild())

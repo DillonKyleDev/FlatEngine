@@ -42,9 +42,9 @@ namespace FlatEngine
 			object.mesh.Cleanup();
 		}
 
-		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(CreateLineObject, CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(CreateQuadObject, CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(CreateCircleObject, CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(std::move(CreateLineObject), CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(std::move(CreateQuadObject), CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(std::move(CreateCircleObject), CleanupPoolObject, 10);
 
 		Vector2 sceneViewDimensions = Vector2(600, 400);	
 		Vector2 sceneViewCenter = Vector2();
@@ -364,7 +364,9 @@ namespace FlatEngine
 			for (Body2D& body2D : SceneManager::loadedScene.GetAll<Body2D>().GetAll())			
 				body2D.UpdateRenderShapes();			
 			for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())			
-				canvas.UpdateRenderShapes();			
+				canvas.UpdateRenderShapes();	
+			for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())			
+				button.UpdateRenderShapes();			
 			for (SceneRenderObject& renderCamera : cameraSceneRenderObjects.GetAll())
 			{
 				Transform* transform = SceneManager::loadedScene.Get<Transform>(renderCamera.ID);
@@ -399,7 +401,7 @@ namespace FlatEngine
 				b_firstSceneRenderPass = false;						
 
 				sceneViewDimensions = canvas_p1 - canvas_p0;	
-				sceneViewportCenter = canvas_p0 + sceneViewDimensions;					
+				sceneViewportCenter = canvas_p0 + (sceneViewDimensions * 0.5f);					
 
 				ImGuiIO& inputOutput = ImGui::GetIO();
 				Vector2 currentPos = ImGui::GetCursorScreenPos();
@@ -737,16 +739,15 @@ namespace FlatEngine
 
 		// Converts from screen space to world grid space in Scene View
 		Vector2 Scene_ConvertScreenToWorld(Vector2 positionOnScreen)
-		{
+		{			
 			float x = (positionOnScreen.x - sceneViewCenter.x) / sceneViewGridStep;
-			float y = (sceneViewCenter.y - positionOnScreen.y) / sceneViewGridStep;
-
+			float y = (sceneViewCenter.y - positionOnScreen.y) / sceneViewGridStep;			
 			return Vector2(x, y);
 		}
 
 		Vector2 Scene_GetMousePosWorld()
 		{
-			return Scene_ConvertScreenToWorld(ImGui::GetIO().MousePos);
+			return Scene_ConvertScreenToWorld(GuiCore::mousePos);
 		}
 
 		void RenderGridView(FL::Vector2& centerPoint, FL::Vector2 &scrolling, bool b_weightedScroll, FL::Vector2 canvasP0, FL::Vector2 canvasP1, FL::Vector2 canvasSize, FL::Vector2& gridStep, FL::Vector2 centerOffset, bool b_showAxis)

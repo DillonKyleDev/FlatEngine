@@ -214,7 +214,8 @@ namespace FlatEngine
 		{
 			if (!b_mouseDownCanWarp)
 			{	
-				lastMousePos = GetMousePosWindow();
+				mousePos = GetMousePosWindow();
+				lastMousePos = mousePos;
 				mouseDelta = Vector2();
 				return;
 			}
@@ -1617,7 +1618,7 @@ namespace FlatEngine
 				paramQueuedForDelete = "";
 			}
 
-			MoveScreenCursor(0, -5);
+			MoveScreenCursor(0, -4);
 		}
 
 		bool RenderDropInputTable(InputProps& inputProps)

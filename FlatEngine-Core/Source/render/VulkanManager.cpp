@@ -1,8 +1,10 @@
 #include "components/Body2D.h"
+#include "components/Button.h"
 #include "components/Canvas.h"
 #include "components/Sprite.h"
 #include "Types.h"
 #include "managers/Assets.h"
+#include "managers/Scene.h"
 #include "managers/SceneManager.h"
 #include "managers/Settings.h"
 #include "render/DeviceManager.h"
@@ -59,10 +61,6 @@ namespace FlatEngine
             m_postProcessingCommandPool = VK_NULL_HANDLE;
             m_b_framebufferResized = false; 
             m_maxSamples = VK_SAMPLE_COUNT_1_BIT;
-        }
-
-        Vulkan::~Vulkan()
-        {
         }
 
         void Vulkan::Cleanup()
@@ -1346,7 +1344,7 @@ namespace FlatEngine
                     }
                 }
 
-                // CANVAS OUTLINE
+                // CANVAS OUTLINES
                 for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())
                 {              
                     SceneRenderObject* renderShape = canvas.GetRenderObject();              
@@ -1361,6 +1359,26 @@ namespace FlatEngine
                             m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape->mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
                             m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape->mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
                         }
+                    }
+                }
+                
+                // BUTTON OUTLINES
+                for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())
+                {                                            
+                    for (SceneRenderObject& renderShape : button.renderShapes)
+                    {           
+                        std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
+                        if (renderShape.mesh.Initialized() && material != nullptr)
+                        {                                                  
+                            if (renderShape.mesh.IsActive())
+                            {                                    
+                                m_renderToTextureSceneViewRenderPass.RecordCommandBuffer(material->GetGraphicsPipeline());
+                                renderShape.mesh.UpdateUniformBuffer(ViewportType::ViewportType_SceneView, &renderShape.transform, &SceneView::sceneViewCamera, &SceneView::sceneViewCameraTransform);
+                                m_renderToTextureSceneViewRenderPass.BindIndexed(renderShape.mesh.GetModel()); // NOTE: Binding the indices can be broken out if we group Meshes by Model
+                                m_renderToTextureSceneViewRenderPass.BindDescriptorSets(renderShape.mesh.GetSceneViewDescriptorSets()[currentFrame], material, ViewportType::ViewportType_SceneView);
+                                m_renderToTextureSceneViewRenderPass.DrawIndexed(renderShape.mesh.GetModel()); // Create final VkImage on m_sceneViewTexture's m_images member variable                                                       
+                            }
+                        }                        
                     }
                 }
 
@@ -1439,7 +1457,7 @@ namespace FlatEngine
                     }                    
                 }
 
-                // Render the Mesh but using the fl_empty material (empty meshes
+                // Render the Mesh but using the fl_empty material (empty meshes)
                 if (meshesMissingTextures.size())
                 {
                     m_renderToTextureGameViewRenderPass.RecordCommandBuffer(GetMaterial("fl_empty")->GetGraphicsPipeline());

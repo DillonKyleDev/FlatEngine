@@ -534,19 +534,13 @@ namespace FlatEngine
 				"GetOwningObject", &Button::GetOwningObject,
 				"GetOwnerID", &Button::GetOwnerID,
 				"SetActive", &Button::SetActive,
-				"IsActive", &Button::IsActive,
-				"SetActiveDimensions", &Button::SetDimensions,
-				"SetActiveOffset", & Button::SetOffset,
-				"GetActiveOffset", &Button::GetOffset,
+				"IsActive", &Button::IsActive,				
 				"GetActiveLayer", & Button::GetLayer,
 				"MouseIsOver", &Button::MouseIsOver,
 				"SetLeftClick", &Button::SetLeftClick,
 				"GetLeftClick", & Button::GetLeftClick,
 				"SetRightClick", & Button::SetRightClick,
-				"GetRightClick", & Button::GetRightClick,
-				"SetFunctionName", &Button::SetFunctionName,
-				"GetFunctionName", &Button::GetFunctionName,
-				"SetFunctionParams", &Button::SetFunctionParamsLua
+				"GetRightClick", & Button::GetRightClick
 			);
 
 			lua.new_usertype<Script>("Script",
@@ -1223,7 +1217,7 @@ namespace FlatEngine
 			GameObject* callingObject = caller->GetOwningObject();
 			Script* script = callingObject->Get<Script>();
 
-			if (script && script->IsActive() && script->GetScripts().size())
+			if (script != nullptr && script->IsActive() && script->GetScripts().size())
 			{
 				for (ScriptData scriptData : callingObject->Get<Script>()->GetScripts())
 				{
@@ -1264,7 +1258,7 @@ namespace FlatEngine
 		{
 			Script* script = caller->Get<Script>();
 
-			if (script->IsActive() && script->GetScripts().size())
+			if (script != nullptr && script->IsActive() && script->GetScripts().size())
 			{
 				for (ScriptData scriptData : caller->Get<Script>()->GetScripts())
 				{

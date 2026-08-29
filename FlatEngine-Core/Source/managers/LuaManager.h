@@ -100,6 +100,28 @@ namespace FlatEngine
             std::string tempParameterName = "";
             int tempParameterType = 0;     
             
+            json GetData()
+            {
+                json jsonData;
+
+                for (auto parameter : parameters)
+                {
+                    jsonData.push_back(parameter.second.GetData());
+                }
+
+                return jsonData;
+            }
+
+            void PutData(json jsonData, std::string name)
+            {
+                if (JsonHelper::JsonContains(jsonData, "functionParameters", name))
+                {
+                    LuaParameter parameter;
+                    parameter.PutData(jsonData.at("functionParameters"), name);
+                    Add(parameter);
+                }
+            }
+
             void Add(LuaManager::LuaParameter parameter)
             {
                 if (parameters.count(parameter.name) == 0)

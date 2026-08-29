@@ -25,7 +25,7 @@ namespace FlatEngine
 
 	Sprite::~Sprite()
 	{
-		RemoveTexture();
+		// RemoveTexture();
 	}
 
 	json Sprite::GetData(bool b_IDOverride)
@@ -74,7 +74,7 @@ namespace FlatEngine
 
 	void Sprite::SetTexture(std::string newPath)
 	{		
-		// mesh.CleanupTextures();
+		RemoveTexture();
 
 		if (newPath != "")
 		{				

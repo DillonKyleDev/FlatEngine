@@ -528,6 +528,12 @@ namespace FlatEngine
 		// Converts from world grid space in Game View to screen space
 		Vector2 ConvertWorldToScreen(Vector2 positionInWorld)
 		{
+			Camera* primaryCamera = SceneManager::loadedScene.GetPrimaryCamera();
+			if (primaryCamera == nullptr)
+				return Vector2();
+
+			Vector3 primaryCameraPos = primaryCamera->GetOwningObject()->Get<Transform>()->GetPosition();
+
 			float x = gameViewCenter.x + (positionInWorld.x * gameViewGridStep);
 			float y = gameViewCenter.y - (positionInWorld.y * gameViewGridStep);
 

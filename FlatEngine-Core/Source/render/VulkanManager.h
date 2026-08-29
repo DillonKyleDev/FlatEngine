@@ -29,7 +29,6 @@ namespace FlatEngine
         {      
         public:
             Vulkan();
-            ~Vulkan();
             void Cleanup();
 
             bool Init(int windowWidth, int windowHeight);

@@ -13,6 +13,7 @@
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include "Types.h"
+
 #include <box2d.h>
 #include <math_functions.h>
 #include <unordered_map>
@@ -554,17 +555,11 @@ namespace FlatEngine
 		}
 	}
 
-	std::vector<SceneRenderObject> CreateCapsuleRenderObjects()
-	{
-		return std::vector<SceneRenderObject>();
-	}
-
 	void Body2D::SetPosition(Vector2 newPosition)
 	{
 		position = newPosition;	
 		Wake();
 		b2Body_SetTransform(m_bodyID, Vector2::GetB2Vec2(position), GetB2Rotation());
-		// PhysicsManager::gamePhysics2D.RecreateBody(this);
 	}
 
 	Vector2 Body2D::GetPosition()

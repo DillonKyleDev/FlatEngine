@@ -2,9 +2,8 @@
 #include "components/Canvas.h"
 #include "components/Component.h"
 #include "managers/LuaManager.h"
+#include "physics/Shape2D.h"
 #include "tools/JsonHelper.h"
-#include "tools/Vector2.h"
-#include "tools/Vector4.h"
 
 #include <string>
 
@@ -20,18 +19,11 @@ namespace FlatEngine
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 
-		void SetOffset(Vector2 offset);	
-		Vector2 GetOffset();	
+		bool CheckForMouseOver(Vector2 mousePos);
 		int GetLayer();
-		Vector2 GetDimensions();
-		void SetDimensions(Vector2 dimensions);
-		
 		void SetMouseIsOver(bool b_isOver);
 		void SetIsOverFired(bool b_fired);
 		bool MouseIsOver();
-		//ImVec4(activeTop, activeRight, activeBottom, activeLeft)
-		void CalculateActiveEdges();
-		Vector4 GetActiveEdges();
 		void SetFunctionName(std::string functionName);
 		std::string GetFunctionName();
 		void SetIsCPP(bool b_isCPP);
@@ -45,6 +37,8 @@ namespace FlatEngine
 		bool GetRightClick();
 
 		CanvasPlacement* GetCanvasPlacement();
+		void UpdateButtonTransform();
+		void UpdateRenderShapes();
 
 		void SetOnMouseEnterCallback(void (*callback)(GameObject* caller));
 		void SetOnMouseLeaveCallback(void (*callback)(GameObject* caller));
@@ -65,16 +59,15 @@ namespace FlatEngine
 		void OnRightClick();
 
 		LuaManager::LuaParameterContainer parameterContainer;
+		std::string functionName;
+		ShapeType2D shapeType;
+		Shape2DDataVariant shapeData;
+		std::vector<SceneRenderObject> renderShapes;
 
 	private:
-		CanvasPlacement m_canvasPlacement;
+		CanvasPlacement m_canvasPlacement;		
 		bool m_b_mouseIsOver;
-		bool m_b_hasMouseOverFired;
-		Vector2 m_dimensions;
-		Vector4 m_activeEdges;
-		Vector2 m_offset;		
-		std::string m_functionName;
-		LuaManager::LuaParameter m_functionParams;	
+		bool m_b_hasMouseOverFired;		
 		bool m_b_luaFunction;
 		bool m_b_leftClick;
 		bool m_b_rightClick;

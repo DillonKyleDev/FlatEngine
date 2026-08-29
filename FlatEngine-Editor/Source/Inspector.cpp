@@ -512,100 +512,6 @@ namespace FlatGui
 			}
 		}
 
-		void RenderButtonComponent(FL::Button* button)
-		{
-			FL::Vector2 dimensions = button->GetDimensions();			
-			FL::Vector2 offset = button->GetOffset();
-			int activeLayer = button->GetLayer();	
-			bool b_leftClick = button->GetLeftClick();
-			bool b_rightClick = button->GetRightClick();
-			FL::LuaManager::LuaParameter functionParams = button->GetFunctionParams();
-			long ownerID = button->GetOwnerID();
-			FL::GameObject* owner = FL::SceneManager::loadedScene.GetObjectByID(ownerID);
-			// bool b_cppEvent = functionParams.b_cppEvent;
-			// bool b_luaEvent = functionParams.b_luaEvent;		
-
-			RenderCanvasPlacementComponent(button);
-			FL::GuiCore::TableProps leftClickTableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click");
-			leftClickTableProps.b_topLabelBorder = true;
-			if (FL::GuiCore::RenderBoolTable(leftClickTableProps, b_leftClick)) button->SetLeftClick(b_leftClick);
-			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_leftClick)) button->SetRightClick(b_rightClick);	
-			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##dimensions" + std::to_string(ownerID), "Dimensions"), dimensions)) button->SetDimensions(dimensions);				
-			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##offset" + std::to_string(ownerID), "Offset"), offset)) button->SetOffset(offset);
-			FL::GuiCore::TableProps callbackFuncTableProps("##ButtonEventName", "Callback Function");
-			callbackFuncTableProps.b_bottomLabelBorder = true;
-			FL::GuiCore::RenderStringTable(callbackFuncTableProps, button->parameterContainer.name);			
-
-			FL::GuiCore::MoveScreenCursor(0, 3);
-			FL::GuiCore::RenderLuaParametersTable("##ButtonEventParameters", "On Click Parameters", button->parameterContainer);	
-
-			// std::string choices[2] = { "C++", "Lua" };
-			// std::string currentChoice = "";
-
-			// if (b_cppEvent)
-			// {
-			// 	currentChoice = "C++";
-			// }
-			// else if (b_luaEvent)
-			// {
-			// 	currentChoice = "Lua";
-			// }
-
-			// std::string cppRadioID = "C++ Function##" + std::to_string(ownerID);
-			// std::string luaRadioID = "Lua Function##" + std::to_string(ownerID);
-
-			// if (ImGui::RadioButton(cppRadioID.c_str(), currentChoice == choices[0]))
-			// {
-			// 	currentChoice = choices[0];
-			// 	functionParams->b_cppEvent = true;
-			// 	functionParams->b_luaEvent = false;
-			// }
-			// if (ImGui::RadioButton(luaRadioID.c_str(), currentChoice == choices[1]))
-			// {
-			// 	currentChoice = choices[1];
-			// 	functionParams->b_cppEvent = false;
-			// 	functionParams->b_luaEvent = true;
-			// }
-
-			// if (functionParams->b_cppEvent)
-			// {
-			// 	int currentEventFunction = 0;
-			// 	std::vector<std::string> eventFunctions = { "- none -" };
-
-			// 	for (std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>::iterator iter = FL::F_CPPAnimationEventFunctions.begin(); iter != FL::F_CPPAnimationEventFunctions.end(); iter++)
-			// 	{
-			// 		eventFunctions.push_back(iter->first);
-			// 	}
-
-			// 	for (int i = 0; i < eventFunctions.size(); i++)
-			// 	{
-			// 		if (functionParams->functionName == eventFunctions[i])
-			// 		{
-			// 			currentEventFunction = i;
-			// 		}
-			// 	}
-
-			// 	if (eventFunctions.size())
-			// 	{
-			// 		FL::GuiCore::MoveScreenCursor(0, 3);
-			// 		ImGui::Text("%s", "Callback Function:");
-			// 		ImGui::SameLine();
-			// 		FL::GuiCore::MoveScreenCursor(0, -3);
-			// 		std::string comboID = "##EventFunctionName";
-			// 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
-			// 		if (FL::GuiCore::RenderCombo(comboID, eventFunctions[currentEventFunction], eventFunctions, currentEventFunction))
-			// 		{
-			// 			functionParams->functionName = eventFunctions[currentEventFunction];
-			// 		}		
-			// 		FL::GuiCore::MoveScreenCursor(0, -6);
-			// 	}
-			// 	else
-			// 	{
-			// 		ImGui::TextWrapped("Add C++ callback functions using AddCPPAnimationEventFunction() in attached C++ script.");
-			// 	}
-			// }
-		}
-
 		void RenderCanvasComponent(FL::Canvas* canvas)
 		{
 			FL::Vector2 dimensions = canvas->GetDimensions();
@@ -1162,8 +1068,9 @@ namespace FlatGui
 				return;
 
 			bool b_changed = false;
-			
-			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Density" + ID, "Density", FL::Vector2(), 0.001f, 0.001f), shape->density);
+			FL::GuiCore::TableProps densityTableProps("##" + shapeString + "Density" + ID, "Density", FL::Vector2(), 0.001f, 0.001f);
+			densityTableProps.b_topLabelBorder = true;
+			b_changed |= FL::GuiCore::RenderFloatTable(densityTableProps, shape->density);
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Friction" + ID, "Friction", FL::Vector2(), 0.001f, 0.001f), shape->friction);
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##" + shapeString + "Restitution" + ID, "Restitution", FL::Vector2(), 0.001f, 0.001f), shape->restitution);
 			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##EnableSensorEvents" + ID, "Enable Sensor Events"), shape->b_enableSensorEvents);
@@ -1403,7 +1310,7 @@ namespace FlatGui
 			angularVelocityTableProps.labelBorderBottom = "tableValueBorderTop";
 			angularVelocityTableProps.valueBorderBottom = "tableValueBorderTop";
 			FL::GuiCore::RenderTextTable(angularVelocityTableProps, { std::to_string(angularVelocity) });									
-			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::MoveScreenCursor(0, 4);
 
 			if (body->GetShapes().size() == 0)
 			{		
@@ -1495,6 +1402,97 @@ namespace FlatGui
 				if (jointIDToDelete != -1)
 					body->RemoveJoint(jointIDToDelete);
 			}
+		}
+
+		void RenderButtonComponent(FL::Button* button)
+		{	
+			int activeLayer = button->GetLayer();	
+			bool b_leftClick = button->GetLeftClick();
+			bool b_rightClick = button->GetRightClick();
+			// FL::LuaManager::LuaParameter functionParams = button->parameterContainer;
+			long ownerID = button->GetOwnerID();
+			FL::GameObject* owner = FL::SceneManager::loadedScene.GetObjectByID(ownerID);
+			// bool b_cppEvent = functionParams.b_cppEvent;
+			// bool b_luaEvent = functionParams.b_luaEvent;		
+
+			RenderCanvasPlacementComponent(button);
+			FL::GuiCore::TableProps leftClickTableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click");
+			leftClickTableProps.b_topLabelBorder = true;
+			if (FL::GuiCore::RenderBoolTable(leftClickTableProps, b_leftClick)) button->SetLeftClick(b_leftClick);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_leftClick)) button->SetRightClick(b_rightClick);							
+			FL::GuiCore::TableProps callbackFuncTableProps("##ButtonCallbackFuncName", "Callback Function");
+			callbackFuncTableProps.b_bottomLabelBorder = true;
+			FL::GuiCore::RenderStringTable(callbackFuncTableProps, button->functionName);			
+
+			FL::GuiCore::MoveScreenCursor(0, 3);
+			FL::GuiCore::RenderLuaParametersTable("##ButtonEventParameters", "On Click Parameters", button->parameterContainer);	
+			FL::GuiCore::MoveScreenCursor(0, 4);			
+
+			// std::string choices[2] = { "C++", "Lua" };
+			// std::string currentChoice = "";
+
+			// if (b_cppEvent)
+			// {
+			// 	currentChoice = "C++";
+			// }
+			// else if (b_luaEvent)
+			// {
+			// 	currentChoice = "Lua";
+			// }
+
+			// std::string cppRadioID = "C++ Function##" + std::to_string(ownerID);
+			// std::string luaRadioID = "Lua Function##" + std::to_string(ownerID);
+
+			// if (ImGui::RadioButton(cppRadioID.c_str(), currentChoice == choices[0]))
+			// {
+			// 	currentChoice = choices[0];
+			// 	functionParams->b_cppEvent = true;
+			// 	functionParams->b_luaEvent = false;
+			// }
+			// if (ImGui::RadioButton(luaRadioID.c_str(), currentChoice == choices[1]))
+			// {
+			// 	currentChoice = choices[1];
+			// 	functionParams->b_cppEvent = false;
+			// 	functionParams->b_luaEvent = true;
+			// }
+
+			// if (functionParams->b_cppEvent)
+			// {
+			// 	int currentEventFunction = 0;
+			// 	std::vector<std::string> eventFunctions = { "- none -" };
+
+			// 	for (std::map<std::string, void (*)(GameObject*, Animation::S_EventFunctionParam)>::iterator iter = FL::F_CPPAnimationEventFunctions.begin(); iter != FL::F_CPPAnimationEventFunctions.end(); iter++)
+			// 	{
+			// 		eventFunctions.push_back(iter->first);
+			// 	}
+
+			// 	for (int i = 0; i < eventFunctions.size(); i++)
+			// 	{
+			// 		if (functionParams->functionName == eventFunctions[i])
+			// 		{
+			// 			currentEventFunction = i;
+			// 		}
+			// 	}
+
+			// 	if (eventFunctions.size())
+			// 	{
+			// 		FL::GuiCore::MoveScreenCursor(0, 3);
+			// 		ImGui::Text("%s", "Callback Function:");
+			// 		ImGui::SameLine();
+			// 		FL::GuiCore::MoveScreenCursor(0, -3);
+			// 		std::string comboID = "##EventFunctionName";
+			// 		ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+			// 		if (FL::GuiCore::RenderCombo(comboID, eventFunctions[currentEventFunction], eventFunctions, currentEventFunction))
+			// 		{
+			// 			functionParams->functionName = eventFunctions[currentEventFunction];
+			// 		}		
+			// 		FL::GuiCore::MoveScreenCursor(0, -6);
+			// 	}
+			// 	else
+			// 	{
+			// 		ImGui::TextWrapped("Add C++ callback functions using AddCPPAnimationEventFunction() in attached C++ script.");
+			// 	}
+			// }
 		}
 
 		void RenderTileMapComponent(FL::TileMap* tileMap)

@@ -22,7 +22,7 @@ namespace FlatEngine
 		m_dimensions = Vector2(20, 10);
 		m_activeEdges = Vector4();
 		m_screenPixelsPerGridSpace = 64.0f;
-		m_renderOutline = CreateQuadObject();
+		m_renderOutline = std::move(CreateQuadObject());
 		m_renderOutline.mesh.SetUBOVec4("color", Assets::assetManager.GetColor("canvasOutline"));
 	}
 
@@ -130,6 +130,14 @@ namespace FlatEngine
 		projection[1][1] *= -1;
 
 		return projection;
+	}
+
+	Vector2 Canvas::GetMousePosOnCanvas(Vector2 mousePos)
+	{		
+		Vector2 pixelOffsetFromCenter = mousePos - SceneView::sceneViewportCenter;
+		Vector2 gridOffsetFromCenter = pixelOffsetFromCenter * (1.0f / m_screenPixelsPerGridSpace);
+		gridOffsetFromCenter.y *= -1.0f;
+		return gridOffsetFromCenter;
 	}
 
 	float Canvas::GetPixelsPerGridSpace()

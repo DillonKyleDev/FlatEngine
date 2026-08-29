@@ -124,6 +124,7 @@ F_Colors = {
 	yAxisDark  = Vector4:new(0.12, 0.2925, 0.645, 1.0),
 	zAxisDark  = Vector4:new(0.615, 0.12, 0.12, 1.0),
 	clearColor = Vector4:new(0.2, 0.2, 0.21, 1.0), -- Vector4:new(0.25, 0.25, 0.35, 1.0),
+	canvasButtonActive = Vector4:new(0.9, 0.54, 0.15, 1.0),
 	-- Inspector	
 	transformXBGLight  = Vector4:new(0.08, 0.39, 0.12, 1.0),
 	transformYBGLight  = Vector4:new(0.08, 0.195, 0.43, 1.0),

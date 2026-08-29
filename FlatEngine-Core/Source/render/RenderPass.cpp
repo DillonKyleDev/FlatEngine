@@ -20,15 +20,8 @@ namespace FlatEngine
     {
         m_renderPass = VK_NULL_HANDLE;
         m_b_initialized = false;
-        m_framebuffers = std::vector<VkFramebuffer>();
-        m_imageViews = std::vector<VkImageView>();
-        m_commandBuffers = std::vector<VkCommandBuffer>();
         m_commandPool = nullptr;
-
-        m_renderPassAttachments = std::vector<VkAttachmentDescription>();
-        m_renderPassAttachmentRefs = std::vector<VkAttachmentReference>();
-        m_subpasses = std::vector<VkSubpassDescription>();
-        m_subpassDependencies = std::vector<VkSubpassDependency>();
+        
         m_b_defaultRenderPassConfig = false;
         m_colorFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
         // antialiasing
@@ -38,7 +31,6 @@ namespace FlatEngine
         m_colorImageView = VK_NULL_HANDLE;
         m_b_msaaEnabled = false;
         // depth testing
-        m_depthTexture = Texture();
         m_b_depthBuffersEnabled = false;
         
         m_imageUsageFlags = 0;

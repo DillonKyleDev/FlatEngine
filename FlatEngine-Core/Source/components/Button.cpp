@@ -64,7 +64,6 @@ namespace FlatEngine
 		json shapeDataJson = json::object();
 		if (!componentJson.empty() && JsonHelper::JsonContains(componentJson, "shapeData", objectName))		
 			shapeDataJson = componentJson.at("shapeData");
-
 		shapeType = GetTypeFromString<ShapeType2D>(ShapeType2DFromString, JsonHelper::CheckJsonString(componentJson, "shapeType", objectName));
 
 		switch (shapeType)
@@ -88,7 +87,10 @@ namespace FlatEngine
 			canvasPlacementJson = componentJson.at("canvasPlacement");
 		m_canvasPlacement.PutData(canvasPlacementJson, objectName);		
 
-		parameterContainer.PutData(componentJson, objectName);
+		json parametersJson = json::object();
+		if (JsonHelper::JsonContains(componentJson, "functionParameters", objectName))		
+			parametersJson = componentJson.at("functionParameters");
+		parameterContainer.PutData(parametersJson, objectName);
 
 		functionName = JsonHelper::CheckJsonString(componentJson, "functionName", objectName);
 		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "b_luaFunction", objectName));						
@@ -103,16 +105,17 @@ namespace FlatEngine
 		Canvas* canvas = owner->GetFirstCanvas();
 		Transform* ownerTransform = owner->Get<Transform>();
 		Vector3 ownerPos = ownerTransform->GetPosition();
+		Vector3 ownerScale = ownerTransform->GetAbsoluteScale();
 		Vector2 worldPos = canvas->GetMousePosOnCanvas(mousePos);
 		b2Vec2 worldPoint = { worldPos.x, worldPos.y };
 
-		std::visit([this, canvas, mousePos, &b_mouseOver, ownerTransform, ownerPos, worldPoint](auto&& sData)
+		std::visit([this, canvas, mousePos, &b_mouseOver, ownerTransform, ownerPos, ownerScale, worldPoint](auto&& sData)
 		{
 			using T = std::decay_t<decltype(sData)>;
 
 			if constexpr (std::is_same_v<T, BoxShape2DData>)
 			{	
-				b2Polygon polygon = b2MakeBox(sData.dimensions.x * 0.5f, sData.dimensions.y * 0.5f);												
+				b2Polygon polygon = b2MakeBox(sData.dimensions.x * ownerScale.x * 0.5f, sData.dimensions.y * ownerScale.y * 0.5f);												
 				b2Transform b2transform;				
 				b2transform.p = { ownerPos.x, ownerPos.y };
 				b2transform.q = b2MakeRot(Numbers::DegreesToRadians(ownerTransform->GetRotation().z));

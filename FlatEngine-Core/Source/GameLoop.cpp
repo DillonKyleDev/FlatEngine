@@ -259,7 +259,7 @@ namespace FlatEngine
 						b_hasLeftClicked = false;
 					}	
 
-					if (ImGui::IsMouseClicked(ImGuiMouseButton_Right) && !b_hasRightClicked)
+					if (ImGui::IsKeyDown(ImGuiKey_MouseRight) && !b_hasRightClicked)
 					{
 						// Scripts
 						b_hasRightClicked = true;

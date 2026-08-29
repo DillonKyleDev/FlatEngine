@@ -442,7 +442,7 @@ namespace FlatEngine
 		{			
 			Canvas* canvas = GetOwningObject()->GetFirstCanvas();
 			Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();
-			Vector3 textureScale = transform->GetScale();				
+			Vector3 textureScale = transform->GetAbsoluteScale();				
 			// Set actual position based on percent and pixel positioning.	
 			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize));						
 			// Then use the position based on the new position + the pivot offset but don't actually set that as the position
@@ -463,7 +463,7 @@ namespace FlatEngine
 		{			
 			Transform transformCopy = Transform(*transform);
 			Vector3 pos = transformCopy.GetPosition();			
-			Vector3 textureScale = transformCopy.GetScale();
+			Vector3 textureScale = transformCopy.GetAbsoluteScale();
 			Sprite* sprite = GetOwningObject()->Get<Sprite>();
 			Vector2 spriteOffset = sprite->GetOffset();
 			Vector2 pivotOffset = sprite->GetPivot()->offset;

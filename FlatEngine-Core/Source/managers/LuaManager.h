@@ -114,11 +114,14 @@ namespace FlatEngine
 
             void PutData(json jsonData, std::string name)
             {
-                if (JsonHelper::JsonContains(jsonData, "functionParameters", name))
+                if (jsonData.empty())
+                    return;
+                
+                for (int i = 0; i < jsonData.size(); i++)
                 {
                     LuaParameter parameter;
-                    parameter.PutData(jsonData.at("functionParameters"), name);
-                    Add(parameter);
+                    parameter.PutData(jsonData[i], name);
+                    Add(parameter);                
                 }
             }
 

@@ -78,11 +78,11 @@ namespace FlatEngine
 
 		if (m_font != nullptr && m_texture != nullptr)
 		{
-			m_texture->LoadFromRenderedText(m_text, m_white, m_font);
-			m_textureWidth = m_texture->GetWidth();
-			m_textureHeight = m_texture->GetHeight();
-			m_canvasPlacement.pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);
-			m_canvasPlacement.pivot->UpdatePivotOffset();
+			// m_texture->LoadFromRenderedText(m_text, m_white, m_font);
+			// m_textureWidth = m_texture->GetWidth();
+			// m_textureHeight = m_texture->GetHeight();
+			// m_canvasPlacement.pivot->dimensions = Vector2(m_textureWidth, m_textureHeight);
+			// m_canvasPlacement.pivot->UpdatePivotOffset();
 		}		
 	}
 

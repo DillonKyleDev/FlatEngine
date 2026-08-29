@@ -85,29 +85,29 @@ namespace FlatEngine
 
 	bool Texture::LoadFromRenderedText(std::string textureText, SDL_Color textColor, TTF_Font* font)
 	{
-		//FreeSurface();		
-		//SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
+		// // FreeSurface();		
+		// SDL_Surface* textSurface = TTF_RenderText_Solid(font, textureText.c_str(), textColor);
 
-		//if (textSurface == NULL)
-		//{
-		//	printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
-		//}
-		//else
-		//{
-		//	if (m_texture == NULL)
-		//	{
-		//		printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
-		//	}
-		//	else
-		//	{
-		//		m_textureWidth = textSurface->w;
-		//		m_textureHeight = textSurface->h;
-		//	}
+		// if (textSurface == NULL)
+		// {
+		// 	printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+		// }
+		// else
+		// {
+		// 	if (m_texture == NULL)
+		// 	{
+		// 		printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+		// 	}
+		// 	else
+		// 	{
+		// 		m_textureWidth = textSurface->w;
+		// 		m_textureHeight = textSurface->h;
+		// 	}
 
-		//	SDL_FreeSurface(textSurface);
-		//}
+		// 	SDL_FreeSurface(textSurface);
+		// }
 
-		return true;
+		// return true;
 	}
 
 	void Texture::FreeTexture()

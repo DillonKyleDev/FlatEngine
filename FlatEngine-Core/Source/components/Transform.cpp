@@ -128,14 +128,14 @@ namespace FlatEngine
 
 	Vector3 Transform::GetAbsoluteScale()
 	{
-		Vector3 scaleOrigin = 1;
+		Vector3 parentScale = Vector3(1);
 
 		if (GetOwningObject() != nullptr && GetOwningObject()->GetParent() != nullptr)
 		{
-			scaleOrigin = GetOwningObject()->GetParent()->Get<Transform>()->GetAbsoluteScale();
+			parentScale = GetOwningObject()->GetParent()->Get<Transform>()->GetAbsoluteScale();
 		}
 
-		return scaleOrigin * m_scale;
+		return parentScale * m_scale;
 	}
 
 	void Transform::SetScale(Vector3 newScale)

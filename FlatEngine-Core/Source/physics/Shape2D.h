@@ -7,6 +7,8 @@
 #include "tools/Vector2.h"
 #include "tools/Vector4.h"
 
+#include <box2d.h>
+#include <id.h>
 #include <string>
 #include <variant>
 
@@ -41,7 +43,7 @@ namespace FlatEngine
 	};
 
 	struct BoxShape2DData {
-		b2ShapeId shapeID;
+		b2ShapeId shapeID = b2_nullShapeId;
 		Vector2 offset = Vector2();
 		b2Rot rotationOffset = b2MakeRot(0);
 		Vector2 dimensions = Vector2(2.0f, 2.0f);
@@ -78,7 +80,7 @@ namespace FlatEngine
 			if (newDimensions.x > 0 && newDimensions.y > 0)
 			{			
 				dimensions = newDimensions;					
-				PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));
+				PhysicsManager::gamePhysics2D.RecreateShape(shapeID);
 			}
 		}
 		void SetCornerRadius(float newCornerRadius)
@@ -86,22 +88,22 @@ namespace FlatEngine
 			if (newCornerRadius >= 0)
 			{
 				cornerRadius = newCornerRadius;
-				PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));
+				PhysicsManager::gamePhysics2D.RecreateShape(shapeID);
 			}
 		}
 		void SetOffset(Vector2 newOffset)
 		{
 			offset = newOffset;
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));	
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);	
 		}
 		void SetRotationOffset(float newRotationOffset)
 		{
 			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(newRotationOffset));	
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));		
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);		
 		}
 	};
 	struct CircleShape2DData {
-		b2ShapeId shapeID;
+		b2ShapeId shapeID = b2_nullShapeId;
 		Vector2 offset = Vector2();
 		b2Rot rotationOffset = b2MakeRot(0);
 		float radius = 1.0f;
@@ -133,22 +135,22 @@ namespace FlatEngine
 			if (radius > 0)
 			{			
 				radius = newRadius;
-				PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));
+				PhysicsManager::gamePhysics2D.RecreateShape(shapeID);
 			}
 		}
 		void SetOffset(Vector2 newOffset)
 		{
 			offset = newOffset;
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));	
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);	
 		}
 		void SetRotationOffset(float newRotationOffset)
 		{
 			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(newRotationOffset));		
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));	
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);	
 		}
 	};
 	struct CapsuleShape2DData {
-		b2ShapeId shapeID;
+		b2ShapeId shapeID = b2_nullShapeId;
 		Vector2 offset = Vector2();
 		b2Rot rotationOffset = b2MakeRot(0);
 		bool b_horizontal = false;
@@ -193,8 +195,8 @@ namespace FlatEngine
 
 			if (newLength < radius * 2)		
 				radius = newLength / 2;		
-			
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));
+						
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);
 		}
 		void SetRadius(float newRadius)
 		{
@@ -209,21 +211,21 @@ namespace FlatEngine
 			if (radius > length / 2)	
 				length = radius * 2;	
 
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);
 		}
 		void SetOffset(Vector2 newOffset)
 		{
 			offset = newOffset;
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));	
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);	
 		}
 		void SetRotationOffset(float newRotationOffset)
 		{
 			rotationOffset = b2MakeRot(Numbers::DegreesToRadians(newRotationOffset));	
-			PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));		
+			PhysicsManager::gamePhysics2D.RecreateShape(shapeID);		
 		}
 	};
 	struct PolygonShape2DData {
-		b2ShapeId shapeID;
+		b2ShapeId shapeID = b2_nullShapeId;
 		float cornerRadius = 0.0f;
 		std::vector<Vector2> points = { {1.0f, -1.0f}, {0.0f, 0.5f}, {-1.0f, -1.0f} };
 		bool b_showPoints;
@@ -276,13 +278,13 @@ namespace FlatEngine
 			if (newCornerRadius >= 0)
 			{
 				cornerRadius = newCornerRadius;
-				PhysicsManager::gamePhysics2D.RecreateShape(static_cast<Shape2D*>(b2Shape_GetUserData(shapeID)));
+				PhysicsManager::gamePhysics2D.RecreateShape(shapeID);
 			}
 		}
 	};
 	struct ChainShape2DData {
-		b2ChainId chainID;
-		b2ShapeId shapeID;
+		b2ChainId chainID = b2_nullChainId;
+		b2ShapeId shapeID = b2_nullShapeId;
 		bool b_isLoop = false;
 		std::vector<Vector2> points = { {1.0f, -1.0f}, {2.0f, 0.0f}, {-2.0f, 0.0f}, {-1.0f, -1.0f} };	
 		bool b_showPoints;

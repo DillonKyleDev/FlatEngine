@@ -1,6 +1,5 @@
 #pragma once
 #include "TagList.h"
-#include "tools/Vector4.h"
 #include "tools/Vector2.h"
 
 #include <list>
@@ -38,6 +37,7 @@ namespace FlatEngine
 			void CreateShape(FL::Shape2D* shape, FL::Body2D* body = nullptr);
 			void DestroyShape(FL::Shape2D* shape);
 			void RecreateShape(FL::Shape2D* shape);
+			void RecreateShape(b2ShapeId shapeID);
 
 			void CreateJoint(FL::Joint2D* joint, FL::Body2D* bodyA = nullptr, FL::Body2D* bodyB = nullptr);
 			void DestroyJoint(FL::Joint2D* joint);

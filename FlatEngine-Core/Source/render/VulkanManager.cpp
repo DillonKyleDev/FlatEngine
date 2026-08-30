@@ -1365,7 +1365,7 @@ namespace FlatEngine
                 // BUTTON OUTLINES
                 for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())
                 {                                            
-                    for (SceneRenderObject& renderShape : button.renderShapes)
+                    for (SceneRenderObject& renderShape : button.GetRenderShapes())
                     {           
                         std::shared_ptr<Material> material = renderShape.mesh.GetSceneViewMaterial();
                         if (renderShape.mesh.Initialized() && material != nullptr)

@@ -1282,13 +1282,13 @@ namespace FlatEngine
 		// Button On Click function events directly added through the Button Component in the Inspector window
 		void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc)
 		{
-			LoadLuaGameObject(caller, eventFunc + " (Lua)");
+			LoadLuaGameObject(caller, eventFunc + "() (Lua)");
 			CallVoidLuaFunction<GameObject*>(eventFunc);
 		}
 		// Button On Click function events directly added through the Button Component in the Inspector window
 		void CallLuaButtonOnClickFunction(GameObject* caller, std::string eventFunc, LuaParameter params)
 		{
-			LoadLuaGameObject(caller, eventFunc + " (Lua)");
+			LoadLuaGameObject(caller, eventFunc + "() (Lua)");
 			sol::protected_function protectedFunc = lua[eventFunc];
 			if (protectedFunc)
 			{

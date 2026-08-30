@@ -3,6 +3,7 @@
 #include "components/Component.h"
 #include "managers/LuaManager.h"
 #include "physics/Shape2D.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/JsonHelper.h"
 
 #include <string>
@@ -39,6 +40,7 @@ namespace FlatEngine
 		CanvasPlacement* GetCanvasPlacement();
 		void UpdateButtonTransform();
 		void UpdateRenderShapes();
+		std::vector<SceneRenderObject>& GetRenderShapes();
 
 		void SetOnMouseEnterCallback(void (*callback)(GameObject* caller));
 		void SetOnMouseLeaveCallback(void (*callback)(GameObject* caller));
@@ -60,9 +62,15 @@ namespace FlatEngine
 
 		LuaManager::LuaParameterContainer parameterContainer;
 		std::string functionName;
-		ShapeType2D shapeType;
-		Shape2DDataVariant shapeData;
-		std::vector<SceneRenderObject> renderShapes;
+		ShapeType2D shapeType;		
+		BoxShape2DData boxShapeData;
+		CircleShape2DData circleShapeData;
+		CapsuleShape2DData capsuleShapeData;
+		PolygonShape2DData polygonShapeData;
+		std::vector<SceneRenderObject> boxRenderShapes;
+		std::vector<SceneRenderObject> circleRenderShapes;
+		std::vector<SceneRenderObject> capsuleRenderShapes;
+		std::vector<SceneRenderObject> polygonRenderShapes;
 
 	private:
 		CanvasPlacement m_canvasPlacement;		

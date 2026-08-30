@@ -384,6 +384,16 @@ namespace FlatEngine
 			CreateShape(shape, SceneManager::loadedScene.GetObjectByID(shape->GetOwnerID())->Get<Body2D>());
 		}
 
+		void Physics2D::RecreateShape(b2ShapeId shapeID)
+		{
+			if (b2Shape_IsValid(shapeID))
+			{
+				Shape2D* shape = static_cast<Shape2D*>(b2Shape_GetUserData(shapeID));
+				DestroyShape(shape);
+				CreateShape(shape, SceneManager::loadedScene.GetObjectByID(shape->GetOwnerID())->Get<Body2D>());
+			}
+		}
+
 		void Physics2D::CreateJoint(Joint2D* joint, Body2D* bodyA, Body2D* bodyB)
 		{	
 			if (bodyA == nullptr)

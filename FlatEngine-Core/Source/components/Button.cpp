@@ -6,12 +6,11 @@
 #include "managers/SceneManager.h"
 #include "physics/Shape2D.h"
 #include "render/SceneView.h"
+#include "structs/SceneRenderObject.h"
 #include "tools/JsonHelper.h"
 #include "tools/Vector2.h"
 #include "tools/Vector3.h"
 #include <types.h>
-
-#include <variant>
 
 
 namespace FlatEngine
@@ -20,6 +19,9 @@ namespace FlatEngine
 	{
 		SetType(ComponentType_Button);
 		SetOwnerID(ownerID);
+
+		functionName = "";
+		shapeType = ShapeType2D_Box;	
 		m_b_mouseIsOver = false;
 		m_b_hasMouseOverFired = false;
 		functionName = "";
@@ -42,15 +44,18 @@ namespace FlatEngine
 	json Button::GetData(bool b_IDOverride)
 	{
 		json componentJson = {
-			{ "shapeType", ShapeType2DStrings[(int)shapeType] },
-			{ "functionName", functionName },
-			{ "b_luaFunction", m_b_luaFunction },
-			{ "b_leftClick", m_b_leftClick },
-			{ "b_rightClick", m_b_rightClick },
-			{ "canvasPlacement", m_canvasPlacement.GetData() }
+			{ "shapeType",        ShapeType2DStrings[(int)shapeType] },
+			{ "functionName",     functionName },
+			{ "b_luaFunction",    m_b_luaFunction },
+			{ "b_leftClick",      m_b_leftClick },
+			{ "b_rightClick",     m_b_rightClick },
+			{ "canvasPlacement",  m_canvasPlacement.GetData() },
+			{ "boxShapeData",     boxShapeData.GetData() },
+			{ "circleShapeData",  circleShapeData.GetData() },
+			{ "capsuleShapeData", capsuleShapeData.GetData() },
+			{ "polygonShapeData", polygonShapeData.GetData() },
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
-		componentJson["shapeData"] = std::visit([](auto&& sData) { return sData.GetData(); }, shapeData);
 
 		json parameters = parameterContainer.GetData();
 		
@@ -61,26 +66,20 @@ namespace FlatEngine
 
 	void Button::PutData(json componentJson, std::string objectName)
 	{
-		json shapeDataJson = json::object();
-		if (!componentJson.empty() && JsonHelper::JsonContains(componentJson, "shapeData", objectName))		
-			shapeDataJson = componentJson.at("shapeData");
-		shapeType = GetTypeFromString<ShapeType2D>(ShapeType2DFromString, JsonHelper::CheckJsonString(componentJson, "shapeType", objectName));
-
-		switch (shapeType)
-		{
-			case ShapeType2D_Box:     shapeData = BoxShape2DData();     renderShapes.push_back(CreateQuadObject()); break; 
-			case ShapeType2D_Circle:  shapeData = CircleShape2DData();  renderShapes.push_back(CreateCircleObject());  break; 
-			case ShapeType2D_Capsule: shapeData = CapsuleShape2DData(); renderShapes = CreateCapsuleObject(); break; 
-			case ShapeType2D_Polygon: shapeData = PolygonShape2DData(); renderShapes = CreatePolygonObject(); break; 			
-			case ShapeType2D_Chain:   shapeData = ChainShape2DData();   renderShapes = CreateChainObject(); break;
-			default: break;
-		}
-		std::visit([shapeDataJson, objectName](auto&& sData) { sData.PutData(shapeDataJson, objectName); }, shapeData);
-
 		if (componentJson == json::object())		
 			return;	
 		
         Component::PutData(componentJson, objectName);	
+
+		shapeType = GetTypeFromString<ShapeType2D>(ShapeType2DFromString, JsonHelper::CheckJsonString(componentJson, "shapeType", objectName));
+		boxShapeData.PutData(JsonHelper::JsonContains(componentJson, "boxShapeData", objectName) ? componentJson.at("boxShapeData") : json::object(), objectName);
+		circleShapeData.PutData(JsonHelper::JsonContains(componentJson, "circleShapeData", objectName) ? componentJson.at("circleShapeData") : json::object(), objectName);
+		capsuleShapeData.PutData(JsonHelper::JsonContains(componentJson, "capsuleShapeData", objectName) ? componentJson.at("capsuleShapeData") : json::object(), objectName);
+		polygonShapeData.PutData(JsonHelper::JsonContains(componentJson, "polygonShapeData", objectName) ? componentJson.at("polygonShapeData") : json::object(), objectName);
+		boxRenderShapes.push_back(CreateQuadObject()); 
+		circleRenderShapes.push_back(CreateCircleObject()); 
+		capsuleRenderShapes = CreateCapsuleObject(); 
+		polygonRenderShapes = CreatePolygonObject();
 
 		json canvasPlacementJson = json::object();
 		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
@@ -96,6 +95,8 @@ namespace FlatEngine
 		SetIsCPP(JsonHelper::CheckJsonBool(componentJson, "b_luaFunction", objectName));						
 		SetLeftClick(JsonHelper::CheckJsonBool(componentJson, "b_leftClick", objectName));
 		SetRightClick(JsonHelper::CheckJsonBool(componentJson, "b_rightClick", objectName));	
+
+		UpdateButtonTransform();
     }
 
 	bool Button::CheckForMouseOver(Vector2 mousePos)
@@ -104,78 +105,83 @@ namespace FlatEngine
 		GameObject* owner = SceneManager::loadedScene.GetObjectByID(GetOwnerID());
 		Canvas* canvas = owner->GetFirstCanvas();
 		Transform* ownerTransform = owner->Get<Transform>();
-		Vector3 ownerPos = ownerTransform->GetPosition();
+		Vector3 ownerPos = ownerTransform->GetPosition();		
 		Vector3 ownerScale = ownerTransform->GetAbsoluteScale();
 		Vector2 worldPos = canvas->GetMousePosOnCanvas(mousePos);
 		b2Vec2 worldPoint = { worldPos.x, worldPos.y };
+		Vector2 pivotOffset = m_canvasPlacement.pivot->offset;
+		pivotOffset = Vector2(pivotOffset.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y / GuiCore::texturePixelsPerGridSpace * -1.0f);	
+		ownerPos = ownerPos + Vector3(pivotOffset, 0);
 
-		std::visit([this, canvas, mousePos, &b_mouseOver, ownerTransform, ownerPos, ownerScale, worldPoint](auto&& sData)
+		switch (shapeType)
 		{
-			using T = std::decay_t<decltype(sData)>;
-
-			if constexpr (std::is_same_v<T, BoxShape2DData>)
+			case ShapeType2D_Box:
 			{	
-				b2Polygon polygon = b2MakeBox(sData.dimensions.x * ownerScale.x * 0.5f, sData.dimensions.y * ownerScale.y * 0.5f);												
+				Vector2 offset = m_canvasPlacement.pivot->offset;
+				b2Polygon polygon = b2MakeBox(boxShapeData.dimensions.x * 0.5f, boxShapeData.dimensions.y * 0.5f);												
 				b2Transform b2transform;				
 				b2transform.p = { ownerPos.x, ownerPos.y };
 				b2transform.q = b2MakeRot(Numbers::DegreesToRadians(ownerTransform->GetRotation().z));
 				
 				b2Vec2 localPoint = b2InvTransformPoint(b2transform, worldPoint);				
 				b_mouseOver = b2PointInPolygon(&polygon, localPoint);
+				break;
 			}
-			if constexpr (std::is_same_v<T, CircleShape2DData>)
+			case ShapeType2D_Circle:
 			{
 				b2Circle circle;
 				circle.center = { 0.0f, 0.0f };
-				circle.radius = sData.radius;
+				circle.radius = circleShapeData.radius;
 
 				b2Transform ownerXf;
 				ownerXf.p = { ownerPos.x, ownerPos.y };
 				ownerXf.q = b2MakeRot(Numbers::DegreesToRadians(ownerTransform->GetRotation().z));
 
 				b2Transform localXf;
-				localXf.p = { sData.offset.x, sData.offset.y };
-				localXf.q = sData.rotationOffset;
+				localXf.p = { circleShapeData.offset.x, circleShapeData.offset.y };
+				localXf.q = circleShapeData.rotationOffset;
 
 				b2Transform xf = b2MulTransforms(ownerXf, localXf);
 
 				b2Vec2 localPoint = b2InvTransformPoint(xf, worldPoint);
 				b_mouseOver = b2PointInCircle(&circle, localPoint);
+				break;
 			}
-			else if constexpr (std::is_same_v<T, CapsuleShape2DData>)
+			case ShapeType2D_Capsule:
 			{
 				b2Capsule capsule;
-				float halfLen = sData.length * 0.5f;
-				if (sData.b_horizontal) {
+				float halfLen = (capsuleShapeData.length - (capsuleShapeData.radius * 2.0f)) * 0.5f;
+				if (capsuleShapeData.b_horizontal) {
 					capsule.center1 = { -halfLen, 0.0f };
 					capsule.center2 = {  halfLen, 0.0f };
 				} else {
 					capsule.center1 = { 0.0f, -halfLen };
 					capsule.center2 = { 0.0f,  halfLen };
 				}
-				capsule.radius = sData.radius;
+				capsule.radius = capsuleShapeData.radius;
 
 				b2Transform ownerXf;
 				ownerXf.p = { ownerPos.x, ownerPos.y };
 				ownerXf.q = b2MakeRot(Numbers::DegreesToRadians(ownerTransform->GetRotation().z));
 
 				b2Transform localXf;
-				localXf.p = { sData.offset.x, sData.offset.y };
-				localXf.q = sData.rotationOffset;
+				localXf.p = { capsuleShapeData.offset.x, capsuleShapeData.offset.y };
+				localXf.q = capsuleShapeData.rotationOffset;
 
 				b2Transform xf = b2MulTransforms(ownerXf, localXf);
 
 				b2Vec2 localPoint = b2InvTransformPoint(xf, worldPoint);
 				b_mouseOver = b2PointInCapsule(&capsule, localPoint);
+				break;
 			}
-			else if constexpr (std::is_same_v<T, PolygonShape2DData>)
+			case ShapeType2D_Polygon:
 			{
 				std::vector<b2Vec2> b2Points;
-				b2Points.reserve(sData.points.size());
-				for (auto& p : sData.points) b2Points.push_back({ p.x, p.y });
+				b2Points.reserve(polygonShapeData.points.size());
+				for (auto& p : polygonShapeData.points) b2Points.push_back({ p.x, p.y });
 
 				b2Hull hull = b2ComputeHull(b2Points.data(), (int)b2Points.size());
-				b2Polygon polygon = b2MakePolygon(&hull, sData.cornerRadius);
+				b2Polygon polygon = b2MakePolygon(&hull, polygonShapeData.cornerRadius);
 
 				b2Transform xf;
 				xf.p = { ownerPos.x, ownerPos.y };
@@ -183,38 +189,10 @@ namespace FlatEngine
 
 				b2Vec2 localPoint = b2InvTransformPoint(xf, worldPoint);
 				b_mouseOver = b2PointInPolygon(&polygon, localPoint);
+				break;
 			}
-			else if constexpr (std::is_same_v<T, ChainShape2DData>)
-			{
-				// Box2D has no built-in point-in-chain test — chains are one-sided edge
-				// loops/strips, not solid areas. If b_isLoop, treat the outline as a
-				// polygon for hover-testing purposes (approximation, not physically
-				// identical to how the chain actually collides in the sim).
-				if (sData.b_isLoop)
-				{
-					std::vector<b2Vec2> b2Points;
-					b2Points.reserve(sData.points.size());
-					for (auto& p : sData.points) b2Points.push_back({ p.x, p.y });
-
-					b2Hull hull = b2ComputeHull(b2Points.data(), (int)b2Points.size());
-					b2Polygon polygon = b2MakePolygon(&hull, 0.0f);
-
-					b2Transform xf;
-					xf.p = { ownerPos.x, ownerPos.y };
-					xf.q = b2MakeRot(Numbers::DegreesToRadians(ownerTransform->GetRotation().z));
-
-					b2Vec2 localPoint = b2InvTransformPoint(xf, worldPoint);
-					b_mouseOver = b2PointInPolygon(&polygon, localPoint);
-				}
-				else
-				{
-					// Open chain (not a loop) has no interior — decide separately
-					// whether hover should mean "near any segment" (distance-to-segment
-					// check) rather than "inside," since there's no inside to test.
-					b_mouseOver = false;
-				}
-			}
-		}, shapeData);
+			default: break;
+		}
 
 		return b_mouseOver;
 	}
@@ -358,164 +336,156 @@ namespace FlatEngine
 	void Button::UpdateButtonTransform()
 	{
 		Transform* ownerTransform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());
-		Canvas* canvas = GetOwningObject()->GetFirstCanvas();
-		Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();
-		Vector3 scale = ownerTransform->GetScale();				
-		ownerTransform->SetPosition(canvas->GetCanvasPlacementPosition(&m_canvasPlacement, SceneView::finalImageSize));						
+		Canvas* canvas = GetOwningObject()->GetFirstCanvas();					
+		ownerTransform->SetPosition(canvas->GetCanvasPlacementPosition(&m_canvasPlacement, SceneView::finalImageSize));		
+		
+		UpdateRenderShapes();
 	}
 
-	// only do this after changing a shape setting because they don't really change that often and don't have a physics step
 	void Button::UpdateRenderShapes()
-	{
-		UpdateButtonTransform(); 
-
+	{	
 		Transform* ownerTransform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());		
 		Canvas* canvas = GetOwningObject()->GetFirstCanvas();
 
 		if (ownerTransform == nullptr || canvas == nullptr)
 			return;
-		
-		Vector3 ownerPos = ownerTransform->GetPosition();
-		Vector3 ownerRot = ownerTransform->GetRotation();
-		Vector3 ownerScale = ownerTransform->GetScale();
+						
+		Vector3 ownerRot = ownerTransform->GetAbsoluteRotation();	
 		Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();		
-
-		Transform renderTransform = Transform(*ownerTransform);
+		
 		Vector2 pivotOffset = m_canvasPlacement.pivot->offset;
-		pivotOffset = Vector2(pivotOffset.x * ownerScale.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y * ownerScale.y / GuiCore::texturePixelsPerGridSpace * -1.0f);				
+		pivotOffset = Vector2(pivotOffset.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y / GuiCore::texturePixelsPerGridSpace * -1.0f);				
 		Vector3 buttonPos = ownerTransform->GetPosition();						
-		Vector3 renderOffset = Vector3(pivotOffset, m_canvasPlacement.zPosition);
-		renderTransform.SetPosition(buttonPos + renderOffset);
-
-		if (renderShapes.size() == 0)
-			return;
+		Vector3 renderOffset = Vector3(pivotOffset, m_canvasPlacement.zPosition);		
+		Vector3 renderPosition = canvasPos + buttonPos + renderOffset;
 		
 		std::string activeString = IsActive() ? "Active" : "Inactive";
 		std::string color = "canvasButton" + activeString;
 
-		std::visit([this, renderTransform, ownerTransform, ownerScale, color](auto&& sData)
+		switch (shapeType)
 		{
-			using T = std::decay_t<decltype(sData)>;
-
-			if constexpr (std::is_same_v<T, BoxShape2DData>)
+			case ShapeType2D_Box:
 			{					
-				this->renderShapes[0].transform = renderTransform;
-				this->renderShapes[0].transform.SetScale(Vector3(ownerScale.x * sData.dimensions.x, ownerScale.y * sData.dimensions.y, 1));
-				this->m_canvasPlacement.pivot->dimensions = sData.dimensions * GuiCore::texturePixelsPerGridSpace;
-				this->renderShapes[0].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
-			}
-			else if constexpr (std::is_same_v<T, CircleShape2DData>)
-			{
-				// Transform renderTransform;						
-				// renderTransform.SetPosition(Vector3(ownerPos.x + sData.offset.x, ownerPos.y + sData.offset.y, ownerPos.z));
-				// renderTransform.SetScale(Vector3(sData.radius, sData.radius, 1));
-				// this->renderShapes[0].transform = renderTransform;
-			}
-			else if constexpr (std::is_same_v<T, CapsuleShape2DData>)
-			{
-				// if (this->renderShapes.size() != 8)											
-				// 	return;					
-								
-				// float center1Value = ((sData.length / 2) - sData.radius) * -1;
-				// float center2Value = (sData.length / 2) - sData.radius;
-				// b2Vec2 offset = b2Vec2(sData.offset.x, sData.offset.y);
-				// Vector2 center1 = b2Vec2(sData.b_horizontal ? center1Value : 0, sData.b_horizontal ? 0 : center1Value);
-				// Vector2 center2 = b2Vec2(sData.b_horizontal ? center2Value : 0, sData.b_horizontal ? 0 : center2Value);				
-				// Vector2 center1World = Vector2(b2Body_GetWorldPoint(m_bodyID, offset + b2Vec2(center1.x, center1.y)));
-				// Vector2 center2World = Vector2(b2Body_GetWorldPoint(m_bodyID, offset + b2Vec2(center2.x, center2.y)));
-				// Vector2 difference = center2World - center1World;
-				// Vector2 diffN = Vector2::Normalize(difference);
-				// Vector2 diffNR = diffN * sData.radius;
-				// Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
-				// Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);
-				
-				// // circles
-				// this->renderShapes[0].transform.SetPosition(Vector3(center1World, ownerPos.z));
-				// this->renderShapes[0].transform.SetScale(Vector3(sData.radius, sData.radius, 1));
-				// this->renderShapes[1].transform.SetPosition(Vector3(center2World, ownerPos.z));
-				// this->renderShapes[1].transform.SetScale(Vector3(sData.radius, sData.radius, 1));
-				// // Lines
-				// this->renderShapes[2].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World - diffNR, ownerPos.z), Vector3(center1World + diffNR, ownerPos.z));				
-				// this->renderShapes[3].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center2World - diffNR, ownerPos.z), Vector3(center2World + diffNR, ownerPos.z));				
-				// this->renderShapes[4].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World - diffPerp, ownerPos.z), Vector3(center1World + diffPerp, ownerPos.z));				
-				// this->renderShapes[5].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center2World - diffPerp, ownerPos.z), Vector3(center2World + diffPerp, ownerPos.z));				
-				// this->renderShapes[6].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World + diffPerp, ownerPos.z), Vector3(center1World + diffPerp + difference, ownerPos.z));												
-				// this->renderShapes[7].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1World + flippedDiffPerp, ownerPos.z), Vector3(center1World + flippedDiffPerp + difference, ownerPos.z));									
-
-				// std::string shapeString = "capsule";
-				// Vector4 color = Assets::assetManager.GetColor(shapeString + postfix);
-				// Vector4 colorLight = Assets::assetManager.GetColor(shapeString + postfix + "Light");
-
-				// this->renderShapes[0].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[1].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[2].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[3].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[4].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[5].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[6].mesh.SetUBOVec4("color", color);
-				// this->renderShapes[7].mesh.SetUBOVec4("color", color);		
-			}
-			else if constexpr (std::is_same_v<T, PolygonShape2DData>)
-			{
-				// if (this->renderShapes.size() < sData.points.size())
-				// {
-				// 	int diff = sData.points.size() - this->renderShapes.size();
-				// 	for (int i = 0; i < diff; i++)
-				// 	{
-				// 		this->renderShapes.push_back(CreateLineObject());
-				// 	}
-				// }
-
-				// for (int p = 0; p < sData.points.size(); p++)
-				// {
-				// 	int pNext = p == sData.points.size() - 1 ? 0 : p + 1;
-				// 	b2Vec2 pointStart = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[p].x, sData.points[p].y));
-				// 	Vector3 startPos = Vector3(pointStart, ownerPos.z);
-				// 	b2Vec2 pointEnd = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[pNext].x, sData.points[pNext].y));
-				// 	Vector3 endPos = Vector3(pointEnd, ownerPos.z);
-
-				// 	this->renderShapes[p].transform = SceneView::GetLineTransformForStartEndPos(startPos, endPos);
-				// }
-			}
-			else if constexpr (std::is_same_v<T, ChainShape2DData>)
-			{
-				if (this->renderShapes.size() < sData.points.size())
+				if (boxRenderShapes.size() != 1)
 				{
-					int diff = sData.points.size() - this->renderShapes.size();
+					boxRenderShapes.clear();
+					boxRenderShapes.push_back(CreateQuadObject());
+				}	
+
+				boxRenderShapes[0].transform.SetPosition(renderPosition);
+				boxRenderShapes[0].transform.SetScale(Vector3(boxShapeData.dimensions.x, boxShapeData.dimensions.y, 1));	
+				boxRenderShapes[0].transform.SetRotation(ownerRot);				
+				boxRenderShapes[0].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				m_canvasPlacement.pivot->dimensions = boxShapeData.dimensions * GuiCore::texturePixelsPerGridSpace;
+				m_canvasPlacement.pivot->UpdatePivotOffset();
+				break;
+			}
+			case ShapeType2D_Circle:
+			{
+				if (circleRenderShapes.size() != 1)
+				{
+					circleRenderShapes.clear();
+					circleRenderShapes.push_back(CreateCircleObject());
+				}	
+
+				circleRenderShapes[0].transform.SetPosition(renderPosition);	
+				circleRenderShapes[0].transform.SetScale(Vector3(circleShapeData.radius, circleShapeData.radius, 1));					
+				circleRenderShapes[0].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				m_canvasPlacement.pivot->dimensions = Vector2(circleShapeData.radius * GuiCore::texturePixelsPerGridSpace * 2.0f);	
+				m_canvasPlacement.pivot->UpdatePivotOffset();
+				break;			
+			}
+			case ShapeType2D_Capsule:
+			{
+				if (capsuleRenderShapes.size() != 8)											
+				{
+					capsuleRenderShapes.clear();
+					capsuleRenderShapes = CreateCapsuleObject();
+				}					
+								
+				float center1Value = ((capsuleShapeData.length / 2) - capsuleShapeData.radius) * -1;
+				float center2Value = (capsuleShapeData.length / 2) - capsuleShapeData.radius;				
+				b2Vec2 b2center1 = b2Vec2(capsuleShapeData.b_horizontal ? center1Value : 0, capsuleShapeData.b_horizontal ? 0 : center1Value);
+				b2Vec2 b2center2 = b2Vec2(capsuleShapeData.b_horizontal ? center2Value : 0, capsuleShapeData.b_horizontal ? 0 : center2Value);				
+				
+				b2Transform b2transform;				
+				b2transform.p = b2Vec2(0,0);
+				b2transform.q = b2MakeRot(Numbers::DegreesToRadians(-ownerRot.z));
+				Vector2 center1 = b2Vec2(renderPosition.x, renderPosition.y) + b2InvTransformPoint(b2transform, b2center1);	
+				Vector2 center2 = b2Vec2(renderPosition.x, renderPosition.y) + b2InvTransformPoint(b2transform, b2center2);	
+
+				Vector2 difference = center2 - center1;
+				Vector2 diffN = Vector2::Normalize(difference);
+				Vector2 diffNR = diffN * capsuleShapeData.radius;
+				Vector2 diffPerp = Vector2::Rotate(diffNR, 90);
+				Vector2 flippedDiffPerp = Vector2::Rotate(diffNR, -90);				
+
+				// circles
+				capsuleRenderShapes[0].transform.SetPosition(Vector3(center1, renderPosition.z));
+				capsuleRenderShapes[1].transform.SetPosition(Vector3(center2, renderPosition.z));
+				capsuleRenderShapes[0].transform.SetScale(Vector3(capsuleShapeData.radius, capsuleShapeData.radius, 1));
+				capsuleRenderShapes[1].transform.SetScale(Vector3(capsuleShapeData.radius, capsuleShapeData.radius, 1));				
+				// Lines		
+				capsuleRenderShapes[2].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1 - diffNR, renderPosition.z), Vector3(center1 + diffNR, renderPosition.z));				
+				capsuleRenderShapes[3].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center2 - diffNR, renderPosition.z), Vector3(center2 + diffNR, renderPosition.z));				
+				capsuleRenderShapes[4].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1 - diffPerp, renderPosition.z), Vector3(center1 + diffPerp, renderPosition.z));				
+				capsuleRenderShapes[5].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center2 - diffPerp, renderPosition.z), Vector3(center2 + diffPerp, renderPosition.z));				
+				capsuleRenderShapes[6].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1 + diffPerp, renderPosition.z), Vector3(center1 + diffPerp + difference, renderPosition.z));												
+				capsuleRenderShapes[7].transform = SceneView::GetLineTransformForStartEndPos(Vector3(center1 + flippedDiffPerp, renderPosition.z), Vector3(center1 + flippedDiffPerp + difference, renderPosition.z));									
+				// Colors
+				capsuleRenderShapes[0].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[1].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[2].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[3].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[4].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[5].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[6].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
+				capsuleRenderShapes[7].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));	
+
+				float length = capsuleShapeData.length + (capsuleShapeData.radius * 2.0f) * GuiCore::texturePixelsPerGridSpace;
+				float width = capsuleShapeData.radius * 2.0f;
+
+				m_canvasPlacement.pivot->dimensions = Vector2(capsuleShapeData.b_horizontal ? length : width, capsuleShapeData.b_horizontal ? width : length);
+				m_canvasPlacement.pivot->UpdatePivotOffset();
+				break;	
+			}
+			case ShapeType2D_Polygon:
+			{
+				if (polygonRenderShapes.size() < polygonShapeData.points.size())
+				{
+					int diff = polygonShapeData.points.size() - polygonRenderShapes.size();
 					for (int i = 0; i < diff; i++)
 					{
-						this->renderShapes.push_back(CreateLineObject());
+						polygonRenderShapes.push_back(CreateLineObject());
 					}
 				}
 
-				for (int p = 0; p < sData.points.size(); p++)
+				for (int p = 0; p < polygonShapeData.points.size(); p++)
 				{
-					if (p == sData.points.size() - 1)
-					{
-						if (sData.b_isLoop)
-						{
-							this->renderShapes[p].mesh.SetActive(true);
-						}
-						else 
-						{
-							this->renderShapes[p].mesh.SetActive(false);
-							return;
-						}
-					}
+					int pNext = p == polygonShapeData.points.size() - 1 ? 0 : p + 1;
+					b2Vec2 pointStart = b2Vec2(renderPosition.x + polygonShapeData.points[p].x, renderPosition.y + polygonShapeData.points[p].y);
+					Vector3 startPos = Vector3(pointStart, renderPosition.z);
+					b2Vec2 pointEnd = b2Vec2(renderPosition.x + polygonShapeData.points[pNext].x, renderPosition.y + polygonShapeData.points[pNext].y);
+					Vector3 endPos = Vector3(pointEnd, renderPosition.z);
 
-					// int pNext = p == sData.points.size() - 1 ? 0 : p + 1;
-					// b2Vec2 pointStart = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[p].x, sData.points[p].y));
-					// Vector3 startPos = Vector3(pointStart, ownerPos.z);
-					// b2Vec2 pointEnd = b2Body_GetWorldPoint(m_bodyID, b2Vec2(sData.points[pNext].x, sData.points[pNext].y));
-					// Vector3 endPos = Vector3(pointEnd, ownerPos.z);
-					// this->renderShapes[p].transform = SceneView::GetLineTransformForStartEndPos(startPos, endPos);
-
-					// std::string color = "chain";
-					// if ((p == 0 || p == this->renderShapes.size() - 2) && !sData.b_isLoop)
-					// 	color = "chainEndSegments";
-					// this->renderShapes[p].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color + postfix));
+					polygonRenderShapes[p].transform = SceneView::GetLineTransformForStartEndPos(startPos, endPos);
+					polygonRenderShapes[p].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));	
 				}
+				break;
 			}
-		}, shapeData);
+			default: break;
+		}
+	}
+
+	std::vector<SceneRenderObject>& Button::GetRenderShapes()
+	{		
+		switch (shapeType)
+		{
+			case ShapeType2D_Box:     return boxRenderShapes;
+			case ShapeType2D_Circle:  return circleRenderShapes;
+			case ShapeType2D_Capsule: return capsuleRenderShapes;
+			case ShapeType2D_Polygon: return polygonRenderShapes;
+			default: 				  return boxRenderShapes;
+		}
 	}
 }

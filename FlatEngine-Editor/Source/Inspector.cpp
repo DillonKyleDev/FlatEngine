@@ -331,9 +331,9 @@ namespace FlatGui
 			FL::GuiCore::RenderSectionHeader("Canvas Placement");			
 			FL::GuiCore::MoveScreenCursor(0, -3);
 
-			if (RenderPivotSelectionButtons(IDString, canvasPlacement->pivot)) canvasPlacement->pivot->UpdatePivotOffset();	
+			if (RenderPivotSelectionButtons(IDString, canvasPlacement->pivot)) canvasPlacement->pivot->UpdatePivotOffset();		
 			
-			FL::Vector3 scale = component->GetOwningObject()->Get<FL::Transform>()->GetScale();
+			FL::Vector3 scale = component->GetType() != FL::ComponentType_Button ? component->GetOwningObject()->Get<FL::Transform>()->GetScale() : FL::Vector3(1);
 			FL::GuiCore::MoveScreenCursor(96, -99);
 			DrawCanvasDemoBox(canvasPlacement, FL::Vector2(scale.x, scale.y), canvas);
 			FL::GuiCore::MoveScreenCursor(-96, 110);
@@ -426,7 +426,7 @@ namespace FlatGui
 			int gridStep = (int)camera->gridStep;			
 			if (FL::GuiCore::RenderInt32Table(FL::GuiCore::TableProps("##gridStep" + std::to_string(ownerID), "Pixels/Grid Square", FL::Vector2(), 1, FL::SceneView::minGridStep, FL::SceneView::maxGridStep), gridStep)) { if (gridStep > 0) camera->gridStep = (uint32_t)gridStep;}							
 			FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##Orthographic" + std::to_string(ownerID), "Orthographic"), camera->b_orthographic);
-			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##PrimaryCamera" + std::to_string(ownerID), "Primary Camera"), camera->b_orthographic)) camera->SetPrimaryCamera(b_isPrimary);
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##PrimaryCamera" + std::to_string(ownerID), "Primary Camera"), b_isPrimary)) camera->SetPrimaryCamera(b_isPrimary);
 			FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##Follow" + std::to_string(ownerID), "Follow"), camera->b_shouldFollow);	
 			FL::GuiCore::InputProps followingInputProps("##CameraFollowObject", "Following");
 			followingInputProps.displayValue = followingName;
@@ -549,9 +549,10 @@ namespace FlatGui
 			newAnimationNameTableProps.b_topLabelBorder = true;
 			newAnimationNameTableProps.b_light = true;
 			newAnimationNameTableProps.b_lightSet = true;
+			newAnimationNameTableProps.labelWidth = 37;
 			FL::GuiCore::RenderStringTable(newAnimationNameTableProps, newAnimationName);		
 
-			FL::GuiCore::InputProps newAnimationPathInputProps("##AnimationPathInspectorWindow-" + std::to_string(ownerID), "File");
+			FL::GuiCore::InputProps newAnimationPathInputProps("##NewAnimationPathInspectorWindow-" + std::to_string(ownerID), "File");
 			newAnimationPathInputProps.displayValue = newAnimationPath;
 			newAnimationPathInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;	
 			newAnimationPathInputProps.requiredExtensions = { ".anm" };
@@ -561,8 +562,7 @@ namespace FlatGui
 				newAnimationPath = newAnimationPathInputProps.value;
 			}
 
-			FL::GuiCore::MoveScreenCursor(0, 3);
-
+			FL::GuiCore::MoveScreenCursor(0, 8);
 			ImGui::BeginDisabled(newAnimationPath == "" || newAnimationName == "");
 			if (FL::GuiCore::RenderButton("Add Animation"))
 			{
@@ -581,7 +581,7 @@ namespace FlatGui
 				}
 			}
 			ImGui::EndDisabled();
-
+			FL::GuiCore::MoveScreenCursor(0, 4);
 
 			int IDCounter = 0;
 			int queuedAnimationForDelete = -1;
@@ -589,11 +589,12 @@ namespace FlatGui
 			{
 				std::string currentAnimationName = animData.name;
 
-				FL::GuiCore::TableProps animationNameTableProps("##NewAnimationName" + std::to_string(IDCounter), "Name");
+				FL::GuiCore::TableProps animationNameTableProps("##AnimationName" + std::to_string(IDCounter), "Name");
 				animationNameTableProps.b_topLabelBorder = true;
 				animationNameTableProps.b_light = true;
 				animationNameTableProps.b_lightSet = true;
-				FL::GuiCore::RenderStringTable(animationNameTableProps, newAnimationName);	
+				animationNameTableProps.labelWidth = 37;
+				FL::GuiCore::RenderStringTable(animationNameTableProps, currentAnimationName);	
 				
 				FL::GuiCore::InputProps animationPathInputProps("##AnimationPathInspectorWindow-" + std::to_string(IDCounter), "File");
 				animationPathInputProps.displayValue = animData.path;
@@ -605,6 +606,7 @@ namespace FlatGui
 					animData.path = animationPathInputProps.value;
 				}
 
+				FL::GuiCore::MoveScreenCursor(0,3);
 				float quarterWidth = (ImGui::GetContentRegionAvail().x - 3) / 4;
 				ImGui::BeginDisabled(animData.path == "");
 				if (FL::GuiCore::RenderButton("Preview##" + std::to_string(IDCounter), FL::Vector2(quarterWidth, 0)))
@@ -801,33 +803,20 @@ namespace FlatGui
 
 			std::string textText = text->GetText();
 			FL::GuiCore::TableProps textTableProps("##TextContent" + std::to_string(ownerID), "Text");
-			if (FL::GuiCore::RenderStringTable(textTableProps, textText))
-			{
-				text->SetText(textText);
-				text->LoadText();
-			}
-
-			FL::GuiCore::MoveScreenCursor(0, 3);
-			
 			FL::GuiCore::InputProps fontPathInputProps("##InputFontPath", "Font");
 			fontPathInputProps.displayValue = FL::FileHelper::GetFilenameFromPath(text->GetFontPath(), true);
 			fontPathInputProps.dropTargetID = FL::GuiCore::fileExplorerTarget;		
 			fontPathInputProps.requiredExtensions = { ".ttf" };					
 			fontPathInputProps.tipMessage = "Drop font files here from File Explorer";
-			if (FL::GuiCore::RenderDropInputTable(fontPathInputProps))					
-			{
-				text->SetFontPath(fontPathInputProps.value);
-			}
-
-			FL::GuiCore::RenderSeparator(3, 3);
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textWidth" + std::to_string(ownerID), "Text width"), { std::to_string(textureWidth) });
-			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textHeight" + std::to_string(ownerID), "Text height"), { std::to_string(textureHeight) });
+			if (FL::GuiCore::RenderDropInputTable(fontPathInputProps)) text->SetFontPath(fontPathInputProps.value);
+			if (FL::GuiCore::RenderStringTable(textTableProps, textText)) text->SetText(textText);
 			FL::GuiCore::TableProps fontSizeTableProps("##textFontSize" + std::to_string(ownerID), "Font size");
 			fontSizeTableProps.intMin = 0;
 			fontSizeTableProps.intMax = FL::MAX_FONT_SIZE;
-			if (FL::GuiCore::RenderInt32Table(fontSizeTableProps, fontSize)) text->SetFontSize(fontSize);
-			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##TextOffset" + std::to_string(ownerID), "Offset"), offset)) text->SetOffset(FL::Vector2(xOffset, yOffset));
-			FL::GuiCore::TableProps renderOrderTableProps("##TextRenderOrder" + std::to_string(ownerID), "Render Order");
+			if (FL::GuiCore::RenderInt32Table(fontSizeTableProps, fontSize)) text->SetFontSize(fontSize);			
+			if (FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##TextOffset" + std::to_string(ownerID), "Offset"), offset)) text->SetOffset(FL::Vector2(xOffset, yOffset));			
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textWidth" + std::to_string(ownerID), "Text width"), { std::to_string(textureWidth) });
+			FL::GuiCore::RenderTextTable(FL::GuiCore::TableProps("##textHeight" + std::to_string(ownerID), "Text height"), { std::to_string(textureHeight) });
 
 			// Tint color picker
 			std::string tintID = "##TextColor" + std::to_string(ownerID) + "-" + std::to_string(ownerID);
@@ -895,7 +884,7 @@ namespace FlatGui
 		}
 		
 		// Shapes
-		bool RenderBoxProps(auto&& sData)
+		bool RenderBoxProps(auto&& sData, bool b_shapeOnly = false)
 		{
 			b2ShapeId shapeID = sData.shapeID;
 			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);
@@ -904,16 +893,20 @@ namespace FlatGui
 									
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeCornerRadius" + ID, "Corner Radius", FL::Vector2(), 0.01f, 0.0f), sData.cornerRadius);
 			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##BoxDimensions" + ID, "Dimensions", FL::Vector2(), 0.01f, 0.0f), sData.dimensions);			
-			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 			
-			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
-			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);
+			if (!b_shapeOnly)
+			{
+				b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
+				float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);
+			}
+
 			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;	
 		}
 
-		bool RenderCircleProps(auto&& sData)
+		bool RenderCircleProps(auto&& sData, bool b_shapeOnly = false)
 		{
 			b2ShapeId shapeID = sData.shapeID;
 			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);						
@@ -921,14 +914,15 @@ namespace FlatGui
 			bool b_light = true;
 									
 			b_changed |= FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##ShapeRadius" + ID, "Radius", FL::Vector2(), 0.001f, 0.001f), sData.radius);
-			b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
+			if (!b_shapeOnly)
+				b_changed |= FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
 			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;
 		}
 
 
-		bool RenderCapsuleProps(auto&& sData)
+		bool RenderCapsuleProps(auto&& sData, bool b_shapeOnly = false)
 		{
 			b2ShapeId shapeID = sData.shapeID;
 			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);			
@@ -940,15 +934,19 @@ namespace FlatGui
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##CapsuleLength" + ID, "Length", FL::Vector2(), 0.001f, 0.001f), capsuleLength)) sData.SetLength(capsuleLength);
 			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##Radii" + ID, "Radii", FL::Vector2(), 0.001f, 0.001f), radius)) sData.SetRadius(radius);
 			b_changed |= FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##HorizontalCapsule_" + ID, "Horizontal"), sData.b_horizontal);
-			FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
-			float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
-			if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);					
+			
+			if (!b_shapeOnly)
+			{
+				FL::GuiCore::RenderVector2Table(FL::GuiCore::TableProps("##PositionOffset" + ID, "Pos. Offset"), sData.offset);
+				float rotationOffset = FL::Numbers::RadiansToDegrees(b2Rot_GetAngle(sData.rotationOffset));	
+				if (FL::GuiCore::RenderFloatTable(FL::GuiCore::TableProps("##RotationOffset" + ID, "Rotation Offset"), rotationOffset)) sData.SetRotationOffset(rotationOffset);					
+			}
 			FL::GuiCore::RenderSeparator(0,3);
 
 			return b_changed;
 		}
 
-		bool RenderPolygonProps(auto&& sData)
+		bool RenderPolygonProps(auto&& sData, bool b_shapeOnly = false)
 		{
 			b2ShapeId shapeID = sData.shapeID;
 			std::string ID = "shape_" + std::to_string(shapeID.index1) + "_" + std::to_string(shapeID.world0);						
@@ -1412,6 +1410,7 @@ namespace FlatGui
 			// FL::LuaManager::LuaParameter functionParams = button->parameterContainer;
 			long ownerID = button->GetOwnerID();
 			FL::GameObject* owner = FL::SceneManager::loadedScene.GetObjectByID(ownerID);
+			bool b_changed = false;
 			// bool b_cppEvent = functionParams.b_cppEvent;
 			// bool b_luaEvent = functionParams.b_luaEvent;		
 
@@ -1419,14 +1418,39 @@ namespace FlatGui
 			FL::GuiCore::TableProps leftClickTableProps("##leftClickableCheckbox" + std::to_string(ownerID), "Left Click");
 			leftClickTableProps.b_topLabelBorder = true;
 			if (FL::GuiCore::RenderBoolTable(leftClickTableProps, b_leftClick)) button->SetLeftClick(b_leftClick);
-			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_leftClick)) button->SetRightClick(b_rightClick);							
+			if (FL::GuiCore::RenderBoolTable(FL::GuiCore::TableProps("##rightClickableCheckbox" + std::to_string(ownerID), "Right Click"), b_rightClick)) button->SetRightClick(b_rightClick);							
 			FL::GuiCore::TableProps callbackFuncTableProps("##ButtonCallbackFuncName", "Callback Function");
 			callbackFuncTableProps.b_bottomLabelBorder = true;
 			FL::GuiCore::RenderStringTable(callbackFuncTableProps, button->functionName);			
-
+			
 			FL::GuiCore::MoveScreenCursor(0, 3);
 			FL::GuiCore::RenderLuaParametersTable("##ButtonEventParameters", "On Click Parameters", button->parameterContainer);	
-			FL::GuiCore::MoveScreenCursor(0, 4);			
+			FL::GuiCore::MoveScreenCursor(0, 4);	
+
+			int currentType = (int)button->shapeType - 1;
+			FL::GuiCore::TableProps buttonShapeTableProps("#ButtonShapeTypeCombo" + std::to_string(ownerID), "Button Shape");
+			buttonShapeTableProps.b_topLabelBorder = true;
+			std::vector<std::string> buttonShapeTypes = { 
+				FL::ShapeType2DStrings[FL::ShapeType2D_Box], 
+				FL::ShapeType2DStrings[FL::ShapeType2D_Circle], 
+				FL::ShapeType2DStrings[FL::ShapeType2D_Capsule], 
+				FL::ShapeType2DStrings[FL::ShapeType2D_Polygon] 
+			};
+
+			if (FL::GuiCore::RenderComboTable(buttonShapeTableProps, buttonShapeTypes[(int)currentType], buttonShapeTypes, currentType)) button->shapeType = (FL::ShapeType2D)(currentType + 1);
+			
+			bool b_shapeOnly = true;
+			switch (button->shapeType)
+			{
+				case FlatEngine::ShapeType2D_Box: b_changed |= RenderBoxProps(button->boxShapeData, b_shapeOnly); break;
+				case FlatEngine::ShapeType2D_Circle: b_changed |= RenderCircleProps(button->circleShapeData, b_shapeOnly); break;
+				case FlatEngine::ShapeType2D_Capsule: b_changed |= RenderCapsuleProps(button->capsuleShapeData, b_shapeOnly); break;
+				case FlatEngine::ShapeType2D_Polygon: b_changed |= RenderPolygonProps(button->polygonShapeData, b_shapeOnly); break;		
+				default: break;		
+			}
+
+			if (b_changed)
+				button->UpdateButtonTransform();
 
 			// std::string choices[2] = { "C++", "Lua" };
 			// std::string currentChoice = "";

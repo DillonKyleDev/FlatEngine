@@ -366,7 +366,7 @@ namespace FlatEngine
 			for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())			
 				canvas.UpdateRenderShapes();	
 			for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())			
-				button.UpdateRenderShapes();			
+				button.UpdateButtonTransform();			
 			for (SceneRenderObject& renderCamera : cameraSceneRenderObjects.GetAll())
 			{
 				Transform* transform = SceneManager::loadedScene.Get<Transform>(renderCamera.ID);

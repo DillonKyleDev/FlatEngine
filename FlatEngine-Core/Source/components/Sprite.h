@@ -14,7 +14,6 @@ namespace FlatEngine
 	public:
 		Sprite(long ownerID = -1);
 		~Sprite();
-		// Sprite(Sprite&& other) noexcept : mesh(std::move(other.mesh)) {};
 		json GetData(bool b_IDOverride = false);
 		void PutData(json componentJson, std::string objectName);
 

@@ -1243,7 +1243,7 @@ namespace FlatEngine
                 
 
 
-                std::vector<Mesh*> meshesMissingTextures = std::vector<Mesh*>();
+                std::vector<Mesh*> meshesMissingTextures;
 
                 std::vector<VkDrawIndirectCommand> drawCommands = std::vector<VkDrawIndirectCommand>();
                 uint32_t meshCount = 0;

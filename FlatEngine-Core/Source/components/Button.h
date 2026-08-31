@@ -38,7 +38,6 @@ namespace FlatEngine
 		bool GetRightClick();
 
 		CanvasPlacement* GetCanvasPlacement();
-		void UpdateButtonTransform();
 		void UpdateRenderShapes();
 		std::vector<SceneRenderObject>& GetRenderShapes();
 

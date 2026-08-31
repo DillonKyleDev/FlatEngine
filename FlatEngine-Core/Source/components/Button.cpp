@@ -96,9 +96,10 @@ namespace FlatEngine
 		SetLeftClick(JsonHelper::CheckJsonBool(componentJson, "b_leftClick", objectName));
 		SetRightClick(JsonHelper::CheckJsonBool(componentJson, "b_rightClick", objectName));	
 
-		UpdateButtonTransform();
+		UpdateRenderShapes();
     }
 
+	// Duplicate code here and UpdateRenderObjects()
 	bool Button::CheckForMouseOver(Vector2 mousePos)
 	{
 		bool b_mouseOver = false;
@@ -112,15 +113,19 @@ namespace FlatEngine
 		Vector2 pivotOffset = m_canvasPlacement.pivot->offset;
 		pivotOffset = Vector2(pivotOffset.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y / GuiCore::texturePixelsPerGridSpace * -1.0f);	
 		ownerPos = ownerPos + Vector3(pivotOffset, 0);
+					
+		Vector3 buttonPos = ownerPos + canvas->GetCanvasPlacementPosition(&m_canvasPlacement, SceneView::finalImageSize);						
+		Vector3 renderOffset = Vector3(pivotOffset, m_canvasPlacement.zPosition);		
+		Vector3 renderPosition = buttonPos + renderOffset;
 
 		switch (shapeType)
 		{
 			case ShapeType2D_Box:
 			{	
-				Vector2 offset = m_canvasPlacement.pivot->offset;
+				// Vector2 offset = m_canvasPlacement.pivot->offset;
 				b2Polygon polygon = b2MakeBox(boxShapeData.dimensions.x * 0.5f, boxShapeData.dimensions.y * 0.5f);												
 				b2Transform b2transform;				
-				b2transform.p = { ownerPos.x, ownerPos.y };
+				b2transform.p = { renderPosition.x, renderPosition.y };
 				b2transform.q = b2MakeRot(Numbers::DegreesToRadians(ownerTransform->GetRotation().z));
 				
 				b2Vec2 localPoint = b2InvTransformPoint(b2transform, worldPoint);				
@@ -333,15 +338,7 @@ namespace FlatEngine
 		return &m_canvasPlacement;
 	}
 
-	void Button::UpdateButtonTransform()
-	{
-		Transform* ownerTransform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());
-		Canvas* canvas = GetOwningObject()->GetFirstCanvas();					
-		ownerTransform->SetPosition(canvas->GetCanvasPlacementPosition(&m_canvasPlacement, SceneView::finalImageSize));		
-		
-		UpdateRenderShapes();
-	}
-
+	// Duplicate code here and CheckForMouseOver()
 	void Button::UpdateRenderShapes()
 	{	
 		Transform* ownerTransform = SceneManager::loadedScene.Get<Transform>(GetOwnerID());		
@@ -349,13 +346,14 @@ namespace FlatEngine
 
 		if (ownerTransform == nullptr || canvas == nullptr)
 			return;
-						
+					
+		Vector3 ownerPos = ownerTransform->GetPosition();
 		Vector3 ownerRot = ownerTransform->GetAbsoluteRotation();	
 		Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();		
 		
 		Vector2 pivotOffset = m_canvasPlacement.pivot->offset;
 		pivotOffset = Vector2(pivotOffset.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y / GuiCore::texturePixelsPerGridSpace * -1.0f);				
-		Vector3 buttonPos = ownerTransform->GetPosition();						
+		Vector3 buttonPos = ownerPos + canvas->GetCanvasPlacementPosition(&m_canvasPlacement, SceneView::finalImageSize);						
 		Vector3 renderOffset = Vector3(pivotOffset, m_canvasPlacement.zPosition);		
 		Vector3 renderPosition = canvasPos + buttonPos + renderOffset;
 		
@@ -374,7 +372,7 @@ namespace FlatEngine
 
 				boxRenderShapes[0].transform.SetPosition(renderPosition);
 				boxRenderShapes[0].transform.SetScale(Vector3(boxShapeData.dimensions.x, boxShapeData.dimensions.y, 1));	
-				boxRenderShapes[0].transform.SetRotation(ownerRot);				
+				boxRenderShapes[0].transform.SetRotation(Vector3(0,0, ownerRot.z));				
 				boxRenderShapes[0].mesh.SetUBOVec4("color", Assets::assetManager.GetColor(color));
 				m_canvasPlacement.pivot->dimensions = boxShapeData.dimensions * GuiCore::texturePixelsPerGridSpace;
 				m_canvasPlacement.pivot->UpdatePivotOffset();

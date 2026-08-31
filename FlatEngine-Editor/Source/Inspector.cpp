@@ -138,12 +138,12 @@ namespace FlatGui
 			FL::Vector3 position = transform->GetPosition();
 			FL::Vector3 rotation = transform->GetRotation();
 			FL::Vector3 scale = transform->GetScale();
-			bool b_isCanvasChild = transform->GetOwningObject()->IsCanvasChild();
+			// bool b_isCanvasChild = transform->GetOwningObject()->IsCanvasChild();
 
 			FL::Vector2 transformTableSize;
 
-			if (b_isCanvasChild)
-				transformTableSize.x = ImGui::GetContentRegionAvail().x - 22;
+			// if (b_isCanvasChild)
+			// 	transformTableSize.x = ImGui::GetContentRegionAvail().x - 22;
 			
 			std::vector<std::string> valueColors = { "transformXBGLight", "transformYBGLight", "transformZBGLight", "transformWBGLight" };	
 			FL::Vector2 tableSize = FL::Vector2(ImGui::GetContentRegionAvail().x, 0);
@@ -160,14 +160,14 @@ namespace FlatGui
 			scaleProps.floatMin = 0;
 			scaleProps.b_bottomLabelBorder = true;					
 
-			ImGui::BeginDisabled(b_isCanvasChild);
+			// ImGui::BeginDisabled(b_isCanvasChild);
 			if (FL::GuiCore::RenderVector3Table(positionProps, position)) transform->SetPosition(position);	
-			ImGui::EndDisabled();	
-			if (b_isCanvasChild)
-			{	
-				ImGui::SameLine(0, 0);
-				FL::GuiCore::RenderInfoButton("Canvas children can only be positioned\nvia \"Canvas Placement\" on the following\ncomponents:\n\nButton - Sprite - Text");				
-			}
+			// ImGui::EndDisabled();	
+			// if (b_isCanvasChild)
+			// {	
+			// 	ImGui::SameLine(0, 0);
+			// 	FL::GuiCore::RenderInfoButton("Canvas children can only be positioned\nvia \"Canvas Placement\" on the following\ncomponents:\n\nButton - Sprite - Text");				
+			// }
 			if (FL::GuiCore::RenderVector3Table(rotationProps, rotation)) transform->SetRotation(rotation);			
 			if (FL::GuiCore::RenderVector3Table(scaleProps, scale)) transform->SetScale(scale);
 		}
@@ -322,6 +322,7 @@ namespace FlatGui
 
 			switch (component->GetType())
 			{
+				case FL::ComponentType_Mesh:   canvasPlacement = &static_cast<FL::Mesh*>(component)->canvasPlacement; break;
 				case FL::ComponentType_Sprite: canvasPlacement = static_cast<FL::Sprite*>(component)->GetCanvasPlacement(); break;
 				case FL::ComponentType_Text:   canvasPlacement = static_cast<FL::Text*>(component)->GetCanvasPlacement(); break;
 				case FL::ComponentType_Button: canvasPlacement = static_cast<FL::Button*>(component)->GetCanvasPlacement(); break;
@@ -1450,7 +1451,7 @@ namespace FlatGui
 			}
 
 			if (b_changed)
-				button->UpdateButtonTransform();
+				button->UpdateRenderShapes();
 
 			// std::string choices[2] = { "C++", "Lua" };
 			// std::string currentChoice = "";
@@ -1858,6 +1859,9 @@ namespace FlatGui
 					materialName = "";
 				}
 			}
+
+			if (mesh->GetOwningObject()->IsCanvasChild())
+				RenderCanvasPlacementComponent(mesh);
 
 			FL::GuiCore::InputProps modelFileInputProps("##InputObjFilePath", "Model");
 			modelFileInputProps.displayValue = modelFileName;

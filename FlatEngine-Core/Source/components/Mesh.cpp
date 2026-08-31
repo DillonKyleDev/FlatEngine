@@ -81,7 +81,8 @@ namespace FlatEngine
 			{ "textures", texturesData },
 			{ "materialName", m_materialName },
 			{ "modelPath", modelPath },
-			{ "uboVec4s", uboVec4s }
+			{ "uboVec4s", uboVec4s },
+			{ "canvasPlacement", canvasPlacement.GetData() }	
 		};
 		componentJson.update(Component::GetData(b_IDOverride));
 
@@ -94,6 +95,9 @@ namespace FlatEngine
 			return;	
 		
         Component::PutData(componentJson, objectName);
+
+		if (JsonHelper::JsonContains(componentJson, "canvasPlacement", objectName))		
+			canvasPlacement.PutData(componentJson.at("canvasPlacement"), objectName);	
 
 		std::string materialName = JsonHelper::CheckJsonString(componentJson, "materialName", objectName);
 		std::string modelPath = JsonHelper::CheckJsonString(componentJson, "modelPath", objectName);
@@ -204,6 +208,8 @@ namespace FlatEngine
 
 	void Mesh::SetModel(std::string modelPath, bool b_addMaterialMesh)
 	{
+		CreateUniformBuffers();
+
 		std::shared_ptr<Model> loadedModel = VulkanManager::vulkan.GetModel(modelPath);
 
 		if (loadedModel == nullptr)
@@ -228,6 +234,8 @@ namespace FlatEngine
 
 	void Mesh::SetMaterial(std::string materialName)
 	{
+		CreateUniformBuffers();
+
 		m_sceneViewMaterial = VulkanManager::vulkan.GetMaterial(materialName, ViewportType::ViewportType_SceneView);
 		m_gameViewMaterial = VulkanManager::vulkan.GetMaterial(materialName, ViewportType::ViewportType_GameView);
 
@@ -403,6 +411,9 @@ namespace FlatEngine
 	{
 		// Refer to - https://vulkan-tutorial.com/en/Uniform_buffers/Descriptor_layout_and_buffer
 
+		if (m_sceneViewUniformBuffersMemory.size() == VulkanManager::MAX_FRAMES_IN_FLIGHT)
+			return;
+
 		VkDeviceSize bufferSize = sizeof(CustomUBO);
 
 		m_sceneViewUniformBuffers.resize(VulkanManager::MAX_FRAMES_IN_FLIGHT);
@@ -423,6 +434,7 @@ namespace FlatEngine
 		}
 	}
 
+	//TODO: Simplify this after getting a handle on the larger Vulkan rework.
 	void Mesh::UpdateUniformBuffer(ViewportType viewportType, Transform* transform, Camera* camera, Transform* cameraTransform)
 	{
 		std::map<uint32_t, std::string> materialVec4s = viewportType == ViewportType::ViewportType_SceneView ? m_sceneViewMaterial->GetUBOVec4Names() : m_gameViewMaterial->GetUBOVec4Names();			
@@ -437,26 +449,25 @@ namespace FlatEngine
 		base.view = glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
 		
 		Vector2 renderScale = GetRenderScale();
-
+		
 		if (GetOwningObject() != nullptr && GetOwningObject()->IsCanvasChild())
 		{			
 			Canvas* canvas = GetOwningObject()->GetFirstCanvas();
-			Vector3 canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();
+			Vector3 canvasPos;
+			if (canvas != nullptr)
+				canvasPos = canvas->GetOwningObject()->Get<Transform>()->GetAbsolutePosition();
 			Vector3 textureScale = transform->GetAbsoluteScale();				
-			// Set actual position based on percent and pixel positioning.	
-			transform->SetPosition(canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize));						
-			// Then use the position based on the new position + the pivot offset but don't actually set that as the position
 			Transform transformCopy = Transform(*transform);
+
 			Vector2 pivotOffset = canvasPlacement.pivot->offset;
-			pivotOffset = Vector2(pivotOffset.x * textureScale.x / GuiCore::texturePixelsPerGridSpace, pivotOffset.y * textureScale.y / GuiCore::texturePixelsPerGridSpace);				
-			pivotOffset.y *= -1;
-			Vector3 pos = transformCopy.GetPosition();				
+			pivotOffset = Vector2(pivotOffset.x * textureScale.x / GuiCore::texturePixelsPerGridSpace, -pivotOffset.y * textureScale.y / GuiCore::texturePixelsPerGridSpace);											
 			transformCopy.SetScale(Vector3(textureScale.x * renderScale.x, textureScale.y * renderScale.y, textureScale.z));
-			Vector3 renderOffset = Vector3(pivotOffset, canvasPlacement.zPosition);
+			Vector3 renderOffset = Vector3(pivotOffset, canvasPlacement.zPosition) + canvas->GetCanvasPlacementPosition(&canvasPlacement, SceneView::finalImageSize);
+			Vector3 objectPos = transformCopy.GetAbsolutePosition(renderOffset);	
 			
 			base.projection = viewportType != ViewportType_SceneView ? canvas->GetProjection() : camera->GetProjection();
 			base.view = viewportType != ViewportType_SceneView ? glm::lookAt(canvasPos.GetGLMVec3(), canvasPos.GetGLMVec3() + glm::vec3(0,0,-1), glm::vec3(up)) : glm::lookAt(cameraPos, cameraPos + lookDir, glm::vec3(up));
-			base.meshPosition = transformCopy.GetAbsolutePosition(renderOffset).GetGLMVec4();
+			base.meshPosition = objectPos.GetGLMVec4();
 			base.model = base.model * transformCopy.GetScaleMatrix();
 		}
 		else if (GetOwningObject() != nullptr && GetOwningObject()->Get<Sprite>() != nullptr)
@@ -542,7 +553,11 @@ namespace FlatEngine
 
 	Vector2 Mesh::GetRenderScale()
 	{
-		return m_textureDimensions * (1.0f / GuiCore::texturePixelsPerGridSpace);
+		Vector2 scale = m_textureDimensions * (1.0f / GuiCore::texturePixelsPerGridSpace);
+		if (scale.x == 0 || scale.y == 0)
+			return Vector2(1);
+		else
+		 	return scale;
 	}
 
 	void Mesh::SetTextureDimensions(Vector2 dimensions)

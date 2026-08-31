@@ -19,10 +19,10 @@ namespace FlatEngine
         Vector3 lastScale  = prev ? last->scale : transform->GetScale();
         Quaternion lastRot = prev ? Quaternion::EulerToQuaternion(last->eulerRotation) : Quaternion::EulerToQuaternion(transform->GetRotation());
         Quaternion rot = Quaternion::EulerToQuaternion(eulerRotation);
-        
+    
+        Vector3 posFinal = lastPos + (animData->startingPos + position - lastPos) * Easing::GetT(positionInterpType, percentDone);
         Vector3 rotFinal = Quaternion::QuaternionToEuler(Quaternion::Slerp(lastRot, rot, Easing::GetT(rotationInterpType, percentDone)));
         rotFinal.z = 0;
-        Vector3 posFinal = lastPos + (animData->startingPos + position - lastPos) * Easing::GetT(positionInterpType, percentDone);
         Vector3 scaleFinal = lastScale + (scale - lastScale) * Easing::GetT(scaleInterpType, percentDone);
 
         if (b_posAnimated) 

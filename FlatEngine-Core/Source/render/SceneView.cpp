@@ -42,8 +42,8 @@ namespace FlatEngine
 			object.mesh.Cleanup();
 		}
 
-		Pool<SceneRenderObject> debugLinePool = Pool<SceneRenderObject>(std::move(CreateLineObject), CleanupPoolObject, 10);
-		Pool<SceneRenderObject> debugQuadPool = Pool<SceneRenderObject>(std::move(CreateQuadObject), CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugLinePool   = Pool<SceneRenderObject>(std::move(CreateLineObject), CleanupPoolObject, 10);
+		Pool<SceneRenderObject> debugQuadPool   = Pool<SceneRenderObject>(std::move(CreateQuadObject), CleanupPoolObject, 10);
 		Pool<SceneRenderObject> debugCirclePool = Pool<SceneRenderObject>(std::move(CreateCircleObject), CleanupPoolObject, 10);
 
 		Vector2 sceneViewDimensions = Vector2(600, 400);	
@@ -365,8 +365,12 @@ namespace FlatEngine
 				body2D.UpdateRenderShapes();			
 			for (Canvas& canvas : SceneManager::loadedScene.GetAll<Canvas>().GetAll())			
 				canvas.UpdateRenderShapes();	
+			// for (Mesh& mesh : SceneManager::loadedScene.GetAll<Mesh>().GetAll())			
+			// 	mesh.UpdateRenderShapes();	
+			// for (Sprite& sprite : SceneManager::loadedScene.GetAll<Sprite>().GetAll())			
+			// 	sprite.UpdateRenderShapes();	
 			for (Button& button : SceneManager::loadedScene.GetAll<Button>().GetAll())			
-				button.UpdateButtonTransform();			
+				button.UpdateRenderShapes();			
 			for (SceneRenderObject& renderCamera : cameraSceneRenderObjects.GetAll())
 			{
 				Transform* transform = SceneManager::loadedScene.Get<Transform>(renderCamera.ID);

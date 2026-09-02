@@ -267,8 +267,8 @@ F_Colors = {
 	---------------------
 	separator = Vector4:new(0.35, 0.35, 0.35, 1.0),
 	-- Inputs
-	input = Vector4:new(0.43, 0.43, 0.5, 1.0),
-	inputBorder = Vector4:new(0.75, 0.75, 0.3, .8),
+	input = Vector4:new(0.53, 0.53, 0.535, 1.0),
+	inputBorder = Vector4:new(1.0, 1.0, 1.0, 0.35),
 	inputBorderTop = Vector4:new(0.5, 0.5, 0.55, 1.0),
 	inputBorderBottom = Vector4:new(0.5, 0.5, 0.55, 1.0),
 	inputSeparator = Vector4:new(0.5, 0.5, 0.55, 1.0),

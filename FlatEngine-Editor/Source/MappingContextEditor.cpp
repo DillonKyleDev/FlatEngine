@@ -21,6 +21,8 @@ namespace FlatGui
 		actionNameProps.labelWidth = 88;
 		actionNameProps.b_light = true;
 		actionNameProps.b_lightSet = true;		
+		actionNameProps.b_topValueBorder = false;	
+		actionNameProps.b_bottomValueBorder = false;	
 		FL::GuiCore::RenderStringTable(actionNameProps, actionName);
 	}
 	bool RenderInputActionPressType(std::string ID, FL::Controls::PressType& pressType)
@@ -33,7 +35,9 @@ namespace FlatGui
 		pressTypeProps.labelTextColor = "mappingContextLabelTextColor";
 		pressTypeProps.labelWidth = 88;
 		pressTypeProps.b_light = false;
-		pressTypeProps.b_lightSet = true;		
+		pressTypeProps.b_lightSet = true;	
+		pressTypeProps.b_topValueBorder = false;	
+		pressTypeProps.b_bottomValueBorder = false;	
 		b_changed = FL::GuiCore::RenderComboTable(pressTypeProps, FL::Controls::PressTypeStrings[currentPressType], FL::Controls::PressTypeStrings, currentPressType);												
 
 		if (b_changed)
@@ -117,6 +121,8 @@ namespace FlatGui
 					buttonProps.labelWidth = 88;
 					buttonProps.b_light = false;
 					buttonProps.b_lightSet = true;	
+					buttonProps.b_topValueBorder = false;
+					buttonProps.b_bottomValueBorder = false;
 					FL::GuiCore::RenderComboTable(buttonProps, FL::Controls::KeyBindingsAvailable[currentContext->tempKeycode], FL::Controls::KeyBindingsAvailable, currentContext->tempKeycode);
 					ImGui::SameLine(0,0);
 
@@ -152,7 +158,7 @@ namespace FlatGui
 	
 					FL::GuiCore::RenderSeparator(-4, -3);
 
-					RenderInputActionName("##CreateInputAction", currentContext->tempActionName, FL::Vector2(ImGui::GetContentRegionAvail().x));
+					RenderInputActionName("##CreateInputAction", currentContext->tempActionName, FL::Vector2(ImGui::GetContentRegionAvail().x, 0));
 					RenderInputActionPressType("##CreateInputAction", currentContext->tempPressType);						
 					FL::GuiCore::MoveScreenCursor(0, 3);	
 					
@@ -177,7 +183,7 @@ namespace FlatGui
 							for (int i = 0; i < inputMapping.second.actions.size(); i++)
 							{																
 								FL::Controls::PressType tempPress = inputMapping.second.actions[i].pressType;
-								RenderInputActionName("##CreateInputAction", inputMapping.second.actions[i].actionName, FL::Vector2(ImGui::GetContentRegionAvail().x - 22));
+								RenderInputActionName("##CreateInputAction", inputMapping.second.actions[i].actionName, FL::Vector2(ImGui::GetContentRegionAvail().x - 22, 0));
 								FL::GuiCore::MoveScreenCursor(ImGui::GetContentRegionAvail().x - 22, -22);
 								if (FL::GuiCore::RenderImageButton("##trashIcon-" + inputMapping.second.keycode + inputMapping.second.actions[i].actionName, FL::Assets::assetManager.GetTexture("trash"), FL::Vector2(16), 0, FL::Vector2(3)))
 								{

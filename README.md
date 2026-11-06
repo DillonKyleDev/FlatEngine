@@ -14,7 +14,7 @@ https://github.com/DillonKyleDev/FlatEngine2D</br></br>
 
 There currently is not a stable release for building from source, but if you are okay with some crashes and wish to proceed anyway, here's how to get setup for Linux VSCodium users:
 
-Dependencies you may want:
+VSCodium extensions you may want:
 lldb, clangd, clang-format by xaver
 
 1. Clone the repo.

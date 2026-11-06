@@ -2,8 +2,9 @@
 
 <a href="https://github.com/DillonKyleDev/FlatEngine2D?tab=readme-ov-file#documentation">Jump to documentation</a></br>
 
-<img width="1920" height="1152" alt="2025-10-07" src="https://github.com/user-attachments/assets/ea75d70f-dc71-4066-b1b2-eb1f2517e67f" /></br>
-<img width="1920" height="1032" alt="2025-10-04_2" src="https://github.com/user-attachments/assets/6684bf43-943e-4d3b-b149-3b637d598bfc" />
+<img width="1919" height="1031" alt="Progress" src="https://github.com/user-attachments/assets/415f91e6-4578-4244-b0fc-59846ed5f06a" />
+
+
 
 **Update:** FlatEngine2D, the 2D-only version of FlatEngine without Vulkan, just got a new major release: V2.0.  It can be found here:</br>
 
@@ -11,20 +12,34 @@ https://github.com/DillonKyleDev/FlatEngine2D</br></br>
 
 ## Building FlatEngine From Source
 
-Note: I'm having issues with Github LFS and it's not allowing further clones of the large files in the repo to be made at the moment due to file limits.  I'll get around to fixing this in the near future.  In the meantime, you may not be able to clone the entire dependencies (Vendor) directory of the repo successfully.
+There currently is not a stable release for building from source, but if you are okay with some crashes and wish to proceed anyway, here's how to get setup for Linux VSCodium users:
 
-There currently is not a stable release for building from source, but if you are okay with some crashes and wish to proceed anyway, here's how to get setup:
+Dependencies you may want:
+lldb, clangd, clang-format by xaver
 
-1. Download the VulkanSDK onto your computer. I have it installed in `C:\VulkanSDK`.  You can download it here: https://vulkan.lunarg.com/
-2. Clone the repo.. ~~Download the .zip and extract~~
-3. Run the Premake batch file by double clicking it located at `Premake/Setup-Windows.bat` to generate the Visual Studio solution file.
-4. Open the solution file that was created in the root directory. In Visual Studio, click Build -> Build Solution.
-5. Run the app.
+1. Clone the repo.
+   
+2. Run the install script:
 
-You're now set up to use the engine and edit it's source code as you wish.
+`sh install_dependencies.sh`
+
+3. Generate makefiles:
+
+`premake5 gmake`
+
+4. Build:
+
+`make config=debug`
+
+5. (If using clangd) generate compile_commands.json for clangd
+
+`bash bear -- make config=debug`
+
+That's it. All other dependencies are in /Vendor/.  You're now set up to use the engine and edit it's source code as you wish. See the `up_and_running.txt` file for more info on adding files and troubleshooting.
 
 ### Disclaimer
 
+- This Readme from here on is fairly out of date and does not reflect the current state of FlatEngine. The engine has seen many improvements and additions since this was last edited.
 - This project is in active development.
 - This is a hobby project. It is not currently in a production state and won't be for a while.  FlatEngine is likely more useful to you in it's current state as a code reference than a game development tool, though I am far from an expert in this field so use your own judgement when using FlatEngine as a reference.</br>
 - Things will change with updates.</br>
@@ -85,15 +100,16 @@ I've spent a lot of time with the Unity game engine and so have found comfort in
 --------------------------------------------------------------------------------------
 
 
-## Libraries / Utilities
+## Libraries / Utilities (incomplete list)
 | Library used        | Features supported |
 |:--------------------|:---------------|
-|SDL_2|The engine is built using SDL_2 as a base, along with several other SDL libraries including SDL_ttf for fonts, SDL_Image, and SDL_Mixer for audio.|
-|ImGui_Docking|The entire user interface, including all of the interactions within the scene view, are handled using ImGui_Docking.|
-|Vulkan|Rendering.|
-|Box2D|The physics and collision in FlatEngine2D is handled by Box2D.|
-|nlohmann Json Formatter|nlohmann Json Formatter is used for saving various types of data for later use including Scene data (GameObjects and components), Project data, and Animation data.|
-|Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine. Scripts are contained in files with the extension ".scp.lua" in order to be controlled as needed within the engine.  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
+|SDL_2|Window, events, controller input, SDL_ttf for fonts, SDL_Image, and SDL_Mixer for audio|
+|ImGui_Docking|The entire user interface, including all of the interactions within the scene view|
+|Vulkan|Viewport rendering|
+|Box2D|Physics and collision|
+|spdlog|Filterable, color-coded logging|
+|nlohmann Json Formatter|For saving various types of data for later use including Scene data (GameObjects and Components), Project data, and Animation data, controls, etc.|
+|Lua/Sol|Lua/Sol is the scripting language embedded in FlatEngine. Scripts are contained in files with the extension ".scp.lua".  See "Using FlatEngine" below for a detailed walkthrough of how to use Lua in FlatEngine.|
 
 
 --------------------------------------------------------------------------------------
